@@ -10,17 +10,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MusicPlayerForDrummers.Controls;
 
 namespace MusicPlayerForDrummers
 {
     /// <summary>
-    /// Interaction logic for SyncPage.xaml
+    /// Interaction logic for PartitionPage.xaml
     /// </summary>
-    public partial class SyncPage : Page
+    public partial class PartitionPage : MainPage
     {
-        public SyncPage()
+
+        public PartitionPage() : base()
         {
             InitializeComponent();
+            InitializeProperties();
+
         }
     }
 }

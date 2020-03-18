@@ -1,4 +1,4 @@
-﻿<Page x:Class="MusicPlayerForDrummers.PartitionPage"
+﻿<local:MainPage x:Class="MusicPlayerForDrummers.PartitionPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,16 +9,16 @@
       d:DesignHeight="855" d:DesignWidth="1520"
       Title="PartitionPage">
 
-    <Grid Background="Beige">
+    <Grid x:Name="MainGrid" Style="{StaticResource MainBackground}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/> <!-- Left Switch Bar -->
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/> <!-- Right Switch Bar -->
         </Grid.ColumnDefinitions>
-        <uc:SwitchPageBar Grid.Column="0" Title="Library" LabelDirection="Left"/>
+        <uc:SwitchPageBar x:Name="LeftSwitchBar" Grid.Column="0" Title="LIBRARY" Direction="Left"/>
         <Grid Grid.Column="1">
             <TextBlock>TEMP</TextBlock>
         </Grid>
-        <uc:SwitchPageBar Grid.Column="2" Title="Sync" LabelDirection="Right"/>
+        <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="2" Title="SYNC" Direction="Right"/>
     </Grid>
-</Page>
+</local:MainPage>

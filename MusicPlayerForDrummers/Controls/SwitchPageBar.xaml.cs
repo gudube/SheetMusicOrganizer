@@ -17,7 +17,7 @@ namespace MusicPlayerForDrummers.Controls
     /// <summary>
     /// Interaction logic for SwitchPageBar.xaml
     /// </summary>
-    public partial class SwitchPageBar : UserControl
+    public partial class SwitchPageBar : Button
     {
         public SwitchPageBar()
         {
@@ -25,17 +25,18 @@ namespace MusicPlayerForDrummers.Controls
             DataContext = this;
         }
 
-        private Direction _labelDirection = Direction.Right;
-        public Direction LabelDirection
+        private EDirection _direction = EDirection.Right;
+        public EDirection Direction
         {
-            get { return _labelDirection; }
+            get { return _direction; }
             set
             {
-                _labelDirection = value;
-                Angle = (int) _labelDirection;
+                _direction = value;
+                Angle = (int) _direction;
             }
         }
-
+        
+        #region Label
         public double Angle { get; set; }
 
         private string _title = "";
@@ -44,11 +45,41 @@ namespace MusicPlayerForDrummers.Controls
             get { return "\u25BD   " + _title + "   \u25BD"; }
             set { _title = value; }
         }
+        #endregion
+
+        #region Events
+        public static readonly RoutedEvent SwitchPageEvent = EventManager.RegisterRoutedEvent(
+            "SwitchPage", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(SwitchPageBar));
+        
+        public event RoutedEventHandler SwitchPage
+        {
+            add { AddHandler(SwitchPageEvent, value); }
+            remove { RemoveHandler(SwitchPageEvent, value); }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new SwitchPageEventArgs(SwitchPageEvent, _direction));
+        }
+        #endregion
     }
 
-    public enum Direction
+    public enum EDirection
     {
         Left = 90,
         Right = -90
+    }
+
+    public class SwitchPageEventArgs : RoutedEventArgs
+    {
+        public EDirection Direction
+        {
+            get; set;
+        }
+
+        public SwitchPageEventArgs(RoutedEvent routedEvent, EDirection direction) : base(routedEvent)
+        {
+            this.Direction = direction;
+        }
     }
 }

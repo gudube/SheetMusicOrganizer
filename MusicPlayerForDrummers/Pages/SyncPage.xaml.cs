@@ -14,13 +14,14 @@ using System.Windows.Shapes;
 namespace MusicPlayerForDrummers
 {
     /// <summary>
-    /// Interaction logic for LibraryPage.xaml
+    /// Interaction logic for SyncPage.xaml
     /// </summary>
-    public partial class LibraryPage : Page
+    public partial class SyncPage : MainPage
     {
-        public LibraryPage()
+        public SyncPage() : base()
         {
             InitializeComponent();
+            InitializeProperties();
         }
     }
 }

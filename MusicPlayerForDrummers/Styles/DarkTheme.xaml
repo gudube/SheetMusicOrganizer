@@ -1,0 +1,39 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MusicPlayerForDrummers.Styles">
+    <SolidColorBrush x:Key="BackgroundColor" Color="#252525"/>
+    <SolidColorBrush x:Key="LighterBackgroundColor" Color="#333333"/>
+    <SolidColorBrush x:Key="LightestBackgroundColor" Color="#717171"/>
+    <SolidColorBrush x:Key="ClickableColor" Color="#d1d1d1"/>
+    <SolidColorBrush x:Key="SelectedColor" Color="#ededed"/>
+
+    <SolidColorBrush x:Key="WhiteThemeBackgroundColor" Color="Beige"/>
+    <SolidColorBrush x:Key="DarkerWTBackgroundColor" Color="BurlyWood"/>
+    
+    <!-- BACKGROUNDS -->
+    <Style x:Key="MainBackground" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
+    </Style>
+    <Style x:Key="LighterBackground" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{StaticResource LighterBackgroundColor}"/>
+    </Style>
+    <Style x:Key="LightestBackground" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{StaticResource LightestBackgroundColor}"/>
+    </Style>
+    
+    <!-- CONTROLS -->
+    <Style x:Key="Clickable" TargetType="{x:Type Control}">
+        <Setter Property="Foreground" Value="{StaticResource ClickableColor}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+
+    </Style>
+    <Style x:Key="Unclickable" TargetType="{x:Type Control}">
+        <Setter Property="Background" Value="{StaticResource LightestBackgroundColor}"/>
+    </Style>
+    <Style x:Key="Selected" TargetType="{x:Type Control}">
+        <Setter Property="Background" Value="{StaticResource SelectedColor}"/>
+    </Style>
+    
+</ResourceDictionary>
+   
