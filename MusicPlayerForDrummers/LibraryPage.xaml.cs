@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,17 +14,13 @@ using System.Windows.Shapes;
 namespace MusicPlayerForDrummers
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for LibraryPage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LibraryPage : Page
     {
-        public MainWindow()
+        public LibraryPage()
         {
             InitializeComponent();
-            LibraryPage libraryPage = new LibraryPage();
-            PartitionPage partitionPage = new PartitionPage();
-            SyncPage syncPage = new SyncPage();
-            MainFrame.Content = partitionPage;
         }
     }
 }

@@ -1,0 +1,24 @@
+﻿<Page x:Class="MusicPlayerForDrummers.PartitionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MusicPlayerForDrummers"
+      xmlns:uc="clr-namespace:MusicPlayerForDrummers.Controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="855" d:DesignWidth="1520"
+      Title="PartitionPage">
+
+    <Grid Background="Beige">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/> <!-- Left Switch Bar -->
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/> <!-- Right Switch Bar -->
+        </Grid.ColumnDefinitions>
+        <uc:SwitchPageBar Grid.Column="0" Title="Library" LabelDirection="Left"/>
+        <Grid Grid.Column="1">
+            <TextBlock>TEMP</TextBlock>
+        </Grid>
+        <uc:SwitchPageBar Grid.Column="2" Title="Sync" LabelDirection="Right"/>
+    </Grid>
+</Page>
