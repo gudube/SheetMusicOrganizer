@@ -12,13 +12,17 @@
     <Grid>
         <Grid x:Name="MainGrid" Style="{StaticResource MainBackground}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="1">
+            <uc:LibraryMenu Grid.Column="0" Width="400"/>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+            <DataGrid Grid.Column="2">
                 <TextBlock>TEMP</TextBlock>
-            </Grid>
-            <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="2" Title="PARTITION" Direction="Right"/>
+            </DataGrid>
+            <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="3" Title="PARTITION" Direction="Right"/>
         </Grid>
     </Grid>
 </local:MainPage>

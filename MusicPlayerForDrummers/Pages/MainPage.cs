@@ -14,7 +14,7 @@ namespace MusicPlayerForDrummers
 
         public MainPage()
         {
-            ShowsNavigationUI = false;
+            
         }
 
         protected void InitializeProperties()

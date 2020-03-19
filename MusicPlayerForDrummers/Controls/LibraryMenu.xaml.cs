@@ -10,20 +10,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MusicPlayerForDrummers.Controls;
 
-namespace MusicPlayerForDrummers
+namespace MusicPlayerForDrummers.Controls
 {
     /// <summary>
-    /// Interaction logic for PartitionPage.xaml
+    /// Interaction logic for LibraryMenu.xaml
     /// </summary>
-    public partial class PartitionPage : MainPage
+    public partial class LibraryMenu : Grid
     {
-
-        public PartitionPage() : base()
+        public LibraryMenu()
         {
             InitializeComponent();
-            InitializeProperties();
         }
     }
 }
