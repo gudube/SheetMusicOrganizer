@@ -13,8 +13,23 @@
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Expander Grid.Row="0" Header="Playlists">
-        <ListBox>
-            <ListBoxItem Content="All Music"/>
+        <ListBox x:Name="PlaylistsListBox">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.Resources>
+                            <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="25"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                        <Image Grid.Column="1" Source="/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
+                               Visibility="{Binding Locked, Converter={StaticResource BoolToVisConverter}}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </Expander>
     <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>

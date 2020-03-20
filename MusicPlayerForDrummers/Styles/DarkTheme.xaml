@@ -54,5 +54,10 @@
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
+    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource Clickable}">
+        <Setter Property="Background" Value="{StaticResource LighterBackgroundColor}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+
 </ResourceDictionary>
    
