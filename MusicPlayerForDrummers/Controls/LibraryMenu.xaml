@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MusicPlayerForDrummers.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
-             Style="{StaticResource LightestBackground}">
+             Style="{StaticResource MainBackground}">
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="5"/>
