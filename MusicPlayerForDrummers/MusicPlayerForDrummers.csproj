@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\lock_64.png" />
-    <None Remove="Resources\plus_40.png" />
+    <None Remove="View\Resources\lock_64.png" />
+    <None Remove="View\Resources\plus_40.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\lock_64.png" />
-    <Resource Include="Resources\plus_40.png" />
+    <Resource Include="View\Resources\lock_64.png" />
+    <Resource Include="View\Resources\plus_40.png" />
   </ItemGroup>
 
   <ItemGroup>

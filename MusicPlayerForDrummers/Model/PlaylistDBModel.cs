@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MusicPlayerForDrummers.Data
+namespace MusicPlayerForDrummers.Model
 {
     //The model contains the table name and its columns
     public static class PlaylistDBModel

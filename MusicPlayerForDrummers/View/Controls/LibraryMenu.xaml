@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.Controls"
-             xmlns:data="clr-namespace:MusicPlayerForDrummers.Data"
+             xmlns:data="clr-namespace:MusicPlayerForDrummers.Model"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
@@ -29,13 +29,13 @@
                             <ColumnDefinition Width="25"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <Image Grid.Column="1" Source="/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
+                        <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
                                Visibility="{Binding Locked, Converter={StaticResource BoolToVisConverter}}"/>
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type data:AddPlaylistItem}">
                     <Grid>
-                        <Image x:Name="AddPlaylistImage" Source="/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center"/>
+                        <Image x:Name="AddPlaylistImage" Source="/View/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center"/>
                         <TextBox x:Name="AddPlaylistTextBox" Visibility="{Binding Path=IsAddingPlaylist, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"/>
                     </Grid>
                 </DataTemplate>

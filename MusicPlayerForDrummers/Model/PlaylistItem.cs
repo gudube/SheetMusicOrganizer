@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace MusicPlayerForDrummers.Data
+namespace MusicPlayerForDrummers.Model
 {
     public class PlaylistItem : CustomListBoxItem
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MusicPlayerForDrummers.Data
+namespace MusicPlayerForDrummers.Model
 {
     public class SqlColumn
     {

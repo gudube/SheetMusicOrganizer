@@ -6,7 +6,7 @@ using System.IO;
 using System.Windows;
 using System.Linq;
 
-namespace MusicPlayerForDrummers.Data
+namespace MusicPlayerForDrummers.Model
 {
     public static class DBHandler
     {

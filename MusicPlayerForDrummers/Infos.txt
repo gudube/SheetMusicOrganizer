@@ -1,1 +1,5 @@
-﻿Technology used: sqlite, MVVM, C#, WPF, 
+﻿Technology used: sqlite, MVVM, C#, WPF
+
+Need to transform to MVVM, voir cours public, Add 3 folders with each.
+
+One VM for the window (main) contains three properties that are other VMs and associate each with currentVM and binding in the xaml
