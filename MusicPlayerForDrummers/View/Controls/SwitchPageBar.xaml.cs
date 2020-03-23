@@ -12,11 +12,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 
-namespace MusicPlayerForDrummers.Controls
+namespace MusicPlayerForDrummers.View
 {
     /// <summary>
     /// Interaction logic for SwitchPageBar.xaml
     /// </summary>
+    /// TODO: Should it be a UserControl containing a button?
     public partial class SwitchPageBar : Button
     {
         public SwitchPageBar()

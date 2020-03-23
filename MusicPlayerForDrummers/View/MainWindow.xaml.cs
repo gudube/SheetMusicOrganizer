@@ -1,5 +1,4 @@
-﻿using MusicPlayerForDrummers.Controls;
-using Prism.Mvvm;
+﻿using MusicPlayerForDrummers.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,32 +15,25 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers
+namespace MusicPlayerForDrummers.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window
     {
-        LibraryPage _libraryPage;
-        PartitionPage _partitionPage;
-        SyncPage _syncPage;
-
         public MainWindow()
         {
             InitializeComponent();
+            DBHandler.InitializeDatabase();
             DataContext = this;
-            _libraryPage = new LibraryPage();
-            _partitionPage = new PartitionPage();
-            _syncPage = new SyncPage();
-            CurrentPage = _libraryPage;
-            CurrentPage.SubToSwitchPageEvent(new RoutedEventHandler(SwitchPageEvent));
         }
-
+        /*
         #region Page
 
         public MainPage CurrentPage { get; set; }
 
+        
         private void SwitchPage(MainPage page)
         {
             if (!Equals(CurrentPage, page))
@@ -83,5 +75,6 @@ namespace MusicPlayerForDrummers
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+        */
     }
 }

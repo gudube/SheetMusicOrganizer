@@ -1,10 +1,10 @@
-﻿<Grid x:Class="MusicPlayerForDrummers.Controls.LibraryMenu"
+﻿<Grid x:Class="MusicPlayerForDrummers.View.LibraryMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.Controls"
-             xmlns:data="clr-namespace:MusicPlayerForDrummers.Model"
+             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+             xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
@@ -19,7 +19,7 @@
     <Expander x:Name="PlaylistsExpander" Grid.Row="0" Header="Playlists">
         <ListBox x:Name="PlaylistsListBox" SelectionMode="Single" SelectionChanged="Playlists_SelectionChanged">
             <ListBox.Resources>
-                <DataTemplate DataType="{x:Type data:PlaylistItem}">
+                <DataTemplate DataType="{x:Type model:PlaylistItem}">
                     <Grid>
                         <Grid.Resources>
                             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
@@ -33,7 +33,7 @@
                                Visibility="{Binding Locked, Converter={StaticResource BoolToVisConverter}}"/>
                     </Grid>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type data:AddPlaylistItem}">
+                <DataTemplate DataType="{x:Type model:AddPlaylistItem}">
                     <Grid>
                         <Image x:Name="AddPlaylistImage" Source="/View/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center"/>
                         <TextBox x:Name="AddPlaylistTextBox" Visibility="{Binding Path=IsAddingPlaylist, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"/>

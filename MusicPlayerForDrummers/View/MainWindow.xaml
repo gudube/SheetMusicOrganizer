@@ -1,11 +1,27 @@
-﻿<Window x:Class="MusicPlayerForDrummers.MainWindow"
+﻿<Window x:Class="MusicPlayerForDrummers.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers"
+        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+        xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:LibraryVM}">
+            <local:LibraryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PartitionVM}">
+            <local:PartitionView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SyncVM}">
+            <local:SyncView/>
+        </DataTemplate>
+        <vm:MainVM x:Key="MainViewModel"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <Binding Source="{StaticResource MainViewModel}"/>
+    </Window.DataContext>
     <Grid Style="{StaticResource BackgroundLv1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Menu here-->
@@ -17,7 +33,7 @@
             <MenuItem Header="File"/>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <Frame Grid.Row="2"  x:Name="MainFrame" NavigationUIVisibility="Hidden" Content="{Binding Path=CurrentPage}"/>
+        <ContentControl Grid.Row="2" DataContext="{StaticResource MainViewModel}" Content="{Binding CurrentViewModel}"/>
         <StatusBar Grid.Row="3" Height="20"> Status, can contain information about song, etc. </StatusBar>
     </Grid>
 </Window>

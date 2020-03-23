@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers.Controls
+namespace MusicPlayerForDrummers.View
 {
     /// <summary>
     /// Interaction logic for LibraryMenu.xaml

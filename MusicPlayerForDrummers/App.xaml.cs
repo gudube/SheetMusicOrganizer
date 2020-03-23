@@ -14,15 +14,5 @@ namespace MusicPlayerForDrummers
     /// </summary>
     public partial class App : Application
     {
-
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            DBHandler.InitializeDatabase();
-
-            // Create the startup window
-            MainWindow wnd = new MainWindow();
-            // Show the window
-            wnd.Show();
-        }
     }
 }

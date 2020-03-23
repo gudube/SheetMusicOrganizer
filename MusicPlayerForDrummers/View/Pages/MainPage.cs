@@ -1,13 +1,13 @@
-﻿using MusicPlayerForDrummers.Controls;
+﻿using MusicPlayerForDrummers.View;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace MusicPlayerForDrummers
+namespace MusicPlayerForDrummers.View
 {
-    public class MainPage : Page
+    public class MainPage : UserControl
     {
         private SwitchPageBar _leftSwitchBar;
         private SwitchPageBar _rightSwitchBar;

@@ -1,13 +1,11 @@
-﻿<local:MainPage x:Class="MusicPlayerForDrummers.LibraryPage"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.LibraryView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MusicPlayerForDrummers"
-      xmlns:uc="clr-namespace:MusicPlayerForDrummers.Controls"
+      xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
       mc:Ignorable="d" 
-      d:DesignHeight="855" d:DesignWidth="1520"
-      Title="LibraryPage">
+      d:DesignHeight="855" d:DesignWidth="1520">
 
     <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
         <Grid.ColumnDefinitions>
@@ -16,12 +14,12 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <uc:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
+        <local:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
         <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"/>
         <DataGrid Grid.Column="2">
             <TextBlock FontSize="12">TEMP</TextBlock>
             <TextBlock>TEMP</TextBlock>
         </DataGrid>
-        <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="3" Title="PARTITION" Direction="Right"/>
+        <local:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="3" Title="PARTITION" Direction="Right"/>
     </Grid>
-</local:MainPage>
+</UserControl>

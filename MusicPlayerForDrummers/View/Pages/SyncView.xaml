@@ -1,13 +1,11 @@
-﻿<local:MainPage x:Class="MusicPlayerForDrummers.SyncPage"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.SyncView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MusicPlayerForDrummers"
-      xmlns:uc="clr-namespace:MusicPlayerForDrummers.Controls"
+      xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
       mc:Ignorable="d" 
-      d:DesignHeight="855" d:DesignWidth="1520"
-      Title="SyncPage">
+      d:DesignHeight="855" d:DesignWidth="1520">
 
     <Grid>
         <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
@@ -15,10 +13,10 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <uc:SwitchPageBar x:Name="LeftSwitchBar" Grid.Column="0" Title="PARTITION" Direction="Left"/>
+            <local:SwitchPageBar x:Name="LeftSwitchBar" Grid.Column="0" Title="PARTITION" Direction="Left"/>
             <Grid Grid.Column="1">
                 <TextBlock>TEMP SYNC PAGE</TextBlock>
             </Grid>
         </Grid>
     </Grid>
-</local:MainPage>
+</UserControl>

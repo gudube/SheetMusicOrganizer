@@ -11,17 +11,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers
+namespace MusicPlayerForDrummers.View
 {
     /// <summary>
-    /// Interaction logic for LibraryPage.xaml
+    /// Interaction logic for SyncPage.xaml
     /// </summary>
-    public partial class LibraryPage : MainPage
+    public partial class SyncView : UserControl
     {
-        public LibraryPage(): base()
+        public SyncView() : base()
         {
             InitializeComponent();
-            InitializeProperties();
         }
     }
 }
