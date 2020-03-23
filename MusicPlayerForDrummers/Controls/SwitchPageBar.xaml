@@ -9,7 +9,7 @@
              HorizontalContentAlignment="Stretch"
              VerticalContentAlignment="Stretch"
              Click="Button_Click">
-    <Grid Style="{StaticResource LighterBackground}">
+    <Grid Style="{StaticResource BackgroundLv2}">
         <Label Name="SwitchBarLabel" Content="{Binding Title}" VerticalAlignment="Center" Style="{StaticResource Clickable}">
             <Label.LayoutTransform>
                 <RotateTransform Angle="{Binding Path=Angle}"/>

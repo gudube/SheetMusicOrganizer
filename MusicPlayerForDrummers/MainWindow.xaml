@@ -6,14 +6,18 @@
         xmlns:local="clr-namespace:MusicPlayerForDrummers"
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520">
-    <Grid>
+    <Grid Style="{StaticResource BackgroundLv1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Menu here-->
+            <RowDefinition Height="1"/>
             <RowDefinition Height="*"/> <!-- Content here (all remaining space) -->
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Height="20"></Menu>
-        <Frame Grid.Row="1"  x:Name="MainFrame" NavigationUIVisibility="Hidden" Content="{Binding Path=CurrentPage}"/>
-        <StatusBar Grid.Row="2" Height="20"> Status, can contain information about song, etc. </StatusBar>
+        <Menu Grid.Row="0" Height="20">
+            <MenuItem Header="File"/>
+        </Menu>
+        <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
+        <Frame Grid.Row="2"  x:Name="MainFrame" NavigationUIVisibility="Hidden" Content="{Binding Path=CurrentPage}"/>
+        <StatusBar Grid.Row="3" Height="20"> Status, can contain information about song, etc. </StatusBar>
     </Grid>
 </Window>

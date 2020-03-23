@@ -4,18 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.Controls"
+             xmlns:data="clr-namespace:MusicPlayerForDrummers.Data"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
-             Style="{StaticResource MainBackground}">
+             Style="{StaticResource BackgroundLv2}">
+    <Grid.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Grid.Resources>
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
-        <RowDefinition Height="5"/>
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
-    <Expander Grid.Row="0" Header="Playlists">
-        <ListBox x:Name="PlaylistsListBox">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
+    <Expander x:Name="PlaylistsExpander" Grid.Row="0" Header="Playlists">
+        <ListBox x:Name="PlaylistsListBox" SelectionMode="Single" SelectionChanged="Playlists_SelectionChanged">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type data:PlaylistItem}">
                     <Grid>
                         <Grid.Resources>
                             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
@@ -29,9 +33,14 @@
                                Visibility="{Binding Locked, Converter={StaticResource BoolToVisConverter}}"/>
                     </Grid>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type data:AddPlaylistItem}">
+                    <Grid>
+                        <Image x:Name="AddPlaylistImage" Source="/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center"/>
+                        <TextBox x:Name="AddPlaylistTextBox" Visibility="{Binding Path=IsAddingPlaylist, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.Resources>
         </ListBox>
     </Expander>
-    <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
-    <Grid Grid.Row="2"/>
+    <Grid Grid.Row="1"/>
 </Grid>

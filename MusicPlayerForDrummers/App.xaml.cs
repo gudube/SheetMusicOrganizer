@@ -17,7 +17,7 @@ namespace MusicPlayerForDrummers
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            DBHandler.InitializeDatabase(true);
+            DBHandler.InitializeDatabase();
 
             // Create the startup window
             MainWindow wnd = new MainWindow();

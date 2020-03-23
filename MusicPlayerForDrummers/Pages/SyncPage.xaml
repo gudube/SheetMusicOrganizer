@@ -10,7 +10,7 @@
       Title="SyncPage">
 
     <Grid>
-        <Grid x:Name="MainGrid" Style="{StaticResource MainBackground}">
+        <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>

@@ -1,0 +1,1 @@
+﻿Technology used: sqlite, MVVM, C#, WPF, 

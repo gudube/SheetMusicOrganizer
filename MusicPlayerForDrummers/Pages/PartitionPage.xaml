@@ -9,7 +9,7 @@
       d:DesignHeight="855" d:DesignWidth="1520"
       Title="PartitionPage">
 
-    <Grid x:Name="MainGrid" Style="{StaticResource MainBackground}">
+    <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/> <!-- Left Switch Bar -->
             <ColumnDefinition Width="*"/>

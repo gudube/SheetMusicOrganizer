@@ -9,20 +9,19 @@
       d:DesignHeight="855" d:DesignWidth="1520"
       Title="LibraryPage">
 
-    <Grid>
-        <Grid x:Name="MainGrid" Style="{StaticResource MainBackground}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <uc:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-            <DataGrid Grid.Column="2">
-                <TextBlock>TEMP</TextBlock>
-            </DataGrid>
-            <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="3" Title="PARTITION" Direction="Right"/>
-        </Grid>
+    <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <uc:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
+        <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"/>
+        <DataGrid Grid.Column="2">
+            <TextBlock FontSize="12">TEMP</TextBlock>
+            <TextBlock>TEMP</TextBlock>
+        </DataGrid>
+        <uc:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="3" Title="PARTITION" Direction="Right"/>
     </Grid>
 </local:MainPage>
