@@ -6,5 +6,6 @@ namespace MusicPlayerForDrummers.ViewModel
 {
     public class PartitionVM : BaseViewModel
     {
+        public override string ViewModelName => "PARTITION";
     }
 }

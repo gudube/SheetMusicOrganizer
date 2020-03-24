@@ -1,5 +1,7 @@
 ﻿Technology used: sqlite, MVVM, C#, WPF
 
-Need to transform to MVVM, voir cours public, Add 3 folders with each.
-
-One VM for the window (main) contains three properties that are other VMs and associate each with currentVM and binding in the xaml
+Need to bind to a dynamic property:
+only in the view? See SwitchViewButton.xaml.cs (DependencyProperty)
+	https://stackoverflow.com/questions/25895011/how-to-add-custom-properties-to-wpf-user-control
+also in model/viewmodel? see MainVM.cs (INotifyPropertyChanged, SetValue) or PlaylistItem.cs
+Event from view to viewmodel? See MainVM.cs (DelegateCommand)

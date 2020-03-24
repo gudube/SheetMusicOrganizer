@@ -6,5 +6,6 @@ namespace MusicPlayerForDrummers.ViewModel
 {
     public class SyncVM : BaseViewModel
     {
+        public override string ViewModelName => "SYNC";
     }
 }

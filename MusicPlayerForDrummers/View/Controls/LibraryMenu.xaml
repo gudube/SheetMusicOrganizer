@@ -21,16 +21,13 @@
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type model:PlaylistItem}">
                     <Grid>
-                        <Grid.Resources>
-                            <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
-                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="25"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Name}"/>
                         <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
-                               Visibility="{Binding Locked, Converter={StaticResource BoolToVisConverter}}"/>
+                               Visibility="{Binding Locked, Converter={StaticResource BoolToVis}}"/>
                     </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type model:AddPlaylistItem}">

@@ -7,16 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="855" d:DesignWidth="1520">
 
-    <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/> <!-- Left Switch Bar -->
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/> <!-- Right Switch Bar -->
-        </Grid.ColumnDefinitions>
-        <local:SwitchPageBar x:Name="LeftSwitchBar" Grid.Column="0" Title="LIBRARY" Direction="Left"/>
-        <Grid Grid.Column="1">
-            <TextBlock>TEMP</TextBlock>
-        </Grid>
-        <local:SwitchPageBar x:Name="RightSwitchBar" Grid.Column="2" Title="SYNC" Direction="Right"/>
+    <Grid Style="{StaticResource BackgroundLv1}">
+            <TextBlock Foreground="White">PARTITION VIEW</TextBlock>
     </Grid>
 </UserControl>

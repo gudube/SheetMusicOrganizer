@@ -7,16 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="855" d:DesignWidth="1520">
 
-    <Grid>
-        <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <local:SwitchPageBar x:Name="LeftSwitchBar" Grid.Column="0" Title="PARTITION" Direction="Left"/>
-            <Grid Grid.Column="1">
-                <TextBlock>TEMP SYNC PAGE</TextBlock>
-            </Grid>
-        </Grid>
+    <Grid Style="{StaticResource BackgroundLv1}">
+        <TextBlock Foreground="White">TEMP SYNC PAGE</TextBlock>
     </Grid>
 </UserControl>

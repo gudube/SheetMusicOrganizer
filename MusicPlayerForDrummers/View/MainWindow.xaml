@@ -17,10 +17,11 @@
         <DataTemplate DataType="{x:Type vm:SyncVM}">
             <local:SyncView/>
         </DataTemplate>
-        <vm:MainVM x:Key="MainViewModel"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
     <Window.DataContext>
-        <Binding Source="{StaticResource MainViewModel}"/>
+        <vm:MainVM/>
+        <!--<vm:MainVM/>-->
     </Window.DataContext>
     <Grid Style="{StaticResource BackgroundLv1}">
         <Grid.RowDefinitions>
@@ -33,7 +34,20 @@
             <MenuItem Header="File"/>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <ContentControl Grid.Row="2" DataContext="{StaticResource MainViewModel}" Content="{Binding CurrentViewModel}"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <local:SwitchViewButton Grid.Column="0" Title="{Binding LeftViewTitle}" Direction="Left"
+                                    Visibility="{Binding Path=CanSwitchViewLeft, Converter={StaticResource BoolToVis}}"
+                                    SwitchViewCommand="{Binding SwitchViewLeftCommand}"/>
+            <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
+            <local:SwitchViewButton Grid.Column="2" Title="{Binding RightViewTitle}" Direction="Right"
+                                    Visibility="{Binding Path=CanSwitchViewRight, Converter={StaticResource BoolToVis}}"
+                                    SwitchViewCommand="{Binding SwitchViewRightCommand}"/>
+        </Grid>
         <StatusBar Grid.Row="3" Height="20"> Status, can contain information about song, etc. </StatusBar>
     </Grid>
 </Window>

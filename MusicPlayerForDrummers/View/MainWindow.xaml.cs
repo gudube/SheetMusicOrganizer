@@ -26,7 +26,6 @@ namespace MusicPlayerForDrummers.View
         {
             InitializeComponent();
             DBHandler.InitializeDatabase();
-            DataContext = this;
         }
         /*
         #region Page

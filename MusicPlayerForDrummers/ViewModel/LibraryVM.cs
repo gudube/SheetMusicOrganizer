@@ -7,5 +7,6 @@ namespace MusicPlayerForDrummers.ViewModel
 {
     public class LibraryVM : BaseViewModel
     {
+        public override string ViewModelName => "LIBRARY";
     }
 }
