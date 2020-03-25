@@ -9,7 +9,7 @@
         Title="MainWindow" Height="855" Width="1520">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:LibraryVM}">
-            <local:LibraryView/>
+            <local:LibraryView DataContext=""/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:PartitionVM}">
             <local:PartitionView/>
@@ -21,7 +21,6 @@
     </Window.Resources>
     <Window.DataContext>
         <vm:MainVM/>
-        <!--<vm:MainVM/>-->
     </Window.DataContext>
     <Grid Style="{StaticResource BackgroundLv1}">
         <Grid.RowDefinitions>

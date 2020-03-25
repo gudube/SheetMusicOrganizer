@@ -4,10 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+      xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
       mc:Ignorable="d" 
       d:DesignHeight="855" d:DesignWidth="1520">
-    
     <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
+        <Grid.DataContext>
+            <vm:LibraryVM/>
+        </Grid.DataContext>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
             <ColumnDefinition Width="5"/>

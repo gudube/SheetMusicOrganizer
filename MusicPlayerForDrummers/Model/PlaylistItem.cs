@@ -58,5 +58,5 @@ namespace MusicPlayerForDrummers.Model
         }
     };
 
-    interface  CustomListBoxItem { };
+    public interface  CustomListBoxItem { };
 }

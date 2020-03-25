@@ -5,3 +5,7 @@ only in the view? See SwitchViewButton.xaml.cs (DependencyProperty)
 	https://stackoverflow.com/questions/25895011/how-to-add-custom-properties-to-wpf-user-control
 also in model/viewmodel? see MainVM.cs (INotifyPropertyChanged, SetValue) or PlaylistItem.cs
 Event from view to viewmodel? See MainVM.cs (DelegateCommand)
+
+set Datacontext: see MainWindow.xaml
+
+Warning: Trace.WriteLine(warning);

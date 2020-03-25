@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
-             xmlns:System="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
              Style="{StaticResource BackgroundLv2}">
@@ -16,8 +15,8 @@
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
-    <Expander x:Name="PlaylistsExpander" Grid.Row="0" Header="Playlists">
-        <ListBox x:Name="PlaylistsListBox" SelectionMode="Single" SelectionChanged="Playlists_SelectionChanged">
+    <Expander x:Name="PlaylistsExpander" Grid.Row="0" Header="Playlists" IsExpanded="True">
+        <ListBox x:Name="PlaylistsListBox" SelectionMode="Single" SelectedIndex="0" ItemsSource="{Binding Path=Playlists, Mode=OneWay}">
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type model:PlaylistItem}">
                     <Grid>
@@ -33,7 +32,7 @@
                 <DataTemplate DataType="{x:Type model:AddPlaylistItem}">
                     <Grid>
                         <Image x:Name="AddPlaylistImage" Source="/View/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center"/>
-                        <TextBox x:Name="AddPlaylistTextBox" Visibility="{Binding Path=IsAddingPlaylist, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"/>
+                        <TextBox x:Name="AddPlaylistTextBox" Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.Resources>

@@ -1,4 +1,5 @@
-﻿using MusicPlayerForDrummers.ViewModel.Tools;
+﻿using MusicPlayerForDrummers.Model;
+using MusicPlayerForDrummers.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -49,6 +50,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM()
         {
+            DBHandler.InitializeDatabase();
+
             SwitchViewLeftCommand = new DelegateCommand(x => SwitchView(EDirection.Left), x => CanSwitchViewLeft);
             SwitchViewRightCommand = new DelegateCommand(x => SwitchView(EDirection.Right), x => CanSwitchViewRight);
 
