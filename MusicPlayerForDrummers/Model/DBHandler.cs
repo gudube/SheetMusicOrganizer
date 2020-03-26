@@ -75,6 +75,23 @@ namespace MusicPlayerForDrummers.Model
             cmd.CommandText = "SELECT * FROM " + tableName;
             return cmd.ExecuteReader();
         }
+
+        private static void DeleteRow(SqliteConnection con, string tableName, string colName, string colValue)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "DELETE FROM " + tableName + " WHERE ";
+            cmd.CommandText += colName + " = " + colValue;
+            cmd.ExecuteNonQuery();
+        }
+
+        private static void UpdateRow(SqliteConnection con, string tableName, string IDColName, string IDValue, string updatedColName, string newValue)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "UPDATE " + tableName + " SET ";
+            cmd.CommandText += updatedColName + " = " + newValue;
+            cmd.CommandText += " WHERE " + IDColName + " = " + IDValue;
+            cmd.ExecuteNonQuery();
+        }
         #endregion
 
         #region Playlist
@@ -104,6 +121,33 @@ namespace MusicPlayerForDrummers.Model
                 }
             }
             return list;
+        }
+
+        public static void DeletePlaylist(PlaylistItem Playlist)
+        {
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                DeleteRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString());
+            }
+        }
+
+        public static void RenamePlaylist(PlaylistItem Playlist, string newName)
+        {
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                UpdateRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString(), PlaylistDBModel.NameColName, newName);
+            }
+        }
+
+        public static void LockPlaylist(PlaylistItem Playlist, bool SetLocked)
+        {
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                UpdateRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString(), PlaylistDBModel.LockedColName, SetLocked ? "1" : "0");
+            }
         }
         #endregion
 

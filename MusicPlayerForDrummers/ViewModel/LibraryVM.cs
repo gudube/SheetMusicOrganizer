@@ -22,15 +22,42 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private AddPlaylistItem _addPlaylist = new AddPlaylistItem();
 
-        public DelegateCommand SelectPlaylistCommand { get; private set; }
+        private CustomListBoxItem _selectedPlaylist;
+        public CustomListBoxItem SelectedPlaylist
+        {
+            get => _selectedPlaylist;
+            set
+            {
+                SetField(ref _selectedPlaylist, value);
+                SelectedPlaylistChanged();
+            }
+        }
+
+        private bool _isEditingSelectedPlaylist;
+        public bool IsEditingSelectedPlaylist
+        {
+            get => _isEditingSelectedPlaylist;
+            set => SetField(ref _isEditingSelectedPlaylist, value);
+        }
+
+        private string _newPlaylistName;
+        public string NewPlaylistName
+        {
+            get => _newPlaylistName;
+            set => SetField(ref _newPlaylistName, value);
+        }
+
         public DelegateCommand CreateNewPlaylistCommand { get; private set; }
+        public DelegateCommand DeletePlaylistCommand { get; private set; }
+        public DelegateCommand RenamePlaylistCommand { get; private set; }
 
         public LibraryVM()
         {
             UpdatePlaylistsFromDB();
 
-            SelectPlaylistCommand = new DelegateCommand(SelectPlaylist);
-            SelectPlaylistCommand = new DelegateCommand(CreateNewPlaylist);
+            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist());
+            DeletePlaylistCommand = new DelegateCommand(x => DeletePlaylist());
+            RenamePlaylistCommand = new DelegateCommand(x => RenamePlaylist());
         }
 
         private void UpdatePlaylistsFromDB()
@@ -39,33 +66,34 @@ namespace MusicPlayerForDrummers.ViewModel
             DBHandler.GetAllPlaylists().ForEach(Playlists.Add);
             Playlists.Add(_addPlaylist);
             OnPropertyChanged("Playlists");
+            SelectedPlaylist = Playlists[0];
         }
 
-        private void SelectPlaylist(object playlist)
+        private void SelectedPlaylistChanged()
         {
-            if (playlist is AddPlaylistItem)
-            {
-                //ADD PLAYLIST
-                if(_addPlaylist.IsAddingPlaylist == false)
-                {
-                    _addPlaylist.IsAddingPlaylist = true;
-                }
-
-            }
-            else if (playlist is PlaylistItem)
-            {
-                //READ PLAYLIST
-                _addPlaylist.IsAddingPlaylist = false;
-            }
-            else
-            {
-                Trace.WriteLine("Invalid selected item in playlist ListBox");
-            }
+            IsEditingSelectedPlaylist = false;
         }
 
-        private void CreateNewPlaylist(object param)
+        private void CreateNewPlaylist()
         {
-            string playlistName = (string)param;
+            PlaylistItem newPlaylist = new PlaylistItem(NewPlaylistName);
+            //DBHandler.AddPlaylist(newPlaylist);
+            Playlists.Insert(Playlists.Count - 1, newPlaylist);
+            OnPropertyChanged("Playlists");
+            SelectedPlaylist = newPlaylist;
+            NewPlaylistName = "";
+        }
+
+        private void DeletePlaylist()
+        {
+            //DBHandler.DeletePlaylist(SelectedPlaylist);
+            Playlists.Remove(SelectedPlaylist);
+            SelectedPlaylist = null;
+        }
+
+        private void RenamePlaylist()
+        {
+            IsEditingSelectedPlaylist = true;
         }
     }
 }

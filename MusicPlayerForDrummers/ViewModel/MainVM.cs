@@ -38,13 +38,22 @@ namespace MusicPlayerForDrummers.ViewModel
         public bool CanSwitchViewRight
         {
             get => _canSwitchViewRight;
-            set => SetField(ref _canSwitchViewRight, value);
+            set
+            {
+                SetField(ref _canSwitchViewRight, value);
+                SwitchViewRightCommand.RaiseCanExecuteChanged(); //TODO: Performance? is necessary? (since the button shouldnt appear anyway)
+            }
+
         }
-        private bool _canSwitchViewLeft;
+    private bool _canSwitchViewLeft;
         public bool CanSwitchViewLeft
         {
             get => _canSwitchViewLeft;
-            set => SetField(ref _canSwitchViewLeft, value);
+            set
+            {
+                SetField(ref _canSwitchViewLeft, value);
+                SwitchViewLeftCommand.RaiseCanExecuteChanged();
+            }
         }
         public override string ViewModelName => "MAIN";
 

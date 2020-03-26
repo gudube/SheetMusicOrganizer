@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="30">
-    <Button HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+    <Button HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="0"
             DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}" Command="{Binding SwitchViewCommand}">
         <Grid Style="{StaticResource BackgroundLv2}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >

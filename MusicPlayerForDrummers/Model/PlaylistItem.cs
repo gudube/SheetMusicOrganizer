@@ -12,6 +12,7 @@ namespace MusicPlayerForDrummers.Model
         public int ID { get; private set; }
         public string Name { get; private set; }
         public bool Locked { get; private set; }
+        // bool IsRenaming { get; set; } 
 
         public PlaylistItem(string name, bool locked = false)
         {
@@ -32,8 +33,8 @@ namespace MusicPlayerForDrummers.Model
         }
     }
 
-    public class AddPlaylistItem : CustomListBoxItem, INotifyPropertyChanged {
-        private bool _IsAddingPlaylistProperty;
+    public class AddPlaylistItem : CustomListBoxItem {
+        /*private bool _IsAddingPlaylistProperty;
 
         public bool IsAddingPlaylist
         {
@@ -55,7 +56,7 @@ namespace MusicPlayerForDrummers.Model
         private void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        }*/
     };
 
     public interface  CustomListBoxItem { };
