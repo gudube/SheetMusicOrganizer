@@ -7,12 +7,15 @@ using System.Text;
 
 namespace MusicPlayerForDrummers.Model
 {
-    public class PlaylistItem : CustomListBoxItem
+    public class PlaylistItem : BaseModelItem
     {
         public int ID { get; private set; }
-        public string Name { get; private set; }
-        public bool Locked { get; private set; }
-        // bool IsRenaming { get; set; } 
+
+        private string _name;
+        public string Name { get => _name; set => SetField(ref _name, value); }
+
+        private bool _locked;
+        public bool Locked { get => _locked; set => SetField(ref _locked, value); }
 
         public PlaylistItem(string name, bool locked = false)
         {
@@ -33,31 +36,6 @@ namespace MusicPlayerForDrummers.Model
         }
     }
 
-    public class AddPlaylistItem : CustomListBoxItem {
-        /*private bool _IsAddingPlaylistProperty;
-
-        public bool IsAddingPlaylist
-        {
-            get
-            {
-                return _IsAddingPlaylistProperty;
-            }
-            set
-            {
-                if (value == _IsAddingPlaylistProperty)
-                    return;
-                _IsAddingPlaylistProperty = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RaisePropertyChanged([CallerMemberName]string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }*/
+    public class AddPlaylistItem : BaseModelItem {
     };
-
-    public interface  CustomListBoxItem { };
 }

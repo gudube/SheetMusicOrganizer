@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -13,8 +14,8 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public override string ViewModelName => "LIBRARY";
 
-        private ObservableCollection<CustomListBoxItem> _playlists = new ObservableCollection<CustomListBoxItem>();
-        public ObservableCollection<CustomListBoxItem> Playlists
+        private ObservableCollection<BaseModelItem> _playlists = new ObservableCollection<BaseModelItem>();
+        public ObservableCollection<BaseModelItem> Playlists
         {
             get => _playlists;
             set => SetField(ref _playlists, value);
@@ -22,42 +23,31 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private AddPlaylistItem _addPlaylist = new AddPlaylistItem();
 
-        private CustomListBoxItem _selectedPlaylist;
-        public CustomListBoxItem SelectedPlaylist
+        private BaseModelItem _selectedPlaylist;
+        public BaseModelItem SelectedPlaylist
         {
             get => _selectedPlaylist;
             set
             {
-                SetField(ref _selectedPlaylist, value);
-                SelectedPlaylistChanged();
+                if(SetField(ref _selectedPlaylist, value))
+                {
+                    SelectedPlaylistChanged();
+                }
             }
         }
 
-        private bool _isEditingSelectedPlaylist;
-        public bool IsEditingSelectedPlaylist
-        {
-            get => _isEditingSelectedPlaylist;
-            set => SetField(ref _isEditingSelectedPlaylist, value);
-        }
-
-        private string _newPlaylistName;
-        public string NewPlaylistName
-        {
-            get => _newPlaylistName;
-            set => SetField(ref _newPlaylistName, value);
-        }
-
         public DelegateCommand CreateNewPlaylistCommand { get; private set; }
-        public DelegateCommand DeletePlaylistCommand { get; private set; }
-        public DelegateCommand RenamePlaylistCommand { get; private set; }
+        public DelegateCommand DeleteSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand RenameSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand IsRenamingPlaylistCommand { get; private set; }
 
         public LibraryVM()
         {
             UpdatePlaylistsFromDB();
 
-            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist());
-            DeletePlaylistCommand = new DelegateCommand(x => DeletePlaylist());
-            RenamePlaylistCommand = new DelegateCommand(x => RenamePlaylist());
+            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x));
+            DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
+            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
         }
 
         private void UpdatePlaylistsFromDB()
@@ -65,35 +55,52 @@ namespace MusicPlayerForDrummers.ViewModel
             Playlists.Clear();
             DBHandler.GetAllPlaylists().ForEach(Playlists.Add);
             Playlists.Add(_addPlaylist);
-            OnPropertyChanged("Playlists");
             SelectedPlaylist = Playlists[0];
         }
 
         private void SelectedPlaylistChanged()
         {
-            IsEditingSelectedPlaylist = false;
         }
 
-        private void CreateNewPlaylist()
+        private void CreateNewPlaylist(object playlistName)
         {
-            PlaylistItem newPlaylist = new PlaylistItem(NewPlaylistName);
+            if(!(playlistName is string plName))
+            {
+                Trace.WriteLine("Expected CreateNewPlaylist to receive a string. Received : " + playlistName.GetType().Name);
+                return;
+            }
+            PlaylistItem newPlaylist = new PlaylistItem(plName);
             //DBHandler.AddPlaylist(newPlaylist);
             Playlists.Insert(Playlists.Count - 1, newPlaylist);
-            OnPropertyChanged("Playlists");
             SelectedPlaylist = newPlaylist;
-            NewPlaylistName = "";
         }
 
-        private void DeletePlaylist()
+        private void DeleteSelectedPlaylist()
         {
-            //DBHandler.DeletePlaylist(SelectedPlaylist);
-            Playlists.Remove(SelectedPlaylist);
-            SelectedPlaylist = null;
+            if (!(SelectedPlaylist is PlaylistItem plItem))
+            {
+                Trace.WriteLine("Expected to have a PlaylistItem selected when DeleteSelectedPlaylist is called.");
+                return;
+            }
+            //DBHandler.DeletePlaylist(plItem);
+            Playlists.Remove(plItem);
+            SelectedPlaylist = null; //TODO: Go to the next one, or last one if no next
         }
 
-        private void RenamePlaylist()
+        private void RenameSelectedPlaylist(object playlistName)
         {
-            IsEditingSelectedPlaylist = true;
+            if (!(playlistName is string plName))
+            {
+                Trace.WriteLine("Expected RenameSelectedPlaylist to receive a string. Received : " + playlistName.GetType().Name);
+                return;
+            }
+            if (!(SelectedPlaylist is PlaylistItem plItem))
+            {
+                Trace.WriteLine("Expected to have a PlaylistItem selected when RenameSelectedPlaylist is called.");
+                return;
+            }
+            //DBHandler.RenamePlaylist((PlaylistItem) SelectedPlaylist, NewPlaylistName);
+            plItem.Name = plName;
         }
     }
 }
