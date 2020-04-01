@@ -29,10 +29,19 @@ namespace MusicPlayerForDrummers.Model
 
         private static void CreateTables()
         {
-            using (var connection = new SqliteConnection(_dataSource))
+            using (SqliteConnection connection = new SqliteConnection(_dataSource))
             {
                 connection.Open();
-                CreatePlaylistTable(connection);
+                using (SqliteTransaction transaction = connection.BeginTransaction())
+                {
+                    CreateMasteryTable(connection);
+                    CreatePlaylistTable(connection);
+                    CreateTable(connection, new SongTable());
+                    CreateTable(connection, new PlaylistSongTable());
+
+                    transaction.Commit();
+                }
+                connection.Close();
             }
         }
         #endregion
@@ -45,28 +54,56 @@ namespace MusicPlayerForDrummers.Model
             cmd.ExecuteNonQuery();
         }
 
-        private static void CreateTable(SqliteConnection con, string tableName, string[] colSchemas)
+        private static void CreateTable(SqliteConnection con, BaseTable table)
         {
-            
+            DropTable(con, table.TableName);
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "CREATE TABLE " + tableName + "(" + string.Join(", ", colSchemas) + ")";
+            cmd.CommandText = "CREATE TABLE " + table.TableName + "(";
+            cmd.CommandText += string.Join(", ", table.GetCustomColumns().Select(x=>x.GetFormatedColumnSchema())) + ")";
             cmd.ExecuteNonQuery();
         }
 
         //TODO: Manage errors
         //TODO: Block sql injections, https://stackoverflow.com/questions/33955636/using-executereader-to-return-a-primary-key
-        //Returns the rowid of the inserted row
-        private static Int64 InsertRow(SqliteConnection con, string tableName, string[] colNames, string[] formatedValues)
+        private static void InsertRow(SqliteConnection con, BaseTable table, BaseModelItem row)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "INSERT INTO " + tableName + "(";
-            cmd.CommandText += string.Join(", ", colNames);
+            cmd.CommandText = "INSERT INTO " + table.TableName + "(";
+            cmd.CommandText += string.Join(", ", table.GetCustomColumns().Select(x => x.Name));
             cmd.CommandText += ") VALUES(";
-            cmd.CommandText += string.Join(", ", formatedValues) + ")";
+            cmd.CommandText += string.Join(", ", row.GetFormatedCustomValues()) + ")";
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "select last_insert_rowid()";
+            row.ID = Convert.ToInt32(cmd.ExecuteScalar());
+        }
+
+        //TODO: Use to same SqliteCommand instead of recreating?
+        private static void InsertRows(SqliteConnection con, BaseTable table, params BaseModelItem[] rows)
+        {
+            if(rows.Length < 1)
+            {
+                throw new ArgumentException("Expected at least one row to insert in the database.");
+            }
+
+            foreach (BaseModelItem row in rows)
+            {
+                InsertRow(con, table, row);
+            }
+            /*SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "INSERT INTO " + table.TableName + "(";
+            cmd.CommandText += string.Join(", ", table.GetCustomColumns().Select(x=>x.Name));
+            cmd.CommandText += ") VALUES";
+            string[] rowValues = new string[rows.Length];
+            for(int i=0; i<rows.Length; i++)
+            {
+                rowValues[i] = "(" + string.Join(", ", rows[i].GetFormatedCustomValues()) + ")";
+            }
+            cmd.CommandText += string.Join(", ", rowValues);
             cmd.ExecuteNonQuery();
             
-            cmd.CommandText = "select last_insert_rowid()";
-            return (Int64)cmd.ExecuteScalar();
+            //cmd.CommandText = "select last_insert_rowid()";
+            //return (Int64)cmd.ExecuteScalar();*/
         }
 
         private static SqliteDataReader GetAllItems(SqliteConnection con, string tableName)
@@ -76,21 +113,35 @@ namespace MusicPlayerForDrummers.Model
             return cmd.ExecuteReader();
         }
 
-        private static void DeleteRow(SqliteConnection con, string tableName, string colName, string colValue)
+        private static void DeleteRow(SqliteConnection con, BaseTable table, BaseModelItem row)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "DELETE FROM " + tableName + " WHERE ";
-            cmd.CommandText += colName + " = " + colValue;
+            cmd.CommandText = "DELETE FROM " + table.TableName + " WHERE ";
+            cmd.CommandText += table.ID.Name + " = " + row.ID;
             cmd.ExecuteNonQuery();
         }
 
-        private static void UpdateRow(SqliteConnection con, string tableName, string IDColName, string IDValue, string updatedColName, string newValue)
+        private static void UpdateRow(SqliteConnection con, BaseTable table, BaseModelItem row)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "UPDATE " + tableName + " SET ";
-            cmd.CommandText += updatedColName + " = " + newValue;
-            cmd.CommandText += " WHERE " + IDColName + " = " + IDValue;
+            cmd.CommandText = "UPDATE " + table.TableName + " SET ";
+            string[] colNames = table.GetCustomColumns().Select(x => x.Name).ToArray();
+            string[] colValues = row.GetFormatedCustomValues();
+            string[] updateValue = new string[colNames.Length];
+            for(int i=0; i<colNames.Length; i++)
+            {
+                updateValue[i] = colNames[i] + " = " + colValues[i];
+            }
+            cmd.CommandText += string.Join(", ", updateValue);
+            cmd.CommandText += " WHERE " + table.ID.Name + " = " + row.ID;
             cmd.ExecuteNonQuery();
+        }
+
+        private static bool IsAlreadyInTransaction(SqliteConnection con)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "select @@TRANCOUNT";
+            return (Int64) cmd.ExecuteScalar() > 0;
         }
         #endregion
 
@@ -98,68 +149,137 @@ namespace MusicPlayerForDrummers.Model
         //TODO: Stop the user from entering special chars such as '
         private static void CreatePlaylistTable(SqliteConnection con)
         {
-            DropTable(con, PlaylistDBModel.TableName);
+            PlaylistTable playlistTable = new PlaylistTable();
+            CreateTable(con, playlistTable);
 
-            CreateTable(con, PlaylistDBModel.TableName, GetColumnsSchemas(PlaylistDBModel.GetAllColumns()));
-
-            PlaylistItem item = new PlaylistItem("All Music", true);
-            InsertRow(con, PlaylistDBModel.TableName, GetColumnsNames(PlaylistDBModel.GetCustomColumns()), item.GetFormatedCustomValues());
+            PlaylistItem DefaultItem = new PlaylistItem("All Music", true);
+            InsertRow(con, playlistTable, DefaultItem);
         }
 
         //TODO: Make sure dataReader passed by value doesnt impact perf. pass by ref?
         public static List<PlaylistItem> GetAllPlaylists()
         {
-            List <PlaylistItem> list = new List<PlaylistItem>();
+            List <PlaylistItem> playlists = new List<PlaylistItem>();
 
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                SqliteDataReader dataReader = GetAllItems(con, PlaylistDBModel.TableName);
+                SqliteDataReader dataReader = GetAllItems(con, new PlaylistTable().TableName);
                 while (dataReader.Read())
                 {
-                    list.Add(new PlaylistItem(dataReader));
+                    playlists.Add(new PlaylistItem(dataReader));
                 }
             }
-            return list;
+            return playlists;
         }
 
-        public static void DeletePlaylist(PlaylistItem Playlist)
+        public static void DeletePlaylist(PlaylistItem playlist)
         {
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                DeleteRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString());
+                DeleteRow(con, new PlaylistTable(), playlist);
             }
         }
 
-        public static void RenamePlaylist(PlaylistItem Playlist, string newName)
+        public static void UpdatePlaylist(PlaylistItem playlist)
         {
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                UpdateRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString(), PlaylistDBModel.NameColName, newName);
+                UpdateRow(con, new PlaylistTable(), playlist);
             }
         }
 
-        public static void LockPlaylist(PlaylistItem Playlist, bool SetLocked)
+        public static void CreateNewPlaylist(PlaylistItem playlist)
         {
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                UpdateRow(con, PlaylistDBModel.TableName, PlaylistDBModel.IDColName, Playlist.ID.ToString(), PlaylistDBModel.LockedColName, SetLocked ? "1" : "0");
+                InsertRow(con, new PlaylistTable(), playlist);
             }
         }
         #endregion
 
-        #region Tools
-        private static string[] GetColumnsNames(SqlColumn[] cols)
+        #region Song
+        //TODO: Block after a certain number of songs (limit to like 100 000 songs? need to do a stress test)
+        private static void AddSong(SongItem song)
         {
-            return cols.Select(col => col.Name).ToArray();
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                //TODO: Find if song already exists, then just update song with ID
+                InsertRow(con, new SongTable(), song);
+            }
         }
 
-        private static string[] GetColumnsSchemas(SqlColumn[] cols)
+        //TODO: GetSongs(int playlistID)
+        //TODO: Et faire GetSongs(int playlistID, int masteryID)
+        public static List<SongItem> GetAllSongs()
         {
-            return cols.Select(col => col.GetFormatedColumnSchema()).ToArray();
+            List<SongItem> songs = new List<SongItem>();
+
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                SqliteDataReader dataReader = GetAllItems(con, new SongTable().TableName);
+                while (dataReader.Read())
+                {
+                    songs.Add(new SongItem(dataReader));
+                }
+            }
+            return songs;
+        }
+
+        //TODO: For when it's removed of All Music
+        public static void RemoveSong(SongItem song)
+        {
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                DeleteRow(con, new SongTable(), song);
+            }
+        }
+
+        //TODO: Would be better to update only the fields necessary?
+        public static void UpdateSong(SongItem song)
+        {
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                UpdateRow(con, new SongTable(), song);
+            }
+        }
+        #endregion
+
+        #region Mastery
+        private static void CreateMasteryTable(SqliteConnection con)
+        {
+            MasteryTable masteryTable = new MasteryTable();
+            CreateTable(con, masteryTable);
+
+            MasteryItem DefaultBeginner = new MasteryItem("Beginner");
+            MasteryItem DefaultIntermediate = new MasteryItem("Intermediate");
+            MasteryItem DefaultAdvanced = new MasteryItem("Advanced");
+            MasteryItem DefaultMastered = new MasteryItem("Mastered");
+
+            InsertRows(con, masteryTable, DefaultBeginner, DefaultIntermediate, DefaultAdvanced, DefaultMastered);
+        }
+
+        public static List<MasteryItem> GetAllMasteryLevels()
+        {
+            List<MasteryItem> masteryItems = new List<MasteryItem>();
+
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                SqliteDataReader dataReader = GetAllItems(con, new MasteryTable().TableName);
+                while (dataReader.Read())
+                {
+                    masteryItems.Add(new MasteryItem(dataReader));
+                }
+            }
+            return masteryItems;
         }
         #endregion
     }

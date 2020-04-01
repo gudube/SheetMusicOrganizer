@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -9,33 +10,32 @@ namespace MusicPlayerForDrummers.Model
 {
     public class PlaylistItem : BaseModelItem
     {
-        public int ID { get; private set; }
-
         private string _name;
         public string Name { get => _name; set => SetField(ref _name, value); }
 
         private bool _locked;
         public bool Locked { get => _locked; set => SetField(ref _locked, value); }
 
-        public PlaylistItem(string name, bool locked = false)
+        public PlaylistItem(string name, bool locked = false) : base()
         {
             Name = name;
             Locked = locked;
         }
 
-        public PlaylistItem(SqliteDataReader dataReader)
+        public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
         {
-            ID = dataReader.GetInt32(dataReader.GetOrdinal(PlaylistDBModel.IDColName));
-            Name = dataReader.GetString(dataReader.GetOrdinal(PlaylistDBModel.NameColName));
-            Locked = dataReader.GetBoolean(dataReader.GetOrdinal(PlaylistDBModel.LockedColName));
+            PlaylistTable playlistTable = new PlaylistTable();
+            Name = dataReader.GetString(dataReader.GetOrdinal(playlistTable.Name.Name));
+            Locked = dataReader.GetBoolean(dataReader.GetOrdinal(playlistTable.Locked.Name));
         }
 
-        public string[] GetFormatedCustomValues()
+        public override string[] GetFormatedCustomValues()
         {
-            return new string[] { "'" + Name + "'", Locked ? "1" : "0" };
+            return new string[] { GetSqlFormat(Name), GetSqlFormat(Locked) };
         }
     }
 
-    public class AddPlaylistItem : BaseModelItem {
+    public class AddPlaylistItem : BaseModelItem
+    {
     };
 }

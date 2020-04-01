@@ -9,9 +9,9 @@ namespace MusicPlayerForDrummers.ViewModel
 {
     public class MainVM : BaseViewModel
     {
-        private LibraryVM LibraryVM { get; set; } = new LibraryVM();
-        private  PartitionVM PartitionVM { get; set; } = new PartitionVM();
-        private SyncVM SyncVM { get; set; } = new SyncVM();
+        private LibraryVM LibraryVM { get; set; }
+        private  PartitionVM PartitionVM { get; set; }
+        private SyncVM SyncVM { get; set; }
 
         public List<BaseViewModel> ViewModels;
 
@@ -59,11 +59,14 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM()
         {
-            DBHandler.InitializeDatabase();
+            DBHandler.InitializeDatabase(true);
 
             SwitchViewLeftCommand = new DelegateCommand(x => SwitchView(EDirection.Left), x => CanSwitchViewLeft);
             SwitchViewRightCommand = new DelegateCommand(x => SwitchView(EDirection.Right), x => CanSwitchViewRight);
 
+            LibraryVM = new LibraryVM();
+            PartitionVM = new PartitionVM();
+            SyncVM = new SyncVM();
             ViewModels = new List<BaseViewModel> { LibraryVM, PartitionVM, SyncVM };
             SetView(LibraryVM);
         }
