@@ -258,10 +258,10 @@ namespace MusicPlayerForDrummers.Model
             MasteryTable masteryTable = new MasteryTable();
             CreateTable(con, masteryTable);
 
-            MasteryItem DefaultBeginner = new MasteryItem("Beginner");
-            MasteryItem DefaultIntermediate = new MasteryItem("Intermediate");
-            MasteryItem DefaultAdvanced = new MasteryItem("Advanced");
-            MasteryItem DefaultMastered = new MasteryItem("Mastered");
+            MasteryItem DefaultBeginner = new MasteryItem("Beginner", true);
+            MasteryItem DefaultIntermediate = new MasteryItem("Intermediate", true);
+            MasteryItem DefaultAdvanced = new MasteryItem("Advanced", true);
+            MasteryItem DefaultMastered = new MasteryItem("Mastered", true);
 
             InsertRows(con, masteryTable, DefaultBeginner, DefaultIntermediate, DefaultAdvanced, DefaultMastered);
         }

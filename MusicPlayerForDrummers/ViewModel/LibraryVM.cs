@@ -14,6 +14,17 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public override string ViewModelName => "LIBRARY";
 
+        public LibraryVM()
+        {
+            UpdatePlaylistsFromDB();
+            UpdateMasteryLevelsFromDB();
+
+            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x));
+            DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
+            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
+        }
+
+        #region Playlists
         private ObservableCollection<BaseModelItem> _playlists = new ObservableCollection<BaseModelItem>();
         public ObservableCollection<BaseModelItem> Playlists
         {
@@ -29,7 +40,7 @@ namespace MusicPlayerForDrummers.ViewModel
             get => _selectedPlaylist;
             set
             {
-                if(SetField(ref _selectedPlaylist, value))
+                if (SetField(ref _selectedPlaylist, value))
                 {
                     SelectedPlaylistChanged();
                 }
@@ -41,19 +52,9 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand RenameSelectedPlaylistCommand { get; private set; }
         public DelegateCommand IsRenamingPlaylistCommand { get; private set; }
 
-        public LibraryVM()
-        {
-            UpdatePlaylistsFromDB();
-
-            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x));
-            DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
-            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
-        }
-
         private void UpdatePlaylistsFromDB()
         {
-            Playlists.Clear();
-            DBHandler.GetAllPlaylists().ForEach(Playlists.Add);
+            Playlists = new ObservableCollection<BaseModelItem>(DBHandler.GetAllPlaylists());
             Playlists.Add(_addPlaylist);
             SelectedPlaylist = Playlists[0];
         }
@@ -102,5 +103,39 @@ namespace MusicPlayerForDrummers.ViewModel
             //DBHandler.RenamePlaylist((PlaylistItem) SelectedPlaylist, NewPlaylistName);
             plItem.Name = plName;
         }
+        #endregion
+
+        #region Mastery
+        private ObservableCollection<MasteryItem> _masteryLevels = new ObservableCollection<MasteryItem>();
+        public ObservableCollection<MasteryItem> MasteryLevels
+        {
+            get => _masteryLevels;
+            set => SetField(ref _masteryLevels, value);
+        }
+
+        private ObservableCollection<MasteryItem> _selectedMasteryLevels = new ObservableCollection<MasteryItem>();
+        public ObservableCollection<MasteryItem> SelectedMasteryLevels
+        {
+            get => _selectedMasteryLevels;
+            set
+            {
+                if(SetField(ref _selectedMasteryLevels, value))
+                {
+                    SelectedMasteryLevelsChanged();
+                }
+                
+            }
+        }
+
+        private void SelectedMasteryLevelsChanged()
+        {
+            //TODO: Update songs shown
+        }
+
+        private void UpdateMasteryLevelsFromDB()
+        {
+            MasteryLevels = new ObservableCollection<MasteryItem>(DBHandler.GetAllMasteryLevels());
+        }
+        #endregion
     }
 }

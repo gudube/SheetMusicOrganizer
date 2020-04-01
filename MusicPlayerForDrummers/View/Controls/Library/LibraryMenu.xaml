@@ -7,15 +7,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400">
     <Grid Style="{StaticResource BackgroundLv2}">
-        <Grid.Resources>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Expander x:Name="PlaylistsExpander" Grid.Row="0" Header="Playlists" IsExpanded="True"> <!-- PLAYLISTS -->
-            <local:LibraryListBox/>
-        </Expander>
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <Expander x:Name="PlaylistsExpander" Header="Playlists" IsExpanded="True">
+                <local:PlaylistsListBox/>
+            </Expander>
+            <Separator Margin="5,10"/>
+            <Expander x:Name="MasteryExpander" Header="Mastery Levels" IsExpanded="True">
+                <local:MasteryListBox/>
+            </Expander>
+        </StackPanel>
         <Grid Grid.Row="1"/>
     </Grid>
 </UserControl>

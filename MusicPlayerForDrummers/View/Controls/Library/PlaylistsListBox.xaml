@@ -1,25 +1,24 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.LibraryListBox"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.PlaylistsListBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
-             xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400">
-    <ListBox x:Name="PlaylistsListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
+    <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
              SelectedItem="{Binding Path=SelectedPlaylist, Mode=TwoWay}" 
              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type model:PlaylistItem}">
-                <local:SelectableTextItem RenameConfirmCommand="{Binding ElementName=PlaylistsListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
-                                          DeleteConfirmCommand="{Binding ElementName=PlaylistsListBox, Path=DataContext.DeleteSelectedPlaylistCommand}"
+                <local:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
+                                          DeleteConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.DeleteSelectedPlaylistCommand}"
                                           Locked="{Binding Locked}"
                                           Text="{Binding Name}"/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type model:AddPlaylistItem}">
-                <local:AdderItem ConfirmCommand="{Binding ElementName=PlaylistsListBox, Path=DataContext.CreateNewPlaylistCommand}"/>
+                <local:AdderItem ConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.CreateNewPlaylistCommand}"/>
             </DataTemplate>
         </ListBox.Resources>
     </ListBox>

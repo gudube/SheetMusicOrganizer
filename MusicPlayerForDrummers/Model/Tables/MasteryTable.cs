@@ -14,11 +14,12 @@ namespace MusicPlayerForDrummers.Model
 
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { Name };
+            return new SqlColumn[] { Name, Locked };
         }
 
         #region Custom Columns
         public readonly SqlColumn Name = new SqlColumn("Name", EType.TEXT);
+        public readonly SqlColumn Locked = new SqlColumn("Locked", EType.BOOL);
         #endregion
 
     }

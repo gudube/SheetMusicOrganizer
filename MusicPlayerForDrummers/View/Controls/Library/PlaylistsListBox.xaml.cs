@@ -16,9 +16,9 @@ namespace MusicPlayerForDrummers.View
     /// <summary>
     /// Interaction logic for LibraryListBox.xaml
     /// </summary>
-    public partial class LibraryListBox : UserControl
+    public partial class PlaylistsListBox : UserControl
     {
-        public LibraryListBox()
+        public PlaylistsListBox()
         {
             InitializeComponent();
         }
