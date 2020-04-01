@@ -5,18 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
-             d:DesignHeight="1520" d:DesignWidth="400">
-    <Grid Style="{StaticResource BackgroundLv2}">
+             d:DesignHeight="1520" d:DesignWidth="400" Padding="5, 5"
+             Style="{StaticResource ControlBackgroundLv2}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical">
-            <Expander x:Name="PlaylistsExpander" Header="Playlists" IsExpanded="True">
+            <Expander x:Name="PlaylistsExpander" Header="Playlists" IsExpanded="True" Padding="0,0,0,5">
                 <local:PlaylistsListBox/>
             </Expander>
             <Separator Margin="5,10"/>
-            <Expander x:Name="MasteryExpander" Header="Mastery Levels" IsExpanded="True">
+            <Expander x:Name="MasteryExpander" Header="Mastery Levels" IsExpanded="True" Padding="0,0,0,5">
                 <local:MasteryListBox/>
             </Expander>
         </StackPanel>

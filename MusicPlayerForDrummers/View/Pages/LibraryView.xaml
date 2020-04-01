@@ -6,18 +6,15 @@
       xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
       xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
       mc:Ignorable="d" 
-      d:DesignHeight="855" d:DesignWidth="1520">
-    <Grid x:Name="MainGrid" Style="{StaticResource BackgroundLv1}">
+      d:DesignHeight="855" d:DesignWidth="1520" Style="{StaticResource ControlBackgroundLv1}">
+    <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <local:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
-        <GridSplitter Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"/>
-        <DataGrid Grid.Column="2">
-            <TextBlock FontSize="12">TEMP</TextBlock>
-            <TextBlock>TEMP</TextBlock>
-        </DataGrid>
+        <GridSplitter Grid.Column="1"/>
+        <local:SongsGrid Grid.Column="2"/>
     </Grid>
 </UserControl>

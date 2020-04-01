@@ -11,8 +11,9 @@ namespace MusicPlayerForDrummers.Model
             PlaylistTable playlistTable = new PlaylistTable();
             SongTable songTable = new SongTable();
 
-            PlaylistID = new SqlColumn("PlaylistID", EType.TEXT, playlistTable.TableName, playlistTable.ID.Name);
-            SongID = new SqlColumn("SongID", EType.TEXT, songTable.TableName, songTable.ID.Name);
+            //TODO: Improve the DB by adding constraints (like not null and OnUpdate)
+            PlaylistID = new SqlColumn("PlaylistID", EType.INT, playlistTable.TableName, playlistTable.ID.Name);
+            SongID = new SqlColumn("SongID", EType.INT, songTable.TableName, songTable.ID.Name);
         }
         public override string TableName => "PlaylistSong";
 

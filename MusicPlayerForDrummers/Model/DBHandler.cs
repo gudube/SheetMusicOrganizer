@@ -59,7 +59,7 @@ namespace MusicPlayerForDrummers.Model
             DropTable(con, table.TableName);
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "CREATE TABLE " + table.TableName + "(";
-            cmd.CommandText += string.Join(", ", table.GetCustomColumns().Select(x=>x.GetFormatedColumnSchema())) + ")";
+            cmd.CommandText += string.Join(", ", table.GetAllColumns().Select(x=>x.GetFormatedColumnSchema())) + ")";
             cmd.ExecuteNonQuery();
         }
 
@@ -104,6 +104,15 @@ namespace MusicPlayerForDrummers.Model
             
             //cmd.CommandText = "select last_insert_rowid()";
             //return (Int64)cmd.ExecuteScalar();*/
+        }
+
+        private static SqliteDataReader GetItems(SqliteConnection con, BaseTable itemTable, string condition)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            string[] formatedCols = itemTable.GetAllColumns().Select(x => itemTable.TableName + "." + x.Name).ToArray();
+            cmd.CommandText = "SELECT " + string.Join(", ", formatedCols);
+            cmd.CommandText += " FROM " + itemTable.TableName + " " + condition;
+            return cmd.ExecuteReader();
         }
 
         private static SqliteDataReader GetAllItems(SqliteConnection con, string tableName)
@@ -203,7 +212,7 @@ namespace MusicPlayerForDrummers.Model
 
         #region Song
         //TODO: Block after a certain number of songs (limit to like 100 000 songs? need to do a stress test)
-        private static void AddSong(SongItem song)
+        public static void AddSong(SongItem song)
         {
             using (var con = new SqliteConnection(_dataSource))
             {
@@ -214,15 +223,29 @@ namespace MusicPlayerForDrummers.Model
         }
 
         //TODO: GetSongs(int playlistID)
-        //TODO: Et faire GetSongs(int playlistID, int masteryID)
-        public static List<SongItem> GetAllSongs()
+        //TODO: Make it better join performance (view?)
+        /*
+         * SELECT Song.ID, Song.Name, ... FROM Song INNER JOIN
+         *  (SELECT SongID FROM PlaylistSong WHERE PlaylistSong.PlaylistID = [playlistID] ON PlaylistSong.SongID = Song.SongID)
+         *  WHERE Song.MasteryID IN ([masteryIDs[0]], [masteryIDs[1]]...)
+         */
+        public static List<SongItem> GetSongs(int playlistID, params int[] masteryIDs)
         {
             List<SongItem> songs = new List<SongItem>();
+            SongTable songTable = new SongTable();
+            PlaylistSongTable playlistSongTable = new PlaylistSongTable();
+            string psName = playlistSongTable.TableName;
+            string condition = "INNER JOIN (SELECT " + playlistSongTable.SongID.Name + " FROM " + psName
+                + " WHERE " + psName + "." + playlistSongTable.PlaylistID.Name + " = " + playlistID + ") ps"
+                + " ON ps." + playlistSongTable.SongID.Name + " = " + songTable.TableName + "." + songTable.ID.Name;
+
+            if(masteryIDs.Count() > 0)
+                condition += " WHERE " + songTable.TableName + "." + songTable.MasteryID.Name + " IN (" + string.Join(", ", masteryIDs) + ")";
 
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                SqliteDataReader dataReader = GetAllItems(con, new SongTable().TableName);
+                SqliteDataReader dataReader = GetItems(con, songTable, condition);
                 while (dataReader.Read())
                 {
                     songs.Add(new SongItem(dataReader));

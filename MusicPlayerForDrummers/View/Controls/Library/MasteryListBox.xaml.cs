@@ -25,6 +25,7 @@ namespace MusicPlayerForDrummers.View
         public MasteryListBox()
         {
             InitializeComponent();
+            MainListBox.SelectAll();
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

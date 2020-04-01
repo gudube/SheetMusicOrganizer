@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400">
-    <ListBox SelectionMode="Multiple" ItemsSource="{Binding Path=MasteryLevels, Mode=OneWay}"
+    <ListBox Name="MainListBox" SelectionMode="Multiple" ItemsSource="{Binding Path=MasteryLevels, Mode=OneWay}"
              SelectionChanged="ListBox_SelectionChanged"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.Resources>

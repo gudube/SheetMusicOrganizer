@@ -18,10 +18,11 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             UpdatePlaylistsFromDB();
             UpdateMasteryLevelsFromDB();
-
+            UpdateSongsFromDB();
             CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x));
             DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
+            AddSongFileCommand = new DelegateCommand(x => AddSongFile(x));
         }
 
         #region Playlists
@@ -56,11 +57,12 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             Playlists = new ObservableCollection<BaseModelItem>(DBHandler.GetAllPlaylists());
             Playlists.Add(_addPlaylist);
-            SelectedPlaylist = Playlists[0];
+            _selectedPlaylist = Playlists[0];
         }
 
         private void SelectedPlaylistChanged()
         {
+            UpdateSongsFromDB();
         }
 
         private void CreateNewPlaylist(object playlistName)
@@ -105,7 +107,7 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
-        #region Mastery
+        #region Mastery Levels
         private ObservableCollection<MasteryItem> _masteryLevels = new ObservableCollection<MasteryItem>();
         public ObservableCollection<MasteryItem> MasteryLevels
         {
@@ -129,12 +131,45 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void SelectedMasteryLevelsChanged()
         {
-            //TODO: Update songs shown
+            UpdateSongsFromDB();
         }
 
         private void UpdateMasteryLevelsFromDB()
         {
             MasteryLevels = new ObservableCollection<MasteryItem>(DBHandler.GetAllMasteryLevels());
+        }
+        #endregion
+
+        #region Songs
+        private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
+        public ObservableCollection<SongItem> Songs
+        {
+            get => _songs;
+            set => SetField(ref _songs, value);
+        }
+
+        private void UpdateSongsFromDB()
+        {
+            int[] masteryIDs = new int[SelectedMasteryLevels.Count];
+            for(int i=0; i < SelectedMasteryLevels.Count; i++)
+            {
+                masteryIDs[i] = SelectedMasteryLevels[i].ID;
+            }
+            DBHandler.GetSongs(SelectedPlaylist.ID, masteryIDs);
+        }
+
+        public DelegateCommand AddSongFileCommand { get; private set; }
+        public void AddSongFile(object songDirObj)
+        {
+            if (!(songDirObj is string songDir))
+            {
+                Trace.WriteLine("Expected AddSongFile to receive a string. Received : " + songDirObj.GetType().Name);
+                return;
+            }
+
+            SongItem newSong = new SongItem(songDir);
+            DBHandler.AddSong(newSong);
+            Songs.Add(newSong);
         }
         #endregion
     }

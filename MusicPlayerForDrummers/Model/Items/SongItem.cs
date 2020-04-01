@@ -46,7 +46,7 @@ namespace MusicPlayerForDrummers.Model
 
         #endregion
 
-        public SongItem(string directory, string partitionDirectory) : base()
+        public SongItem(string directory, string partitionDirectory = "") : base()
         {
             Directory = directory;
             PartitionDirectory = partitionDirectory;

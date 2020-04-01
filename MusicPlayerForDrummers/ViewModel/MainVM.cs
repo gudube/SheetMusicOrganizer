@@ -59,7 +59,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM()
         {
-            DBHandler.InitializeDatabase();
+            DBHandler.InitializeDatabase(true);
 
             SwitchViewLeftCommand = new DelegateCommand(x => SwitchView(EDirection.Left), x => CanSwitchViewLeft);
             SwitchViewRightCommand = new DelegateCommand(x => SwitchView(EDirection.Right), x => CanSwitchViewRight);
