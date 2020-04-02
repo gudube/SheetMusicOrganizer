@@ -8,14 +8,27 @@
              Name="MainControl"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}"/>
-        <Button Name="OpenFileButton" VerticalAlignment="Center" HorizontalAlignment="Center" Click="OpenFileButton_Click">
-            <StackPanel Orientation="Vertical">
-                <Image Source="/View/Resources/music_40.png" MaxHeight="40" Margin="0, 2, 0, 0"/>
-                <TextBlock Text="OPEN MUSIC FILE" Margin="0, 10, 0, 0"/>
-            </StackPanel>
-        </Button>
-        
+        <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding NumberMD}" MinWidth="10" Width="15"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding TitleMD}" MinWidth="40" Width="150"/>
+                <DataGridTextColumn Header="Artist" Binding="{Binding ArtistMD}" MinWidth="40" Width="150"/>
+                <DataGridTextColumn Header="Album" Binding="{Binding AlbumMD}" MinWidth="40" Width="150"/>
+                <DataGridTextColumn Header="Genre" Binding="{Binding GenreMD}" MinWidth="40" Width="100"/>
+                <DataGridTextColumn Header="Length" Binding="{Binding LengthMD}" MinWidth="30" Width="50"/>
+                <DataGridTextColumn Header="Codec" Binding="{Binding CodecMD}" MinWidth="30" Width="50"/>
+                <DataGridTextColumn Header="Bitrate" Binding="{Binding BitrateMD}" MinWidth="30" Width="50"/>
+                <DataGridTextColumn Header="Rating" Binding="{Binding RatingMD}" MinWidth="30" Width="70"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Border Style="{StaticResource OutsideLightBorder}" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button Name="OpenFileButton" Click="OpenFileButton_Click">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="/View/Resources/music_40.png" MaxHeight="40" Margin="0, 2, 0, 0"/>
+                    <TextBlock Text="OPEN MUSIC FILE" Margin="0, 10, 0, 0"/>
+                </StackPanel>
+            </Button>
+        </Border>
     </Grid>
     <!-- ADD SONGS -->
 </UserControl>

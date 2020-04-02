@@ -27,12 +27,13 @@
             <RowDefinition Height="Auto"/> <!-- Menu here-->
             <RowDefinition Height="1"/>
             <RowDefinition Height="*"/> <!-- Content here (all remaining space) -->
+            <RowDefinition Height="1"/>
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Height="20">
             <MenuItem Header="File"/>
         </Menu>
-        <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
+        <Border Grid.Row="1" Style="{StaticResource LightBorder}" Margin="-5,0,5,0"/>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -47,6 +48,7 @@
                                     Visibility="{Binding Path=CanSwitchViewRight, Converter={StaticResource BoolToVis}}"
                                     SwitchViewCommand="{Binding SwitchViewRightCommand}"/>
         </Grid>
-        <StatusBar Grid.Row="3" Height="20"> Status, can contain information about song, etc. </StatusBar>
+        <Border Grid.Row="3" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
+        <StatusBar Grid.Row="4" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0"> Status, can contain information about song, etc. </StatusBar>
     </Grid>
 </Window>

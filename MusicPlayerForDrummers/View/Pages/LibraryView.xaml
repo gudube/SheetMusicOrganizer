@@ -9,12 +9,12 @@
       d:DesignHeight="855" d:DesignWidth="1520" Style="{StaticResource ControlBackgroundLv1}">
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition MinWidth="50" Width="400"/>
             <ColumnDefinition Width="5"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <local:LibraryMenu Grid.Column="0" HorizontalAlignment="Stretch"/>
-        <GridSplitter Grid.Column="1"/>
-        <local:SongsGrid Grid.Column="2"/>
+        <local:LibraryMenu x:Name="Library" Grid.Column="0" HorizontalAlignment="Stretch" Style="{StaticResource ControlBackgroundLv2}"/>
+        <GridSplitter Grid.Column="1" ResizeDirection="Columns"/>
+        <local:SongsGrid Grid.Column="2" Style="{StaticResource InsideLightControl}" BorderThickness="1,0,0,0"/>
     </Grid>
 </UserControl>

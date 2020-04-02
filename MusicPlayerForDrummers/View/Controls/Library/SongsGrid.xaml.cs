@@ -25,6 +25,10 @@ namespace MusicPlayerForDrummers.View
             InitializeComponent();
         }
 
+        //TODO: Accept drag-and-drop
+        //TODO: Hide button after a song is added
+        //TODO: Add this option in File->Add Song
+        //TODO: Directory import (batch import, see performance with taglib)
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openDialog = new OpenFileDialog();

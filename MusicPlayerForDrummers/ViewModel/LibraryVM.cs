@@ -167,7 +167,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
 
-            SongItem newSong = new SongItem(songDir);
+            SongItem newSong = new SongItem(songDir, MasteryLevels[0].ID);
             DBHandler.AddSong(newSong);
             Songs.Add(newSong);
         }

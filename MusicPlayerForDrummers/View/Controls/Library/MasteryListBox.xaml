@@ -6,7 +6,8 @@
              xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
-             d:DesignHeight="1520" d:DesignWidth="400">
+             d:DesignHeight="1520" d:DesignWidth="400"
+             Style="{StaticResource InsideLightControl}">
     <ListBox Name="MainListBox" SelectionMode="Multiple" ItemsSource="{Binding Path=MasteryLevels, Mode=OneWay}"
              SelectionChanged="ListBox_SelectionChanged"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled">

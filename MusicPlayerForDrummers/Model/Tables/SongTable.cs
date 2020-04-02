@@ -25,7 +25,7 @@ namespace MusicPlayerForDrummers.Model
 
         //TODO: Verify the files metadata is uptodate when playing: compare each field vs store and look at the modified date?
         #region Metadata
-        public readonly SqlColumn NumberMD = new SqlColumn("NumberMD", EType.TEXT);
+        public readonly SqlColumn NumberMD = new SqlColumn("NumberMD", EType.INT);
 
         public readonly SqlColumn TitleMD = new SqlColumn("TitleMD", EType.TEXT);
 
