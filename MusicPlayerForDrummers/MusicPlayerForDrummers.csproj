@@ -13,7 +13,14 @@
     <None Remove="View\Resources\music_40.png" />
     <None Remove="View\Resources\music_dir_40.png" />
     <None Remove="View\Resources\music_file_40.png" />
+    <None Remove="View\Resources\next_song_40.png" />
+    <None Remove="View\Resources\open_folder_song_40.png" />
+    <None Remove="View\Resources\pause_song_40.png" />
+    <None Remove="View\Resources\play_song_40.png" />
     <None Remove="View\Resources\plus_40.png" />
+    <None Remove="View\Resources\previous_song_40.png" />
+    <None Remove="View\Resources\random_song_40.png" />
+    <None Remove="View\Resources\stop_song_40.png" />
     <None Remove="View\Resources\switch_view_40.png" />
     <None Remove="View\Resources\switch_view_l_40.png" />
     <None Remove="View\Resources\switch_view_r_40.png" />
@@ -24,7 +31,14 @@
     <Resource Include="View\Resources\music_40.png" />
     <Resource Include="View\Resources\music_dir_40.png" />
     <Resource Include="View\Resources\music_file_40.png" />
+    <Resource Include="View\Resources\next_song_40.png" />
+    <Resource Include="View\Resources\open_folder_song_40.png" />
+    <Resource Include="View\Resources\pause_song_40.png" />
+    <Resource Include="View\Resources\play_song_40.png" />
     <Resource Include="View\Resources\plus_40.png" />
+    <Resource Include="View\Resources\previous_song_40.png" />
+    <Resource Include="View\Resources\random_song_40.png" />
+    <Resource Include="View\Resources\stop_song_40.png" />
     <Resource Include="View\Resources\switch_view_40.png" />
   </ItemGroup>
 

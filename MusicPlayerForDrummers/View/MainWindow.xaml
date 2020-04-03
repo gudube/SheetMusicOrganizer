@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}">
+        Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
+        WindowState="Maximized">
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:LibraryVM}">
             <local:LibraryView/>

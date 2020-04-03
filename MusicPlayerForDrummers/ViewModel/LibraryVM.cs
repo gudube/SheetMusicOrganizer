@@ -23,6 +23,7 @@ namespace MusicPlayerForDrummers.ViewModel
             DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
             AddSongFileCommand = new DelegateCommand(x => AddSongFile(x));
+            PlaySelectedSongCommand = new DelegateCommand(x => PlaySelectedSong());
         }
 
         #region Playlists
@@ -148,6 +149,20 @@ namespace MusicPlayerForDrummers.ViewModel
             set => SetField(ref _songs, value);
         }
 
+        private SongItem _selectedSong;
+        public SongItem SelectedSong
+        {
+            get => _selectedSong;
+            set => SetField(ref _selectedSong, value);
+        }
+
+        private SongItem _playingSong;
+        public SongItem PlayingSong
+        {
+            get => _playingSong;
+            set => SetField(ref _playingSong, value);
+        }
+
         private void UpdateSongsFromDB()
         {
             int[] masteryIDs = new int[SelectedMasteryLevels.Count];
@@ -170,6 +185,11 @@ namespace MusicPlayerForDrummers.ViewModel
             SongItem newSong = new SongItem(songDir, MasteryLevels[0].ID);
             DBHandler.AddSong(newSong);
             Songs.Add(newSong);
+        }
+
+        public DelegateCommand PlaySelectedSongCommand { get; private set; }
+        public void PlaySelectedSong()
+        {
         }
         #endregion
     }

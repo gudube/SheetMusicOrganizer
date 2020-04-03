@@ -159,9 +159,14 @@
     
     <!-- Button -->
     <!-- TODO: Simplify styles (especially borders) -->
-    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
-        <Setter Property="Padding" Value="10,10,10,10"/>
+    <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
+        <Setter Property="Padding" Value="10"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+    </Style>
+
+    <Style x:Key="SimpleButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ClickableTitle}">
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="BorderThickness" Value="0"/>
     </Style>
     
     <!-- OTHERS -->
