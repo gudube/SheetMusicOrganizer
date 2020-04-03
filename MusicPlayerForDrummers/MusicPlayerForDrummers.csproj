@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Remove="View\Resources\lock_64.png" />
     <None Remove="View\Resources\music_40.png" />
+    <None Remove="View\Resources\music_dir_40.png" />
+    <None Remove="View\Resources\music_file_40.png" />
     <None Remove="View\Resources\plus_40.png" />
     <None Remove="View\Resources\switch_view_40.png" />
     <None Remove="View\Resources\switch_view_l_40.png" />
@@ -20,6 +22,8 @@
   <ItemGroup>
     <Resource Include="View\Resources\lock_64.png" />
     <Resource Include="View\Resources\music_40.png" />
+    <Resource Include="View\Resources\music_dir_40.png" />
+    <Resource Include="View\Resources\music_file_40.png" />
     <Resource Include="View\Resources\plus_40.png" />
     <Resource Include="View\Resources\switch_view_40.png" />
   </ItemGroup>

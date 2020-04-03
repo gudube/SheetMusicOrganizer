@@ -11,7 +11,7 @@ namespace MusicPlayerForDrummers.Model
     {
         #region Properties
         private string _directory;
-        public string Directory { get => _directory; set => SetField(ref _directory, value); }
+        public string Directory { get => _directory; private set => SetField(ref _directory, value); }
 
         private uint _numberMD;
         public uint NumberMD { get => _numberMD; set => SetField(ref _numberMD, value); }
@@ -29,16 +29,16 @@ namespace MusicPlayerForDrummers.Model
         public string GenreMD { get => _genreMD; set => SetField(ref _genreMD, value); }
 
         private string _lengthMD;
-        public string LengthMD { get => _lengthMD; set => SetField(ref _lengthMD, value); }
+        public string LengthMD { get => _lengthMD; private set => SetField(ref _lengthMD, value); }
 
         private string _codecMD;
-        public string CodecMD { get => _codecMD; set => SetField(ref _codecMD, value); }
+        public string CodecMD { get => _codecMD; private set => SetField(ref _codecMD, value); }
 
         private string _bitrateMD;
-        public string BitrateMD { get => _bitrateMD; set => SetField(ref _bitrateMD, value); }
+        public string BitrateMD { get => _bitrateMD; private set => SetField(ref _bitrateMD, value); }
 
-        private string _ratingMD;
-        public string RatingMD { get => _ratingMD; set => SetField(ref _ratingMD, value); }
+        private byte _ratingMD;
+        public byte RatingMD { get => _ratingMD; set => SetField(ref _ratingMD, value); }
 
         private int _masteryID;
         public int MasteryID { get => _masteryID; set => SetField(ref _masteryID, value); }
@@ -51,7 +51,7 @@ namespace MusicPlayerForDrummers.Model
         public SongItem(string directory, int masteryID) : base()
         {
             Directory = directory;
-            //PartitionDirectory = partitionDirectory;
+            PartitionDirectory = "";
             MasteryID = masteryID;
             ReadMetadata();
         }
@@ -68,7 +68,7 @@ namespace MusicPlayerForDrummers.Model
             LengthMD = dataReader.GetString(dataReader.GetOrdinal(songTable.LengthMD.Name));
             CodecMD = dataReader.GetString(dataReader.GetOrdinal(songTable.CodecMD.Name));
             BitrateMD = dataReader.GetString(dataReader.GetOrdinal(songTable.BitrateMD.Name));
-            RatingMD = dataReader.GetString(dataReader.GetOrdinal(songTable.RatingMD.Name));
+            RatingMD = dataReader.GetByte(dataReader.GetOrdinal(songTable.RatingMD.Name));
             MasteryID = dataReader.GetInt32(dataReader.GetOrdinal(songTable.MasteryID.Name));
             PartitionDirectory = dataReader.GetString(dataReader.GetOrdinal(songTable.PartitionDirectory.Name));
         }
@@ -91,12 +91,13 @@ namespace MusicPlayerForDrummers.Model
             GenreMD = tFile.Tag.JoinedGenres;
             //TODO: Make empty if Properties is null
             LengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
-            CodecMD = tFile.MimeType;
+            string[] mimeSplits = tFile.MimeType.Split('/');
+            CodecMD = mimeSplits[mimeSplits.Length - 1];
             BitrateMD = tFile.Properties.AudioBitrate + " kbps";
             //TODO: Crashes when opening something else than mp3, make the field empty if null
             TagLib.Id3v2.Tag tagData = (TagLib.Id3v2.Tag) tFile.GetTag(TagLib.TagTypes.Id3v2);
             TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
-            RatingMD = tagInfo.Rating.ToString(); //TODO: Transform RatingMD to bytes if it works
+            RatingMD = tagInfo.Rating; //TODO: Transform RatingMD to bytes if it works
             /*Track song = new Track(Directory);
             NumberMD = song.TrackNumber;
             TitleMD = song.Title;
@@ -119,12 +120,10 @@ namespace MusicPlayerForDrummers.Model
         }
 
         //TODO: Better way to do it?
-        public override string[] GetFormatedCustomValues()
+        public override object[] GetCustomValues()
         {
-            return new string[] { GetSqlFormat(Directory), NumberMD.ToString(),
-            GetSqlFormat(TitleMD), GetSqlFormat(ArtistMD), GetSqlFormat(AlbumMD), GetSqlFormat(GenreMD),
-            GetSqlFormat(LengthMD), GetSqlFormat(CodecMD), GetSqlFormat(BitrateMD), GetSqlFormat(RatingMD),
-            MasteryID.ToString(), GetSqlFormat(PartitionDirectory) };
+            return new object[] { Directory, NumberMD, TitleMD, ArtistMD, AlbumMD, GenreMD,
+            LengthMD, CodecMD, BitrateMD, RatingMD, MasteryID, PartitionDirectory };
         }
     }
 }

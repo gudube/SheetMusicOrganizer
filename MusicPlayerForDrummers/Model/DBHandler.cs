@@ -69,9 +69,19 @@ namespace MusicPlayerForDrummers.Model
         {
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "INSERT INTO " + table.TableName + "(";
-            cmd.CommandText += string.Join(", ", table.GetCustomColumns().Select(x => x.Name));
-            cmd.CommandText += ") VALUES(";
-            cmd.CommandText += string.Join(", ", row.GetFormatedCustomValues()) + ")";
+            string[] colNames = table.GetCustomColumns().Select(x => x.Name).ToArray();
+            cmd.CommandText += string.Join(", ", colNames);
+            //string[] paramNames = table.GetCustomColumns().Select(x => "@" + x.Name).ToArray();
+            
+            string[] preparedNames = new string[colNames.Length]; 
+            object[] formatedValues = row.GetCustomValues();
+            for (int i = 0; i < formatedValues.Length; i++)
+            {
+                preparedNames[i] = "@" + colNames[i];
+                cmd.Parameters.AddWithValue(preparedNames[i], formatedValues[i]);
+
+            }
+            cmd.CommandText += ") VALUES(" + string.Join(',', preparedNames) + ")"; //INSERT INTO car(name, price) VALUES(@name, @price)
             cmd.ExecuteNonQuery();
 
             cmd.CommandText = "select last_insert_rowid()";
@@ -130,18 +140,21 @@ namespace MusicPlayerForDrummers.Model
             cmd.ExecuteNonQuery();
         }
 
+        //TODO: Test if it works
         private static void UpdateRow(SqliteConnection con, BaseTable table, BaseModelItem row)
         {
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "UPDATE " + table.TableName + " SET ";
             string[] colNames = table.GetCustomColumns().Select(x => x.Name).ToArray();
-            string[] colValues = row.GetFormatedCustomValues();
-            string[] updateValue = new string[colNames.Length];
+            object[] colValues = row.GetCustomValues();
+            string[] preparedUpdate = new string[colNames.Length];
             for(int i=0; i<colNames.Length; i++)
             {
-                updateValue[i] = colNames[i] + " = " + colValues[i];
+                string preparedName = "@" + colNames[i];
+                preparedUpdate[i] = colNames[i] + " = " + preparedName;
+                cmd.Parameters.AddWithValue(preparedName, colValues[i]);
             }
-            cmd.CommandText += string.Join(", ", updateValue);
+            cmd.CommandText += string.Join(", ", preparedUpdate);
             cmd.CommandText += " WHERE " + table.ID.Name + " = " + row.ID;
             cmd.ExecuteNonQuery();
         }

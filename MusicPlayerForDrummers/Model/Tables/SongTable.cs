@@ -41,7 +41,7 @@ namespace MusicPlayerForDrummers.Model
 
         public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.TEXT);
 
-        public readonly SqlColumn RatingMD = new SqlColumn("RatingMD", EType.TEXT);
+        public readonly SqlColumn RatingMD = new SqlColumn("RatingMD", EType.INT);
         #endregion
 
         #region Custom Song Fields

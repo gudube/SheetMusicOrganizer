@@ -2,6 +2,7 @@
 using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,13 +30,24 @@ namespace MusicPlayerForDrummers.View
         //TODO: Hide button after a song is added
         //TODO: Add this option in File->Add Song
         //TODO: Directory import (batch import, see performance with taglib)
+        //TODO: Test more formats
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openDialog = new OpenFileDialog();
+            OpenFileDialog openDialog = new OpenFileDialog
+            {
+                Filter = "Audio (*.mp3, *.flac)|*.mp3;*.flac|All Files (*.*)|*.*",
+                Multiselect = true,
+                FilterIndex = 1
+            };
             if (openDialog.ShowDialog() == true)
             {
-                ((LibraryVM)this.DataContext).AddSongFileCommand.Execute(openDialog.FileName);   
+                foreach (string fileName in openDialog.FileNames)
+                    ((LibraryVM)this.DataContext).AddSongFileCommand.Execute(fileName);
             }
+        }
+
+        private void OpenDirButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

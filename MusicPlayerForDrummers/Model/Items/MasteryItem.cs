@@ -26,9 +26,9 @@ namespace MusicPlayerForDrummers.Model
             Locked = dataReader.GetBoolean(dataReader.GetOrdinal(masteryTable.Locked.Name));
         }
 
-        public override string[] GetFormatedCustomValues()
+        public override object[] GetCustomValues()
         {
-            return new string[] { GetSqlFormat(Name), GetSqlFormat(Locked) };
+            return new object[] { Name, Locked };
         }
     }
 }

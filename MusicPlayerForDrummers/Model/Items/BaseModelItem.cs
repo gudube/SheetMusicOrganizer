@@ -20,9 +20,9 @@ namespace MusicPlayerForDrummers.Model
         private int _iD;
         public int ID { get => _iD; set => SetField(ref _iD, value); }
 
-        virtual public string[] GetFormatedCustomValues() => null;
+        abstract public object[] GetCustomValues();
 
-        protected string GetSqlFormat(string value)
+        /*protected string GetSqlFormat(string value)
         {
             return "'" + value + "'";
         }
@@ -38,6 +38,6 @@ namespace MusicPlayerForDrummers.Model
         protected string GetSqlFormat(bool value)
         {
             return value ? "1" : "0";
-        }
+        }*/
     }
 }
