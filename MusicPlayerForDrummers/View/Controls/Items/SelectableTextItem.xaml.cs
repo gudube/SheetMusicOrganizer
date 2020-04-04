@@ -39,12 +39,12 @@ namespace MusicPlayerForDrummers.View
         public static readonly DependencyProperty DeleteConfirmCommandProperty =
             DependencyProperty.Register("DeleteConfirmCommand", typeof(ICommand), typeof(SelectableTextItem));
 
-        public static DependencyProperty LockedProperty = DependencyProperty.Register("Locked", typeof(bool), typeof(SelectableTextItem));
+        public static DependencyProperty IsLockedProperty = DependencyProperty.Register("IsLocked", typeof(bool), typeof(SelectableTextItem));
 
-        public bool Locked
+        public bool IsLocked
         {
-            get => (bool)GetValue(LockedProperty);
-            set => SetValue(LockedProperty, value);
+            get => (bool)GetValue(IsLockedProperty);
+            set => SetValue(IsLockedProperty, value);
         }
         
         public static DependencyProperty  TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectableTextItem));

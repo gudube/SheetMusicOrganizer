@@ -10,25 +10,25 @@ namespace MusicPlayerForDrummers.Model
         private string _name;
         public string Name { get => _name; set => SetField(ref _name, value); }
 
-        private bool _locked;
-        public bool Locked { get => _locked; set => SetField(ref _locked, value); }
+        private bool _isLocked;
+        public bool IsLocked { get => _isLocked; set => SetField(ref _isLocked, value); }
 
         public MasteryItem(string name, bool locked = true) : base()
         {
             Name = name;
-            Locked = locked;
+            IsLocked = locked;
         }
 
         public MasteryItem(SqliteDataReader dataReader) : base(dataReader)
         {
             MasteryTable masteryTable = new MasteryTable();
             Name = dataReader.GetString(dataReader.GetOrdinal(masteryTable.Name.Name));
-            Locked = dataReader.GetBoolean(dataReader.GetOrdinal(masteryTable.Locked.Name));
+            IsLocked = dataReader.GetBoolean(dataReader.GetOrdinal(masteryTable.IsLocked.Name));
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { Name, Locked };
+            return new object[] { Name, IsLocked };
         }
     }
 }

@@ -15,7 +15,7 @@
             <Expander x:Name="PlaylistsExpander" Header="Playlists" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
                 <local:PlaylistsListBox/>
             </Expander>
-            <Separator Margin="5,10"/>
+            <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
             <Expander x:Name="MasteryExpander" Header="Mastery Levels" IsExpanded="True" Margin="5, 0" Padding="0,0,0,5">
                 <local:MasteryListBox/>
             </Expander>

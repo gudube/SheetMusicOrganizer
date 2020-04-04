@@ -15,13 +15,17 @@ namespace MusicPlayerForDrummers.Model
         
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { Name, Locked };
+            return new SqlColumn[] { Name, IsLocked, IsSmart, SmartDir };
         }
 
         #region Custom Columns
         public readonly SqlColumn Name = new SqlColumn("Name", EType.TEXT);
 
-        public readonly SqlColumn Locked = new SqlColumn("Locked", EType.BOOL);
+        public readonly SqlColumn IsLocked = new SqlColumn("IsLocked", EType.BOOL);
+        
+        public readonly SqlColumn IsSmart = new SqlColumn("IsSmart", EType.BOOL);
+        
+        public readonly SqlColumn SmartDir = new SqlColumn("SmartDir", EType.TEXT);
         #endregion
     }
 }

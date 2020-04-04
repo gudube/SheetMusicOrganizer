@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="1820"
+             d:DesignHeight="55" d:DesignWidth="1820"
              Style="{StaticResource InsideLightControl}"
              BorderThickness="0,0,0,1"
              Background="{StaticResource BackgroundLv2SolidColor}">
@@ -13,15 +13,15 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Row="0">
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="28"/>
-                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="25"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="2,2,0,0">
                     <Button Style="{StaticResource SimpleButton}">
                         <Image Source="/View/Resources/previous_song_40.png"/>
                     </Button>
@@ -34,7 +34,7 @@
                     <Button Style="{StaticResource SimpleButton}">
                         <Image Source="/View/Resources/next_song_40.png"/>
                     </Button>
-                    <Separator Margin="10,0" Height="Auto"/>
+                    <Separator Margin="10,3" Style="{StaticResource BaseSeparator}"/>
                     <Button Style="{StaticResource SimpleButton}">
                         <Image Source="/View/Resources/stop_song_40.png"/>
                     </Button>
@@ -45,10 +45,10 @@
                         <Image Source="/View/Resources/open_folder_song_40.png"/>
                     </Button>
                 </StackPanel>
-                <ComboBox Grid.Row="1"/>
+                <ComboBox Grid.Row="1" Margin="2,2,2,3"/>
             </Grid>
-            <GridSplitter Grid.Row="1"/>
-            <Grid Grid.Row="2"/>
+            <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
+            <Grid Grid.Column="2"/>
         </Grid>
     </Border>
 </UserControl>

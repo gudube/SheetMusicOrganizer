@@ -27,6 +27,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Menu here-->
             <RowDefinition Height="1"/>
+            <RowDefinition Height="Auto"/> <!-- Player here -->
             <RowDefinition Height="*"/> <!-- Content here (all remaining space) -->
             <RowDefinition Height="1"/>
             <RowDefinition Height="Auto"/> <!-- Status here -->
@@ -34,8 +35,9 @@
         <Menu Grid.Row="0" Height="20">
             <MenuItem Header="File"/>
         </Menu>
-        <Border Grid.Row="1" Style="{StaticResource LightBorder}" Margin="-5,0,5,0"/>
-        <Grid Grid.Row="2">
+        <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
+        <local:PlayerControl Grid.Row="2"/>
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -49,7 +51,7 @@
                                     Visibility="{Binding Path=CanSwitchViewRight, Converter={StaticResource BoolToVis}}"
                                     SwitchViewCommand="{Binding SwitchViewRightCommand}"/>
         </Grid>
-        <Border Grid.Row="3" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
-        <StatusBar Grid.Row="4" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0"> Status, can contain information about song, etc. </StatusBar>
+        <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
+        <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0"> Status, can contain information about song, etc. </StatusBar>
     </Grid>
 </Window>

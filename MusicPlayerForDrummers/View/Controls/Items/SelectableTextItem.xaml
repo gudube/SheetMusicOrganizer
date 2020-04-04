@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
              d:DesignHeight="25" d:DesignWidth="200" Name="Me">
@@ -16,12 +17,13 @@
                     <!-- Hide the ContextMenu if playlist locked -->
                     <Style>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DataContext.Locked}" Value="True">
+                            <DataTrigger Binding="{Binding DataContext.IsLocked}" Value="True">
                                 <Setter Property="ContextMenu.Visibility" Value="Hidden"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </ContextMenu.Style>
+                <MenuItem Header="Set Smart Playlist"/>
                 <MenuItem Header="Rename" Click="RenameMenuItem_Click"/>
                 <MenuItem Header="Delete" Command="{Binding DataContext.DeleteConfirmCommand}"/>
             </ContextMenu>
@@ -33,6 +35,6 @@
         <TextBlock Grid.Column="0" Text="{Binding Text}"/>
         <TextBox x:Name="MainTextBox"  KeyDown="TextBox_KeyDown" Visibility="Collapsed"/>
         <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
-                               Visibility="{Binding Locked, Converter={StaticResource BoolToVis}}"/>
+                               Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}}"/>
     </Grid>
 </UserControl>

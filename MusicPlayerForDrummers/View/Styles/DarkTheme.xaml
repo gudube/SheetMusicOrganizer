@@ -140,6 +140,7 @@
     </Style>
 
     <Style x:Key="DataGridText" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="Margin" Value="4,2"/>
         <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
@@ -160,7 +161,7 @@
     <!-- Button -->
     <!-- TODO: Simplify styles (especially borders) -->
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
-        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Padding" Value="5,5"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
     </Style>
 
@@ -194,11 +195,11 @@
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
     </Style>
 
-    <Style TargetType="{x:Type Separator}">
-        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
-        <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
+    <!-- SEPARATOR -->
+    <Style x:Key="BaseSeparator" TargetType="{x:Type Separator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1,0,0,0"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
-        <Setter Property="Height" Value="4"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Separator}">
@@ -210,6 +211,18 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="HorizontalSeparator"  TargetType="{x:Type Separator}" BasedOn="{StaticResource BaseSeparator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
+        <Setter Property="Height" Value="4"/>
+    </Style>
+
+    <Style x:Key="VerticalSeparator" TargetType="{x:Type Separator}" BasedOn="{StaticResource BaseSeparator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
+        <Setter Property="Width" Value="4"/>
     </Style>
 </ResourceDictionary>
    

@@ -174,7 +174,8 @@ namespace MusicPlayerForDrummers.Model
             PlaylistTable playlistTable = new PlaylistTable();
             CreateTable(con, playlistTable);
 
-            PlaylistItem DefaultItem = new PlaylistItem("All Music", true);
+            PlaylistItem DefaultItem = new PlaylistItem("All music", true);
+            DefaultItem.ID = 1;
             InsertRow(con, playlistTable, DefaultItem);
         }
 
@@ -225,13 +226,24 @@ namespace MusicPlayerForDrummers.Model
 
         #region Song
         //TODO: Block after a certain number of songs (limit to like 100 000 songs? need to do a stress test)
-        public static void AddSong(SongItem song)
+        public static void AddSong(SongItem song, int playlistID = -1)
         {
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                //TODO: Find if song already exists, then just update song with ID
-                InsertRow(con, new SongTable(), song);
+                PlaylistSongTable playlistSongTable = new PlaylistSongTable();
+                using (SqliteTransaction transaction = con.BeginTransaction())
+                {
+                    //TODO: Find if song already exists, then just update song with ID
+                    InsertRow(con, new SongTable(), song);
+                    if (playlistID > 0 && playlistID != 1)
+                    {
+                        InsertRow(con, playlistSongTable, new PlaylistSongItem(playlistID, song.ID));
+                    }
+                    //TODO: Add property in PlaylistItem/Table that says if its the default one (instead of forcing id)
+                    InsertRow(con, playlistSongTable, new PlaylistSongItem(1, song.ID)); //Add to default playlist
+                    transaction.Commit();
+                }
             }
         }
 

@@ -63,7 +63,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void SelectedPlaylistChanged()
         {
-            UpdateSongsFromDB();
+            if(SelectedPlaylist is PlaylistItem)
+                UpdateSongsFromDB();
         }
 
         private void CreateNewPlaylist(object playlistName)
@@ -74,7 +75,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
             PlaylistItem newPlaylist = new PlaylistItem(plName);
-            //DBHandler.AddPlaylist(newPlaylist);
+            DBHandler.CreateNewPlaylist(newPlaylist);
             Playlists.Insert(Playlists.Count - 1, newPlaylist);
             SelectedPlaylist = newPlaylist;
         }
@@ -108,6 +109,7 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
+        //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
         private ObservableCollection<MasteryItem> _masteryLevels = new ObservableCollection<MasteryItem>();
         public ObservableCollection<MasteryItem> MasteryLevels
@@ -170,7 +172,8 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 masteryIDs[i] = SelectedMasteryLevels[i].ID;
             }
-            DBHandler.GetSongs(SelectedPlaylist.ID, masteryIDs);
+            //code smell?
+            Songs = new ObservableCollection<SongItem>(DBHandler.GetSongs(SelectedPlaylist.ID, masteryIDs));
         }
 
         public DelegateCommand AddSongFileCommand { get; private set; }
@@ -182,8 +185,14 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
 
-            SongItem newSong = new SongItem(songDir, MasteryLevels[0].ID);
-            DBHandler.AddSong(newSong);
+            int masteryID;
+            if(SelectedMasteryLevels.Count == 0)
+                masteryID = MasteryLevels[0].ID;
+            else
+                masteryID = SelectedMasteryLevels[0].ID;
+
+            SongItem newSong = new SongItem(songDir, masteryID);
+            DBHandler.AddSong(newSong, SelectedPlaylist.ID);
             Songs.Add(newSong);
         }
 
@@ -192,5 +201,12 @@ namespace MusicPlayerForDrummers.ViewModel
         {
         }
         #endregion
+
+        public enum PlaybackOrder
+        {
+            Default,
+            Random,
+            Repeat
+        }
     }
 }

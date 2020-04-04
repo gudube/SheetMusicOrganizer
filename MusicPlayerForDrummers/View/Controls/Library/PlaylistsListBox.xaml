@@ -15,7 +15,7 @@
             <DataTemplate DataType="{x:Type model:PlaylistItem}">
                 <local:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
                                           DeleteConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.DeleteSelectedPlaylistCommand}"
-                                          Locked="{Binding Locked}"
+                                          IsLocked="{Binding IsLocked}"
                                           Text="{Binding Name}"/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type model:AddPlaylistItem}">
