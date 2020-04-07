@@ -1,16 +1,18 @@
 ﻿<UserControl x:Class="MusicPlayerForDrummers.View.PlaylistsListBox"
+             x:Name="PlaylistsUC"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
              Style="{StaticResource InsideLightControl}">
     <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
              SelectedItem="{Binding Path=SelectedPlaylist, Mode=TwoWay}" 
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=PlaylistsUC}">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type model:PlaylistItem}">
                 <local:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"

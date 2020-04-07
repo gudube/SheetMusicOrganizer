@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -35,6 +36,7 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         private AddPlaylistItem _addPlaylist = new AddPlaylistItem();
+        private PlaylistItem _allMusicPlaylist = new PlaylistItem("All music", true);
 
         private BaseModelItem _selectedPlaylist;
         public BaseModelItem SelectedPlaylist
@@ -56,8 +58,10 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void UpdatePlaylistsFromDB()
         {
-            Playlists = new ObservableCollection<BaseModelItem>(DBHandler.GetAllPlaylists());
-            Playlists.Add(_addPlaylist);
+            List<BaseModelItem> playlists = new List<BaseModelItem>{ _allMusicPlaylist };
+            playlists.AddRange(DBHandler.GetAllPlaylists());
+            playlists.Add(_addPlaylist);
+            Playlists = new ObservableCollection<BaseModelItem>(playlists);
             _selectedPlaylist = Playlists[0];
         }
 
@@ -107,8 +111,14 @@ namespace MusicPlayerForDrummers.ViewModel
             //DBHandler.RenamePlaylist((PlaylistItem) SelectedPlaylist, NewPlaylistName);
             plItem.Name = plName;
         }
+
+        public void AddSongToPlaylist(PlaylistItem playlist, SongItem song)
+        {
+            DBHandler.AddPlaylistSongLink(playlist.ID, song.ID);
+        }
         #endregion
 
+        //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
         //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
         private ObservableCollection<MasteryItem> _masteryLevels = new ObservableCollection<MasteryItem>();
@@ -173,7 +183,14 @@ namespace MusicPlayerForDrummers.ViewModel
                 masteryIDs[i] = SelectedMasteryLevels[i].ID;
             }
             //code smell?
-            Songs = new ObservableCollection<SongItem>(DBHandler.GetSongs(SelectedPlaylist.ID, masteryIDs));
+            if(SelectedPlaylist == _allMusicPlaylist)
+            {
+                Songs = new ObservableCollection<SongItem>(DBHandler.GetAllSongs(masteryIDs));
+            }
+            else
+            {
+                Songs = new ObservableCollection<SongItem>(DBHandler.GetSongs(SelectedPlaylist.ID, masteryIDs));
+            }
         }
 
         public DelegateCommand AddSongFileCommand { get; private set; }
@@ -184,6 +201,8 @@ namespace MusicPlayerForDrummers.ViewModel
                 Trace.WriteLine("Expected AddSongFile to receive a string. Received : " + songDirObj.GetType().Name);
                 return;
             }
+            if (Songs.Any(x => x.Directory == songDir))
+                return;
 
             int masteryID;
             if(SelectedMasteryLevels.Count == 0)
@@ -191,8 +210,16 @@ namespace MusicPlayerForDrummers.ViewModel
             else
                 masteryID = SelectedMasteryLevels[0].ID;
 
-            SongItem newSong = new SongItem(songDir, masteryID);
-            DBHandler.AddSong(newSong, SelectedPlaylist.ID);
+            SongItem newSong;
+            if (SelectedPlaylist is PlaylistItem && SelectedPlaylist != _allMusicPlaylist)
+            {
+                newSong = DBHandler.AddSong(songDir, masteryID, SelectedPlaylist.ID);
+            }
+            else
+            {
+                newSong = DBHandler.AddSong(songDir, masteryID);
+
+            }
             Songs.Add(newSong);
         }
 
