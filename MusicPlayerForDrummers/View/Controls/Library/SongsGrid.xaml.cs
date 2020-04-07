@@ -1,8 +1,11 @@
 ﻿using Microsoft.Win32;
+using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -48,6 +51,20 @@ namespace MusicPlayerForDrummers.View
 
         private void OpenDirButton_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Delete)
+            {
+                ((LibraryVM)this.DataContext).RemoveSelectedSongsCommand.Execute(null);
+            }
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            List<SongItem> selectedSongs = ((DataGrid)sender).SelectedItems.Cast<SongItem>().ToList();
+            ((LibraryVM)this.DataContext).SelectedSongs = new ObservableCollection<SongItem>(selectedSongs);
         }
     }
 }

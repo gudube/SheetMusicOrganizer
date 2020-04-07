@@ -12,8 +12,8 @@
         <local:RatingConverter x:Key="ratingConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}" SelectedItem="{Binding SelectedSong}"
-                  IsReadOnly="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True">
+        <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}" SelectionChanged="DataGrid_SelectionChanged"
+                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlaySelectedSong}"/>
             </DataGrid.InputBindings>

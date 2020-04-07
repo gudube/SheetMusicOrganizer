@@ -25,6 +25,7 @@ namespace MusicPlayerForDrummers.ViewModel
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
             AddSongFileCommand = new DelegateCommand(x => AddSongFile(x));
             PlaySelectedSongCommand = new DelegateCommand(x => PlaySelectedSong());
+            RemoveSelectedSongsCommand = new DelegateCommand(x => RemoveSelectedSongs());
         }
 
         #region Playlists
@@ -153,6 +154,7 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
+        //TODO: Be able to Ctrl+c and Ctrv songs between playlists
         #region Songs
         private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
         public ObservableCollection<SongItem> Songs
@@ -161,11 +163,11 @@ namespace MusicPlayerForDrummers.ViewModel
             set => SetField(ref _songs, value);
         }
 
-        private SongItem _selectedSong;
-        public SongItem SelectedSong
+        private ObservableCollection<SongItem> _selectedSongs;
+        public ObservableCollection<SongItem> SelectedSongs
         {
-            get => _selectedSong;
-            set => SetField(ref _selectedSong, value);
+            get => _selectedSongs;
+            set => SetField(ref _selectedSongs, value);
         }
 
         private SongItem _playingSong;
@@ -226,6 +228,33 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand PlaySelectedSongCommand { get; private set; }
         public void PlaySelectedSong()
         {
+        }
+
+        public DelegateCommand RemoveSelectedSongsCommand { get; private set; }
+        private void RemoveSelectedSongs()
+        {
+            if (!(SelectedPlaylist is PlaylistItem)) {
+                Trace.WriteLine("Expected selected playlist to be a PlaylistItem when RemoveSelectedSongs(), but is : " + SelectedPlaylist.GetType().Name);
+                return;
+            }
+
+            if (SelectedSongs.Count == 0)
+            {
+                Trace.WriteLine("Expected songs to be selected when RemoveSelectedSongs()");
+                return;
+            }
+
+            int[] songIDs = SelectedSongs.Select(x => x.ID).ToArray();
+            if (SelectedPlaylist == _allMusicPlaylist)
+            {
+                DBHandler.DeleteSongs(songIDs);
+            }
+            else
+            {
+                DBHandler.RemoveSongsFromPlaylist(SelectedPlaylist.ID, songIDs);
+            }
+            foreach (SongItem song in SelectedSongs)
+                Songs.Remove(song); //TODO: does it call the NotifyProperty on each song removed? way of doing it once at the end instead?
         }
         #endregion
 

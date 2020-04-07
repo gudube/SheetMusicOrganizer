@@ -154,11 +154,31 @@ namespace MusicPlayerForDrummers.Model
             return cmd.ExecuteReader();
         }
 
-        private static void DeleteRow(SqliteConnection con, BaseTable table, BaseModelItem row)
+        private static void DeleteRow(SqliteConnection con, BaseTable table, string colName, object value)
         {
+            string paramName = "@" + colName;
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "DELETE FROM " + table.TableName + " WHERE ";
-            cmd.CommandText += table.ID.Name + " = " + row.ID;
+            cmd.CommandText += table.ID.Name + " = " + paramName;
+            cmd.Parameters.AddWithValue(paramName, value);
+            cmd.ExecuteNonQuery();
+        }
+
+        private static void DeleteRows(SqliteConnection con, BaseTable table, string safeCondition)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "DELETE FROM " + table.TableName + " " + safeCondition;
+            cmd.ExecuteNonQuery();
+        }
+
+        private static void DeleteRows(SqliteConnection con, BaseTable table, string condition, string[] paramNames, string[] paramValues)
+        {
+            SqliteCommand cmd = con.CreateCommand();
+            cmd.CommandText = "DELETE FROM " + table.TableName + " " + condition;
+            for (int i = 1; i < paramNames.Length; i++)
+            {
+                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+            }
             cmd.ExecuteNonQuery();
         }
 
@@ -216,10 +236,11 @@ namespace MusicPlayerForDrummers.Model
 
         public static void DeletePlaylist(PlaylistItem playlist)
         {
+            PlaylistTable table = new PlaylistTable();
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                DeleteRow(con, new PlaylistTable(), playlist);
+                DeleteRow(con, table, table.ID.Name, playlist.ID);
             }
         }
 
@@ -342,13 +363,27 @@ namespace MusicPlayerForDrummers.Model
             return songs;
         }
 
-        //TODO: For when it's removed of All Music
-        public static void RemoveSong(SongItem song)
+        public static void DeleteSongs(int[] songIDs)
         {
+            SongTable songTable = new SongTable();
+            string safeCondition = "WHERE " + songTable.ID.Name + " IN (" + string.Join(", ", songIDs) + ")";
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                DeleteRow(con, new SongTable(), song);
+                DeleteRows(con, songTable, safeCondition);
+            }
+        }
+
+        public static void RemoveSongsFromPlaylist(int playlistID, int[] songIDs)
+        {
+            PlaylistSongTable psTable = new PlaylistSongTable();
+            string safeCondition = "WHERE " + psTable.PlaylistID.Name + " = " + playlistID + " AND "
+                + psTable.SongID.Name + " IN(" + string.Join(", ", songIDs) + ")";
+            
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                DeleteRows(con, psTable, safeCondition);
             }
         }
 

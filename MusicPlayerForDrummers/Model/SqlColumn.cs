@@ -13,6 +13,8 @@ namespace MusicPlayerForDrummers.Model
         public bool ForeignKey { get; private set; }
         public string FKTableName { get; private set; }
         public string FKColumnName { get; private set; }
+        public bool FKDeleteCascade { get; private set; }
+
 
         public SqlColumn(string name, EType type, bool primaryKey = false)
         {
@@ -20,9 +22,10 @@ namespace MusicPlayerForDrummers.Model
             Type = type;
             PrimaryKey = primaryKey;
             ForeignKey = false;
+            FKDeleteCascade = false;
         }
 
-        public SqlColumn(string name, EType type, string fKTableName, string fKColumnName)
+        public SqlColumn(string name, EType type, string fKTableName, string fKColumnName, bool fkDeleteCascade)
         {
             Name = name;
             Type = type;
@@ -30,6 +33,7 @@ namespace MusicPlayerForDrummers.Model
             ForeignKey = true;
             FKTableName = fKTableName;
             FKColumnName = fKColumnName;
+            FKDeleteCascade = fkDeleteCascade;
         }
 
         public string GetFormatedColumnSchema()
@@ -44,7 +48,8 @@ namespace MusicPlayerForDrummers.Model
             }
             string formatedPK = PrimaryKey ? "PRIMARY KEY NOT NULL" : "";
             string formatedFK = ForeignKey? ("REFERENCES " + FKTableName + "(" + FKColumnName + ")") : "";
-            return string.Join(" ", Name, formatedType, formatedPK, formatedFK);
+            string fkCascade = FKDeleteCascade ? "ON DELETE CASCADE" : "";
+            return string.Join(" ", Name, formatedType, formatedPK, formatedFK, fkCascade);
         }
 
         /*public string GetFormatedForeignKey()

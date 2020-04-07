@@ -9,7 +9,7 @@ namespace MusicPlayerForDrummers.Model
         public SongTable() : base()
         {
             MasteryTable masteryTable = new MasteryTable();
-            MasteryID = new SqlColumn("MasteryID", EType.INT, masteryTable.TableName, masteryTable.ID.Name);
+            MasteryID = new SqlColumn("MasteryID", EType.INT, masteryTable.TableName, masteryTable.ID.Name, false);
         }
 
         public override string TableName => "Song";
