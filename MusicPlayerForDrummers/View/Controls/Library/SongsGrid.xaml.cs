@@ -53,6 +53,9 @@ namespace MusicPlayerForDrummers.View
         {
         }
 
+        //TODO: Be able to copy paste songs between playlists
+        //TODO: Be able to drag-and-drop songs to mastery levels
+        //TODO: Add warning when deleting song from All Music
         private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Delete)

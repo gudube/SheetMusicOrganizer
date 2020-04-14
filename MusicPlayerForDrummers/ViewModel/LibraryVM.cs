@@ -113,9 +113,19 @@ namespace MusicPlayerForDrummers.ViewModel
             plItem.Name = plName;
         }
 
-        public void AddSongToPlaylist(PlaylistItem playlist, SongItem song)
+        public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
             DBHandler.AddPlaylistSongLink(playlist.ID, song.ID);
+        }
+
+        public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
+        {
+            DBHandler.AddPlaylistSongLinks(playlist.ID, songs.Select(x => x.ID));
+        }
+
+        public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
+        {
+            return DBHandler.IsSongInPlaylist(playlist.ID, song.ID);
         }
         #endregion
 
@@ -154,7 +164,6 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
-        //TODO: Be able to Ctrl+c and Ctrv songs between playlists
         #region Songs
         private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
         public ObservableCollection<SongItem> Songs

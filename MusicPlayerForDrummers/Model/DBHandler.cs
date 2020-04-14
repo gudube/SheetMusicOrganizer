@@ -15,6 +15,7 @@ namespace MusicPlayerForDrummers.Model
         //TODO: Change Database Dir when exporting .exe
         private const string _databaseFile = @"C:\Users\Guilhem\Documents\Ecole\Ecole\Private\Project\Application.sqlite";
         private const string _dataSource = "Data Source = " + _databaseFile;
+        private static SqliteTransaction _transaction;
 
         public static void InitializeDatabase(bool forceResetDatabase = false)
         {
@@ -29,19 +30,19 @@ namespace MusicPlayerForDrummers.Model
 
         private static void CreateTables()
         {
-            using (SqliteConnection connection = new SqliteConnection(_dataSource))
+            using (SqliteConnection con = new SqliteConnection(_dataSource))
             {
-                connection.Open();
-                using (SqliteTransaction transaction = connection.BeginTransaction())
-                {
-                    CreateMasteryTable(connection);
-                    CreatePlaylistTable(connection);
-                    CreateSongTable(connection);
-                    CreatePlaylistSongTable(connection);
+                con.Open();
 
-                    transaction.Commit();
-                }
-                connection.Close();
+                bool transactionStarted = StartTransaction(con);
+                CreateMasteryTable(con);
+                CreatePlaylistTable(con);
+                CreateSongTable(con);
+                CreatePlaylistSongTable(con);
+
+                if(transactionStarted)
+                    _transaction.Commit();
+                con.Close();
             }
         }
         #endregion
@@ -71,7 +72,7 @@ namespace MusicPlayerForDrummers.Model
             cmd.ExecuteNonQuery();
         }
 
-        private static bool Exists(SqliteConnection con, BaseTable table, SqlColumn[] columns, object[] values)
+        private static bool Exists(SqliteConnection con, BaseTable table, SqlColumn[] columns, params object[] values)
         {
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + table.TableName + " WHERE ";
@@ -119,10 +120,13 @@ namespace MusicPlayerForDrummers.Model
                 throw new ArgumentException("Expected at least one row to insert in the database.");
             }
 
+            bool transactionStarted = StartTransaction(con);
             foreach (BaseModelItem row in rows)
             {
                 InsertRow(con, table, row, ignoreConflict);
             }
+            if (transactionStarted)
+                _transaction.Commit();
         }
 
         private static SqliteDataReader GetItems(SqliteConnection con, BaseTable itemTable, string condition, string[] paramNames, object[] paramValues)
@@ -201,11 +205,13 @@ namespace MusicPlayerForDrummers.Model
             cmd.ExecuteNonQuery();
         }
 
-        private static bool IsAlreadyInTransaction(SqliteConnection con)
+        private static bool StartTransaction(SqliteConnection con)
         {
-            SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "select @@TRANCOUNT";
-            return (Int64) cmd.ExecuteScalar() > 0;
+            if (_transaction != null && _transaction.Connection != null)
+                return false;
+
+            _transaction = con.BeginTransaction();
+            return true;
         }
         #endregion
 
@@ -221,7 +227,6 @@ namespace MusicPlayerForDrummers.Model
         public static List<PlaylistItem> GetAllPlaylists()
         {
             List <PlaylistItem> playlists = new List<PlaylistItem>();
-
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
@@ -282,7 +287,7 @@ namespace MusicPlayerForDrummers.Model
             {
                 con.Open();
                 SqliteDataReader itemDR = GetItems(con, songTable, condition, new string[] { paramName }, new object[] { songDir });
-                if(itemDR.Read())
+                if (itemDR.Read())
                 {
                     song = new SongItem(itemDR);
                 }
@@ -292,6 +297,8 @@ namespace MusicPlayerForDrummers.Model
                     InsertRow(con, songTable, song);
                 }
             }
+
+            
             return song;
         }
 
@@ -429,6 +436,7 @@ namespace MusicPlayerForDrummers.Model
         }
         #endregion
 
+        #region PlaylistSong
         private static void CreatePlaylistSongTable(SqliteConnection con)
         {
             PlaylistSongTable table = new PlaylistSongTable();
@@ -445,5 +453,31 @@ namespace MusicPlayerForDrummers.Model
                 InsertRow(con, new PlaylistSongTable(), psItem, true);
             }
         }
+
+        public static void AddPlaylistSongLinks(int playlistID, IEnumerable<int> songsIDs)
+        {
+            PlaylistSongTable table = new PlaylistSongTable();
+            PlaylistSongItem[] items = new PlaylistSongItem[songsIDs.Count()];
+            for(int i=0; i<songsIDs.Count(); i++)
+            {
+                items[i] = new PlaylistSongItem(playlistID, songsIDs.ElementAt(i));
+            }
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                InsertRows(con, table, items, true);
+            }
+        }
+
+        public static bool IsSongInPlaylist(int playlistID, int songID)
+        {
+            PlaylistSongTable table = new PlaylistSongTable();
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                return Exists(con, table, new SqlColumn[] { table.PlaylistID, table.SongID }, playlistID, songID);
+            }
+        }
+        #endregion
     }
 }

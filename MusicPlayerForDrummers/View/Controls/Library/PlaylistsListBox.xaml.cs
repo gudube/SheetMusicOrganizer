@@ -3,6 +3,7 @@ using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,13 +27,42 @@ namespace MusicPlayerForDrummers.View
             InitializeComponent();
         }
 
+        //TODO: Add adorner text/status message to explain why can't drop
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            SongItem sourceItem = dropInfo.Data as SongItem;
-            PlaylistItem targetItem = dropInfo.TargetItem as PlaylistItem;
+            if (!(dropInfo.TargetItem is PlaylistItem playlist))
+                return;
 
-            if(sourceItem != null && targetItem != null && !targetItem.IsLocked)
+            if (playlist.IsLocked)
             {
+                //AdornerText = "Playlist locked";
+                return;
+            }
+
+            bool canDrop = false;
+
+            if (dropInfo.Data is SongItem song)
+            {
+                if(((LibraryVM)DataContext).IsSongInPlaylist(playlist, song))
+                {
+                    //AdornerText = "Song already in playlist";
+                }
+                else
+                    canDrop = true;
+            }
+            else if(dropInfo.Data is IEnumerable<object> data && data.All(x => x is SongItem))
+            {
+                if(data.All(x => ((LibraryVM)DataContext).IsSongInPlaylist(playlist, (SongItem)x)))
+                {
+                    //AdornerText = "Song(s) already in playlist";
+                }
+                else 
+                    canDrop = true;
+            }
+            
+            if (canDrop)
+            {
+                //AdornerText = "";
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
@@ -40,9 +70,21 @@ namespace MusicPlayerForDrummers.View
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            SongItem sourceItem = dropInfo.Data as SongItem;
             PlaylistItem targetItem = dropInfo.TargetItem as PlaylistItem;
-            ((LibraryVM)this.DataContext).AddSongToPlaylist(targetItem, sourceItem);
+            
+            if(dropInfo.Data is SongItem song)
+            {
+                ((LibraryVM)DataContext).CopySongToPlaylist(targetItem, song);
+            }
+            else
+            {
+                IEnumerable<object> data = dropInfo.Data as IEnumerable<object>;
+                if (data != null && data.All(x => x is SongItem))
+                {
+                    ((LibraryVM)DataContext).CopySongsToPlaylist(targetItem, data.Cast<SongItem>());
+                }
+            } 
+            
         }
     }
 }

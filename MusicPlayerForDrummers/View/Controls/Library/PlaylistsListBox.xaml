@@ -10,9 +10,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
              Style="{StaticResource InsideLightControl}">
+    <UserControl.Resources>
+        <DataTemplate x:Key="TextDropAdorner">
+            <TextBlock Text="{Binding ElementName=PlaylistsUC, Path=DataContext}"/>
+        </DataTemplate>
+    </UserControl.Resources>
     <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
              SelectedItem="{Binding Path=SelectedPlaylist, Mode=TwoWay}" 
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=PlaylistsUC}">
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=PlaylistsUC}"
+             dd:DragDrop.DropAdornerTemplate="{StaticResource TextDropAdorner}">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type model:PlaylistItem}">
                 <local:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
