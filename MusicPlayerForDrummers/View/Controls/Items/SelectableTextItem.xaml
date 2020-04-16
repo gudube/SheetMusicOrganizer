@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="25" d:DesignWidth="200" Name="Me">
     <UserControl.Resources>
+        <local:HexColorConverter x:Key="hexColorConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:SelectableTextItem}}">
@@ -32,7 +33,17 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Text="{Binding Text}"/>
+        <TextBlock Grid.Column="0" Text="{Binding Text}">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}" >
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCustomColor}" Value="true">
+                            <Setter Property="Foreground" Value="{Binding TextColor, Converter={StaticResource hexColorConverter}}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
         <TextBox x:Name="MainTextBox"  KeyDown="TextBox_KeyDown" Visibility="Collapsed"/>
         <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
                                Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}}"/>

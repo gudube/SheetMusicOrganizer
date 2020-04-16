@@ -13,10 +13,14 @@ namespace MusicPlayerForDrummers.Model
         private bool _isLocked;
         public bool IsLocked { get => _isLocked; set => SetField(ref _isLocked, value); }
 
-        public MasteryItem(string name, bool locked = true) : base()
+        private string _color;
+        public string Color { get => _color; set => SetField(ref _color, value); }
+
+        public MasteryItem(string name, bool locked, string color) : base()
         {
             Name = name;
             IsLocked = locked;
+            Color = color;
         }
 
         public MasteryItem(SqliteDataReader dataReader) : base(dataReader)
@@ -24,11 +28,12 @@ namespace MusicPlayerForDrummers.Model
             MasteryTable masteryTable = new MasteryTable();
             Name = dataReader.GetString(dataReader.GetOrdinal(masteryTable.Name.Name));
             IsLocked = dataReader.GetBoolean(dataReader.GetOrdinal(masteryTable.IsLocked.Name));
+            Color = dataReader.GetString(dataReader.GetOrdinal(masteryTable.Color.Name));
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { Name, IsLocked };
+            return new object[] { Name, IsLocked, Color };
         }
     }
 }

@@ -10,6 +10,9 @@ namespace MusicPlayerForDrummers.Model
 {
     public static class DBHandler
     {
+        private static List<MasteryItem> _masteryItems;
+        private static Dictionary<int, MasteryItem> _masteryDic;
+
 
         #region Init
         //TODO: Change Database Dir when exporting .exe
@@ -26,6 +29,7 @@ namespace MusicPlayerForDrummers.Model
                 File.Create(_databaseFile).Close();
                 CreateTables();
             }
+            LoadAllMasteryLevels();
         }
 
         private static void CreateTables()
@@ -290,15 +294,16 @@ namespace MusicPlayerForDrummers.Model
                 if (itemDR.Read())
                 {
                     song = new SongItem(itemDR);
+                    song.Mastery = _masteryDic[song.MasteryID];
                 }
                 else
                 {
                     song = new SongItem(songDir, masteryID);
+                    song.Mastery = _masteryDic[song.MasteryID];
                     InsertRow(con, songTable, song);
                 }
             }
 
-            
             return song;
         }
 
@@ -332,7 +337,9 @@ namespace MusicPlayerForDrummers.Model
                 SqliteDataReader dataReader = GetItems(con, songTable, condition);
                 while (dataReader.Read())
                 {
-                    songs.Add(new SongItem(dataReader));
+                    var song = new SongItem(dataReader);
+                    song.Mastery = _masteryDic[song.MasteryID];
+                    songs.Add(song);
                 }
             }
             return songs;
@@ -364,7 +371,9 @@ namespace MusicPlayerForDrummers.Model
                 SqliteDataReader dataReader = GetItems(con, songTable, condition);
                 while (dataReader.Read())
                 {
-                    songs.Add(new SongItem(dataReader));
+                    SongItem song = new SongItem(dataReader);
+                    song.Mastery = _masteryDic[song.MasteryID];
+                    songs.Add(song);
                 }
             }
             return songs;
@@ -406,20 +415,28 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Mastery
+        public const int DefaultMasteryID = 0;
         private static void CreateMasteryTable(SqliteConnection con)
         {
             MasteryTable masteryTable = new MasteryTable();
             CreateTable(con, masteryTable);
 
-            MasteryItem DefaultBeginner = new MasteryItem("Beginner", true);
-            MasteryItem DefaultIntermediate = new MasteryItem("Intermediate", true);
-            MasteryItem DefaultAdvanced = new MasteryItem("Advanced", true);
-            MasteryItem DefaultMastered = new MasteryItem("Mastered", true);
+            MasteryItem DefaultUnset = new MasteryItem("Unset", true, "#F0FDFA");
+            DefaultUnset.ID = DefaultMasteryID;
+            MasteryItem DefaultBeginner = new MasteryItem("Beginner", true, "#D8F4EF");
+            MasteryItem DefaultIntermediate = new MasteryItem("Intermediate", true, "#B7ECEA");
+            MasteryItem DefaultAdvanced = new MasteryItem("Advanced", true, "#97DEE7");
+            MasteryItem DefaultMastered = new MasteryItem("Mastered", true, "#78C5DC");
 
-            InsertRows(con, masteryTable, new BaseModelItem[] { DefaultBeginner, DefaultIntermediate, DefaultAdvanced, DefaultMastered });
+            InsertRows(con, masteryTable, new BaseModelItem[] { DefaultUnset, DefaultBeginner, DefaultIntermediate, DefaultAdvanced, DefaultMastered });
         }
 
         public static List<MasteryItem> GetAllMasteryLevels()
+        {
+            return _masteryItems;
+        }
+
+        private static void LoadAllMasteryLevels()
         {
             List<MasteryItem> masteryItems = new List<MasteryItem>();
 
@@ -432,7 +449,8 @@ namespace MusicPlayerForDrummers.Model
                     masteryItems.Add(new MasteryItem(dataReader));
                 }
             }
-            return masteryItems;
+            _masteryDic = masteryItems.ToDictionary(item => item.ID);
+            _masteryItems = masteryItems;
         }
         #endregion
 

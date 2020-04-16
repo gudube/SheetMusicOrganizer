@@ -13,7 +13,7 @@
              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type model:MasteryItem}">
-                <local:SelectableTextItem IsLocked="{Binding IsLocked}" Text="{Binding Name}"/>
+                <local:SelectableTextItem IsLocked="{Binding IsLocked}" Text="{Binding Name}" IsCustomColor="True" TextColor="{Binding Color}"/>
             </DataTemplate>
         </ListBox.Resources>
     </ListBox>

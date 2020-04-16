@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Linq;
+using MusicPlayerForDrummers.Model.Tools;
 
 namespace MusicPlayerForDrummers.ViewModel
 {

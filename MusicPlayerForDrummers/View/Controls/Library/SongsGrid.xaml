@@ -10,6 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <local:RatingConverter x:Key="ratingConverter"/>
+        <local:HexColorConverter x:Key="hexColorConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
         <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}" SelectionChanged="DataGrid_SelectionChanged"
@@ -27,6 +28,13 @@
                 <DataGridTextColumn Header="Codec" Binding="{Binding CodecMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Bitrate" Binding="{Binding BitrateMD}" MinWidth="30" Width="65" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Rating" Binding="{Binding RatingMD, Converter={StaticResource ratingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Mastery" Binding="{Binding Mastery.Name}" MinWidth="30" Width="60">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
+                            <Setter Property="Foreground" Value="{Binding Mastery.Color, Converter={StaticResource hexColorConverter}}"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 0, 0, 15" BorderBrush="Black"/>

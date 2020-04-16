@@ -48,6 +48,16 @@ namespace MusicPlayerForDrummers.Model
 
         #endregion
 
+        #region Other Properties
+        private MasteryItem _mastery;
+        public MasteryItem Mastery { get => _mastery; set
+            {
+                if(SetField(ref _mastery, value))
+                    MasteryID = value.ID;
+            }
+        }
+        #endregion
+
         public SongItem(string directory, int masteryID) : base()
         {
             Directory = directory;

@@ -55,6 +55,25 @@ namespace MusicPlayerForDrummers.View
             set => SetValue(TextProperty, value);
         }
 
+        public static DependencyProperty IsCustomColorProperty = DependencyProperty.Register("IsCustomColor", typeof(bool), typeof(SelectableTextItem));
+
+        public bool IsCustomColor
+        {
+            get => (bool)GetValue(IsCustomColorProperty);
+            set => SetValue(IsCustomColorProperty, value);
+        }
+
+        public static DependencyProperty TextColorProperty = DependencyProperty.Register("TextColor", typeof(string), typeof(SelectableTextItem));
+
+        public string TextColor
+        {
+            get => (string)GetValue(TextColorProperty);
+            set {
+                IsCustomColor = true;
+                SetValue(TextColorProperty, value);
+            }
+        }
+
         private void Edit()
         {
             MainTextBox.Visibility = Visibility.Visible;
