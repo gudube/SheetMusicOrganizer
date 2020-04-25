@@ -41,7 +41,13 @@ namespace MusicPlayerForDrummers.Model
         public byte RatingMD { get => _ratingMD; set => SetField(ref _ratingMD, value); }
 
         private int _masteryID;
-        public int MasteryID { get => _masteryID; set => SetField(ref _masteryID, value); }
+        public int MasteryID { get => _masteryID; 
+            set
+            {
+                SetField(ref _masteryID, value);
+                OnPropertyChanged("Mastery");
+            }
+        }
 
         private string _partitionDirectory;
         public string PartitionDirectory { get => _partitionDirectory; set => SetField(ref _partitionDirectory, value); }
@@ -49,13 +55,7 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Other Properties
-        private MasteryItem _mastery;
-        public MasteryItem Mastery { get => _mastery; set
-            {
-                if(SetField(ref _mastery, value))
-                    MasteryID = value.ID;
-            }
-        }
+        public MasteryItem Mastery { get => DBHandler.MasteryDic[MasteryID]; }
         #endregion
 
         public SongItem(string directory, int masteryID) : base()

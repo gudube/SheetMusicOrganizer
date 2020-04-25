@@ -163,6 +163,28 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             MasteryLevels = new ObservableCollection<MasteryItem>(DBHandler.GetAllMasteryLevels());
         }
+
+        public bool IsSongInMastery(MasteryItem mastery, SongItem song)
+        {
+            return DBHandler.IsSongInMastery(mastery.ID, song.ID);
+        }
+
+        public void SetSongMastery(SongItem song, MasteryItem mastery)
+        {
+            DBHandler.SetSongMastery(song, mastery);
+            if (!SelectedMasteryLevels.Contains(mastery) && Songs.Contains(song))
+                Songs.Remove(song);
+        }
+        public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
+        {
+            DBHandler.SetSongsMastery(songs, mastery);
+            if (!SelectedMasteryLevels.Contains(mastery))
+            {
+                foreach (SongItem song in songs)
+                    if (Songs.Contains(song))
+                        Songs.Remove(song);
+            }
+        }
         #endregion
 
         #region Songs

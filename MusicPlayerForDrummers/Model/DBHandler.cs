@@ -10,8 +10,8 @@ namespace MusicPlayerForDrummers.Model
 {
     public static class DBHandler
     {
-        private static List<MasteryItem> _masteryItems;
-        private static Dictionary<int, MasteryItem> _masteryDic;
+        //private static List<MasteryItem> _masteryItems;
+        public static Dictionary<int, MasteryItem> MasteryDic;
 
 
         #region Init
@@ -44,8 +44,6 @@ namespace MusicPlayerForDrummers.Model
                 CreateSongTable(con);
                 CreatePlaylistSongTable(con);
 
-                if(transactionStarted)
-                    _transaction.Commit();
                 con.Close();
             }
         }
@@ -294,12 +292,12 @@ namespace MusicPlayerForDrummers.Model
                 if (itemDR.Read())
                 {
                     song = new SongItem(itemDR);
-                    song.Mastery = _masteryDic[song.MasteryID];
+                    //song.Mastery = _masteryDic[song.MasteryID];
                 }
                 else
                 {
                     song = new SongItem(songDir, masteryID);
-                    song.Mastery = _masteryDic[song.MasteryID];
+                    //song.Mastery = _masteryDic[song.MasteryID];
                     InsertRow(con, songTable, song);
                 }
             }
@@ -338,7 +336,7 @@ namespace MusicPlayerForDrummers.Model
                 while (dataReader.Read())
                 {
                     var song = new SongItem(dataReader);
-                    song.Mastery = _masteryDic[song.MasteryID];
+                    //song.Mastery = _masteryDic[song.MasteryID];
                     songs.Add(song);
                 }
             }
@@ -372,7 +370,7 @@ namespace MusicPlayerForDrummers.Model
                 while (dataReader.Read())
                 {
                     SongItem song = new SongItem(dataReader);
-                    song.Mastery = _masteryDic[song.MasteryID];
+                    //song.Mastery = _masteryDic[song.MasteryID];
                     songs.Add(song);
                 }
             }
@@ -433,7 +431,8 @@ namespace MusicPlayerForDrummers.Model
 
         public static List<MasteryItem> GetAllMasteryLevels()
         {
-            return _masteryItems;
+            return MasteryDic.Values.ToList();
+            //return _masteryItems;
         }
 
         private static void LoadAllMasteryLevels()
@@ -449,8 +448,46 @@ namespace MusicPlayerForDrummers.Model
                     masteryItems.Add(new MasteryItem(dataReader));
                 }
             }
-            _masteryDic = masteryItems.ToDictionary(item => item.ID);
-            _masteryItems = masteryItems;
+            MasteryDic = masteryItems.ToDictionary(item => item.ID);
+            //_masteryItems = masteryItems;
+        }
+
+        public static bool IsSongInMastery(int masteryID, int songID)
+        {
+            SongTable table = new SongTable();
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                return Exists(con, table, new SqlColumn[] { table.ID, table.MasteryID }, songID, masteryID);
+            }
+        }
+
+        public static void SetSongMastery(SongItem song, MasteryItem mastery)
+        {
+            song.MasteryID = mastery.ID;
+            //song.Mastery
+            SongTable table = new SongTable();
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                UpdateRow(con, table, song);
+            }
+        }
+        public static void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
+        {
+            SongTable table = new SongTable();
+            using (var con = new SqliteConnection(_dataSource))
+            {
+                con.Open();
+                bool transactionStarted = StartTransaction(con);
+                foreach (SongItem song in songs)
+                {
+                    song.MasteryID = mastery.ID;
+                    UpdateRow(con, table, song);
+                }
+                if (transactionStarted)
+                    _transaction.Commit();
+            }
         }
         #endregion
 
