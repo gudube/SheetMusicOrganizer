@@ -66,8 +66,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
             LibraryVM = new LibraryVM();
             PartitionVM = new PartitionVM();
-            SyncVM = new SyncVM();
-            ViewModels = new List<BaseViewModel> { LibraryVM, PartitionVM, SyncVM };
+            ViewModels = new List<BaseViewModel> { LibraryVM, PartitionVM };
             SetView(LibraryVM);
         }
 

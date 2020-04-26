@@ -66,8 +66,11 @@ namespace MusicPlayerForDrummers.View
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            List<SongItem> selectedSongs = ((DataGrid)sender).SelectedItems.Cast<SongItem>().ToList();
-            ((LibraryVM)this.DataContext).SelectedSongs = new ObservableCollection<SongItem>(selectedSongs);
+            if(this.DataContext is LibraryVM libraryContext)
+            {
+                List<SongItem> selectedSongs = ((DataGrid)sender).SelectedItems.Cast<SongItem>().ToList();
+                libraryContext.SelectedSongs = new ObservableCollection<SongItem>(selectedSongs);
+            }
         }
     }
 }

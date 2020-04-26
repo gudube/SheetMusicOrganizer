@@ -14,13 +14,11 @@ using System.Windows.Shapes;
 namespace MusicPlayerForDrummers.View
 {
     /// <summary>
-    /// Interaction logic for Player.xaml
+    /// Interaction logic for PartitionMenu.xaml
     /// </summary>
-    /// TODO: Add button (on the right of the player?) to remove the waveform part (only keep buttons)
-    /// on top of the LibraryMenu or PartitionMenu, leaving more place for the rest 
-    public partial class PlayerControl : UserControl
+    public partial class PartitionMenu : UserControl
     {
-        public PlayerControl()
+        public PartitionMenu()
         {
             InitializeComponent();
         }
