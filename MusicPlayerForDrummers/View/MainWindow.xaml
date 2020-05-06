@@ -15,9 +15,6 @@
         <DataTemplate DataType="{x:Type vm:PartitionVM}">
             <local:PartitionView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:SyncVM}">
-            <local:SyncView/>
-        </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
     <Window.DataContext>
@@ -33,7 +30,9 @@
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Height="20">
-            <MenuItem Header="File"/>
+            <MenuItem Header="File">
+                <MenuItem Header="Add New Song" Click="AddNewSongMenuItem_Click"/>
+            </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
         <local:PlayerControl Grid.Row="2"/>

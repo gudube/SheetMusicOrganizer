@@ -27,6 +27,36 @@ namespace MusicPlayerForDrummers.View
         public SongsGrid()
         {
             InitializeComponent();
+            DataContextChanged += (sender, args) => ((LibraryVM)DataContext).SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
+        }
+
+        private void SelectedSongs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch(e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    foreach(SongItem song in e.NewItems)
+                        if(!Songs.SelectedItems.Contains(song))
+                            Songs.SelectedItems.Add(song);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    foreach (SongItem song in e.OldItems)
+                        if (Songs.SelectedItems.Contains(song))
+                            Songs.SelectedItems.Remove(song);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    Songs.SelectedItems.Clear();
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                    foreach (SongItem song in e.OldItems)
+                        if (Songs.SelectedItems.Contains(song))
+                            Songs.SelectedItems.Remove(song);
+                    foreach (SongItem song in e.NewItems)
+                        if (!Songs.SelectedItems.Contains(song))
+                            Songs.SelectedItems.Add(song);
+                    break;
+                default: break;
+            }
         }
 
         //TODO: Accept drag-and-drop
@@ -34,23 +64,9 @@ namespace MusicPlayerForDrummers.View
         //TODO: Add this option in File->Add Song
         //TODO: Directory import (batch import, see performance with taglib)
         //TODO: Test more formats
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        private void AddNewSongButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "Audio (*.mp3, *.flac)|*.mp3;*.flac|All Files (*.*)|*.*",
-                Multiselect = true,
-                FilterIndex = 1
-            };
-            if (openDialog.ShowDialog() == true)
-            {
-                foreach (string fileName in openDialog.FileNames)
-                    ((LibraryVM)this.DataContext).AddSongFileCommand.Execute(fileName);
-            }
-        }
-
-        private void OpenDirButton_Click(object sender, RoutedEventArgs e)
-        {
+            WindowManager.OpenAddNewSongWindow();
         }
 
         //TODO: Be able to copy paste songs between playlists
@@ -66,11 +82,10 @@ namespace MusicPlayerForDrummers.View
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(this.DataContext is LibraryVM libraryContext)
-            {
-                List<SongItem> selectedSongs = ((DataGrid)sender).SelectedItems.Cast<SongItem>().ToList();
-                libraryContext.SelectedSongs = new ObservableCollection<SongItem>(selectedSongs);
-            }
+            foreach (SongItem addedSong in e.AddedItems)
+                ((LibraryVM)DataContext).SelectedSongs.Add(addedSong);
+            foreach (SongItem song in e.RemovedItems)
+                ((LibraryVM)DataContext).SelectedSongs.Remove(song);
         }
     }
 }

@@ -1,0 +1,22 @@
+﻿<Window x:Class="MusicPlayerForDrummers.View.GenericWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+        mc:Ignorable="d" Style="{StaticResource ControlBackgroundLv1}"
+        Title="GenericWindow" SizeToContent="WidthAndHeight">
+    <StackPanel Orientation="Vertical" Margin="18">
+        <TextBlock Grid.Row="0" Width="400" TextWrapping="Wrap" Margin="0,0,0,18" Text="{Binding MainText}" Style="{StaticResource LabelTextBlock}"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Back" IsCancel="True" Style="{StaticResource 3DButton}"/>
+            <Button Grid.Column="2" Content="{Binding ContinueButtonText}" Click="ContinueButton_Click"
+                    HorizontalAlignment="Right" Style="{StaticResource SelectedButton}"/>
+        </Grid>
+    </StackPanel>
+</Window>

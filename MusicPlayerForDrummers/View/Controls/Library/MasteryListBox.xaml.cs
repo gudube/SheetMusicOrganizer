@@ -23,20 +23,47 @@ namespace MusicPlayerForDrummers.View
     /// </summary>
     public partial class MasteryListBox : UserControl, IDropTarget
     {
-        //TODO: Remove lock (at least visual) of masteryitem
         public MasteryListBox()
         {
             InitializeComponent();
-            MainListBox.SelectAll();
+            DataContextChanged += (sender, args) => ((LibraryVM)DataContext).SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
+        }
+
+        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    foreach (MasteryItem mastery in e.NewItems)
+                        if (!MainListBox.SelectedItems.Contains(mastery))
+                            MainListBox.SelectedItems.Add(mastery);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    foreach (MasteryItem mastery in e.OldItems)
+                        if (MainListBox.SelectedItems.Contains(mastery))
+                            MainListBox.SelectedItems.Remove(mastery);
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    MainListBox.SelectedItems.Clear();
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                    foreach (MasteryItem mastery in e.OldItems)
+                        if (MainListBox.SelectedItems.Contains(mastery))
+                            MainListBox.SelectedItems.Remove(mastery);
+                    foreach (MasteryItem mastery in e.NewItems)
+                        if (!MainListBox.SelectedItems.Contains(mastery))
+                            MainListBox.SelectedItems.Add(mastery);
+                    break;
+                default: break;
+            }
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            List<MasteryItem> selectedMasteryLevels = ((ListBox)sender).SelectedItems.Cast<MasteryItem>().ToList();
-            if(DataContext is LibraryVM libraryVM)
-            {
-                libraryVM.SelectedMasteryLevels = new ObservableCollection<MasteryItem>(selectedMasteryLevels);
-            }
+            foreach (MasteryItem mastery in e.AddedItems)
+                ((LibraryVM)DataContext).SelectedMasteryLevels.Add(mastery);
+            foreach (MasteryItem mastery in e.RemovedItems)
+                ((LibraryVM)DataContext).SelectedMasteryLevels.Remove(mastery);
         }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)

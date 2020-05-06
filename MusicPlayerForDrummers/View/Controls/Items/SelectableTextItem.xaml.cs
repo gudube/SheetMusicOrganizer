@@ -39,7 +39,7 @@ namespace MusicPlayerForDrummers.View
         public static readonly DependencyProperty DeleteConfirmCommandProperty =
             DependencyProperty.Register("DeleteConfirmCommand", typeof(ICommand), typeof(SelectableTextItem));
 
-        public static DependencyProperty IsLockedProperty = DependencyProperty.Register("IsLocked", typeof(bool), typeof(SelectableTextItem));
+        public static readonly DependencyProperty IsLockedProperty = DependencyProperty.Register("IsLocked", typeof(bool), typeof(SelectableTextItem));
 
         public bool IsLocked
         {
@@ -47,7 +47,7 @@ namespace MusicPlayerForDrummers.View
             set => SetValue(IsLockedProperty, value);
         }
         
-        public static DependencyProperty  TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectableTextItem));
+        public static readonly DependencyProperty  TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectableTextItem));
 
         public string Text
         {
@@ -55,7 +55,7 @@ namespace MusicPlayerForDrummers.View
             set => SetValue(TextProperty, value);
         }
 
-        public static DependencyProperty IsCustomColorProperty = DependencyProperty.Register("IsCustomColor", typeof(bool), typeof(SelectableTextItem));
+        public static readonly DependencyProperty IsCustomColorProperty = DependencyProperty.Register("IsCustomColor", typeof(bool), typeof(SelectableTextItem));
 
         public bool IsCustomColor
         {
@@ -63,7 +63,7 @@ namespace MusicPlayerForDrummers.View
             set => SetValue(IsCustomColorProperty, value);
         }
 
-        public static DependencyProperty TextColorProperty = DependencyProperty.Register("TextColor", typeof(string), typeof(SelectableTextItem));
+        public static readonly DependencyProperty TextColorProperty = DependencyProperty.Register("TextColor", typeof(string), typeof(SelectableTextItem));
 
         public string TextColor
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MusicPlayerForDrummers.ViewModel;
+using System;
 using System.Windows;
 
 namespace MusicPlayerForDrummers.View
@@ -11,6 +12,11 @@ namespace MusicPlayerForDrummers.View
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenAddNewSongWindow();
         }
     }
 }

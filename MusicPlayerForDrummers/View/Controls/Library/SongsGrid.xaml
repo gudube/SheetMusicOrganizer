@@ -13,21 +13,21 @@
         <local:HexColorConverter x:Key="hexColorConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}" SelectionChanged="DataGrid_SelectionChanged"
+        <DataGrid Name="Songs" Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Songs}" SelectionChanged="DataGrid_SelectionChanged"
                   SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding PlaySelectedSong}"/>
             </DataGrid.InputBindings>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="#" Binding="{Binding NumberMD}" MinWidth="10" Width="25" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Title" Binding="{Binding TitleMD}" MinWidth="40" Width="190" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Artist" Binding="{Binding ArtistMD}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Album" Binding="{Binding AlbumMD}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Genre" Binding="{Binding GenreMD}" MinWidth="40" Width="100" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="#" Binding="{Binding Number}" MinWidth="10" Width="25" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" MinWidth="40" Width="190" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Album" Binding="{Binding Album}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" MinWidth="40" Width="100" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Length" Binding="{Binding LengthMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Codec" Binding="{Binding CodecMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Bitrate" Binding="{Binding BitrateMD}" MinWidth="30" Width="65" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Rating" Binding="{Binding RatingMD, Converter={StaticResource ratingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Rating" Binding="{Binding Rating, Converter={StaticResource ratingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Mastery" Binding="{Binding Mastery.Name}" MinWidth="30" Width="60">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
@@ -38,23 +38,13 @@
             </DataGrid.Columns>
         </DataGrid>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 0, 0, 15" BorderBrush="Black"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Border Style="{StaticResource OutsideLightBorder}" Margin="0,0,30,0" Width="130" Height="40">
-                <Button Name="OpenFileButton" Click="OpenFileButton_Click" Style="{StaticResource 3DButton}">
+            <Border Style="{StaticResource OutsideLightBorder}" Width="150" Height="40">
+                <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{StaticResource 3DButton}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/View/Resources/music_file_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
-                        <TextBlock Text="Add File" VerticalAlignment="Center"/>
+                        <TextBlock Text="Add New Song" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </Border>
-            <Border Style="{StaticResource OutsideLightBorder}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="130" Height="40">
-                <Button Name="OpenDirButton" Click="OpenDirButton_Click" Style="{StaticResource 3DButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/View/Resources/music_dir_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
-                        <TextBlock Text="Add Folder" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </Border>
-        </StackPanel>
     </StackPanel>
 </UserControl>

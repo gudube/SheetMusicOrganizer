@@ -22,8 +22,8 @@ namespace MusicPlayerForDrummers.Model
         public PlaylistSongItem(SqliteDataReader dataReader) : base(dataReader)
         {
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
-            PlaylistID = dataReader.GetInt32(dataReader.GetOrdinal(playlistSongTable.PlaylistID.Name));
-            SongID = dataReader.GetInt32(dataReader.GetOrdinal(playlistSongTable.SongID.Name));
+            PlaylistID = (int) GetSafeInt(dataReader, playlistSongTable.PlaylistID.Name);
+            SongID = (int) GetSafeInt(dataReader, playlistSongTable.SongID.Name);
         }
 
         public override object[] GetCustomValues()

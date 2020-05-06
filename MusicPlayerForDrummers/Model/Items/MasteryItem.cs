@@ -26,9 +26,9 @@ namespace MusicPlayerForDrummers.Model
         public MasteryItem(SqliteDataReader dataReader) : base(dataReader)
         {
             MasteryTable masteryTable = new MasteryTable();
-            Name = dataReader.GetString(dataReader.GetOrdinal(masteryTable.Name.Name));
-            IsLocked = dataReader.GetBoolean(dataReader.GetOrdinal(masteryTable.IsLocked.Name));
-            Color = dataReader.GetString(dataReader.GetOrdinal(masteryTable.Color.Name));
+            Name = GetSafeString(dataReader, masteryTable.Name.Name);
+            IsLocked = GetSafeBool(dataReader, masteryTable.IsLocked.Name);
+            Color = GetSafeString(dataReader, masteryTable.Color.Name);
         }
 
         public override object[] GetCustomValues()

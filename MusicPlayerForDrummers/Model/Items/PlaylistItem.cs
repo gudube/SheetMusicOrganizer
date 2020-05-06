@@ -41,10 +41,10 @@ namespace MusicPlayerForDrummers.Model
         public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
         {
             PlaylistTable playlistTable = new PlaylistTable();
-            Name = dataReader.GetString(dataReader.GetOrdinal(playlistTable.Name.Name));
-            IsLocked = dataReader.GetBoolean(dataReader.GetOrdinal(playlistTable.IsLocked.Name));
-            IsSmart = dataReader.GetBoolean(dataReader.GetOrdinal(playlistTable.IsSmart.Name));
-            SmartDir = dataReader.GetString(dataReader.GetOrdinal(playlistTable.SmartDir.Name));
+            Name = GetSafeString(dataReader, playlistTable.Name.Name);
+            IsLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
+            IsSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
+            SmartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
         }
 
         public override object[] GetCustomValues()

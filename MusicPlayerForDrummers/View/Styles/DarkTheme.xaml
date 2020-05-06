@@ -14,19 +14,21 @@
     <Color x:Key="BackgroundLv4Color">#717171</Color>
     <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
     
-    <Color x:Key="ClickableColor">#d1d1d1</Color>
+    <Color x:Key="ClickableColor">#E1E1E1</Color>
     <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
-    
+
+    <Color x:Key="UnclickableColor">#A7A7A7</Color>
+    <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
+
     <Color x:Key="SelectedColor">#ededed</Color>
     <SolidColorBrush x:Key="SelectedSolidColor" Color="{StaticResource SelectedColor}"/>
     
-    <Color x:Key="SpecialColor">#00CEA2</Color>
+    <Color x:Key="SpecialColor">#0090A2</Color>
     <SolidColorBrush x:Key="SpecialSolidColor" Color="{StaticResource SpecialColor}"/>
 
-    <Color x:Key="SpecialFocusedColor">#00FFC8</Color>
-    <SolidColorBrush x:Key="SpecialFocusedSolidColor" Color="{StaticResource SpecialFocusedColor}"/>
-
-
+    <Color x:Key="SimpleBlackColor">#000000</Color>
+    <SolidColorBrush x:Key="SimpleBlackSolidColor" Color="{StaticResource SimpleBlackColor}"/>
+    
     <SolidColorBrush x:Key="WhiteThemeBackgroundColor" Color="Beige"/>
     
     <!-- BACKGROUNDS -->
@@ -47,28 +49,29 @@
     </Style>
     <Style x:Key="ControlBackgroundLv3" TargetType="{x:Type Control}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
     </Style>
 
     <!-- TEXT -->
     <Style x:Key="MainTitle" TargetType="{x:Type Control}">
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="MainText" TargetType="{x:Type Control}">
         <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="ClickableTitle" TargetType="{x:Type Control}" BasedOn="{StaticResource MainTitle}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="ClickableText" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style x:Key="UnclickableControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
     </Style>
-    <Style x:Key="Selected" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
+    <Style x:Key="SelectedControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
         <Setter Property="Background" Value="{StaticResource SelectedSolidColor}"/>
     </Style>
 
@@ -110,8 +113,7 @@
     </Style>
 
     <!-- DataGrid -->
-    <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource ControlBackgroundLv1}">
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="RowBackground" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="AlternatingRowBackground" Value="{StaticResource BackgroundLv2SolidColor}"/>
@@ -124,12 +126,10 @@
         <Setter Property="RowHeaderWidth" Value="0"/>
     </Style>
     
-    <Style TargetType="{x:Type DataGridRowHeader}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    <Style TargetType="{x:Type DataGridRowHeader}" BasedOn="{StaticResource ControlBackgroundLv1}">
     </Style>
 
-    <Style TargetType="{x:Type DataGridColumnHeader}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource ControlBackgroundLv3}">
         <Setter Property="Padding" Value="4,0,0,0"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
         <Setter Property="BorderThickness" Value="0,0,1,0"/>
@@ -161,15 +161,34 @@
     <!-- Button -->
     <!-- TODO: Simplify styles (especially borders) -->
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
-        <Setter Property="Padding" Value="5,5"/>
+        <Setter Property="Padding" Value="7, 5"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+                <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="SimpleButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ClickableTitle}">
         <Setter Property="Padding" Value="5"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    
+
+    <Style x:Key="SelectedButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
+        <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"/>
+        <Setter Property="IsDefault" Value="True"/>
+        <Style.Triggers>
+        <Trigger Property="IsEnabled" Value="True">
+            <Setter Property="BorderThickness" Value="2"/>
+        </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="IsDefault" Value="True"/>-->
+    </Style>
+
     <!-- OTHERS -->
     <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource BaseBlackControl}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
@@ -185,14 +204,15 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="{x:Type StatusBar}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource ControlBackgroundLv1}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
     </Style>
 
-    <Style TargetType="{x:Type Menu}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
-        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+    <!-- MENU -->
+    <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource ControlBackgroundLv3}">
+    </Style>
+    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource ControlBackgroundLv3}">
+        <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
     <!-- SEPARATOR -->
@@ -223,6 +243,34 @@
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
         <Setter Property="Width" Value="4"/>
+    </Style>
+    
+    <!-- TEXTBLOCK -->
+    <Style x:Key="InputTextBlock" TargetType="TextBlock">
+        <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Height" Value="16"/>
+    </Style>
+    <Style x:Key="LabelTextBlock" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+    </Style>
+    <Style x:Key="ErrorTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Text" Value="*"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="3,0,0,0"/>
+    </Style>
+    
+    <!-- TEXTBOX -->
+    <Style TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Height" Value="16"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 </ResourceDictionary>
    

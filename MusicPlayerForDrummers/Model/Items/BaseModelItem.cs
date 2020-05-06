@@ -22,6 +22,32 @@ namespace MusicPlayerForDrummers.Model
 
         abstract public object[] GetCustomValues();
 
+        protected string GetSafeString(SqliteDataReader dR, string colName)
+        {
+            int colNum = dR.GetOrdinal(colName);
+            if (!dR.IsDBNull(colNum))
+                return dR.GetString(colNum);
+            else
+                return null;
+        }
+
+        protected int? GetSafeInt(SqliteDataReader dR, string colName)
+        {
+            int colNum = dR.GetOrdinal(colName);
+            if (!dR.IsDBNull(colNum))
+                return dR.GetInt32(colNum);
+            else
+                return null;
+        }
+
+        protected bool GetSafeBool(SqliteDataReader dR, string colName)
+        {
+            int colNum = dR.GetOrdinal(colName);
+            if (!dR.IsDBNull(colNum))
+                return dR.GetBoolean(colNum);
+            else
+                return false;
+        }
         /*protected string GetSqlFormat(string value)
         {
             return "'" + value + "'";

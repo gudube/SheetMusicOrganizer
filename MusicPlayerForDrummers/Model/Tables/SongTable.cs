@@ -16,24 +16,26 @@ namespace MusicPlayerForDrummers.Model
 
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { Directory, NumberMD, TitleMD, ArtistMD, AlbumMD, GenreMD,
-               LengthMD, CodecMD, BitrateMD, RatingMD, MasteryID, PartitionDirectory};
+            return new SqlColumn[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
+               LengthMD, CodecMD, BitrateMD, Rating, MasteryID};
         }
 
         #region Custom Columns
-        public readonly SqlColumn Directory = new SqlColumn("Directory", EType.TEXT);
+        public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.TEXT, false, false);
+
+        public readonly SqlColumn AudioDirectory = new SqlColumn("AudioDirectory", EType.TEXT);
 
         //TODO: Verify the files metadata is uptodate when playing: compare each field vs store and look at the modified date?
         #region Metadata
-        public readonly SqlColumn NumberMD = new SqlColumn("NumberMD", EType.INT);
+        public readonly SqlColumn Number = new SqlColumn("Number", EType.INT);
 
-        public readonly SqlColumn TitleMD = new SqlColumn("TitleMD", EType.TEXT);
+        public readonly SqlColumn Title = new SqlColumn("Title", EType.TEXT);
 
-        public readonly SqlColumn ArtistMD = new SqlColumn("ArtistMD", EType.TEXT);
+        public readonly SqlColumn Artist = new SqlColumn("Artist", EType.TEXT);
 
-        public readonly SqlColumn AlbumMD = new SqlColumn("AlbumMD", EType.TEXT);
+        public readonly SqlColumn Album = new SqlColumn("Album", EType.TEXT);
 
-        public readonly SqlColumn GenreMD = new SqlColumn("GenreMD", EType.TEXT);
+        public readonly SqlColumn Genre = new SqlColumn("Genre", EType.TEXT);
 
         public readonly SqlColumn LengthMD = new SqlColumn("LengthMD", EType.TEXT);
 
@@ -41,15 +43,11 @@ namespace MusicPlayerForDrummers.Model
 
         public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.TEXT);
 
-        public readonly SqlColumn RatingMD = new SqlColumn("RatingMD", EType.INT);
+        public readonly SqlColumn Rating = new SqlColumn("Rating", EType.INT);
         #endregion
 
-        #region Custom Song Fields
         //TODO: Make it a Foreign Key field and implement FKs in SqlColumns
         public readonly SqlColumn MasteryID;
-
-        public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.TEXT);
-        #endregion
         #endregion
     }
 }

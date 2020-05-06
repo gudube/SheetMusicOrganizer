@@ -1,16 +1,35 @@
 ﻿using MusicPlayerForDrummers.Model;
+using MusicPlayerForDrummers.View;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
     public class MainVM : BaseViewModel
     {
+        
+        public override string ViewModelName => "MAIN";
+
+        public MainVM()
+        {
+            DBHandler.InitializeDatabase();
+
+            SwitchViewLeftCommand = new DelegateCommand(x => SwitchView(EDirection.Left), x => CanSwitchViewLeft);
+            SwitchViewRightCommand = new DelegateCommand(x => SwitchView(EDirection.Right), x => CanSwitchViewRight);
+
+            LibraryVM = new LibraryVM();
+            PartitionVM = new PartitionVM();
+            ViewModels = new List<BaseViewModel> { LibraryVM, PartitionVM };
+            SetView(LibraryVM);
+        }
+        
+        #region Child VMs
         private LibraryVM LibraryVM { get; set; }
-        private  PartitionVM PartitionVM { get; set; }
+        private PartitionVM PartitionVM { get; set; }
         private SyncVM SyncVM { get; set; }
 
         public List<BaseViewModel> ViewModels;
@@ -19,7 +38,7 @@ namespace MusicPlayerForDrummers.ViewModel
         public BaseViewModel CurrentViewModel
         {
             get => _currentViewModel;
-            set => SetField(ref _currentViewModel, value); 
+            set => SetField(ref _currentViewModel, value);
         }
 
         private string _leftViewTitle;
@@ -45,7 +64,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
 
         }
-    private bool _canSwitchViewLeft;
+        private bool _canSwitchViewLeft;
         public bool CanSwitchViewLeft
         {
             get => _canSwitchViewLeft;
@@ -55,32 +74,18 @@ namespace MusicPlayerForDrummers.ViewModel
                 SwitchViewLeftCommand.RaiseCanExecuteChanged();
             }
         }
-        public override string ViewModelName => "MAIN";
-
-        public MainVM()
-        {
-            DBHandler.InitializeDatabase();
-
-            SwitchViewLeftCommand = new DelegateCommand(x => SwitchView(EDirection.Left), x => CanSwitchViewLeft);
-            SwitchViewRightCommand = new DelegateCommand(x => SwitchView(EDirection.Right), x => CanSwitchViewRight);
-
-            LibraryVM = new LibraryVM();
-            PartitionVM = new PartitionVM();
-            ViewModels = new List<BaseViewModel> { LibraryVM, PartitionVM };
-            SetView(LibraryVM);
-        }
 
         public DelegateCommand SwitchViewLeftCommand { get; private set; }
         public DelegateCommand SwitchViewRightCommand { get; private set; }
-        
+
         private void SetView(BaseViewModel view)
         {
-            if(CurrentViewModel == view)
+            if (CurrentViewModel == view)
                 return;
-            
+
             CurrentViewModel = view;
             int index = ViewModels.IndexOf(view);
-            if(index > 0)
+            if (index > 0)
             {
                 LeftViewTitle = ViewModels[index - 1].ViewModelName;
                 CanSwitchViewLeft = true;
@@ -106,7 +111,7 @@ namespace MusicPlayerForDrummers.ViewModel
             int currentIndex = ViewModels.IndexOf(CurrentViewModel);
             int newIndex = currentIndex + (int)direction;
 
-            if(newIndex >= 0 && newIndex <= (ViewModels.Count - 1))
+            if (newIndex >= 0 && newIndex <= (ViewModels.Count - 1))
             {
                 SetView(ViewModels[newIndex]);
             }
@@ -117,6 +122,36 @@ namespace MusicPlayerForDrummers.ViewModel
                 Trace.WriteLine(warning);
             }
         }
+        #endregion
+
+        #region Menu
+        public bool IsSongExisting(string partitionFilename)
+        {
+            return DBHandler.IsSongExisting(partitionFilename);
+        }
+
+        public void GoToSong(string partitionFilename)
+        {
+            SongItem song = DBHandler.GetSong(partitionFilename);
+            SetView(LibraryVM);
+            LibraryVM.GoToSong(song);
+        }
+
+        public void AddNewSong(SongItem song)
+        {
+            if (LibraryVM.SelectedMasteryLevels.Count == 0)
+                song.MasteryID = LibraryVM.MasteryLevels[0].ID;
+            else
+                song.MasteryID = LibraryVM.SelectedMasteryLevels[0].ID;
+
+            if (LibraryVM.SelectedPlaylist is PlaylistItem && LibraryVM.SelectedPlaylist != LibraryVM._allMusicPlaylist)
+                DBHandler.AddSong(song, LibraryVM.SelectedPlaylist.ID);
+            else
+                DBHandler.AddSong(song);
+            
+            LibraryVM.Songs.Add(song);
+        }
+        #endregion
 
         public enum EDirection
         {

@@ -10,23 +10,26 @@ namespace MusicPlayerForDrummers.Model
     public class SongItem : BaseModelItem
     {
         #region Properties
-        private string _directory;
-        public string Directory { get => _directory; private set => SetField(ref _directory, value); }
+        private string _partitionDirectory;
+        public string PartitionDirectory { get => _partitionDirectory; set => SetField(ref _partitionDirectory, value); }
 
-        private uint _numberMD;
-        public uint NumberMD { get => _numberMD; set => SetField(ref _numberMD, value); }
+        private string _audioDirectory;
+        public string AudioDirectory { get => _audioDirectory; set => SetField(ref _audioDirectory, value); }
 
-        private string _titleMD;
-        public string TitleMD { get => _titleMD; set => SetField(ref _titleMD, value); }
+        private uint? _number;
+        public uint? Number { get => _number; set => SetField(ref _number, value); }
 
-        private string _artistMD;
-        public string ArtistMD { get => _artistMD; set => SetField(ref _artistMD, value); }
+        private string _title;
+        public string Title { get => _title; set => SetField(ref _title, value); }
 
-        private string _albumMD;
-        public string AlbumMD { get => _albumMD; set => SetField(ref _albumMD, value); }
+        private string _artist;
+        public string Artist { get => _artist; set => SetField(ref _artist, value); }
 
-        private string _genreMD;
-        public string GenreMD { get => _genreMD; set => SetField(ref _genreMD, value); }
+        private string _album;
+        public string Album { get => _album; set => SetField(ref _album, value); }
+
+        private string _genre;
+        public string Genre { get => _genre; set => SetField(ref _genre, value); }
 
         private string _lengthMD;
         public string LengthMD { get => _lengthMD; private set => SetField(ref _lengthMD, value); }
@@ -37,8 +40,8 @@ namespace MusicPlayerForDrummers.Model
         private string _bitrateMD;
         public string BitrateMD { get => _bitrateMD; private set => SetField(ref _bitrateMD, value); }
 
-        private byte _ratingMD;
-        public byte RatingMD { get => _ratingMD; set => SetField(ref _ratingMD, value); }
+        private uint _rating;
+        public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
         private int _masteryID;
         public int MasteryID { get => _masteryID; 
@@ -49,38 +52,41 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
-        private string _partitionDirectory;
-        public string PartitionDirectory { get => _partitionDirectory; set => SetField(ref _partitionDirectory, value); }
 
         #endregion
 
         #region Other Properties
+        //useful to know the mastery name from SongItem (e.g. in the SongsGrid)
         public MasteryItem Mastery { get => DBHandler.MasteryDic[MasteryID]; }
         #endregion
 
-        public SongItem(string directory, int masteryID) : base()
+        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryID = 0) : base()
         {
-            Directory = directory;
-            PartitionDirectory = "";
+            PartitionDirectory = partitionDir;
+            AudioDirectory = audioDirectory;
             MasteryID = masteryID;
-            ReadMetadata();
+
+            if (!string.IsNullOrWhiteSpace(audioDirectory))
+            {
+                ReadAudioMetadata();
+            }
         }
 
         public SongItem(SqliteDataReader dataReader) : base(dataReader)
         {
             SongTable songTable = new SongTable();
-            Directory = dataReader.GetString(dataReader.GetOrdinal(songTable.Directory.Name));
-            NumberMD = (uint) dataReader.GetInt32(dataReader.GetOrdinal(songTable.NumberMD.Name));
-            TitleMD = dataReader.GetString(dataReader.GetOrdinal(songTable.TitleMD.Name));
-            ArtistMD = dataReader.GetString(dataReader.GetOrdinal(songTable.ArtistMD.Name));
-            AlbumMD = dataReader.GetString(dataReader.GetOrdinal(songTable.AlbumMD.Name));
-            GenreMD = dataReader.GetString(dataReader.GetOrdinal(songTable.GenreMD.Name));
-            LengthMD = dataReader.GetString(dataReader.GetOrdinal(songTable.LengthMD.Name));
-            CodecMD = dataReader.GetString(dataReader.GetOrdinal(songTable.CodecMD.Name));
-            BitrateMD = dataReader.GetString(dataReader.GetOrdinal(songTable.BitrateMD.Name));
-            RatingMD = dataReader.GetByte(dataReader.GetOrdinal(songTable.RatingMD.Name));
-            MasteryID = dataReader.GetInt32(dataReader.GetOrdinal(songTable.MasteryID.Name));
-            PartitionDirectory = dataReader.GetString(dataReader.GetOrdinal(songTable.PartitionDirectory.Name));
+            PartitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
+            AudioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
+            Number = (uint?) GetSafeInt(dataReader, songTable.Number.Name);
+            Title = GetSafeString(dataReader, songTable.Title.Name);
+            Artist = GetSafeString(dataReader, songTable.Artist.Name);
+            Album = GetSafeString(dataReader, songTable.Album.Name);
+            Genre = GetSafeString(dataReader, songTable.Genre.Name);
+            LengthMD = GetSafeString(dataReader, songTable.LengthMD.Name);
+            CodecMD = GetSafeString(dataReader, songTable.CodecMD.Name);
+            BitrateMD = GetSafeString(dataReader, songTable.BitrateMD.Name);
+            Rating = (uint) GetSafeInt(dataReader, songTable.Rating.Name);
+            MasteryID = (int) GetSafeInt(dataReader, songTable.MasteryID.Name);
         }
 
         //TODO: Block files that are more than 99:99 minutes?
@@ -88,17 +94,17 @@ namespace MusicPlayerForDrummers.Model
         //(for performance and not calling tons of events)
         //Verify ATL .NET vs TagLibSharp (performance, etc.)
         //ATL Rating tag easier to find, but Codec harder to find
-        private void ReadMetadata()
+        public void ReadAudioMetadata()
         {
-            TagLib.File tFile = TagLib.File.Create(Directory);//, TagLib.ReadStyle.PictureLazy);
-            NumberMD = tFile.Tag.Track;
-            TitleMD = tFile.Tag.Title;
+            TagLib.File tFile = TagLib.File.Create(AudioDirectory);//, TagLib.ReadStyle.PictureLazy);
+            Number = tFile.Tag.Track;
+            Title = tFile.Tag.Title;
             if (tFile.Tag.Performers.Length > 0) //use song artist if exists (or album)
-                ArtistMD = tFile.Tag.JoinedPerformers;
+                Artist = tFile.Tag.JoinedPerformers;
             else
-                ArtistMD = tFile.Tag.JoinedAlbumArtists;
-            AlbumMD = tFile.Tag.Album;
-            GenreMD = tFile.Tag.JoinedGenres;
+                Artist = tFile.Tag.JoinedAlbumArtists;
+            Album = tFile.Tag.Album;
+            Genre = tFile.Tag.JoinedGenres;
             //TODO: Make empty if Properties is null
             LengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
             string[] mimeSplits = tFile.MimeType.Split('/');
@@ -107,7 +113,20 @@ namespace MusicPlayerForDrummers.Model
             //TODO: Crashes when opening something else than mp3, make the field empty if null
             TagLib.Id3v2.Tag tagData = (TagLib.Id3v2.Tag) tFile.GetTag(TagLib.TagTypes.Id3v2);
             TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
-            RatingMD = tagInfo.Rating; //TODO: Transform RatingMD to bytes if it works
+            byte byteRating = tagInfo.Rating;
+            if (byteRating == 0)
+                Rating = 0;
+            else if (byteRating == 1)
+                Rating = 1;
+            else if (byteRating <= 64)
+                Rating = 2;
+            else if (byteRating <= 128)
+                Rating = 3;
+            else if (byteRating <= 196)
+                Rating = 4;
+            else
+                Rating = 5;
+
             /*Track song = new Track(Directory);
             NumberMD = song.TrackNumber;
             TitleMD = song.Title;
@@ -132,8 +151,8 @@ namespace MusicPlayerForDrummers.Model
         //TODO: Better way to do it?
         public override object[] GetCustomValues()
         {
-            return new object[] { Directory, NumberMD, TitleMD, ArtistMD, AlbumMD, GenreMD,
-            LengthMD, CodecMD, BitrateMD, RatingMD, MasteryID, PartitionDirectory };
+            return new object[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
+            LengthMD, CodecMD, BitrateMD, Rating, MasteryID };
         }
     }
 }

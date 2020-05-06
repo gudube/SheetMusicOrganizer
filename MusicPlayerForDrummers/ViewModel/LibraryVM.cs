@@ -16,6 +16,7 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public override string ViewModelName => "LIBRARY";
 
+        //TODO: Separer le LibraryVM est plusieurs VM
         public LibraryVM()
         {
             UpdatePlaylistsFromDB();
@@ -24,7 +25,6 @@ namespace MusicPlayerForDrummers.ViewModel
             CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x));
             DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x));
-            AddSongFileCommand = new DelegateCommand(x => AddSongFile(x));
             PlaySelectedSongCommand = new DelegateCommand(x => PlaySelectedSong());
             RemoveSelectedSongsCommand = new DelegateCommand(x => RemoveSelectedSongs());
         }
@@ -37,8 +37,8 @@ namespace MusicPlayerForDrummers.ViewModel
             set => SetField(ref _playlists, value);
         }
 
-        private AddPlaylistItem _addPlaylist = new AddPlaylistItem();
-        private PlaylistItem _allMusicPlaylist = new PlaylistItem("All music", true);
+        public readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
+        public readonly PlaylistItem _allMusicPlaylist = new PlaylistItem("All music", true);
 
         private BaseModelItem _selectedPlaylist;
         public BaseModelItem SelectedPlaylist
@@ -121,7 +121,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
-            DBHandler.AddPlaylistSongLinks(playlist.ID, songs.Select(x => x.ID));
+            DBHandler.AddSongsToPlaylist(playlist.ID, songs.Select(x => x.ID));
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
@@ -189,25 +189,13 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region Songs
         private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
-        public ObservableCollection<SongItem> Songs
-        {
-            get => _songs;
-            set => SetField(ref _songs, value);
-        }
+        public ObservableCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
 
-        private ObservableCollection<SongItem> _selectedSongs;
-        public ObservableCollection<SongItem> SelectedSongs
-        {
-            get => _selectedSongs;
-            set => SetField(ref _selectedSongs, value);
-        }
+        private ObservableCollection<SongItem> _selectedSongs = new ObservableCollection<SongItem>();
+        public ObservableCollection<SongItem> SelectedSongs { get => _selectedSongs; set => SetField(ref _selectedSongs, value); }
 
         private SongItem _playingSong;
-        public SongItem PlayingSong
-        {
-            get => _playingSong;
-            set => SetField(ref _playingSong, value);
-        }
+        public SongItem PlayingSong { get => _playingSong; set => SetField(ref _playingSong, value); }
 
         private void UpdateSongsFromDB()
         {
@@ -227,34 +215,13 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
 
-        public DelegateCommand AddSongFileCommand { get; private set; }
-        public void AddSongFile(object songDirObj)
+        public void GoToSong(SongItem song)
         {
-            if (!(songDirObj is string songDir))
-            {
-                Trace.WriteLine("Expected AddSongFile to receive a string. Received : " + songDirObj.GetType().Name);
-                return;
-            }
-            if (Songs.Any(x => x.Directory == songDir))
-                return;
-
-            int masteryID;
-            if(SelectedMasteryLevels.Count == 0)
-                masteryID = MasteryLevels[0].ID;
-            else
-                masteryID = SelectedMasteryLevels[0].ID;
-
-            SongItem newSong;
-            if (SelectedPlaylist is PlaylistItem && SelectedPlaylist != _allMusicPlaylist)
-            {
-                newSong = DBHandler.AddSong(songDir, masteryID, SelectedPlaylist.ID);
-            }
-            else
-            {
-                newSong = DBHandler.AddSong(songDir, masteryID);
-
-            }
-            Songs.Add(newSong);
+            SelectedSongs.Clear();
+            SelectedMasteryLevels.Clear();
+            SelectedPlaylist = _allMusicPlaylist;
+            SelectedMasteryLevels.Add(MasteryLevels.First(x => x.ID == song.MasteryID));
+            SelectedSongs.Add(Songs.First(x=> x.ID == song.ID));
         }
 
         public DelegateCommand PlaySelectedSongCommand { get; private set; }
