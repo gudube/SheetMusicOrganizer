@@ -13,6 +13,16 @@ namespace MusicPlayerForDrummers.ViewModel
 {
     public abstract class BaseViewModel : BaseNotifyPropertyChanged
     {
+        public BaseViewModel(SessionContext session)
+        {
+            Session = session;
+            Session.PropertyChanged += Session_PropertyChanged;
+        }
+
+        protected abstract void Session_PropertyChanged(object sender, PropertyChangedEventArgs e);
+
+        public SessionContext Session { get; }
+
         public abstract string ViewModelName { get; }
     }
 }

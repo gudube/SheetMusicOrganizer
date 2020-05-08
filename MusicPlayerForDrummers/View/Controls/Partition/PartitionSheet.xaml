@@ -6,14 +6,7 @@
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Border Style="{StaticResource OutsideLightBorder}" Margin="0,0,30,0" Width="170" Height="40">
-            <Button Name="OpenPartitionButton" Click="OpenPartitionButton_Click" Style="{StaticResource 3DButton}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/View/Resources/music_file_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
-                    <TextBlock Text="Add Music Sheet" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-        </Border>
-    </Grid>
+    <ScrollViewer PanningMode="Both">
+        <ItemsControl x:Name="PagesContainer"/>
+    </ScrollViewer>
 </UserControl>

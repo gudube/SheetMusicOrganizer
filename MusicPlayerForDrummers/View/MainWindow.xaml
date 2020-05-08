@@ -9,12 +9,6 @@
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type vm:LibraryVM}">
-            <local:LibraryView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:PartitionVM}">
-            <local:PartitionView/>
-        </DataTemplate>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
     <Window.DataContext>
@@ -36,20 +30,32 @@
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
         <local:PlayerControl Grid.Row="2"/>
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <local:SwitchViewButton Grid.Column="0" Title="{Binding LeftViewTitle}" Direction="Left"
-                                    Visibility="{Binding Path=CanSwitchViewLeft, Converter={StaticResource BoolToVis}}"
-                                    SwitchViewCommand="{Binding SwitchViewLeftCommand}"/>
-            <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
-            <local:SwitchViewButton Grid.Column="2" Title="{Binding RightViewTitle}" Direction="Right"
-                                    Visibility="{Binding Path=CanSwitchViewRight, Converter={StaticResource BoolToVis}}"
-                                    SwitchViewCommand="{Binding SwitchViewRightCommand}"/>
-        </Grid>
+        <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:LibraryVM}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    <local:LibraryView Grid.Column="0"/>
+                    <local:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
+                                SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchPartitionViewCommand}"/>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:PartitionVM}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <local:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
+                                SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchLibraryViewCommand}"/>
+                        <local:PartitionView Grid.Column="1"/>
+                    </Grid>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
         <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
         <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0"> Status, can contain information about song, etc. </StatusBar>
     </Grid>

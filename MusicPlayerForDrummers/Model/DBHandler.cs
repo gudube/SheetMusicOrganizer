@@ -253,14 +253,12 @@ namespace MusicPlayerForDrummers.Model
             }
             return playlists;
         }
-
-        public static void DeletePlaylist(PlaylistItem playlist)
+        public static void CreateNewPlaylist(PlaylistItem playlist)
         {
-            PlaylistTable table = new PlaylistTable();
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                DeleteRow(con, table, table.ID, playlist.ID);
+                InsertRow(con, new PlaylistTable(), playlist);
             }
         }
 
@@ -273,12 +271,13 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
-        public static void CreateNewPlaylist(PlaylistItem playlist)
+        public static void DeletePlaylist(PlaylistItem playlist)
         {
+            PlaylistTable table = new PlaylistTable();
             using (var con = new SqliteConnection(_dataSource))
             {
                 con.Open();
-                InsertRow(con, new PlaylistTable(), playlist);
+                DeleteRow(con, table, table.ID, playlist.ID);
             }
         }
         #endregion

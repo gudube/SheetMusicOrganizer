@@ -138,14 +138,13 @@
     <Style TargetType="{x:Type DataGridCell}">
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
-
+    
     <Style x:Key="DataGridText" TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Margin" Value="4,2"/>
         <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>
     </Style>
-
     <!-- ListBox -->
     <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource BaseBlackControl}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>

@@ -37,12 +37,6 @@ namespace MusicPlayerForDrummers.View
         public static readonly DependencyProperty SongProperty = DependencyProperty.Register("Song", typeof(SongItem), typeof(AddNewSongWindow));
         public SongItem Song { get => (SongItem)GetValue(SongProperty); set => SetValue(SongProperty, value); }
 
-        //public static readonly DependencyProperty PartitionFilenameProperty = DependencyProperty.Register("PartitionFilename", typeof(string), typeof(AddNewSongWindow));
-        //public string PartitionFilename { get => (string)GetValue(PartitionFilenameProperty); set => SetValue(PartitionFilenameProperty, value); }
-
-        //public static readonly DependencyProperty AudioFilenameProperty = DependencyProperty.Register("AudioFilename", typeof(string), typeof(AddNewSongWindow));
-        //public string AudioFilename { get => (string)GetValue(AudioFilenameProperty); set => SetValue(AudioFilenameProperty, value); }
-
         private void SelectMusicSheetButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openDialog = new OpenFileDialog
@@ -141,7 +135,9 @@ namespace MusicPlayerForDrummers.View
 
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            MainVM mainVM = Owner.DataContext as MainVM;
+            if(!(Owner.DataContext is MainVM mainVM))
+                return;
+
             if (!string.IsNullOrWhiteSpace(Song.PartitionDirectory) && !string.IsNullOrWhiteSpace(TitleText))
             {
                 if (mainVM.IsSongExisting(Song.PartitionDirectory))

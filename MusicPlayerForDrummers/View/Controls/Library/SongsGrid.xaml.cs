@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using MusicPlayerForDrummers.Model;
+using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -27,36 +28,7 @@ namespace MusicPlayerForDrummers.View
         public SongsGrid()
         {
             InitializeComponent();
-            DataContextChanged += (sender, args) => ((LibraryVM)DataContext).SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
-        }
-
-        private void SelectedSongs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            switch(e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    foreach(SongItem song in e.NewItems)
-                        if(!Songs.SelectedItems.Contains(song))
-                            Songs.SelectedItems.Add(song);
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    foreach (SongItem song in e.OldItems)
-                        if (Songs.SelectedItems.Contains(song))
-                            Songs.SelectedItems.Remove(song);
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    Songs.SelectedItems.Clear();
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
-                    foreach (SongItem song in e.OldItems)
-                        if (Songs.SelectedItems.Contains(song))
-                            Songs.SelectedItems.Remove(song);
-                    foreach (SongItem song in e.NewItems)
-                        if (!Songs.SelectedItems.Contains(song))
-                            Songs.SelectedItems.Add(song);
-                    break;
-                default: break;
-            }
+            DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
         }
 
         //TODO: Accept drag-and-drop
@@ -78,14 +50,6 @@ namespace MusicPlayerForDrummers.View
             {
                 ((LibraryVM)this.DataContext).RemoveSelectedSongsCommand.Execute(null);
             }
-        }
-
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach (SongItem addedSong in e.AddedItems)
-                ((LibraryVM)DataContext).SelectedSongs.Add(addedSong);
-            foreach (SongItem song in e.RemovedItems)
-                ((LibraryVM)DataContext).SelectedSongs.Remove(song);
         }
     }
 }
