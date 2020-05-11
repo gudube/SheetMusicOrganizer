@@ -1,5 +1,8 @@
-﻿using System;
+﻿using MusicPlayerForDrummers.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MusicPlayerForDrummers.View
 {
@@ -23,6 +25,17 @@ namespace MusicPlayerForDrummers.View
         public PlayerControl()
         {
             InitializeComponent();
+        }
+
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
+                return;
+            if(playerVM.Session.PlayingSong != null)
+            {
+                string dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
+                Process.Start("explorer.exe", @dir);
+            }
         }
     }
 }

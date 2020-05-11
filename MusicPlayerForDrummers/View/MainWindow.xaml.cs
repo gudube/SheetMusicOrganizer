@@ -9,6 +9,7 @@ namespace MusicPlayerForDrummers.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        //TODO: Add Load Playlist, Save Playlist
         public MainWindow()
         {
             InitializeComponent();

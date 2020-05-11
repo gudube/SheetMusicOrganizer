@@ -18,13 +18,14 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             DBHandler.InitializeDatabase();
 
-            SwitchLibraryViewCommand = new DelegateCommand(x => SetView(_libraryVM));
-            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(_partitionVM), x => Session.SelectedSongs.Count > 0);
+            SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
+            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
             Session.SelectedSongs.CollectionChanged += (sender, args) => SwitchPartitionViewCommand.RaiseCanExecuteChanged();
 
-            _libraryVM = new LibraryVM(Session);
-            _partitionVM = new PartitionVM(Session);
-            SetView(_libraryVM);
+            LibraryVM = new LibraryVM(Session);
+            PartitionVM = new PartitionVM(Session);
+            SetView(LibraryVM);
+            PlayerVM = new PlayerVM(Session);
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -32,8 +33,9 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         #region Child VMs
-        private LibraryVM _libraryVM { get; }
-        private PartitionVM _partitionVM { get; }
+        public LibraryVM LibraryVM { get; }
+        public PartitionVM PartitionVM { get; }
+        public PlayerVM PlayerVM { get; }
 
         private BaseViewModel _currentViewModel;
         public BaseViewModel CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
@@ -47,7 +49,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
 
             CurrentViewModel = view;
-            if (view == _partitionVM)
+            if (view == PartitionVM)
                 Session.PlayingSong = Session.SelectedSongs.FirstOrDefault();
         }
         #endregion
@@ -61,15 +63,15 @@ namespace MusicPlayerForDrummers.ViewModel
         public void GoToSong(string partitionFilename)
         {
             SongItem song = DBHandler.GetSong(partitionFilename);
-            SetView(_libraryVM);
-            _libraryVM.GoToSong(song);
+            SetView(LibraryVM);
+            LibraryVM.GoToSong(song);
         }
 
         public void AddNewSong(SongItem song)
         {
-            _libraryVM.AddNewSong(song);
-            SetView(_libraryVM);
-            _libraryVM.GoToSong(song);
+            LibraryVM.AddNewSong(song);
+            SetView(LibraryVM);
+            LibraryVM.GoToSong(song);
         }
 
         

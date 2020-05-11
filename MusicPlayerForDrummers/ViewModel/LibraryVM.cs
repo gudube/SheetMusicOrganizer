@@ -10,6 +10,7 @@ using System.Threading;
 using System.Linq;
 using MusicPlayerForDrummers.Model.Tools;
 using System.ComponentModel;
+using Windows.Media.Playlists;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -200,7 +201,18 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand PlaySelectedSongCommand { get; private set; }
         public void PlaySelectedSong()
         {
-        }
+            if (!(Session.SelectedSongs.Count > 0))
+            {
+                Trace.WriteLine("Tried to start playing a song without songs selected.");
+                return;
+            }
+            Session.PlayingSong = Session.SelectedSongs[0];
+            if (Session.SelectedPlaylist is PlaylistItem pl)
+                Session.PlayingPlaylist = pl;
+            else
+                Trace.WriteLine("Tried to start playing a song without a playlist selected.");
+            Session.PlayingMasteryLevels = Session.SelectedMasteryLevels;
+        }   
 
         public DelegateCommand RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()

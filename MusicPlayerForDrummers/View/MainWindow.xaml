@@ -29,7 +29,7 @@
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <local:PlayerControl Grid.Row="2"/>
+        <local:PlayerControl Grid.Row="2" Height="60"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:LibraryVM}">
@@ -57,6 +57,11 @@
             </ContentControl.Resources>
         </ContentControl>
         <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
-        <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0"> Status, can contain information about song, etc. </StatusBar>
+        <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
+            <StatusBarItem Content="Playing Song: "/>
+            <StatusBarItem>
+                <Binding Path="Session.PlayingSong"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

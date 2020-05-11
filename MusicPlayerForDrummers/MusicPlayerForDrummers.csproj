@@ -24,6 +24,7 @@
     <None Remove="View\Resources\switch_view_40.png" />
     <None Remove="View\Resources\switch_view_l_40.png" />
     <None Remove="View\Resources\switch_view_r_40.png" />
+    <None Remove="View\Resources\waveform.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,7 @@
     <Resource Include="View\Resources\random_song_40.png" />
     <Resource Include="View\Resources\stop_song_40.png" />
     <Resource Include="View\Resources\switch_view_40.png" />
+    <Resource Include="View\Resources\waveform.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +50,10 @@
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
     <PackageReference Include="z440.atl.core" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NaudioWrapper\NaudioWrapper.csproj" />
   </ItemGroup>
 
 </Project>

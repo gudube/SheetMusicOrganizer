@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
+using Windows.Media.Playlists;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -38,9 +39,17 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private SmartCollection<SongItem> _selectedSongs = new SmartCollection<SongItem>();
         public SmartCollection<SongItem> SelectedSongs { get => _selectedSongs; set => SetField(ref _selectedSongs, value); }
+        #endregion
 
+        #region Playing
         private INotifyPropertyChanged _playingSong;
         public SongItem PlayingSong { get => (SongItem)_playingSong; set => SetField(ref _playingSong, value); }
+
+        private INotifyPropertyChanged _playingPlaylist;
+        public PlaylistItem PlayingPlaylist { get => (PlaylistItem)_playingPlaylist; set => SetField(ref _playingPlaylist, value); }
+
+        private SmartCollection<MasteryItem> _playingMasteryLevels;
+        public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; set => SetField(ref _playingMasteryLevels, value); }
         #endregion
 
 

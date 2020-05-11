@@ -70,6 +70,11 @@ namespace MusicPlayerForDrummers.Model
                 default: return SqliteType.Blob;
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public enum EType

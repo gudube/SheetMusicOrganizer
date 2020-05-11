@@ -79,4 +79,17 @@ namespace MusicPlayerForDrummers.View
             throw new NotImplementedException();
         }
     }
+
+    public class FloatPercentageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)((float)value * 100);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (float)((double)value / 100);
+        }
+    }
 }

@@ -154,5 +154,10 @@ namespace MusicPlayerForDrummers.Model
             return new object[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
             LengthMD, CodecMD, BitrateMD, Rating, MasteryID };
         }
+
+        public override string ToString()
+        {
+            return string.Join(" - ", Artist, Title);
+        }
     }
 }
