@@ -7,27 +7,28 @@ namespace NaudioWrapper
     {
         private AudioFileReader _audioFileReader;
         private DirectSoundOut _output;
+        private WaveChannel32 _waveChannel;
+
         public PlaybackState PlayerState { get => _output.PlaybackState; }
 
-        public AudioPlayer(string filepath, float volume, bool play = false)
+        public AudioPlayer(string filepath, float volume, double position = 0)
         {
             _audioFileReader = new AudioFileReader(filepath) { Volume = volume }; //TODO: Check other options
             _output = new DirectSoundOut(200); //TODO: 200?
 
-            var wc = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
-            wc.PadWithZeroes = false;
+            _waveChannel = new WaveChannel32(_audioFileReader);
+            //_waveChannel.PadWithZeroes = false;
 
-            _output.Init(wc);
-            
-            if (play)
-                Play();
+            _output.Init(_waveChannel);
+
+            Position = position;
         }
 
         #region Play Controls
         public void Play()
         {
             if (_output != null && _output.PlaybackState == PlaybackState.Playing)
-                PositionDS = 0;
+                Position = 0;
             else
                 _output.Play();
         }
@@ -43,16 +44,15 @@ namespace NaudioWrapper
         /// </summary>
         public void Stop()
         {
-            if(_output != null)
-                _output.Stop();
+            _output.Stop();
             Dispose();
         }
 
-        public int PositionDS { get => Convert.ToInt32(_audioFileReader.CurrentTime.TotalMilliseconds)/100; set => _audioFileReader.CurrentTime = TimeSpan.FromMilliseconds(value*100); }
+        public double Position { get => _audioFileReader.CurrentTime.TotalSeconds; set => _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value); }
         
         public float Volume { get => _audioFileReader.Volume; set => _audioFileReader.Volume = value; }
 
-        public int LengthDS { get => Convert.ToInt32(_audioFileReader.TotalTime.TotalMilliseconds)/100; }
+        public double Length { get => _audioFileReader.TotalTime.TotalSeconds; }
         #endregion
 
         #region Tools
@@ -69,6 +69,11 @@ namespace NaudioWrapper
             {
                 _audioFileReader.Dispose();
                 _audioFileReader = null;
+            }
+            if(_waveChannel != null)
+            {
+                _waveChannel.Dispose();
+                _waveChannel = null;
             }
         }
         #endregion

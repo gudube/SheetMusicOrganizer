@@ -20,16 +20,17 @@
     <Color x:Key="UnclickableColor">#A7A7A7</Color>
     <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
 
-    <Color x:Key="SelectedColor">#ededed</Color>
-    <SolidColorBrush x:Key="SelectedSolidColor" Color="{StaticResource SelectedColor}"/>
+    <!--<Color x:Key="SelectedColor">#ededed</Color>
+    <SolidColorBrush x:Key="SelectedSolidColor" Color="{StaticResource SelectedColor}"/>-->
     
     <Color x:Key="SpecialColor">#0090A2</Color>
     <SolidColorBrush x:Key="SpecialSolidColor" Color="{StaticResource SpecialColor}"/>
 
     <Color x:Key="SimpleBlackColor">#000000</Color>
     <SolidColorBrush x:Key="SimpleBlackSolidColor" Color="{StaticResource SimpleBlackColor}"/>
-    
-    <SolidColorBrush x:Key="WhiteThemeBackgroundColor" Color="Beige"/>
+
+    <Color x:Key="InfoLightBGColor">Beige</Color>
+    <SolidColorBrush x:Key="InfoLightBGSolidColor" Color="{StaticResource InfoLightBGColor}"/>
     
     <!-- BACKGROUNDS -->
     <Style x:Key="PanelBackgroundLv1" TargetType="{x:Type Panel}">
@@ -71,9 +72,9 @@
     <Style x:Key="UnclickableControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
     </Style>
-    <Style x:Key="SelectedControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
+    <!--<Style x:Key="SelectedControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
         <Setter Property="Background" Value="{StaticResource SelectedSolidColor}"/>
-    </Style>
+    </Style>-->
 
     <!-- BORDER -->
     <Style x:Key="BaseBlackControl" TargetType="{x:Type Control}" BasedOn="{StaticResource ClickableTitle}">
@@ -245,12 +246,12 @@
     </Style>
     
     <!-- TEXTBLOCK -->
-    <Style x:Key="InputTextBlock" TargetType="TextBlock">
+    <Style x:Key="InputTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Height" Value="16"/>
     </Style>
-    <Style x:Key="LabelTextBlock" TargetType="TextBlock">
+    <Style x:Key="LabelTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
@@ -263,8 +264,14 @@
         <Setter Property="Margin" Value="3,0,0,0"/>
     </Style>
     
+    <Style x:Key="PopupTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Background" Value="{StaticResource InfoLightBGSolidColor}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource SimpleBlackSolidColor}"/>
+    </Style>
+    
     <!-- TEXTBOX -->
-    <Style TargetType="TextBox">
+    <Style TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"/>
         <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>

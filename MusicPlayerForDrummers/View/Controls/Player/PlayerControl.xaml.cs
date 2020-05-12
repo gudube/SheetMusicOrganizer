@@ -27,6 +27,8 @@ namespace MusicPlayerForDrummers.View
             InitializeComponent();
         }
 
+        private bool pausedForDragging = false;
+
         private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
@@ -35,6 +37,30 @@ namespace MusicPlayerForDrummers.View
             {
                 string dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
                 Process.Start("explorer.exe", @dir);
+            }
+        }
+
+        private void WaveformSeekbar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
+                return;
+            if (playerVM.IsPlaying)
+            {
+                pausedForDragging = true;
+                playerVM.PauseCommand.Execute(null);
+            }
+        }
+
+        private void WaveformSeekbar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
+                return;
+            playerVM.SeekCommand.Execute(Seekbar.Value);
+
+            if (pausedForDragging)
+            {
+                pausedForDragging = false;
+                playerVM.PlayCommand.Execute(null);
             }
         }
     }

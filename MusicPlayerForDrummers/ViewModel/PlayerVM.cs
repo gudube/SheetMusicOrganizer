@@ -17,16 +17,16 @@ namespace MusicPlayerForDrummers.ViewModel
         public PlayerVM(SessionContext session) : base(session)
         {
             Volume = 0.75f;
-            LengthDS = 20;
-            PositionDS = 0;
+            Length = 1;
+            Position = 0;
 
             PlayCommand = new DelegateCommand(Play);
             PauseCommand = new DelegateCommand(Pause);
             StopCommand = new DelegateCommand(Stop);
             NextCommand = new DelegateCommand(Next);
+            SeekCommand = new DelegateCommand(Seek);
 
-            _timer = new Timer();
-            _timer.Interval = 100;
+            _timer = new Timer(100);
             _timer.Elapsed += Timer_Elapsed;
         }
 
@@ -34,42 +34,35 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private Timer _timer;
 
-        private float _volume;
-        public float Volume { get => _volume; set { if (SetField(ref _volume, value)) Volume_PropertyChanged(); } }
-
-        private int _lengthDS;
-        public int LengthDS { get => _lengthDS; set => SetField(ref _lengthDS, value); }
-
-        private int _positionDS;
-        public int PositionDS { get => _positionDS; set { if (SetField(ref _positionDS, value)) PositionDS_PropertyChanged(); } }
-
-
         private void ResetAudioPlayer()
         {
+            _timer.Stop();
             if (_audioPlayer != null)
+            {
                 _audioPlayer.Stop();
+                _audioPlayer = null;
+            }
 
-            PositionDS = 0;
-
+            Position = 0;
             if (Session.PlayingSong == null)
             {
-                _audioPlayer = null;
-                LengthDS = 20;
+                Length = 1;
             }
             else
             {
-                _audioPlayer = new AudioPlayer(Session.PlayingSong.AudioDirectory, Volume, false);
-                _lengthDS = _audioPlayer.LengthDS;
+                _audioPlayer = new AudioPlayer(Session.PlayingSong.AudioDirectory, Volume, Position);
+                Length = _audioPlayer.Length;
+                //Play(null);
             }
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (_audioPlayer != null && _audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Playing)
-            {
+            //if (_audioPlayer != null && _audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Playing)
+            //{
                // dontUpdate = true;
-                PositionDS = _audioPlayer.PositionDS;
-            }
+                Position = _audioPlayer.Position;
+            //}
         }
 
         #region PropertyChanged
@@ -79,28 +72,25 @@ namespace MusicPlayerForDrummers.ViewModel
                 ResetAudioPlayer();
         }
 
-        private bool dontUpdate = false;
-
         private void Volume_PropertyChanged()
         {
             if (_audioPlayer != null)
                 _audioPlayer.Volume = Volume;
         }
-
-        private void PositionDS_PropertyChanged()
-        {
-            /*if (dontUpdate)
-            {
-                dontUpdate = false;
-                return;
-            }
-             
-            if(_audioPlayer != null && _audioPlayer.PositionDS != null)
-                _audioPlayer.PositionDS = PositionDS;*/
-        }
         #endregion
 
         #region Controls
+        private float _volume;
+        public float Volume { get => _volume; set { if (SetField(ref _volume, value)) Volume_PropertyChanged(); } }
+
+        private double _length;
+        public double Length { get => _length; set => SetField(ref _length, value); }
+
+        private double _position;
+        public double Position { get => _position; private set => SetField(ref _position, value); }
+
+        public bool IsPlaying { get => _audioPlayer != null && _audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Playing; }
+
         public DelegateCommand PlayCommand { get; }
         private bool CanPlay(object obj)
         {
@@ -125,9 +115,9 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (!CanPause(null))
                 return;
-
-            _audioPlayer.Pause();
+            
             _timer.Stop();
+            _audioPlayer.Pause();
         }
 
         public DelegateCommand StopCommand { get; }
@@ -139,7 +129,6 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (!CanStop(null))
                 return;
-            _timer.Stop();
             Session.PlayingSong = null;
         }   
 
@@ -154,9 +143,23 @@ namespace MusicPlayerForDrummers.ViewModel
             if (!CanNext(null))
                 return;
 
-            _audioPlayer.Stop();
             SongItem nextSong = DBHandler.FindNextSong(Session.PlayingSong.ID, Session.PlayingPlaylist.ID, Session.PlayingMasteryLevels.Select(x => x.ID).ToArray());
             Session.PlayingSong = nextSong;
+        }
+
+        public DelegateCommand SeekCommand { get; }
+        private bool CanSeek(object obj)
+        {
+            return _audioPlayer != null && _audioPlayer.PlayerState != NAudio.Wave.PlaybackState.Stopped
+                && Session.PlayingSong != null;
+        }
+        private void Seek(object obj)
+        {
+            if (!CanSeek(null))
+                return;
+
+            _position = (double)obj;
+            _audioPlayer.Position = Position;
         }
         #endregion
     }

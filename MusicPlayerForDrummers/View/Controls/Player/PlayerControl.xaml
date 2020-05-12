@@ -10,9 +10,6 @@
              BorderThickness="0,0,0,1"
              Background="{StaticResource BackgroundLv2SolidColor}"
              DataContext="{Binding PlayerVM}">
-    <UserControl.Resources>
-        <local:FloatPercentageConverter x:Key="floatPercentConverter"/>
-    </UserControl.Resources>
     <Border x:Name="PlayerBorder" Style="{StaticResource BaseBlackBorder}" BorderThickness="0,0,0,1">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -69,7 +66,22 @@
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <local:WaveformSeekbar Grid.Column="2" Minimum="0" Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.LengthDS, Mode=OneWay}" Value="{Binding ElementName=PlayerBorder, Path=DataContext.PositionDS, Mode=TwoWay}"/>
+            <local:WaveformSeekbar x:Name="Seekbar" Grid.Column="2" Minimum="0"
+                Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Length, Mode=OneWay}"
+                Value="{Binding ElementName=PlayerBorder, Path=DataContext.Position, Mode=OneWay}"
+                Thumb.DragStarted="WaveformSeekbar_DragStarted"
+                Thumb.DragCompleted="WaveformSeekbar_DragCompleted">
+                <local:WaveformSeekbar.Style>
+                    <Style TargetType="{x:Type local:WaveformSeekbar}">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Session.PlayingSong}" Value="null">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </local:WaveformSeekbar.Style>
+            </local:WaveformSeekbar>
         </Grid>
     </Border>
 </UserControl>
