@@ -366,7 +366,7 @@ namespace MusicPlayerForDrummers.Model
             return songs;
         }
 
-        public static SongItem FindNextSong(int currentSongID, int playlistID, params int[] masteryIDs)
+        private static SongItem FindPlayingSong(bool next, int currentSongID, int playlistID, params int[] masteryIDs)
         {
             SongTable songTable = new SongTable();
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
@@ -382,12 +382,22 @@ namespace MusicPlayerForDrummers.Model
                 cmd.CommandText += " FROM " + songTable.TableName + " UNION " + playlistSongTable.TableName;
                 cmd.CommandText += " WHERE " + playlistSongTable.TableName + "." + playlistSongTable.PlaylistID + " == " + playlistID;
                 cmd.CommandText += " AND " + songTable.TableName + "." + songTable.MasteryID + " IN " + "(" + string.Join(", ", masteryIDs) + ")";
-                cmd.CommandText += " AND " + songTable.TableName + "." + songTable.ID + " > " + currentSongID; //TODO: Replace with ID in playlist from playlistSongTable
+                cmd.CommandText += " AND " + songTable.TableName + "." + songTable.ID + (next ? " > " : " < ") + currentSongID; //TODO: Replace with ID in playlist from playlistSongTable
                 SqliteDataReader dataReader = cmd.ExecuteReader();
                 if (dataReader.Read())
                     return new SongItem(dataReader);
             }
             return null;
+        }
+
+        public static SongItem FindNextSong(int currentSongID, int playlistID, params int[] masteryIDs)
+        {
+            return FindPlayingSong(true, currentSongID, playlistID, masteryIDs);
+        }
+
+        public static SongItem FindPreviousSong(int currentSongID, int playlistID, params int[] masteryIDs)
+        {
+            return FindPlayingSong(false, currentSongID, playlistID, masteryIDs);
         }
 
         //we suppose the song doesnt already exist!

@@ -75,7 +75,7 @@
                     <Style TargetType="{x:Type local:WaveformSeekbar}">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Session.PlayingSong}" Value="null">
+                            <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>

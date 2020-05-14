@@ -32,10 +32,10 @@ namespace MusicPlayerForDrummers.ViewModel
         private void CreateDelegateCommands()
         {
             CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist((string)x));
-            DeleteSelectedPlaylistCommand = new DelegateCommand(x => DeleteSelectedPlaylist());
+            DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist((string)x));
-            PlaySelectedSongCommand = new DelegateCommand(x => PlaySelectedSong());
-            RemoveSelectedSongsCommand = new DelegateCommand(x => RemoveSelectedSongs());
+            PlaySelectedSongCommand = new DelegateCommand(_ => Session.SetSelectedSongPlaying());
+            RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -199,20 +199,6 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         public DelegateCommand PlaySelectedSongCommand { get; private set; }
-        public void PlaySelectedSong()
-        {
-            if (!(Session.SelectedSongs.Count > 0))
-            {
-                Trace.WriteLine("Tried to start playing a song without songs selected.");
-                return;
-            }
-            Session.PlayingSong = Session.SelectedSongs[0];
-            if (Session.SelectedPlaylist is PlaylistItem pl)
-                Session.PlayingPlaylist = pl;
-            else
-                Trace.WriteLine("Tried to start playing a song without a playlist selected.");
-            Session.PlayingMasteryLevels = Session.SelectedMasteryLevels;
-        }   
 
         public DelegateCommand RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()

@@ -15,7 +15,7 @@
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
         <DataGrid Name="Songs" Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Session.Songs}"
-                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
+                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}"/>
             </DataGrid.InputBindings>

@@ -50,7 +50,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
             CurrentViewModel = view;
             if (view == PartitionVM)
-                Session.PlayingSong = Session.SelectedSongs.FirstOrDefault();
+                Session.SetSelectedSongPlaying();
         }
         #endregion
 

@@ -44,24 +44,14 @@ namespace MusicPlayerForDrummers.View
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
-            if (playerVM.IsPlaying)
-            {
-                pausedForDragging = true;
-                playerVM.PauseCommand.Execute(null);
-            }
+            playerVM.StartedSeekCommand.Execute(null);
         }
 
         private void WaveformSeekbar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
-            playerVM.SeekCommand.Execute(Seekbar.Value);
-
-            if (pausedForDragging)
-            {
-                pausedForDragging = false;
-                playerVM.PlayCommand.Execute(null);
-            }
+            playerVM.StoppedSeekCommand.Execute(Seekbar.Value);
         }
     }
 }

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Windows.Media.Playlists;
 
@@ -43,15 +45,57 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region Playing
         private INotifyPropertyChanged _playingSong;
-        public SongItem PlayingSong { get => (SongItem)_playingSong; set => SetField(ref _playingSong, value); }
+        public SongItem PlayingSong { get => (SongItem)_playingSong; private set => SetField(ref _playingSong, value); }
 
         private INotifyPropertyChanged _playingPlaylist;
-        public PlaylistItem PlayingPlaylist { get => (PlaylistItem)_playingPlaylist; set => SetField(ref _playingPlaylist, value); }
+        public PlaylistItem PlayingPlaylist { get => (PlaylistItem)_playingPlaylist; private set => SetField(ref _playingPlaylist, value); }
 
         private SmartCollection<MasteryItem> _playingMasteryLevels;
-        public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; set => SetField(ref _playingMasteryLevels, value); }
+        public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; private set => SetField(ref _playingMasteryLevels, value); }
+
+        public void StopPlayingSong()
+        {
+            PlayingSong = null;
+            PlayingPlaylist = null;
+            PlayingMasteryLevels.Clear();
+        }
+
+        private void SetPlayingSong(SongItem song, PlaylistItem playlist, SmartCollection<MasteryItem> masteryLevels)
+        {
+            PlayingSong = song;
+            PlayingPlaylist = playlist;
+            PlayingMasteryLevels = masteryLevels;
+        }
+
+        public void SetSelectedSongPlaying()
+        {
+            if (!(this.SelectedSongs.Count > 0))
+                Trace.WriteLine("Tried to start playing a song without songs selected.");
+            else if (!(this.SelectedPlaylist is PlaylistItem pl))
+                Trace.WriteLine("Tried to start playing a song without a playlist selected.");
+            else
+            {
+                SetPlayingSong(this.SelectedSongs[0], pl, this.SelectedMasteryLevels);
+            }
+        }
+
+        public void SetNextPlayingSong()
+        {
+            SongItem next = DBHandler.FindNextSong(PlayingSong.ID, PlayingPlaylist.ID, PlayingMasteryLevels.Select(x => x.ID).ToArray());
+            if (next == null && SelectedSongs.Count > 0)
+                SetSelectedSongPlaying();
+            else
+                PlayingSong = next;
+        }
+
+        public void SetPreviousPlayingSong()
+        {
+            SongItem previous = DBHandler.FindPreviousSong(PlayingSong.ID, PlayingPlaylist.ID, PlayingMasteryLevels.Select(x => x.ID).ToArray());
+            if(previous == null && SelectedSongs.Count > 0)
+                SetSelectedSongPlaying();
+            else
+                PlayingSong = previous;
+        }
         #endregion
-
-
     }
 }

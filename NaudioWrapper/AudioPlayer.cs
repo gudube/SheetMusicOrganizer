@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.Timers;
 
 namespace NaudioWrapper
 {
@@ -8,35 +9,46 @@ namespace NaudioWrapper
         private AudioFileReader _audioFileReader;
         private DirectSoundOut _output;
         private WaveChannel32 _waveChannel;
+        private bool _stopMeansEnded = true;
+        private Timer _timer;
 
         public PlaybackState PlayerState { get => _output.PlaybackState; }
+
+        public event Action PlaybackFinished;
+        public event Action TimerElapsed;
 
         public AudioPlayer(string filepath, float volume, double position = 0)
         {
             _audioFileReader = new AudioFileReader(filepath) { Volume = volume }; //TODO: Check other options
-            _output = new DirectSoundOut(200); //TODO: 200?
+            _waveChannel = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
 
-            _waveChannel = new WaveChannel32(_audioFileReader);
-            //_waveChannel.PadWithZeroes = false;
-
+            _output = new DirectSoundOut(200);
             _output.Init(_waveChannel);
-
             Position = position;
+
+            _output.PlaybackStopped += _output_PlaybackStopped;
+
+            _timer = new Timer(500);
+            _timer.Elapsed += _timer_Elapsed;
         }
+
 
         #region Play Controls
         public void Play()
         {
-            if (_output != null && _output.PlaybackState == PlaybackState.Playing)
+            if (_output.PlaybackState == PlaybackState.Playing)
                 Position = 0;
             else
+            {
                 _output.Play();
+                _timer.Start();
+            }
         }
 
         public void Pause()
         {
-            if(_output != null)
-                _output.Pause();
+            _timer.Stop();
+            _output.Pause();
         }
 
         /// <summary>
@@ -44,8 +56,13 @@ namespace NaudioWrapper
         /// </summary>
         public void Stop()
         {
-            _output.Stop();
-            Dispose();
+            if(_output.PlaybackState != PlaybackState.Stopped)
+            {
+                _stopMeansEnded = false;
+                _timer.Stop();
+                _output.Stop();
+            }
+            //Dispose();
         }
 
         public double Position { get => _audioFileReader.CurrentTime.TotalSeconds; set => _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value); }
@@ -55,25 +72,44 @@ namespace NaudioWrapper
         public double Length { get => _audioFileReader.TotalTime.TotalSeconds; }
         #endregion
 
+        #region Events
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            TimerElapsed?.Invoke();
+        }
+
+        private void _output_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            //TODO: Find a way to make it work
+            Dispose();
+            if (_stopMeansEnded)
+            {
+                _stopMeansEnded = false;
+                PlaybackFinished?.Invoke();
+            }
+        }
+        #endregion
+
         #region Tools
         private void Dispose()
         {
-            if(_output != null)
+            if(_timer != null)
+            {
+                _timer.Elapsed -= _timer_Elapsed;
+                _timer.Dispose();
+            }
+            if (_output != null)
             {
                 if (_output.PlaybackState == PlaybackState.Playing)
                     _output.Stop();
+                _output.PlaybackStopped -= _output_PlaybackStopped;
                 _output.Dispose();
                 _output = null;
             }
-            if(_audioFileReader != null)
+            if (_audioFileReader != null)
             {
                 _audioFileReader.Dispose();
                 _audioFileReader = null;
-            }
-            if(_waveChannel != null)
-            {
-                _waveChannel.Dispose();
-                _waveChannel = null;
             }
         }
         #endregion

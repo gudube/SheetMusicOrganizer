@@ -59,7 +59,6 @@ namespace MusicPlayerForDrummers.View
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseLeftButtonDown(e);
-
             //https://stackoverflow.com/questions/2909862/slider-does-not-drag-in-combination-with-ismovetopointenabled-behaviour
             // It's important to check `track.Thumb.IsMouseOver`, because if it's `true` then
             // the Thumb will already have its `OnMouseLeftButtonDown` method called - there's
