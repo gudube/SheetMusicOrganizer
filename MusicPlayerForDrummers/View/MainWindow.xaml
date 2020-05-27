@@ -26,6 +26,7 @@
         <Menu Grid.Row="0" Height="20">
             <MenuItem Header="File">
                 <MenuItem Header="Add New Song" Click="AddNewSongMenuItem_Click"/>
+                <MenuItem Header="Open Folder" Click="OpenFolderMenuItem_Click"/>
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>

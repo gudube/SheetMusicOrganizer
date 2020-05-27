@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
@@ -39,6 +40,11 @@ namespace MusicPlayerForDrummers.View
         private void AddNewSongButton_Click(object sender, RoutedEventArgs e)
         {
             WindowManager.OpenAddNewSongWindow();
+        }
+
+        private void AddFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenOpenFolderWindow();
         }
 
         //TODO: Be able to copy paste songs between playlists

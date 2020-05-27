@@ -140,7 +140,13 @@ namespace MusicPlayerForDrummers.View
 
             if (!string.IsNullOrWhiteSpace(Song.PartitionDirectory) && !string.IsNullOrWhiteSpace(TitleText))
             {
-                if (mainVM.IsSongExisting(Song.PartitionDirectory))
+                UpdateSongFromInformations();
+
+                if (mainVM.AddSong(Song))
+                {
+                    this.Close();
+                }
+                else
                 {
                     string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
                     GenericWindow songExistingWindow = new GenericWindow(message, "Go To Song");
@@ -151,12 +157,6 @@ namespace MusicPlayerForDrummers.View
                         mainVM.GoToSong(Song.PartitionDirectory);
                         this.Close();
                     }
-                }
-                else
-                {
-                    UpdateSongFromInformations();
-                    mainVM.AddNewSong(Song);
-                    this.Close();
                 }
             }
         }

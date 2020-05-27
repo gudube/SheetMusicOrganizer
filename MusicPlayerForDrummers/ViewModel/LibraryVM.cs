@@ -11,6 +11,7 @@ using System.Linq;
 using MusicPlayerForDrummers.Model.Tools;
 using System.ComponentModel;
 using Windows.Media.Playlists;
+using System.IO;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -183,7 +184,18 @@ namespace MusicPlayerForDrummers.ViewModel
                 Session.Songs.Reset(DBHandler.GetSongs(Session.SelectedPlaylist.ID, masteryIDs));
         }
 
-        public void AddNewSong(SongItem song)
+        public bool AddSong(SongItem song)
+        {
+            if (!DBHandler.IsSongExisting(song.PartitionDirectory))
+            {
+                AddNewSong(song);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void AddNewSong(SongItem song)
         {
             if (Session.SelectedMasteryLevels.Count == 0)
                 song.MasteryID = Session.MasteryLevels[0].ID;
@@ -196,6 +208,53 @@ namespace MusicPlayerForDrummers.ViewModel
                 DBHandler.AddSong(song);
 
             Session.Songs.Add(song);
+        }
+
+        //TODO: Add advanced options (like import music sheet only, audio only or both)
+        //TODO: Add update existing songs (music sheet or audio) vs skip existing songs
+        public void AddFolder(string dir, bool recursive, bool useAudioMD)
+        {
+            if (recursive)
+            {
+                foreach (string subDir in Directory.GetDirectories(dir))
+                {
+                    AddFolder(subDir, recursive, useAudioMD);
+                }
+            }
+
+            List<string> partitionFiles = new List<string>();
+            List<string> audioFiles = new List<string>();
+            foreach (string fileDir in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(fileDir);
+                if (ext == ".pdf")
+                    partitionFiles.Add(fileDir);
+                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
+                    audioFiles.Add(fileDir);
+            }
+
+            if(partitionFiles.Count == 1 && audioFiles.Count == 1)
+            {
+                AddSong(new SongItem(partitionFiles[0], audioFiles[0], 0, useAudioMD));
+            }
+            else
+            {
+                foreach(string partition in partitionFiles) //TODO: More performance way to do it?
+                {
+                    bool audioFound = false;
+                    foreach(string audio in audioFiles)
+                    {
+                        if (Path.GetFileNameWithoutExtension(partition) == Path.GetFileNameWithoutExtension(audio))
+                        {
+                            AddSong(new SongItem(partition, audio, 0, useAudioMD));
+                            audioFound = true;
+                            break;
+                        }
+                    }
+                    if(!audioFound)
+                        AddSong(new SongItem(partition));
+                }
+            }
         }
 
         public DelegateCommand PlaySelectedSongCommand { get; private set; }

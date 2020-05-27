@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using ATL.AudioData;
 using ATL;
+using System.IO;
 
 namespace MusicPlayerForDrummers.Model
 {
@@ -60,15 +61,19 @@ namespace MusicPlayerForDrummers.Model
         public MasteryItem Mastery { get => DBHandler.MasteryDic[MasteryID]; }
         #endregion
 
-        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryID = 0) : base()
+        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryID = 0, bool useAudioMD = true) : base()
         {
             PartitionDirectory = partitionDir;
             AudioDirectory = audioDirectory;
             MasteryID = masteryID;
 
-            if (!string.IsNullOrWhiteSpace(audioDirectory))
+            if (useAudioMD && !string.IsNullOrWhiteSpace(audioDirectory))
             {
                 ReadAudioMetadata();
+            }
+            else
+            {
+                Title = Path.GetFileNameWithoutExtension(partitionDir);
             }
         }
 

@@ -55,11 +55,6 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Menu
-        public bool IsSongExisting(string partitionFilename)
-        {
-            return DBHandler.IsSongExisting(partitionFilename);
-        }
-
         public void GoToSong(string partitionFilename)
         {
             SongItem song = DBHandler.GetSong(partitionFilename);
@@ -67,11 +62,16 @@ namespace MusicPlayerForDrummers.ViewModel
             LibraryVM.GoToSong(song);
         }
 
-        public void AddNewSong(SongItem song)
+        public bool AddSong(SongItem song)
         {
-            LibraryVM.AddNewSong(song);
-            SetView(LibraryVM);
-            LibraryVM.GoToSong(song);
+            if (LibraryVM.AddSong(song))
+            {
+                SetView(LibraryVM);
+                LibraryVM.GoToSong(song);
+                return true;
+            }
+
+            return false;
         }
 
         

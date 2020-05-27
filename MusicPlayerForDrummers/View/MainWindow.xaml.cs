@@ -1,4 +1,5 @@
-﻿using MusicPlayerForDrummers.ViewModel;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Windows;
 
@@ -17,7 +18,12 @@ namespace MusicPlayerForDrummers.View
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow();
+            WindowManager.OpenAddNewSongWindow(); //TODO: Add update button when song already existing
+        }
+
+        private void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenOpenFolderWindow();
         }
     }
 }
