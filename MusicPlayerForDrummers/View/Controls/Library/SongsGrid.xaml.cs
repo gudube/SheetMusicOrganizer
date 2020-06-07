@@ -6,11 +6,13 @@ using MusicPlayerForDrummers.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -29,7 +31,21 @@ namespace MusicPlayerForDrummers.View
         public SongsGrid()
         {
             InitializeComponent();
-            DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
+            DataContextChanged += SongsGrid_DataContextChanged;
+        }
+
+        private void SongsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
+            if(DataContext is LibraryVM libraryVM)
+                libraryVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
+        }
+
+        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if(DataContext is LibraryVM libraryVM && Songs != null)
+            (Songs.ItemsSource as ListCollectionView).Filter = new Predicate<object>(x =>
+                                                  libraryVM.Session.SelectedMasteryLevels.Any(mastery => mastery.ID == ((SongItem)x).MasteryID));
         }
 
         //TODO: Accept drag-and-drop
@@ -56,6 +72,32 @@ namespace MusicPlayerForDrummers.View
             {
                 ((LibraryVM)this.DataContext).RemoveSelectedSongsCommand.Execute(null);
             }
+        }
+
+        //TODO: Add drag and drop song to reorder it
+
+        //TODO: Save new order to database
+        //TODO: Add SortDescriptions in First place instead of clearing everything
+        private void Songs_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            ListCollectionView source = (sender as DataGrid).ItemsSource as ListCollectionView;
+            if (source == null)
+            {
+                return;
+            }
+
+            DataGridColumn column = e.Column;
+            ListSortDirection direction = e.Column.SortDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+            //ListCollectionView lcv = (ListCollectionView)CollectionViewSource.GetDefaultView(Songs);
+
+            using (source.DeferRefresh())
+            {
+                source.SortDescriptions.Clear();
+                source.SortDescriptions.Add(new SortDescription(column.Header.ToString(), direction));
+            }
+            source.Refresh();
+            column.SortDirection = direction;
+            e.Handled = true;
         }
     }
 }

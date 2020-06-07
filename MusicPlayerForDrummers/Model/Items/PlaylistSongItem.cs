@@ -13,10 +13,14 @@ namespace MusicPlayerForDrummers.Model
         private int _songID;
         public int SongID { get => _songID; set => SetField(ref _songID, value); }
 
-        public PlaylistSongItem(int playlistID, int songID) : base()
+        private int _previousID;
+        public int PreviousID { get => _previousID; set => SetField(ref _previousID, value); }
+
+        public PlaylistSongItem(int playlistID, int songID, int previousID = -1) : base()
         {
             PlaylistID = playlistID;
             SongID = songID;
+            PreviousID = previousID;
         }
 
         public PlaylistSongItem(SqliteDataReader dataReader) : base(dataReader)
@@ -24,11 +28,12 @@ namespace MusicPlayerForDrummers.Model
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
             PlaylistID = (int) GetSafeInt(dataReader, playlistSongTable.PlaylistID.Name);
             SongID = (int) GetSafeInt(dataReader, playlistSongTable.SongID.Name);
+            PreviousID = (int) GetSafeInt(dataReader, playlistSongTable.PreviousID.Name);
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { PlaylistID, SongID };
+            return new object[] { PlaylistID, SongID, PreviousID };
         }
     }
 }

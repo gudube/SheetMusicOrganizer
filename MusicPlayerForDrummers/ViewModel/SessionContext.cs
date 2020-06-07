@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
 using Windows.Media.Playlists;
 
 namespace MusicPlayerForDrummers.ViewModel
@@ -25,6 +26,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public INotifyPropertyChanged _selectedPlaylist;
         public BaseModelItem SelectedPlaylist { get => (BaseModelItem) _selectedPlaylist; set => SetField(ref _selectedPlaylist, value); }
+
+        public int AllMusicPlaylistID { get => DBHandler.ALLMUSIC_PL_ID; }
         #endregion
 
         #region Mastery Levels
@@ -36,8 +39,8 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Songs
-        private SmartCollection<SongItem> _songs = new SmartCollection<SongItem>();
-        public SmartCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
+        private SmartCollection<SongItem> songsInPlaylist = new SmartCollection<SongItem>();
+        public SmartCollection<SongItem> SongsInPlaylist { get => songsInPlaylist; set => SetField(ref songsInPlaylist, value); }
 
         private SmartCollection<SongItem> _selectedSongs = new SmartCollection<SongItem>();
         public SmartCollection<SongItem> SelectedSongs { get => _selectedSongs; set => SetField(ref _selectedSongs, value); }

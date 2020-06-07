@@ -16,7 +16,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DBHandler.InitializeDatabase();
+            DBHandler.InitializeDatabase(true);
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);

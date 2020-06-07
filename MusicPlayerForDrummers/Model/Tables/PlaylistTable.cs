@@ -15,7 +15,7 @@ namespace MusicPlayerForDrummers.Model
         
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { Name, IsLocked, IsSmart, SmartDir };
+            return new SqlColumn[] { Name, IsLocked, IsSmart, SmartDir, PreviousID };
         }
 
         #region Custom Columns
@@ -26,6 +26,8 @@ namespace MusicPlayerForDrummers.Model
         public readonly SqlColumn IsSmart = new SqlColumn("IsSmart", EType.BOOL);
         
         public readonly SqlColumn SmartDir = new SqlColumn("SmartDir", EType.TEXT);
+
+        public readonly SqlColumn PreviousID = new SqlColumn("PreviousID", EType.INT);
         #endregion
     }
 }
