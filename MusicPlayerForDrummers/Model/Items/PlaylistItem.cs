@@ -22,25 +22,21 @@ namespace MusicPlayerForDrummers.Model
         private string _smartDir;
         public string SmartDir { get => _smartDir; set => SetField(ref _smartDir, value); }
 
-        private int _previousID;
-        public int PreviousID { get => _previousID; set => SetField(ref _previousID, value); }
-
-        public PlaylistItem(string name, bool locked = false, int previousID = -1) : base()
+        public PlaylistItem(string name, bool locked = false) : base()
         {
             Name = name;
             IsLocked = locked;
             IsSmart = false;
             SmartDir = "";
-            PreviousID = previousID;
         }
-        /*
+
         public PlaylistItem(string name, string smartDir, bool locked = false) : base()
         {
             Name = name;
             IsLocked = locked;
             IsSmart = true;
             SmartDir = smartDir;
-        }*/
+        }
 
         public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
         {
@@ -49,12 +45,11 @@ namespace MusicPlayerForDrummers.Model
             IsLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
             IsSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
             SmartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
-            PreviousID = (int) GetSafeInt(dataReader, playlistTable.PreviousID.Name);
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { Name, IsLocked, IsSmart, SmartDir, PreviousID };
+            return new object[] { Name, IsLocked, IsSmart, SmartDir };
         }
     }
 

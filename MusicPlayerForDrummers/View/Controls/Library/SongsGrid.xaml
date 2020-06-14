@@ -12,20 +12,13 @@
         <local:RatingConverter x:Key="ratingConverter"/>
         <local:HexColorConverter x:Key="hexColorConverter"/>
         <local:DirFilenameConverter x:Key="dirFilenameConverter"/>
-        <CollectionViewSource x:Key="ShownSongsView" Source="{Binding Session.SongsInPlaylist}"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid x:Name="Songs" Grid.Column="2" ItemsSource="{Binding Source={StaticResource ShownSongsView}}"
-                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown"
-                  Sorting="Songs_Sorting">
+        <DataGrid Name="Songs" Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Session.Songs}"
+                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}"/>
             </DataGrid.InputBindings>
-            <!--<DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
-                    <EventSetter Event="Click" Handler="DataGridColumnHeader_Click"/>
-                </Style>
-            </DataGrid.ColumnHeaderStyle>-->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Number}" MinWidth="10" Width="25" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Title" Binding="{Binding Title}" MinWidth="40" Width="190" ElementStyle="{StaticResource DataGridText}"/>

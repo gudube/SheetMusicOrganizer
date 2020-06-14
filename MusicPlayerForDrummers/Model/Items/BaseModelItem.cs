@@ -2,9 +2,7 @@
 using MusicPlayerForDrummers.Model.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Windows.Markup;
 
 namespace MusicPlayerForDrummers.Model
 {
@@ -23,17 +21,6 @@ namespace MusicPlayerForDrummers.Model
         public int ID { get => _iD; set => SetField(ref _iD, value); }
 
         abstract public object[] GetCustomValues();
-
-        //TODO: Find a way to enforce the BaseModelItem to be the same type
-        public void Update(BaseModelItem updatedItem)
-        {
-            object[] values = GetCustomValues();
-            object[] updatedValues = updatedItem.GetCustomValues();
-            for(int i = 0; i < values.Count(); i++)
-            {
-                values[i] = updatedValues[i];
-            }
-        }
 
         protected string GetSafeString(SqliteDataReader dR, string colName)
         {
