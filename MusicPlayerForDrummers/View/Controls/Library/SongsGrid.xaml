@@ -15,7 +15,7 @@
         <CollectionViewSource x:Key="ShownSongsView" Source="{Binding Session.SongsInPlaylist}"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid x:Name="SongsDG" Grid.Column="2" ItemsSource="{Binding Source={StaticResource ShownSongsView}}"
+        <DataGrid x:Name="Songs" Grid.Column="2" ItemsSource="{Binding Source={StaticResource ShownSongsView}}"
                   SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown"
                   Sorting="Songs_Sorting">
             <DataGrid.InputBindings>
