@@ -32,19 +32,30 @@ namespace MusicPlayerForDrummers.View
         {
             InitializeComponent();
             DataContextChanged += SongsGrid_DataContextChanged;
+            UserSettings.Default.SortDescriptions = new List<(string, int)>();
+            foreach(string colName in UserSettings.Default.ColumnSorts)
+            {
+                DataGridColumn column = SongsDG.Columns.FirstOrDefault(x => String.Equals(x.Header, colName))
+                if (column != null)
+                {
+                    (SongsDG.ItemsSource as ListCollectionView).SortDescriptions.Add(new SortDescription(column.Header.ToString(), direction))
+                }
+
+            }
+
         }
 
         private void SongsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
+            BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, SongsDG, SongsDG.SelectedItems);
             if(DataContext is LibraryVM libraryVM)
                 libraryVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
         }
 
         private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if(DataContext is LibraryVM libraryVM && Songs != null)
-            (Songs.ItemsSource as ListCollectionView).Filter = new Predicate<object>(x =>
+            if(DataContext is LibraryVM libraryVM && SongsDG != null)
+            (SongsDG.ItemsSource as ListCollectionView).Filter = new Predicate<object>(x =>
                                                   libraryVM.Session.SelectedMasteryLevels.Any(mastery => mastery.ID == ((SongItem)x).MasteryID));
         }
 
@@ -90,8 +101,10 @@ namespace MusicPlayerForDrummers.View
             ListSortDirection direction = e.Column.SortDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
             //ListCollectionView lcv = (ListCollectionView)CollectionViewSource.GetDefaultView(Songs);
 
+
             using (source.DeferRefresh())
             {
+                if(source.SortDescriptions.Contains)
                 source.SortDescriptions.Clear();
                 source.SortDescriptions.Add(new SortDescription(column.Header.ToString(), direction));
             }
