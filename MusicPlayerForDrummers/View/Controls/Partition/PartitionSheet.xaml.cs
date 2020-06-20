@@ -28,8 +28,17 @@ namespace MusicPlayerForDrummers.View
         public PartitionSheet()
         {
             InitializeComponent();
-            DataContextChanged += (sender, args) => { if (DataContext != null) PlayingSong_PropertyChanged(((PartitionVM)DataContext).Session.PlayingSong); };
-            DataContextChanged += (sender, args) => { if (DataContext != null) ((PartitionVM)DataContext).Session.PropertyChanged += Session_PropertyChanged; };
+            DataContextChanged += PartitionSheet_DataContextChanged;
+        }
+
+        private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM) {
+                PlayingSong_PropertyChanged(partitionVM.Session.PlayingSong);
+                partitionVM.Session.PropertyChanged += Session_PropertyChanged;
+                partitionVM.Session.PlayerTimerUpdate += TimerUpdate;
+            }
+
         }
 
         private void Session_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -103,5 +112,10 @@ namespace MusicPlayerForDrummers.View
             return image;
         }
         #endregion
+
+        private void TimerUpdate()
+        {
+            Scrollbar.ScrollToVerticalOffset(Scrollbar.VerticalOffset + 10);
+        }
     }
 }
