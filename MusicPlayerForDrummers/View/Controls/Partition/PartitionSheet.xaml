@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer x:Name="Scrollbar" PanningMode="Both">
+    <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
+                  HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Auto">
         <ItemsControl x:Name="PagesContainer"/>
     </ScrollViewer>
 </UserControl>
