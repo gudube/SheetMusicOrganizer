@@ -36,8 +36,15 @@ namespace MusicPlayerForDrummers.View
             if (DataContext is PartitionVM partitionVM) {
                 PlayingSong_PropertyChanged(partitionVM.Session.PlayingSong);
                 partitionVM.Session.PropertyChanged += Session_PropertyChanged;
-                partitionVM.Session.PlayerTimerUpdate += TimerUpdate;
+                //partitionVM.Session.PlayerTimerUpdate += TimerUpdate;
+                partitionVM.Session.Player.PropertyChanged += Player_PropertyChanged;
             }
+        }
+        
+        private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && e.PropertyName == nameof(partitionVM.Session.Player.Position))
+                UpdateScrollPos();
 
         }
 
@@ -113,9 +120,14 @@ namespace MusicPlayerForDrummers.View
         }
         #endregion
 
-        private void TimerUpdate()
+        private void UpdateScrollPos()
         {
-            Scrollbar.ScrollToVerticalOffset(Scrollbar.VerticalOffset + 10);
+            if (DataContext is PartitionVM partitionVM)
+            {
+                double scrollPos = partitionVM.Session.Player.Position / partitionVM.Session.Player.Length;
+                scrollPos *= Scrollbar.ScrollableHeight;
+                Scrollbar.ScrollToVerticalOffset(scrollPos);
+            }
         }
     }
 }

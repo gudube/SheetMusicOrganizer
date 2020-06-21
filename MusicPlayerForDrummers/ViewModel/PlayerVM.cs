@@ -78,7 +78,7 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand StoppedSeekCommand { get; }
         private void StoppedSeek(object obj)
         {
-            Session.Player.Position = (double)obj;
+            //Session.Player.Position = (double)obj;
 
             if (_resumePlaying)
                 Session.Player.Play();

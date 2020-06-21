@@ -52,7 +52,7 @@ namespace NaudioWrapper
                 if (_audioFileReader != null)
                 {
                     _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value);
-                    //OnPropertyChanged(nameof(Position));
+                    OnPropertyChanged(nameof(Position));
                 }
             }
         }

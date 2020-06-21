@@ -18,8 +18,8 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public SessionContext()
         {
-            _timer = new DispatcherTimer(DispatcherPriority.Normal);
-            _timer.Interval = TimeSpan.FromMilliseconds(100);
+            _timer = new DispatcherTimer(DispatcherPriority.Render);
+            _timer.Interval = TimeSpan.FromMilliseconds(50);
             _timer.Tick += (sender, e) => PlayerTimerUpdate();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
 
