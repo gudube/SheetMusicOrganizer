@@ -62,13 +62,13 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5,0"/>
-                    <Slider Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Volume}" VerticalAlignment="Top" IsMoveToPointEnabled="True"/>
+                    <Slider Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=OneWay}" VerticalAlignment="Top" IsMoveToPointEnabled="True"/>
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
             <local:WaveformSeekbar x:Name="Seekbar" Grid.Column="2" Minimum="0"
-                Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Length, Mode=OneWay}"
-                Value="{Binding ElementName=PlayerBorder, Path=DataContext.Position, Mode=OneWay}"
+                Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
+                Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
                 Thumb.DragStarted="WaveformSeekbar_DragStarted"
                 Thumb.DragCompleted="WaveformSeekbar_DragCompleted">
                 <local:WaveformSeekbar.Style>

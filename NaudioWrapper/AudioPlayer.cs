@@ -1,115 +1,154 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Timers;
 
 namespace NaudioWrapper
 {
-    public class AudioPlayer
+    public class AudioPlayer : BaseNotifyPropertyChanged
     {
         private AudioFileReader _audioFileReader;
-        private DirectSoundOut _output;
-        private WaveChannel32 _waveChannel;
+        //private DirectSoundOut _output;
+        private WaveOutEvent _output;
+        //private WaveChannel32 _waveChannel;
         private bool _stopMeansEnded = true;
-        private Timer _timer;
-
-        public PlaybackState PlayerState { get => _output.PlaybackState; }
 
         public event Action PlaybackFinished;
-        public event Action TimerElapsed;
+        public event Action PlaybackStarting;
+        public event Action PlaybackStopping;
 
-        public AudioPlayer(string filepath, float volume, double position = 0)
+        public AudioPlayer(float volume)
         {
-            _audioFileReader = new AudioFileReader(filepath) { Volume = volume }; //TODO: Check other options
-            _waveChannel = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
-
-            _output = new DirectSoundOut(200);
-            _output.Init(_waveChannel);
-            Position = position;
-
-            _output.PlaybackStopped += _output_PlaybackStopped;
-
-            _timer = new Timer(500);
-            _timer.Elapsed += _timer_Elapsed;
+            Volume = volume;
         }
 
+        public void SetSong(string filepath)
+        {
+            //bool resumePlaying = false;
+            if (_output != null){
+                //    resumePlaying = _output.PlaybackState == PlaybackState.Playing;
+                Stop();
+            }
+
+            _output = new WaveOutEvent();
+            _output.PlaybackStopped += _output_PlaybackStopped;
+            _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume }; //TODO: Check other options
+            //_waveChannel = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
+            //_output = new DirectSoundOut(200);
+            //_output.Init(_waveChannel);
+            _output.Init(_audioFileReader);
+
+            OnPropertyChanged(nameof(Position));
+            OnPropertyChanged(nameof(Length));
+
+            //if (resumePlaying)
+                Play();
+        }
+
+        #region Properties
+        public double Position
+        {
+            get => _audioFileReader == null ? 0 : _audioFileReader.CurrentTime.TotalSeconds;
+            set
+            {
+                if (_audioFileReader != null)
+                {
+                    _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value);
+                    OnPropertyChanged(nameof(Position));
+                }
+            }
+        }
+
+        private float _volume;
+        public float Volume { get => _volume; set { if (SetField(ref _volume, value) && _audioFileReader != null) _audioFileReader.Volume = value; } }
+
+        public double Length { get => _audioFileReader == null ? 1 : _audioFileReader.TotalTime.TotalSeconds; }
+        #endregion
 
         #region Play Controls
         public void Play()
         {
+            if (_output == null)
+                return;
+
             if (_output.PlaybackState == PlaybackState.Playing)
                 Position = 0;
             else
             {
                 _output.Play();
-                _timer.Start();
+                PlaybackStarting();
             }
         }
 
-        public void Pause()
+        public bool Pause(bool force = false)
         {
-            _timer.Stop();
-            _output.Pause();
+            if (_output == null)
+                return false;
+
+            bool isPlaying = _output.PlaybackState == PlaybackState.Playing;
+
+            if (force || isPlaying)
+            {
+                PlaybackStopping();
+                _output.Pause();
+            }
+            else if (_output.PlaybackState == PlaybackState.Paused)
+                Play();
+
+            return isPlaying;
         }
 
-        /// <summary>
-        /// Stops the AudioPlayer entirely. Should not use the same AudioPlayer instance after.
-        /// </summary>
-        public void Stop()
+        //Soft clears the buffer but doesn't dispose anything. Usefull when changing position in song.
+        public bool Stop(bool soft = false)
         {
-            if(_output.PlaybackState != PlaybackState.Stopped)
+            if (_output == null)
+                return false;
+
+            bool isPlaying = _output.PlaybackState == PlaybackState.Playing;
+
+            if (_output.PlaybackState != PlaybackState.Stopped)
             {
                 _stopMeansEnded = false;
-                _timer.Stop();
+                PlaybackStopping();
                 _output.Stop();
             }
-            //Dispose();
+            if(!soft)
+                DisposeOutput();
+
+            return isPlaying;
         }
 
-        public double Position { get => _audioFileReader.CurrentTime.TotalSeconds; set => _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value); }
-        
-        public float Volume { get => _audioFileReader.Volume; set => _audioFileReader.Volume = value; }
-
-        public double Length { get => _audioFileReader.TotalTime.TotalSeconds; }
         #endregion
 
         #region Events
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            TimerElapsed?.Invoke();
-        }
-
         private void _output_PlaybackStopped(object sender, StoppedEventArgs e)
         {
             //TODO: Find a way to make it work
-            Dispose();
             if (_stopMeansEnded)
             {
                 _stopMeansEnded = false;
-                PlaybackFinished?.Invoke();
+                PlaybackFinished();
             }
         }
         #endregion
 
         #region Tools
-        private void Dispose()
+        private void DisposeOutput()
         {
-            if(_timer != null)
+            if (_output != null && _output.PlaybackState == PlaybackState.Playing)
             {
-                _timer.Elapsed -= _timer_Elapsed;
-                _timer.Dispose();
+                PlaybackStopping();
+                _output.Stop();
             }
-            if (_output != null)
-            {
-                if (_output.PlaybackState == PlaybackState.Playing)
-                    _output.Stop();
-                _output.PlaybackStopped -= _output_PlaybackStopped;
-                _output.Dispose();
-                _output = null;
-            }
+
             if (_audioFileReader != null)
             {
                 _audioFileReader.Dispose();
                 _audioFileReader = null;
+            }
+
+            if (_output != null)
+            {
+                _output.Dispose();
+                _output = null;
             }
         }
         #endregion

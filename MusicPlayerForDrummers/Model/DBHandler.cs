@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Windows;
 using System.Linq;
+using System.Reflection;
 
 namespace MusicPlayerForDrummers.Model
 {
@@ -16,8 +17,11 @@ namespace MusicPlayerForDrummers.Model
 
         #region Init
         //TODO: Change Database Dir when exporting .exe
-        private const string _databaseFile = @"C:\Users\Guilhem\Documents\Ecole\Ecole\Private\Project\Application.sqlite";
-        private const string _dataSource = "Data Source = " + _databaseFile;
+        private readonly static string _databaseDir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data");
+        private readonly static string _databaseFileName = "Application.sqlite";
+        private readonly static string _databaseFile = Path.Combine(_databaseDir, _databaseFileName);
+        //private const string _databaseFile = @"C:\Users\Guilhem\Documents\Ecole\Ecole\Private\Project\Application.sqlite";
+        private readonly static string _dataSource = "Data Source = " + _databaseFile;
         private static SqliteTransaction _transaction;
 
         public static void InitializeDatabase(bool forceResetDatabase = false)
@@ -26,6 +30,7 @@ namespace MusicPlayerForDrummers.Model
             //TODO: Add a button to reset the database with warning that it will reset the software's content
             if (!File.Exists(_databaseFile) || forceResetDatabase)
             {
+                Directory.CreateDirectory(_databaseDir);
                 File.Create(_databaseFile).Close();
                 CreateTables();
             }

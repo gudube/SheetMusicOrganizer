@@ -12,8 +12,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public PlayerVM(SessionContext session) : base(session)
         {
-            Volume = 0.75f;
-
             PlayCommand = new DelegateCommand(Play);
             PauseCommand = new DelegateCommand(Pause);
             StopCommand = new DelegateCommand(Stop);
@@ -22,69 +20,11 @@ namespace MusicPlayerForDrummers.ViewModel
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
         }
 
-        private AudioPlayer _audioPlayer;
-
-        #region PropertyChanged
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Session.PlayingSong))
-            {
-                ResetAudioPlayer();
-                if (_silentSetPlayingSong)
-                    _silentSetPlayingSong = false;
-                else
-                    _audioPlayer.Play();
-            }
         }
-
-        private void ResetAudioPlayer()
-        {
-            if (_audioPlayer != null)
-            {
-                _audioPlayer.PlaybackFinished -= PlaybackFinished;
-                _audioPlayer.TimerElapsed -= TimerUpdate;
-                _audioPlayer.Stop();
-                _audioPlayer = null;
-            }
-
-            if (Session.PlayingSong != null)
-            {
-                _audioPlayer = new AudioPlayer(Session.PlayingSong.AudioDirectory, Volume, Position);
-                _audioPlayer.PlaybackFinished += PlaybackFinished;
-                _audioPlayer.TimerElapsed += TimerUpdate;
-            }
-            OnPropertyChanged(nameof(Length));
-            OnPropertyChanged(nameof(Position));
-        }
-
-        private void PlaybackFinished()
-        {
-            Next(null);
-        }
-
-        private void Volume_PropertyChanged()
-        {
-            if (_audioPlayer != null)
-                _audioPlayer.Volume = Volume;
-        }
-
-        private void TimerUpdate()
-        {
-            if (Session.PlayingSong != null)
-            {
-                OnPropertyChanged("Position");
-            }
-        }
-        #endregion
 
         #region Controls
-        private float _volume;
-        public float Volume { get => _volume; set { if (SetField(ref _volume, value)) Volume_PropertyChanged(); } }
-
-        public double Length { get => _audioPlayer == null ? 1 : _audioPlayer.Length; }
-
-        public double Position { get => _audioPlayer == null ? 0 : _audioPlayer.Position; }
-
         public DelegateCommand PlayCommand { get; }
         //Playing song playing? play from beginning
         //Playing song paused? unpause
@@ -94,7 +34,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (Session.PlayingSong != null)
             {
-                _audioPlayer.Play();
+                Session.Player.Play();
             }
             else if (Session.SelectedSongs.Count > 0)
             {
@@ -108,17 +48,7 @@ namespace MusicPlayerForDrummers.ViewModel
         //No playing song? do nothing
         private void Pause(object obj)
         {
-            if (Session.PlayingSong == null)
-                return;
-            
-            if (_audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Playing)
-            {
-                _audioPlayer.Pause();
-            }
-            else if(_audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Paused)
-            {
-                _audioPlayer.Play();
-            }
+            Session.Player.Pause();
         }
 
         public DelegateCommand StopCommand { get; }
@@ -142,36 +72,16 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand StartedSeekCommand { get; }
         private void StartedSeek(object obj)
         {
-            if(_audioPlayer.PlayerState == NAudio.Wave.PlaybackState.Playing)
-            {
-                _resumePlaying = true;
-                _audioPlayer.Pause();
-            }
-            else
-            {
-                _resumePlaying = false;
-            }
+            _resumePlaying = Session.Player.Stop(true);
         }
 
         public DelegateCommand StoppedSeekCommand { get; }
         private void StoppedSeek(object obj)
         {
-            _audioPlayer.Position = (double)obj;
+            //Session.Player.Position = (double)obj;
 
             if (_resumePlaying)
-                _audioPlayer.Play();
-        }
-        #endregion
-
-        #region Tools
-        private bool _silentSetPlayingSong = false;
-        /// <summary>
-        /// Usually, use Session.PlaySelectedSong as it plays the song afterwards.
-        /// However, for a few cases, this method sets the playing song without playing it.
-        /// </summary>
-        public void SilentSetPlayingSong()
-        {
-            _silentSetPlayingSong = true;
+                Session.Player.Play();
         }
         #endregion
     }

@@ -26,9 +26,6 @@ namespace MusicPlayerForDrummers.View
         {
             InitializeComponent();
         }
-
-        private bool pausedForDragging = false;
-
         private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))

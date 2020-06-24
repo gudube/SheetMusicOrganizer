@@ -251,8 +251,8 @@ namespace MusicPlayerForDrummers.ViewModel
                             break;
                         }
                     }
-                    if(!audioFound)
-                        AddSong(new SongItem(partition));
+                    //if(!audioFound)
+                    //    AddSong(new SongItem(partition)); //todo: Make this work eventually
                 }
             }
         }

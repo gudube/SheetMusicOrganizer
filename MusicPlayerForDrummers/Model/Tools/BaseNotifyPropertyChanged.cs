@@ -26,7 +26,7 @@ namespace MusicPlayerForDrummers.Model.Tools
             OnPropertyChanged(propertyName);
             return true;
         }
-        protected virtual bool SetField(ref INotifyPropertyChanged field, INotifyPropertyChanged value, [CallerMemberName]string propertyName = null)
+        /*protected virtual bool SetField(ref INotifyPropertyChanged field, INotifyPropertyChanged value, [CallerMemberName]string propertyName = null)
         {
             if (field == value)
                 return false;
@@ -75,6 +75,6 @@ namespace MusicPlayerForDrummers.Model.Tools
             var prop = GetType().GetProperty(property).GetValue(this);
             if (prop != null)
                 ((INotifyPropertyChanged)prop).PropertyChanged -= handler;
-        }
+        }*/
     }
 }

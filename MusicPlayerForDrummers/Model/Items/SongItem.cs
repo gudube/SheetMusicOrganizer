@@ -53,7 +53,11 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
+        private int _scrollStartTime;
+        public int ScrollStartTime { get => _scrollStartTime; set { if (SetField(ref _scrollStartTime, value)) DBHandler.UpdateSong(this); } }
 
+        private int _scrollEndTime;
+        public int ScrollEndTime { get => _scrollEndTime; set { if (SetField(ref _scrollEndTime, value)) DBHandler.UpdateSong(this); } }
         #endregion
 
         #region Other Properties
@@ -63,9 +67,9 @@ namespace MusicPlayerForDrummers.Model
 
         public SongItem(string partitionDir = "", string audioDirectory = "", int masteryID = 0, bool useAudioMD = true) : base()
         {
-            PartitionDirectory = partitionDir;
-            AudioDirectory = audioDirectory;
-            MasteryID = masteryID;
+            _partitionDirectory = partitionDir;
+            _audioDirectory = audioDirectory;
+            _masteryID = masteryID;
 
             if (useAudioMD && !string.IsNullOrWhiteSpace(audioDirectory))
             {
@@ -73,25 +77,30 @@ namespace MusicPlayerForDrummers.Model
             }
             else
             {
-                Title = Path.GetFileNameWithoutExtension(partitionDir);
+                _title = Path.GetFileNameWithoutExtension(partitionDir);
             }
+
+            _scrollStartTime = 10;
+            _scrollEndTime = 10;
         }
 
         public SongItem(SqliteDataReader dataReader) : base(dataReader)
         {
             SongTable songTable = new SongTable();
-            PartitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
-            AudioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
-            Number = (uint?) GetSafeInt(dataReader, songTable.Number.Name);
-            Title = GetSafeString(dataReader, songTable.Title.Name);
-            Artist = GetSafeString(dataReader, songTable.Artist.Name);
-            Album = GetSafeString(dataReader, songTable.Album.Name);
-            Genre = GetSafeString(dataReader, songTable.Genre.Name);
-            LengthMD = GetSafeString(dataReader, songTable.LengthMD.Name);
-            CodecMD = GetSafeString(dataReader, songTable.CodecMD.Name);
-            BitrateMD = GetSafeString(dataReader, songTable.BitrateMD.Name);
-            Rating = (uint) GetSafeInt(dataReader, songTable.Rating.Name);
-            MasteryID = (int) GetSafeInt(dataReader, songTable.MasteryID.Name);
+            _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
+            _audioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
+            _number = (uint?) GetSafeInt(dataReader, songTable.Number.Name);
+            _title = GetSafeString(dataReader, songTable.Title.Name);
+            _artist = GetSafeString(dataReader, songTable.Artist.Name);
+            _album = GetSafeString(dataReader, songTable.Album.Name);
+            _genre = GetSafeString(dataReader, songTable.Genre.Name);
+            _lengthMD = GetSafeString(dataReader, songTable.LengthMD.Name);
+            _codecMD = GetSafeString(dataReader, songTable.CodecMD.Name);
+            _bitrateMD = GetSafeString(dataReader, songTable.BitrateMD.Name);
+            _rating = (uint) GetSafeInt(dataReader, songTable.Rating.Name);
+            _masteryID = (int) GetSafeInt(dataReader, songTable.MasteryID.Name);
+            _scrollStartTime = (int) GetSafeInt(dataReader, songTable.ScrollStartTime.Name);
+            _scrollEndTime = (int) GetSafeInt(dataReader, songTable.ScrollEndTime.Name);
         }
 
         //TODO: Block files that are more than 99:99 minutes?
@@ -102,35 +111,38 @@ namespace MusicPlayerForDrummers.Model
         public void ReadAudioMetadata()
         {
             TagLib.File tFile = TagLib.File.Create(AudioDirectory);//, TagLib.ReadStyle.PictureLazy);
-            Number = tFile.Tag.Track;
-            Title = tFile.Tag.Title;
+            _number = tFile.Tag.Track;
+            _title = tFile.Tag.Title;
             if (tFile.Tag.Performers.Length > 0) //use song artist if exists (or album)
-                Artist = tFile.Tag.JoinedPerformers;
+                _artist = tFile.Tag.JoinedPerformers;
             else
-                Artist = tFile.Tag.JoinedAlbumArtists;
-            Album = tFile.Tag.Album;
-            Genre = tFile.Tag.JoinedGenres;
+                _artist = tFile.Tag.JoinedAlbumArtists;
+            _album = tFile.Tag.Album;
+            _genre = tFile.Tag.JoinedGenres;
             //TODO: Make empty if Properties is null
-            LengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
+            _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
             string[] mimeSplits = tFile.MimeType.Split('/');
-            CodecMD = mimeSplits[mimeSplits.Length - 1];
-            BitrateMD = tFile.Properties.AudioBitrate + " kbps";
+            _codecMD = mimeSplits[mimeSplits.Length - 1];
+            _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
             //TODO: Crashes when opening something else than mp3, make the field empty if null
             TagLib.Id3v2.Tag tagData = (TagLib.Id3v2.Tag) tFile.GetTag(TagLib.TagTypes.Id3v2);
-            TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
-            byte byteRating = tagInfo.Rating;
-            if (byteRating == 0)
-                Rating = 0;
-            else if (byteRating == 1)
-                Rating = 1;
-            else if (byteRating <= 64)
-                Rating = 2;
-            else if (byteRating <= 128)
-                Rating = 3;
-            else if (byteRating <= 196)
-                Rating = 4;
-            else
-                Rating = 5;
+            if (tagData != null)
+            {
+                TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
+                byte byteRating = tagInfo.Rating;
+                if (byteRating == 0)
+                    _rating = 0;
+                else if (byteRating == 1)
+                    _rating = 1;
+                else if (byteRating <= 64)
+                    _rating = 2;
+                else if (byteRating <= 128)
+                    _rating = 3;
+                else if (byteRating <= 196)
+                    _rating = 4;
+                else
+                    _rating = 5;
+            }
 
             /*Track song = new Track(Directory);
             NumberMD = song.TrackNumber;
@@ -157,7 +169,7 @@ namespace MusicPlayerForDrummers.Model
         public override object[] GetCustomValues()
         {
             return new object[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
-            LengthMD, CodecMD, BitrateMD, Rating, MasteryID };
+            LengthMD, CodecMD, BitrateMD, Rating, MasteryID, ScrollStartTime, ScrollEndTime };
         }
 
         public override string ToString()

@@ -76,10 +76,10 @@ namespace MusicPlayerForDrummers.View.Tools
                 return;
             _isUpdating = true;
             foreach (T item in e.AddedItems)
-                //if(!collectionToUpdate.Contains(item))
+                if(!collectionToUpdate.Contains(item))
                     collectionToUpdate.Add(item);
             foreach (T item in e.RemovedItems)
-                //if(collectionToUpdate.Contains(item))
+                if(collectionToUpdate.Contains(item))
                     collectionToUpdate.Remove(item);
             _isUpdating = false;
         }
@@ -97,11 +97,17 @@ namespace MusicPlayerForDrummers.View.Tools
         public static DependencyPropertyChangedEventHandler BidirectionalLink<T>(Func<object> dataContext, Func<ObservableCollection<T>> vmCollection, Selector viewList, IList viewItems)
         {
             var instance = new BindingHelper();
+            viewList.SelectionChanged += (sender, e) => { if (dataContext() != null) instance.ListChanged(vmCollection(), sender, e); };
+
             return (sender, args) =>
             {
-                if(dataContext() != null)
-                    vmCollection().CollectionChanged += (sender, e) => instance.ObservableCollectionChanged<T>(viewItems, sender, e);
-                viewList.SelectionChanged += (sender, e) => { if (dataContext() != null) instance.ListChanged(vmCollection(), sender, e); };
+                if (dataContext() == null)
+                    return;
+                viewItems.Clear();
+                ObservableCollection<T> collection = vmCollection();
+                foreach (T item in collection)
+                    viewItems.Add(item);
+                vmCollection().CollectionChanged += (sender, e) => instance.ObservableCollectionChanged<T>(viewItems, sender, e);
             };
         }
     }

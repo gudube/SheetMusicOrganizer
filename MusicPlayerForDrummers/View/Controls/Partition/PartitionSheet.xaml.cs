@@ -28,8 +28,25 @@ namespace MusicPlayerForDrummers.View
         public PartitionSheet()
         {
             InitializeComponent();
-            DataContextChanged += (sender, args) => { if (DataContext != null) PlayingSong_PropertyChanged(((PartitionVM)DataContext).Session.PlayingSong); };
-            DataContextChanged += (sender, args) => { if (DataContext != null) ((PartitionVM)DataContext).Session.PropertyChanged += Session_PropertyChanged; };
+            DataContextChanged += PartitionSheet_DataContextChanged;
+            this.KeyDown += PartitionSheet_KeyDown;
+        }
+
+        private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM) {
+                PlayingSong_PropertyChanged(partitionVM.Session.PlayingSong);
+                partitionVM.Session.PropertyChanged += Session_PropertyChanged;
+                //partitionVM.Session.PlayerTimerUpdate += TimerUpdate;
+                partitionVM.Session.Player.PropertyChanged += Player_PropertyChanged;
+            }
+        }
+        
+        private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && e.PropertyName == nameof(partitionVM.Session.Player.Position))
+                UpdateScrollPos();
+
         }
 
         private void Session_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -103,5 +120,59 @@ namespace MusicPlayerForDrummers.View
             return image;
         }
         #endregion
+
+        private void UpdateScrollPos()
+        {
+            if (DataContext is PartitionVM partitionVM)
+            {
+
+                double updatedPos = partitionVM.Session.Player.Position - partitionVM.Session.PlayingSong.ScrollStartTime;
+                double updatedLength = partitionVM.Session.Player.Length - partitionVM.Session.PlayingSong.ScrollStartTime - partitionVM.Session.PlayingSong.ScrollEndTime;
+                if(updatedPos <= 0 || updatedLength <= 0)
+                {
+                    Scrollbar.ScrollToVerticalOffset(0);
+                }
+                else
+                {
+                    updatedPos = (updatedPos / updatedLength) * Scrollbar.ScrollableHeight;
+                    Scrollbar.ScrollToVerticalOffset(updatedPos);
+                }
+            }
+        }
+
+        private double zoom = 1.0;
+        private void PartitionSheet_KeyDown(object sender, KeyEventArgs e)
+        {
+            /*switch (e.Key)
+            {
+                case Key.Add:
+                    zoom += 0.1;
+                    foreach (Image image in PagesContainer.Items)
+                        image.LayoutTransform = new ScaleTransform(zoom, zoom);
+                    break;
+                case Key.Subtract:
+                    zoom -= 0.1;
+                    foreach (Image image in PagesContainer.Items)
+                        image.LayoutTransform = new ScaleTransform(zoom, zoom);
+                    break;
+            }*/
+
+            if(e.Key == Key.Add || e.Key == Key.Subtract)
+            {
+                double verticalScrollRatio = Scrollbar.ScrollableHeight == 0 ? 0 : (Scrollbar.VerticalOffset / Scrollbar.ScrollableHeight);
+                double horizontalScrollRatio = Scrollbar.ScrollableWidth == 0 ? 0.5 : (Scrollbar.HorizontalOffset / Scrollbar.ScrollableWidth);
+                double newZoom = zoom + (e.Key == Key.Add ? 0.1 : -0.1);
+                if (newZoom <= 0.01)
+                    return;
+
+                zoom = newZoom;
+                foreach (Image image in PagesContainer.Items)
+                    image.LayoutTransform = new ScaleTransform(zoom, zoom);
+
+                Scrollbar.UpdateLayout();
+                Scrollbar.ScrollToVerticalOffset(verticalScrollRatio * Scrollbar.ScrollableHeight);
+                Scrollbar.ScrollToHorizontalOffset(horizontalScrollRatio * Scrollbar.ScrollableWidth);
+            }
+        }
     }
 }
