@@ -125,9 +125,17 @@ namespace MusicPlayerForDrummers.View
         {
             if (DataContext is PartitionVM partitionVM)
             {
-                double scrollPos = partitionVM.Session.Player.Position / partitionVM.Session.Player.Length;
-                scrollPos *= Scrollbar.ScrollableHeight;
-                Scrollbar.ScrollToVerticalOffset(scrollPos);
+                double updatedPos = partitionVM.Session.Player.Position - partitionVM.StartScrollTime;
+                double updatedLength = partitionVM.Session.Player.Length - partitionVM.StartScrollTime;
+                if(updatedPos <= 0 || updatedLength <= 0)
+                {
+                    Scrollbar.ScrollToVerticalOffset(0);
+                }
+                else
+                {
+                    updatedPos = (updatedPos / updatedLength) * Scrollbar.ScrollableHeight * partitionVM.ScrollSpeed;
+                    Scrollbar.ScrollToVerticalOffset(updatedPos);
+                }
             }
         }
 

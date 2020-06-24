@@ -17,11 +17,21 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public PartitionVM(SessionContext session) : base(session)
         {
-            session.PlayerTimerUpdate += TimerUpdate;
+            //session.PlayerTimerUpdate += TimerUpdate;
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(Session.PlayingSong))
+                UpdateFromPlayingSong();
+        }
+
+        private void UpdateFromPlayingSong()
+        {
+            //todo: get info from DB
+            //for now:
+            ScrollSpeed = 1;
+            StartScrollTime = 0;
         }
 
         private int _pageZoom = 100;
@@ -37,10 +47,11 @@ namespace MusicPlayerForDrummers.ViewModel
         private SyncMethod _selectedSync = SyncMethod.None;
         public SyncMethod SelectedSync { get => _selectedSync; set => SetField(ref _selectedSync, value); }
 
-        public void TimerUpdate()
-        {
+        private double _scrollSpeed = 1;
+        public double ScrollSpeed { get => _scrollSpeed; set => SetField(ref _scrollSpeed, value); }
 
-        }
+        private int _startScrollTime = 0;
+        public int StartScrollTime { get => _startScrollTime; set => SetField(ref _startScrollTime, value); }
         #endregion
 
     }
