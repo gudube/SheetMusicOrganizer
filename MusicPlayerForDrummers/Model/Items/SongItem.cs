@@ -117,20 +117,23 @@ namespace MusicPlayerForDrummers.Model
             BitrateMD = tFile.Properties.AudioBitrate + " kbps";
             //TODO: Crashes when opening something else than mp3, make the field empty if null
             TagLib.Id3v2.Tag tagData = (TagLib.Id3v2.Tag) tFile.GetTag(TagLib.TagTypes.Id3v2);
-            TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
-            byte byteRating = tagInfo.Rating;
-            if (byteRating == 0)
-                Rating = 0;
-            else if (byteRating == 1)
-                Rating = 1;
-            else if (byteRating <= 64)
-                Rating = 2;
-            else if (byteRating <= 128)
-                Rating = 3;
-            else if (byteRating <= 196)
-                Rating = 4;
-            else
-                Rating = 5;
+            if (tagData != null)
+            {
+                TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
+                byte byteRating = tagInfo.Rating;
+                if (byteRating == 0)
+                    Rating = 0;
+                else if (byteRating == 1)
+                    Rating = 1;
+                else if (byteRating <= 64)
+                    Rating = 2;
+                else if (byteRating <= 128)
+                    Rating = 3;
+                else if (byteRating <= 196)
+                    Rating = 4;
+                else
+                    Rating = 5;
+            }
 
             /*Track song = new Track(Directory);
             NumberMD = song.TrackNumber;
