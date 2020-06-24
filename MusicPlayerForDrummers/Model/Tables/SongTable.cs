@@ -17,7 +17,7 @@ namespace MusicPlayerForDrummers.Model
         public override SqlColumn[] GetCustomColumns()
         {
             return new SqlColumn[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
-               LengthMD, CodecMD, BitrateMD, Rating, MasteryID};
+               LengthMD, CodecMD, BitrateMD, Rating, MasteryID, ScrollStartTime, ScrollEndTime};
         }
 
         #region Custom Columns
@@ -48,6 +48,9 @@ namespace MusicPlayerForDrummers.Model
 
         //TODO: Make it a Foreign Key field and implement FKs in SqlColumns
         public readonly SqlColumn MasteryID;
+
+        public readonly SqlColumn ScrollStartTime = new SqlColumn("ScrollStartTime", EType.INT);
+        public readonly SqlColumn ScrollEndTime = new SqlColumn("ScrollEndTime", EType.INT);
         #endregion
     }
 }
