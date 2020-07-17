@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Linq;
-using MusicPlayerForDrummers.ViewModel;
+using MusicPlayerForDrummers.View.Windows;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Tools
 {
     public static class WindowManager
     {

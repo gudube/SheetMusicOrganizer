@@ -5,6 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
+        xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
+        xmlns:pages="clr-namespace:MusicPlayerForDrummers.View.Pages"
+        xmlns:controls="clr-namespace:MusicPlayerForDrummers.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized">
@@ -30,7 +33,7 @@
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <local:PlayerControl Grid.Row="2" Height="60"/>
+        <player:PlayerControl Grid.Row="2" Height="60"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:LibraryVM}">
@@ -39,8 +42,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                    <local:LibraryView Grid.Column="0"/>
-                    <local:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
+                    <pages:LibraryView Grid.Column="0"/>
+                    <controls:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
                                 SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchPartitionViewCommand}"/>
                     </Grid>
                 </DataTemplate>
@@ -50,9 +53,9 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <local:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
+                        <controls:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
                                 SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchLibraryViewCommand}"/>
-                        <local:PartitionView Grid.Column="1"/>
+                        <pages:PartitionView Grid.Column="1"/>
                     </Grid>
                 </DataTemplate>
             </ContentControl.Resources>

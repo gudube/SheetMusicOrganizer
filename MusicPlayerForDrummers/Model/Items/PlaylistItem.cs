@@ -1,12 +1,8 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System;
+using Microsoft.Data.Sqlite;
+using MusicPlayerForDrummers.Model.Tables;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Items
 {
     public class PlaylistItem : BaseModelItem
     {

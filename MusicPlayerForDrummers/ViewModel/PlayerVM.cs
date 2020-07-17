@@ -1,8 +1,5 @@
-﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel.Tools;
-using NaudioWrapper;
+﻿using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
-using System.Linq;
 
 namespace MusicPlayerForDrummers.ViewModel
 {

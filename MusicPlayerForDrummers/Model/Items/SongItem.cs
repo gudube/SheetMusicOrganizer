@@ -1,12 +1,9 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using ATL.AudioData;
-using ATL;
-using System.IO;
+﻿using System.IO;
+using Microsoft.Data.Sqlite;
+using MusicPlayerForDrummers.Model.Tables;
+using Serilog;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Items
 {
     public class SongItem : BaseModelItem
     {
@@ -44,32 +41,33 @@ namespace MusicPlayerForDrummers.Model
         private uint _rating;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
-        private int _masteryID;
-        public int MasteryID { get => _masteryID; 
+        private int _masteryId;
+        public int MasteryId { get => _masteryId; 
             set
             {
-                SetField(ref _masteryID, value);
-                OnPropertyChanged("Mastery");
+                SetField(ref _masteryId, value);
+                OnPropertyChanged(nameof(Mastery));
             }
         }
 
         private int _scrollStartTime;
-        public int ScrollStartTime { get => _scrollStartTime; set { if (SetField(ref _scrollStartTime, value)) DBHandler.UpdateSong(this); } }
+        public int ScrollStartTime { get => _scrollStartTime; set { if (SetField(ref _scrollStartTime, value)) DbHandler.UpdateSong(this); } }
 
         private int _scrollEndTime;
-        public int ScrollEndTime { get => _scrollEndTime; set { if (SetField(ref _scrollEndTime, value)) DBHandler.UpdateSong(this); } }
+        public int ScrollEndTime { get => _scrollEndTime; set { if (SetField(ref _scrollEndTime, value)) DbHandler.UpdateSong(this); } }
         #endregion
 
         #region Other Properties
         //useful to know the mastery name from SongItem (e.g. in the SongsGrid)
-        public MasteryItem Mastery { get => DBHandler.MasteryDic[MasteryID]; }
+        public MasteryItem Mastery => DbHandler.MasteryDic[MasteryId];
+
         #endregion
 
-        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryID = 0, bool useAudioMD = true) : base()
+        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryId = 0, bool useAudioMD = true) : base()
         {
             _partitionDirectory = partitionDir;
             _audioDirectory = audioDirectory;
-            _masteryID = masteryID;
+            _masteryId = masteryId;
 
             if (useAudioMD && !string.IsNullOrWhiteSpace(audioDirectory))
             {
@@ -80,8 +78,8 @@ namespace MusicPlayerForDrummers.Model
                 _title = Path.GetFileNameWithoutExtension(partitionDir);
             }
 
-            _scrollStartTime = 10;
-            _scrollEndTime = 10;
+            _scrollStartTime = Settings.Default.DefaultScrollStartTime;
+            _scrollEndTime = Settings.Default.DefaultScrollEndTime;
         }
 
         public SongItem(SqliteDataReader dataReader) : base(dataReader)
@@ -89,7 +87,7 @@ namespace MusicPlayerForDrummers.Model
             SongTable songTable = new SongTable();
             _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
             _audioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
-            _number = (uint?) GetSafeInt(dataReader, songTable.Number.Name);
+            _number = GetSafeUInt(dataReader, songTable.Number.Name).GetValueOrDefault(0);
             _title = GetSafeString(dataReader, songTable.Title.Name);
             _artist = GetSafeString(dataReader, songTable.Artist.Name);
             _album = GetSafeString(dataReader, songTable.Album.Name);
@@ -97,13 +95,17 @@ namespace MusicPlayerForDrummers.Model
             _lengthMD = GetSafeString(dataReader, songTable.LengthMD.Name);
             _codecMD = GetSafeString(dataReader, songTable.CodecMD.Name);
             _bitrateMD = GetSafeString(dataReader, songTable.BitrateMD.Name);
-            _rating = (uint) GetSafeInt(dataReader, songTable.Rating.Name);
-            _masteryID = (int) GetSafeInt(dataReader, songTable.MasteryID.Name);
-            _scrollStartTime = (int) GetSafeInt(dataReader, songTable.ScrollStartTime.Name);
-            _scrollEndTime = (int) GetSafeInt(dataReader, songTable.ScrollEndTime.Name);
+
+            uint? rating = GetSafeUInt(dataReader, songTable.Rating.Name);
+            if (rating == null || rating > 255)
+                Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
+            _rating = rating.GetValueOrDefault(0);
+            _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(0);
+            _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
+            _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
         }
 
-        //TODO: Block files that are more than 99:99 minutes?
+        //TODO: Block files that are more than 99:99 minutes? what about really short sounds? test it
         //TODO: Better to add a ReadMetadataSilently that writes private fields instead
         //(for performance and not calling tons of events)
         //Verify ATL .NET vs TagLibSharp (performance, etc.)
@@ -169,7 +171,7 @@ namespace MusicPlayerForDrummers.Model
         public override object[] GetCustomValues()
         {
             return new object[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
-            LengthMD, CodecMD, BitrateMD, Rating, MasteryID, ScrollStartTime, ScrollEndTime };
+            LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime };
         }
 
         public override string ToString()

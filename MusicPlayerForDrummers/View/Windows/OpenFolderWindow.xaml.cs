@@ -1,18 +1,8 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using System.Windows;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Windows
 {
     //TODO: Add ? button with an image that explains the two ways to bind audio file to song
     /// <summary>

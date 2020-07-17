@@ -1,17 +1,18 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.SongsGrid"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.Controls.Library.SongsGrid"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:tools="clr-namespace:MusicPlayerForDrummers.View.Tools"
              mc:Ignorable="d" 
              Name="MainControl"
              d:DesignHeight="450">
     <UserControl.Resources>
-        <local:RatingConverter x:Key="ratingConverter"/>
-        <local:HexColorConverter x:Key="hexColorConverter"/>
-        <local:DirFilenameConverter x:Key="dirFilenameConverter"/>
+        <tools:RatingConverter x:Key="ratingConverter"/>
+        <tools:HexColorConverter x:Key="hexColorConverter"/>
+        <tools:DirFilenameConverter x:Key="dirFilenameConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
         <DataGrid Name="Songs" Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Session.Songs}"

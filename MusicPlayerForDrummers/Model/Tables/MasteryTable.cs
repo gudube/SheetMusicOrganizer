@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MusicPlayerForDrummers.Model
+﻿namespace MusicPlayerForDrummers.Model.Tables
 {
     public class MasteryTable : BaseTable
     {
-        public MasteryTable() : base()
+        public MasteryTable() : base("Mastery")
         {
         }
-
-        public override string TableName => "Mastery";
 
         public override SqlColumn[] GetCustomColumns()
         {
@@ -18,9 +12,9 @@ namespace MusicPlayerForDrummers.Model
         }
 
         #region Custom Columns
-        public readonly SqlColumn Name = new SqlColumn("Name", EType.TEXT);
-        public readonly SqlColumn IsLocked = new SqlColumn("IsLocked", EType.BOOL);
-        public readonly SqlColumn Color = new SqlColumn("Color", EType.TEXT);
+        public readonly SqlColumn Name = new SqlColumn("Name", EType.Text);
+        public readonly SqlColumn IsLocked = new SqlColumn("IsLocked", EType.Bool);
+        public readonly SqlColumn Color = new SqlColumn("Color", EType.Text);
         #endregion
 
     }

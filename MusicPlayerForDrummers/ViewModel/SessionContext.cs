@@ -1,16 +1,12 @@
 ﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.Model.Tools;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using NaudioWrapper;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Windows.Threading;
-using Windows.Media.Playlists;
+using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -18,21 +14,23 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public SessionContext()
         {
-            _timer = new DispatcherTimer(DispatcherPriority.Render);
-            _timer.Interval = TimeSpan.FromMilliseconds(50);
-            _timer.Tick += (sender, e) => PlayerTimerUpdate();
+            DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render)
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
+            timer.Tick += (sender, e) => PlayerTimerUpdate();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
 
             Player = new AudioPlayer(0.25f);
-            Player.PlaybackStarting += () => _timer.Start();
-            Player.PlaybackStopping += () => _timer.Stop();
+            Player.PlaybackStarting += () => timer.Start();
+            Player.PlaybackStopping += () => timer.Stop();
         }
 
         #region Playlists
         private SmartCollection<BaseModelItem> _playlists = new SmartCollection<BaseModelItem>();
         public SmartCollection<BaseModelItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
 
-        public INotifyPropertyChanged _selectedPlaylist;
+        private INotifyPropertyChanged _selectedPlaylist;
         public BaseModelItem SelectedPlaylist { get => (BaseModelItem) _selectedPlaylist; set => SetField(ref _selectedPlaylist, value); }
         #endregion
 
@@ -95,7 +93,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetNextPlayingSong()
         {
-            SongItem next = DBHandler.FindNextSong(PlayingSong.ID, PlayingPlaylist.ID, PlayingMasteryLevels.Select(x => x.ID).ToArray());
+            SongItem next = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
 
             if (next == null)
                 StopPlayingSong();
@@ -105,7 +103,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetPreviousPlayingSong()
         {
-            SongItem previous = DBHandler.FindPreviousSong(PlayingSong.ID, PlayingPlaylist.ID, PlayingMasteryLevels.Select(x => x.ID).ToArray());
+            SongItem previous = DbHandler.FindPreviousSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
 
             if (previous == null)
                 StopPlayingSong();
@@ -116,8 +114,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region AudioPlayer
         public AudioPlayer Player { get; }
-
-        private DispatcherTimer _timer;
 
         public event Action PlayerTimerUpdate;
         #endregion

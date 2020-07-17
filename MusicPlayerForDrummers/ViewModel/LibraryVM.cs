@@ -1,17 +1,11 @@
 ﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel;
 using MusicPlayerForDrummers.ViewModel.Tools;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Text;
-using System.Threading;
 using System.Linq;
-using MusicPlayerForDrummers.Model.Tools;
 using System.ComponentModel;
-using Windows.Media.Playlists;
 using System.IO;
+using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -22,9 +16,9 @@ namespace MusicPlayerForDrummers.ViewModel
         //TODO: Separer le LibraryVM est plusieurs VM?
         public LibraryVM(SessionContext session) : base(session)
         {
-            UpdatePlaylistsFromDB();
-            UpdateMasteryLevelsFromDB();
-            UpdateSongsFromDB();
+            UpdatePlaylistsFromDb();
+            UpdateMasteryLevelsFromDb();
+            UpdateSongsFromDb();
             CreateDelegateCommands();
             Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
             Session.Playlists.CollectionChanged += Playlists_CollectionChanged;
@@ -52,12 +46,11 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand CreateNewPlaylistCommand { get; private set; }
         public DelegateCommand DeleteSelectedPlaylistCommand { get; private set; }
         public DelegateCommand RenameSelectedPlaylistCommand { get; private set; }
-        public DelegateCommand IsRenamingPlaylistCommand { get; private set; }
 
-        private void UpdatePlaylistsFromDB()
+        private void UpdatePlaylistsFromDb()
         {
             List<BaseModelItem> playlists = new List<BaseModelItem>{ _allMusicPlaylist };
-            playlists.AddRange(DBHandler.GetAllPlaylists());
+            playlists.AddRange(DbHandler.GetAllPlaylists());
             playlists.Add(_addPlaylist);
             Session.Playlists.Reset(playlists);
             Session.SelectedPlaylist = _allMusicPlaylist;
@@ -71,13 +64,13 @@ namespace MusicPlayerForDrummers.ViewModel
         private void SelectedPlaylist_PropertyChanged()
         {
             Session.SelectedSongs.Clear();
-            UpdateSongsFromDB();
+            UpdateSongsFromDb();
         }
 
         private void CreateNewPlaylist(string playlistName)
         {
             PlaylistItem newPlaylist = new PlaylistItem(playlistName);
-            DBHandler.CreateNewPlaylist(newPlaylist);
+            DbHandler.CreateNewPlaylist(newPlaylist);
             Session.Playlists.Insert(Session.Playlists.Count - 1, newPlaylist);
             Session.SelectedPlaylist = newPlaylist;
         }
@@ -91,7 +84,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
             //Session.SelectedPlaylist = null; //TODO: Go to the next one, or last one if no next
             Session.Playlists.Remove(plItem);
-            DBHandler.DeletePlaylist(plItem);
+            DbHandler.DeletePlaylist(plItem);
         }
 
         private void RenameSelectedPlaylist(string playlistName)
@@ -102,22 +95,22 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
             plItem.Name = playlistName;
-            DBHandler.UpdatePlaylist(plItem);
+            DbHandler.UpdatePlaylist(plItem);
         }
 
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
-            DBHandler.AddPlaylistSongLink(playlist.ID, song.ID);
+            DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
-            DBHandler.AddSongsToPlaylist(playlist.ID, songs.Select(x => x.ID));
+            DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
         {
-            return DBHandler.IsSongInPlaylist(playlist.ID, song.ID);
+            return DbHandler.IsSongInPlaylist(playlist.Id, song.Id);
         }
         #endregion
 
@@ -126,28 +119,28 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Mastery Levels
         private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            UpdateSongsFromDB();
+            UpdateSongsFromDb();
         }
 
-        private void UpdateMasteryLevelsFromDB()
+        private void UpdateMasteryLevelsFromDb()
         {
-            Session.MasteryLevels.Reset(DBHandler.GetAllMasteryLevels());
+            Session.MasteryLevels.Reset(DbHandler.GetAllMasteryLevels());
         }
 
         public bool IsSongInMastery(MasteryItem mastery, SongItem song)
         {
-            return DBHandler.IsSongInMastery(mastery.ID, song.ID);
+            return DbHandler.IsSongInMastery(mastery.Id, song.Id);
         }
 
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
-            DBHandler.SetSongMastery(song, mastery);
+            DbHandler.SetSongMastery(song, mastery);
             if (!Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
                 Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
-            DBHandler.SetSongsMastery(songs, mastery);
+            DbHandler.SetSongsMastery(songs, mastery);
             if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songs)
@@ -161,32 +154,32 @@ namespace MusicPlayerForDrummers.ViewModel
         public void GoToSong(SongItem song)
         {
             Session.SelectedSongs.Clear();
-            if(Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Any(x => x.ID == song.MasteryID))
-                Session.SelectedMasteryLevels.Add(Session.MasteryLevels.First(x => x.ID == song.MasteryID));
-            SongItem songToSelect = Session.Songs.FirstOrDefault(x => x.ID == song.ID);
+            if(Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Any(x => x.Id == song.MasteryId))
+                Session.SelectedMasteryLevels.Add(Session.MasteryLevels.First(x => x.Id == song.MasteryId));
+            SongItem songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
                 Session.SelectedPlaylist = _allMusicPlaylist;
-                songToSelect = Session.Songs.FirstOrDefault(x => x.ID == song.ID);
+                songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
             }
             Session.SelectedSongs.Add(songToSelect);
         }
 
-        private void UpdateSongsFromDB()
+        private void UpdateSongsFromDb()
         {
-            int[] masteryIDs = Session.SelectedMasteryLevels.Select(x => x.ID).ToArray();
+            int[] masteryIDs = Session.SelectedMasteryLevels.Select(x => x.Id).ToArray();
 
             if (Session.SelectedPlaylist == _allMusicPlaylist)
-                Session.Songs.Reset(DBHandler.GetAllSongs(masteryIDs));
+                Session.Songs.Reset(DbHandler.GetAllSongs(masteryIDs));
             else if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
                 Session.Songs.Clear();
             else
-                Session.Songs.Reset(DBHandler.GetSongs(Session.SelectedPlaylist.ID, masteryIDs));
+                Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id, masteryIDs));
         }
 
         public bool AddSong(SongItem song)
         {
-            if (!DBHandler.IsSongExisting(song.PartitionDirectory))
+            if (!DbHandler.IsSongExisting(song.PartitionDirectory))
             {
                 AddNewSong(song);
                 return true;
@@ -198,14 +191,14 @@ namespace MusicPlayerForDrummers.ViewModel
         private void AddNewSong(SongItem song)
         {
             if (Session.SelectedMasteryLevels.Count == 0)
-                song.MasteryID = Session.MasteryLevels[0].ID;
+                song.MasteryId = Session.MasteryLevels[0].Id;
             else
-                song.MasteryID = Session.SelectedMasteryLevels[0].ID;
+                song.MasteryId = Session.SelectedMasteryLevels[0].Id;
 
             if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _allMusicPlaylist)
-                DBHandler.AddSong(song, Session.SelectedPlaylist.ID);
+                DbHandler.AddSong(song, Session.SelectedPlaylist.Id);
             else
-                DBHandler.AddSong(song);
+                DbHandler.AddSong(song);
 
             Session.Songs.Add(song);
         }
@@ -241,13 +234,13 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 foreach(string partition in partitionFiles) //TODO: More performance way to do it?
                 {
-                    bool audioFound = false;
+                    //bool audioFound = false;
                     foreach(string audio in audioFiles)
                     {
                         if (Path.GetFileNameWithoutExtension(partition) == Path.GetFileNameWithoutExtension(audio))
                         {
                             AddSong(new SongItem(partition, audio, 0, useAudioMD));
-                            audioFound = true;
+                            //audioFound = true;
                             break;
                         }
                     }
@@ -273,14 +266,14 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
 
-            int[] songIDs = Session.SelectedSongs.Select(x => x.ID).ToArray();
+            int[] songIDs = Session.SelectedSongs.Select(x => x.Id).ToArray();
             if (Session.SelectedPlaylist == _allMusicPlaylist)
             {
-                DBHandler.DeleteSongs(songIDs);
+                DbHandler.DeleteSongs(songIDs);
             }
             else
             {
-                DBHandler.RemoveSongsFromPlaylist(Session.SelectedPlaylist.ID, songIDs);
+                DbHandler.RemoveSongsFromPlaylist(Session.SelectedPlaylist.Id, songIDs);
             }
             foreach(SongItem song in Session.SelectedSongs.ToList())
                 Session.Songs.Remove(song);

@@ -1,34 +1,34 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MusicPlayerForDrummers.Model
+﻿
+namespace MusicPlayerForDrummers.Model.Items
 {
     public class PlaylistSongItem : BaseModelItem
     {
-        private int _playlistID;
-        public int PlaylistID { get => _playlistID; set => SetField(ref _playlistID, value); }
+        private int _playlistId;
+        public int PlaylistId { get => _playlistId; set => SetField(ref _playlistId, value); }
 
-        private int _songID;
-        public int SongID { get => _songID; set => SetField(ref _songID, value); }
+        private int _songId;
+        public int SongId { get => _songId; set => SetField(ref _songId, value); }
 
-        public PlaylistSongItem(int playlistID, int songID) : base()
+        public PlaylistSongItem(int playlistId, int songId) : base()
         {
-            PlaylistID = playlistID;
-            SongID = songID;
+            PlaylistId = playlistId;
+            SongId = songId;
         }
 
+        /*
         public PlaylistSongItem(SqliteDataReader dataReader) : base(dataReader)
         {
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
-            PlaylistID = (int) GetSafeInt(dataReader, playlistSongTable.PlaylistID.Name);
-            SongID = (int) GetSafeInt(dataReader, playlistSongTable.SongID.Name);
-        }
+            int? playlistId = GetSafeInt(dataReader, playlistSongTable.PlaylistId.Name);
+            if(playlistId == null)
+                Log.Error("Missing playlist id for PlaylistSongItem with Id {Id}", Id);
+            PlaylistId = playlistId.GetValueOrDefault()
+            SongId = GetSafeInt(dataReader, playlistSongTable.SongId.Name);
+        }*/
 
         public override object[] GetCustomValues()
         {
-            return new object[] { PlaylistID, SongID };
+            return new object[] { PlaylistId, SongId };
         }
     }
 }

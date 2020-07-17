@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.PlayerControl"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.Controls.Player.PlayerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+             xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="1820"
              Style="{StaticResource InsideLightControl}"
@@ -66,13 +67,13 @@
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <local:WaveformSeekbar x:Name="Seekbar" Grid.Column="2" Minimum="0"
+            <player:WaveformSeekbar x:Name="Seekbar" Grid.Column="2" Minimum="0"
                 Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
                 Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
                 Thumb.DragStarted="WaveformSeekbar_DragStarted"
                 Thumb.DragCompleted="WaveformSeekbar_DragCompleted">
-                <local:WaveformSeekbar.Style>
-                    <Style TargetType="{x:Type local:WaveformSeekbar}">
+                <player:WaveformSeekbar.Style>
+                    <Style TargetType="{x:Type player:WaveformSeekbar}">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
@@ -80,8 +81,8 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </local:WaveformSeekbar.Style>
-            </local:WaveformSeekbar>
+                </player:WaveformSeekbar.Style>
+            </player:WaveformSeekbar>
         </Grid>
     </Border>
 </UserControl>

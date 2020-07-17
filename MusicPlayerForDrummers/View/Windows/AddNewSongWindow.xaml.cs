@@ -1,20 +1,11 @@
-﻿using Microsoft.Win32;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using TagLib.Mpeg;
+using Microsoft.Win32;
+using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Windows
 {
     /// <summary>
     /// Interaction logic for AddNewSongWindow.xaml
@@ -149,13 +140,21 @@ namespace MusicPlayerForDrummers.View
                 else
                 {
                     string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
-                    GenericWindow songExistingWindow = new GenericWindow(message, "Go To Song");
-                    songExistingWindow.Owner = this;
+                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Go To Song");
                     songExistingWindow.ShowDialog();
                     if (songExistingWindow.DialogResult.HasValue && songExistingWindow.DialogResult.Value)
                     {
-                        mainVM.GoToSong(Song.PartitionDirectory);
-                        this.Close();
+                        try
+                        {
+                            mainVM.GoToSong(Song.PartitionDirectory);
+                            this.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            string error = "Could not find the music sheet in the library.";
+                            Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
+                            ErrorWindow errorWindow = new ErrorWindow(this, error);
+                        }
                     }
                 }
             }

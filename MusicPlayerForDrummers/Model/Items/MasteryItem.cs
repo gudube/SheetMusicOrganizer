@@ -1,9 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using MusicPlayerForDrummers.Model.Tables;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Items
 {
     public class MasteryItem : BaseModelItem
     {

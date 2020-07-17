@@ -1,17 +1,13 @@
-﻿using GongSolutions.Wpf.DragDrop;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.View.Tools;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using IList = System.Collections.IList;
+using GongSolutions.Wpf.DragDrop;
+using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.View.Tools;
+using MusicPlayerForDrummers.ViewModel;
 
-
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Library
 {
     /// <summary>
     /// Interaction logic for MasteryListBox.xaml

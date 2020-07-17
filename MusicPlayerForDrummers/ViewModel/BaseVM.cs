@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
 using MusicPlayerForDrummers.Model.Tools;
 
 //https://www.technical-recipes.com/2018/navigating-between-views-in-wpf-mvvm/

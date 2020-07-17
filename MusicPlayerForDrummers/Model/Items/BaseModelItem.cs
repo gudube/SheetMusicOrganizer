@@ -1,34 +1,34 @@
 ﻿using Microsoft.Data.Sqlite;
 using MusicPlayerForDrummers.Model.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Serilog;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Items
 {
     public abstract class BaseModelItem : BaseNotifyPropertyChanged
     {
         protected BaseModelItem()
         {
-            ID = -1;
+            Id = -1;
         }
 
         protected BaseModelItem(SqliteDataReader dataReader)
         {
-            ID = dataReader.GetInt32(0);
+            Id = dataReader.GetInt32(0);
         }
-        private int _iD;
-        public int ID { get => _iD; set => SetField(ref _iD, value); }
 
-        abstract public object[] GetCustomValues();
+        private int _id;
+        public int Id { get => _id; set => SetField(ref _id, value); }
+
+        public abstract object[] GetCustomValues();
 
         protected string GetSafeString(SqliteDataReader dR, string colName)
         {
             int colNum = dR.GetOrdinal(colName);
             if (!dR.IsDBNull(colNum))
                 return dR.GetString(colNum);
-            else
-                return null;
+            
+            Log.Warning("Null value for String {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            return "";
         }
 
         protected int? GetSafeInt(SqliteDataReader dR, string colName)
@@ -36,8 +36,28 @@ namespace MusicPlayerForDrummers.Model
             int colNum = dR.GetOrdinal(colName);
             if (!dR.IsDBNull(colNum))
                 return dR.GetInt32(colNum);
-            else
+
+            Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            return null;
+        }
+
+        protected uint? GetSafeUInt(SqliteDataReader dR, string colName)
+        {
+            int colNum = dR.GetOrdinal(colName);
+            if (dR.IsDBNull(colNum))
+            {
+                Log.Warning("Null value for Uint {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
                 return null;
+            }
+
+            int safeInt = dR.GetInt32(colNum);
+            if (safeInt < 0)
+            {
+                Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+                return null;
+            }
+        
+            return (uint) safeInt;
         }
 
         protected bool GetSafeBool(SqliteDataReader dR, string colName)
@@ -45,8 +65,9 @@ namespace MusicPlayerForDrummers.Model
             int colNum = dR.GetOrdinal(colName);
             if (!dR.IsDBNull(colNum))
                 return dR.GetBoolean(colNum);
-            else
-                return false;
+
+            Log.Warning("Null value for Bool {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            return false;
         }
         /*protected string GetSqlFormat(string value)
         {

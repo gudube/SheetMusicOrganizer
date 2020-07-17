@@ -1,12 +1,7 @@
 ﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.View;
 using MusicPlayerForDrummers.ViewModel.Tools;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -16,7 +11,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DBHandler.InitializeDatabase();
+            DbHandler.InitializeDatabase();
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
@@ -57,7 +52,7 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Menu
         public void GoToSong(string partitionFilename)
         {
-            SongItem song = DBHandler.GetSong(partitionFilename);
+            SongItem song = DbHandler.GetSong(partitionFilename);
             SetView(LibraryVM);
             LibraryVM.GoToSong(song);
         }
