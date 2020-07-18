@@ -17,6 +17,7 @@ namespace MusicPlayerForDrummers.View.Windows
                 ContinueButton.Visibility = Visibility.Hidden;
             else
                 ContinueButton.Content = continueButtonText;
+            ShowDialog();
         }
 
         //public static readonly DependencyProperty MainTextProperty = DependencyProperty.Register("MainText", typeof(string), typeof(GenericWindow));

@@ -13,8 +13,8 @@ namespace MusicPlayerForDrummers.View.Windows
     public partial class AddNewSongWindow : Window
     {
         //TODO: Rajouter bouton pour enlever le champ audio file
-        //TODO: Changer couleur texte textbox
-        //TODO: Ouvrir fenetre si chanson existe deja
+        //TODO: Changer couleur texte text-box
+        //TODO: Ouvrir fenêtre si chanson existe déjà
         public AddNewSongWindow()
         {
             this.Owner = Application.Current.MainWindow;
@@ -140,12 +140,10 @@ namespace MusicPlayerForDrummers.View.Windows
                 {
                     string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
                     GenericWindow songExistingWindow = new GenericWindow(this, message, "Go To Song");
-                    songExistingWindow.ShowDialog();
                     if (songExistingWindow.DialogResult.HasValue && songExistingWindow.DialogResult.Value)
                     {
                         try
                         {
-                            throw new Exception("test");
                             mainVM.GoToSong(Song.PartitionDirectory);
                             this.Close();
                         }
@@ -153,7 +151,7 @@ namespace MusicPlayerForDrummers.View.Windows
                         {
                             string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
                             Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
-                            ErrorWindow errorWindow = new ErrorWindow(this, error);
+                            ErrorWindow unused = new ErrorWindow(this, error);
                         }
                     }
                 }
