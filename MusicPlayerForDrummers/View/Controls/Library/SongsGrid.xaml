@@ -15,9 +15,9 @@
         <tools:HexColorConverter x:Key="HexColorConverter"/>
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
-    <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <Grid>
         <DataGrid Name="Songs" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.Session).Songs}"
-                  d:DataContext="{d:DesignInstance modelItems:SongItem}"
+                  d:DataContext="{d:DesignInstance modelItems:SongItem}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
@@ -48,8 +48,19 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 0, 0, 15" BorderBrush="Black"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <!--<Separator Style="{StaticResource HorizontalSeparator}" BorderBrush="Black"/>-->
+        <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=Songs, Path=HasItems}" Value="true">
+                            <DataTrigger.Setters>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger.Setters>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
             <Border Style="{StaticResource OutsideLightBorder}" Width="150" Height="40" Margin="5,0">
                 <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{StaticResource 3DButton}">
                     <StackPanel Orientation="Horizontal">
@@ -67,5 +78,5 @@
                 </Button>
             </Border>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </UserControl>

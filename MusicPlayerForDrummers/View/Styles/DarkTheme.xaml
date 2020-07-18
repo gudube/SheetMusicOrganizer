@@ -149,6 +149,18 @@
 
     <!-- DataGrid -->
     <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource ControlBackgroundLv1}">
+        <Style.Resources>
+            <Style TargetType="ScrollBar">
+                <!--todo: Change style of scrollbar to be dark on background and darker on thumb. probably needs to change template-->
+            </Style>
+        </Style.Resources>
+        <Style.Triggers>
+            <Trigger Property="HasItems" Value="false">
+                <Trigger.Setters>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger.Setters>
+            </Trigger>
+        </Style.Triggers>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="RowBackground" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="AlternatingRowBackground" Value="{StaticResource BackgroundLv2SolidColor}"/>
