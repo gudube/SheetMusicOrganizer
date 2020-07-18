@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
         xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
         xmlns:pages="clr-namespace:MusicPlayerForDrummers.View.Pages"
@@ -11,9 +10,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </Window.Resources>
     <Window.DataContext>
         <vm:MainVM/>
     </Window.DataContext>
@@ -33,7 +29,7 @@
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <player:PlayerControl Grid.Row="2" Height="60"/>
+        <player:PlayerControl Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:LibraryVM}">

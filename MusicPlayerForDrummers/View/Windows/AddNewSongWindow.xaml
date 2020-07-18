@@ -3,15 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         xmlns:tools="clr-namespace:MusicPlayerForDrummers.View.Tools"
         mc:Ignorable="d"
         Title="Add New Song"
         Style="{StaticResource ControlBackgroundLv1}"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
-        <tools:StringNotEmptyConverter x:Key="stringNotEmptyConverter"/>
-        <tools:StringsNotEmptyConverter x:Key="stringsNotEmptyConverter"/>
+        <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+        <tools:StringsNotEmptyConverter x:Key="StringsNotEmptyConverter"/>
     </Window.Resources>
     <StackPanel Orientation="Vertical" Margin="18, 0, 14, 18">
         <Grid Margin="0,18,0,0">
@@ -38,7 +38,7 @@
             <TextBlock Text="Use Audio Metadata" Style="{StaticResource LabelTextBlock}"/>
             <!-- TODO: Change style to look more like the textboxes above when disabled -->
             <CheckBox x:Name="UseAudioMDCheckBox" IsChecked="True" Margin="10,0,0,0" VerticalAlignment="Center"
-                      IsEnabled="{Binding Song.AudioDirectory, Converter={StaticResource stringNotEmptyConverter}}"
+                      IsEnabled="{Binding Song.AudioDirectory, Converter={StaticResource StringNotEmptyConverter}}"
                       Checked="UseAudioMD_Checked" Unchecked="UseAudioMD_Unchecked"/>
         </StackPanel>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 18"/>
@@ -77,7 +77,7 @@
             </Button>
             <Button FontSize="12" HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource SelectedButton}">
                 <Button.IsEnabled>
-                    <MultiBinding Converter="{StaticResource stringsNotEmptyConverter}">
+                    <MultiBinding Converter="{StaticResource StringsNotEmptyConverter}">
                         <Binding Path="Song.PartitionDirectory"/>
                         <Binding Path="TitleText"/>
                     </MultiBinding>

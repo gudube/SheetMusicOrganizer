@@ -43,9 +43,9 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 else
                     canDrop = true;
             }
-            else if (dropInfo.Data is IEnumerable<object> data && data.All(x => x is SongItem))
+            else if (dropInfo.Data is IEnumerable<object> data)
             {
-                if (data.All(x => ((LibraryVM)DataContext).IsSongInMastery(mastery, (SongItem)x)))
+                if (data.All(x => x is SongItem item && ((LibraryVM)DataContext).IsSongInMastery(mastery, item)))
                 {
                     //AdornerText = "Songs already set to this mastery";
                 }
@@ -69,12 +69,12 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             {
                 ((LibraryVM)DataContext).SetSongMastery(song, targetItem);
             }
-            else
+            else if (dropInfo.Data is IEnumerable<object> data)
             {
-                IEnumerable<object> data = dropInfo.Data as IEnumerable<object>;
-                if (data != null && data.All(x => x is SongItem))
+                IEnumerable<object> songs = data as object[] ?? data.ToArray();
+                if (songs.All(x => x is SongItem))
                 {
-                    ((LibraryVM)DataContext).SetSongsMastery(data.Cast<SongItem>(), targetItem);
+                    ((LibraryVM)DataContext).SetSongsMastery(songs.Cast<SongItem>(), targetItem);
                 }
             }
 

@@ -7,5 +7,3 @@ also in model/viewmodel? see MainVM.cs (INotifyPropertyChanged, SetValue) or Pla
 Event from view to viewmodel? See MainVM.cs (DelegateCommand)
 
 set Datacontext: see MainWindow.xaml
-
-Warning: Trace.WriteLine(warning);

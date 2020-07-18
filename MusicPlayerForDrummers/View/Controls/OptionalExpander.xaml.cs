@@ -17,9 +17,9 @@ namespace MusicPlayerForDrummers.View.Controls
 
         private struct GridRow
         {
-            public ToggleButton toggle;
-            public bool? defaultValue;
-            public List<UIElement> elements;
+            public ToggleButton Toggle;
+            public bool? DefaultValue;
+            public List<UIElement> Elements;
         }
 
         public OptionalExpander()
@@ -44,16 +44,16 @@ namespace MusicPlayerForDrummers.View.Controls
                     int rowIndex = Grid.GetRow(elem);
                     if (elem is ToggleButton toggle)
                     {
-                        _rows[rowIndex].toggle = toggle;
-                        _rows[rowIndex].defaultValue = toggle.IsChecked;
+                        _rows[rowIndex].Toggle = toggle;
+                        _rows[rowIndex].DefaultValue = toggle.IsChecked;
                         toggle.Checked += Toggle_Changed; //TODO: need to unsubscribe?
                         toggle.Unchecked += Toggle_Changed; //TODO: need to unsubscribe?
                     }
                     else
                     {
-                        if (_rows[rowIndex].elements == null)
-                            _rows[rowIndex].elements = new List<UIElement>();
-                        _rows[rowIndex].elements.Add(elem);
+                        if (_rows[rowIndex].Elements == null)
+                            _rows[rowIndex].Elements = new List<UIElement>();
+                        _rows[rowIndex].Elements.Add(elem);
                     }
                 }
             }
@@ -62,25 +62,25 @@ namespace MusicPlayerForDrummers.View.Controls
         //TODO: Add (default) or (modified) to header to make it more clear
         private void Toggle_Changed(object sender, RoutedEventArgs e)
         {
-            GridRow changed = _rows.First(x => x.toggle == sender);
-            if(changed.toggle.IsChecked != changed.defaultValue) //togle became nondefault
+            GridRow changed = _rows.First(x => x.Toggle == sender);
+            if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {
-                changed.toggle.Opacity = _changedOpacity;
-                if(changed.elements != null)
-                    foreach (UIElement elem in changed.elements)
+                changed.Toggle.Opacity = _changedOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
                         elem.Opacity = _changedOpacity;
                 HeaderOpacity = _changedOpacity;
             }
             else //toggle became default, need to check other toggles
             {
-                changed.toggle.Opacity = _defaultOpacity;
-                if(changed.elements != null)
-                    foreach (UIElement elem in changed.elements)
+                changed.Toggle.Opacity = _defaultOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
                         elem.Opacity = _defaultOpacity;
 
                 foreach (GridRow row in _rows)
                 {
-                    if (row.toggle != null && row.toggle.IsChecked != row.defaultValue)
+                    if (row.Toggle != null && row.Toggle.IsChecked != row.DefaultValue)
                     {
                         HeaderOpacity = _changedOpacity;
                         return;

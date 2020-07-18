@@ -3,22 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:tools="clr-namespace:MusicPlayerForDrummers.View.Tools"
+             xmlns:modelItems="clr-namespace:MusicPlayerForDrummers.Model.Items"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
              mc:Ignorable="d" 
              Name="MainControl"
              d:DesignHeight="450">
     <UserControl.Resources>
-        <tools:RatingConverter x:Key="ratingConverter"/>
-        <tools:HexColorConverter x:Key="hexColorConverter"/>
-        <tools:DirFilenameConverter x:Key="dirFilenameConverter"/>
+        <tools:RatingConverter x:Key="RatingConverter"/>
+        <tools:HexColorConverter x:Key="HexColorConverter"/>
+        <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-        <DataGrid Name="Songs" Grid.Column="2" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.Session.Songs}"
+        <DataGrid Name="Songs" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.Session).Songs}"
+                  d:DataContext="{d:DesignInstance modelItems:SongItem}"
                   SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
-                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}"/>
+                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
             </DataGrid.InputBindings>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Number}" MinWidth="10" Width="25" ElementStyle="{StaticResource DataGridText}"/>
@@ -29,15 +31,15 @@
                 <DataGridTextColumn Header="Length" Binding="{Binding LengthMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Codec" Binding="{Binding CodecMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Bitrate" Binding="{Binding BitrateMD}" MinWidth="30" Width="65" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Rating" Binding="{Binding Rating, Converter={StaticResource ratingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
+                <DataGridTextColumn Header="Rating" Binding="{Binding Rating, Converter={StaticResource RatingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
                 <DataGridTextColumn Header="Mastery" Binding="{Binding Mastery.Name}" MinWidth="30" Width="60">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
-                            <Setter Property="Foreground" Value="{Binding Mastery.Color, Converter={StaticResource hexColorConverter}}"/>
+                            <Setter Property="Foreground" Value="{Binding Mastery.Color, Converter={StaticResource HexColorConverter}}"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Music Sheet Name" Binding="{Binding PartitionDirectory, Converter={StaticResource dirFilenameConverter}}" MinWidth="50" Width="100">
+                <DataGridTextColumn Header="Music Sheet Name" Binding="{Binding PartitionDirectory, Converter={StaticResource DirFilenameConverter}}" MinWidth="50" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
                             <Setter Property="ToolTip" Value="{Binding PartitionDirectory}"/>

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MusicPlayerForDrummers.ViewModel;
 
@@ -8,12 +9,12 @@ namespace MusicPlayerForDrummers.View.Windows
     /// <summary>
     /// Interaction logic for OpenFolderWindow.xaml
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public partial class OpenFolderWindow : Window
     {
         public OpenFolderWindow()
         {
-            this.Owner = App.Current.MainWindow;
-            this.DataContext = this;
+            this.Owner = Application.Current.MainWindow;
             InitializeComponent();
 
         }
@@ -30,8 +31,7 @@ namespace MusicPlayerForDrummers.View.Windows
         //TODO: Be able to import only audio
         private void SelectFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 Folder = dialog.FileName;

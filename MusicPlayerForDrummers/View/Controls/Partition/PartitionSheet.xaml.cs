@@ -38,7 +38,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         
         private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (DataContext is PartitionVM partitionVM && e.PropertyName == nameof(partitionVM.Session.Player.Position))
+            if (e.PropertyName == nameof(PartitionVM.Session.Player.Position))
                 UpdateScrollPos();
 
         }
@@ -64,7 +64,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             if (!string.IsNullOrWhiteSpace(partitionDir))
             {
                 //making sure it's an absolute path
-                var path = System.IO.Path.GetFullPath(partitionDir);
+                var path = Path.GetFullPath(partitionDir);
 
                 StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
                   //Then load pdf document on background thread
@@ -134,7 +134,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             }
         }
 
-        private double zoom = 1.0;
+        private double _zoom = 1.0;
         private void PartitionSheet_KeyDown(object sender, KeyEventArgs e)
         {
             /*switch (e.Key)
@@ -151,17 +151,17 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                     break;
             }*/
 
-            if(e.Key == Key.Add || e.Key == Key.Subtract)
+            if (e.Key == Key.Add || e.Key == Key.Subtract)
             {
-                double verticalScrollRatio = Scrollbar.ScrollableHeight == 0 ? 0 : (Scrollbar.VerticalOffset / Scrollbar.ScrollableHeight);
-                double horizontalScrollRatio = Scrollbar.ScrollableWidth == 0 ? 0.5 : (Scrollbar.HorizontalOffset / Scrollbar.ScrollableWidth);
-                double newZoom = zoom + (e.Key == Key.Add ? 0.1 : -0.1);
+                double verticalScrollRatio = Math.Abs(Scrollbar.ScrollableHeight) < 0.0001 ? 0 : (Scrollbar.VerticalOffset / Scrollbar.ScrollableHeight);
+                double horizontalScrollRatio = Math.Abs(Scrollbar.ScrollableWidth) < 0.0001 ? 0.5 : (Scrollbar.HorizontalOffset / Scrollbar.ScrollableWidth);
+                double newZoom = _zoom + (e.Key == Key.Add ? 0.1 : -0.1);
                 if (newZoom <= 0.01)
                     return;
 
-                zoom = newZoom;
+                _zoom = newZoom;
                 foreach (Image image in PagesContainer.Items)
-                    image.LayoutTransform = new ScaleTransform(zoom, zoom);
+                    image.LayoutTransform = new ScaleTransform(_zoom, _zoom);
 
                 Scrollbar.UpdateLayout();
                 Scrollbar.ScrollToVerticalOffset(verticalScrollRatio * Scrollbar.ScrollableHeight);

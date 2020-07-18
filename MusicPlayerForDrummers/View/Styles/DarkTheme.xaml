@@ -197,7 +197,6 @@
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
         <Setter Property="Padding" Value="7, 5"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
-        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>

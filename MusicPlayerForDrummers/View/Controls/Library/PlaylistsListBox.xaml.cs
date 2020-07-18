@@ -41,9 +41,9 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 else
                     canDrop = true;
             }
-            else if(dropInfo.Data is IEnumerable<object> data && data.All(x => x is SongItem))
+            else if(dropInfo.Data is IEnumerable<object> data)
             {
-                if(data.All(x => ((LibraryVM)DataContext).IsSongInPlaylist(playlist, (SongItem)x)))
+                if(data.All(x => x is SongItem item && ((LibraryVM)DataContext).IsSongInPlaylist(playlist, item)))
                 {
                     //AdornerText = "Song(s) already in playlist";
                 }
@@ -69,10 +69,11 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             }
             else
             {
-                IEnumerable<object> data = dropInfo.Data as IEnumerable<object>;
-                if (data != null && data.All(x => x is SongItem))
+                if (dropInfo.Data is IEnumerable<object> data)
                 {
-                    ((LibraryVM)DataContext).CopySongsToPlaylist(targetItem, data.Cast<SongItem>());
+                    IEnumerable<object> songs = data as object[] ?? data.ToArray();
+                    if(songs.All(x => x is SongItem))
+                        ((LibraryVM)DataContext).CopySongsToPlaylist(targetItem, songs.Cast<SongItem>());
                 }
             } 
             

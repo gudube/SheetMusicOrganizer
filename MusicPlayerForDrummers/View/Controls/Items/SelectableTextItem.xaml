@@ -11,14 +11,18 @@
         <tools:HexColorConverter x:Key="HexColorConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
-    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=items:SelectableTextItem}}">
+    <Grid>
+        <Grid.DataContext>
+            <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type items:SelectableTextItem}}" />
+        </Grid.DataContext>
         <Grid.ContextMenu>
-            <ContextMenu DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+            <ContextMenu DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
+                         d:DataContext="{d:DesignInstance items:SelectableTextItem}">
                 <ContextMenu.Style>
                     <!-- Hide the ContextMenu if playlist locked -->
                     <Style>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DataContext.IsLocked}" Value="True">
+                            <DataTrigger Binding="{Binding IsLocked}" Value="True">
                                 <Setter Property="ContextMenu.Visibility" Value="Hidden"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -26,7 +30,7 @@
                 </ContextMenu.Style>
                 <MenuItem Header="Set Smart Playlist"/>
                 <MenuItem Header="Rename" Click="RenameMenuItem_Click"/>
-                <MenuItem Header="Delete" Command="{Binding DataContext.DeleteConfirmCommand}"/>
+                <MenuItem Header="Delete" Command="{Binding DeleteConfirmCommand}"/>
             </ContextMenu>
         </Grid.ContextMenu>
         <Grid.ColumnDefinitions>
@@ -44,7 +48,7 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        <TextBox x:Name="MainTextBox"  KeyDown="TextBox_KeyDown" Visibility="Collapsed"/>
+        <TextBox Grid.Column="0" x:Name="MainTextBox"  KeyDown="TextBox_KeyDown" Visibility="Collapsed"/>
         <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
                                Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}}"/>
     </Grid>

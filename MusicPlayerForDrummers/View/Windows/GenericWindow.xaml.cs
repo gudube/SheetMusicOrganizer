@@ -10,13 +10,13 @@ namespace MusicPlayerForDrummers.View.Windows
         public GenericWindow(Window owner, string mainText, string continueButtonText = "")
         {
             this.DataContext = this;
+            Owner = owner;
+            InitializeComponent();
             MainText.Text = mainText;
             if (string.IsNullOrWhiteSpace(continueButtonText))
                 ContinueButton.Visibility = Visibility.Hidden;
             else
                 ContinueButton.Content = continueButtonText;
-            Owner = owner;
-            InitializeComponent();
         }
 
         //public static readonly DependencyProperty MainTextProperty = DependencyProperty.Register("MainText", typeof(string), typeof(GenericWindow));

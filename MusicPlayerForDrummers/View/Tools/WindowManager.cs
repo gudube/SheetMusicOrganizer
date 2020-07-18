@@ -6,38 +6,38 @@ namespace MusicPlayerForDrummers.View.Tools
 {
     public static class WindowManager
     {
-        private static Window openedWindow = null;
+        private static Window _openedWindow;
 
         public static void OpenAddNewSongWindow()
         {
-            if(openedWindow != null)
+            if(_openedWindow != null)
             {
-                openedWindow.Closed -= OpenedWindow_Closed;
-                openedWindow.Close();
+                _openedWindow.Closed -= OpenedWindow_Closed;
+                _openedWindow.Close();
             }
-            openedWindow = new AddNewSongWindow();
-            openedWindow.Closed += OpenedWindow_Closed;
-            openedWindow.ShowDialog();
+            _openedWindow = new AddNewSongWindow();
+            _openedWindow.Closed += OpenedWindow_Closed;
+            _openedWindow.ShowDialog();
         }
 
         public static void OpenOpenFolderWindow()
         {
-            if (openedWindow != null)
+            if (_openedWindow != null)
             {
-                openedWindow.Closed -= OpenedWindow_Closed;
-                openedWindow.Close();
+                _openedWindow.Closed -= OpenedWindow_Closed;
+                _openedWindow.Close();
             }
-            openedWindow = new OpenFolderWindow();
-            openedWindow.Closed += OpenedWindow_Closed;
-            openedWindow.ShowDialog();
+            _openedWindow = new OpenFolderWindow();
+            _openedWindow.Closed += OpenedWindow_Closed;
+            _openedWindow.ShowDialog();
         }
 
         private static void OpenedWindow_Closed(object sender, EventArgs e)
         {
-            if(openedWindow != null)
+            if(_openedWindow != null)
             {
-                openedWindow.Closed -= OpenedWindow_Closed;
-                openedWindow = null;
+                _openedWindow.Closed -= OpenedWindow_Closed;
+                _openedWindow = null;
             }
         }
     }

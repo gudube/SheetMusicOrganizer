@@ -74,7 +74,7 @@ namespace NaudioWrapper
             else
             {
                 _output.Play();
-                PlaybackStarting();
+                PlaybackStarting?.Invoke();
             }
         }
 
@@ -87,7 +87,7 @@ namespace NaudioWrapper
 
             if (force || isPlaying)
             {
-                PlaybackStopping();
+                PlaybackStopping?.Invoke();
                 _output.Pause();
             }
             else if (_output.PlaybackState == PlaybackState.Paused)
@@ -107,7 +107,7 @@ namespace NaudioWrapper
             if (_output.PlaybackState != PlaybackState.Stopped)
             {
                 _stopMeansEnded = false;
-                PlaybackStopping();
+                PlaybackStopping?.Invoke();
                 _output.Stop();
             }
             if(!soft)
@@ -125,7 +125,7 @@ namespace NaudioWrapper
             if (_stopMeansEnded)
             {
                 _stopMeansEnded = false;
-                PlaybackFinished();
+                PlaybackFinished?.Invoke();
             }
         }
         #endregion
@@ -135,7 +135,7 @@ namespace NaudioWrapper
         {
             if (_output != null && _output.PlaybackState == PlaybackState.Playing)
             {
-                PlaybackStopping();
+                PlaybackStopping?.Invoke();
                 _output.Stop();
             }
 

@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="View\Resources\error_emoji.png" />
     <None Remove="View\Resources\lock_64.png" />
     <None Remove="View\Resources\music_40.png" />
     <None Remove="View\Resources\music_dir_40.png" />
@@ -33,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="View\Resources\error_emoji.png" />
     <Resource Include="View\Resources\lock_64.png" />
     <Resource Include="View\Resources\music_40.png" />
     <Resource Include="View\Resources\music_dir_40.png" />

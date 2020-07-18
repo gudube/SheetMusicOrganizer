@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
              xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="1820"
              Style="{StaticResource InsideLightControl}"
              BorderThickness="0,0,0,1"
              Background="{StaticResource BackgroundLv2SolidColor}"
-             DataContext="{Binding PlayerVM}">
+             d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
     <Border x:Name="PlayerBorder" Style="{StaticResource BaseBlackBorder}" BorderThickness="0,0,0,1">
         <Grid>
             <Grid.ColumnDefinitions>

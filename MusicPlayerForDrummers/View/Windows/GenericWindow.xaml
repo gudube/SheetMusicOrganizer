@@ -3,12 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         mc:Ignorable="d" Style="{StaticResource ControlBackgroundLv1}"
         Title="GenericWindow" SizeToContent="WidthAndHeight">
     <StackPanel Orientation="Vertical" Margin="18">
-        <TextBlock x:Name="MainText" Grid.Row="0" Width="400" TextWrapping="Wrap" Margin="0,0,0,18" Style="{StaticResource LabelTextBlock}"/>
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="MainText" Width="400" TextWrapping="Wrap" Margin="0,0,0,18" Style="{StaticResource LabelTextBlock}"/>
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>

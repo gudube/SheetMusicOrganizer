@@ -24,7 +24,7 @@ namespace MusicPlayerForDrummers.Model
         //private readonly static string _dataSource = "Data Source = " + _databaseFile;
         private static SqliteTransaction _transaction;
 
-        public static void InitializeDatabase()
+        public static void InitializeDatabase(bool force = false)
         {
             //TODO: Add verification of database schema (tables have the good format)
             //TODO: Add a button to reset the database with warning that it will reset the software's content
@@ -39,7 +39,7 @@ namespace MusicPlayerForDrummers.Model
                 OpenDefaultDatabase();
             }
 
-            CreateTables(false);
+            CreateTables(force);
             LoadAllMasteryLevels();
         }
 
@@ -120,7 +120,8 @@ namespace MusicPlayerForDrummers.Model
         #region Generic Query Methods
         private static void CreateTable(SqliteConnection con, BaseTable table, bool force = false)
         {
-            DropTable(con, table.TableName);
+            if(force)
+                DropTable(con, table.TableName);
             SqliteCommand cmd = con.CreateCommand();
             cmd.CommandText = "CREATE TABLE " + (force ? "" : "IF NOT EXISTS ") + table.TableName + "(";
             cmd.CommandText += string.Join(", ", table.GetAllColumns().Select(x => x.GetFormattedColumnSchema())) + ")";
@@ -136,21 +137,28 @@ namespace MusicPlayerForDrummers.Model
 
         private static void CreateIndex(SqliteConnection con, BaseTable table, bool unique, bool force = false, params string[] colNames)
         {
+            if (force)
+            {
+                SqliteCommand dropCmd = con.CreateCommand();
+                dropCmd.CommandText = $"DROP INDEX IF EXISTS {string.Join("_", colNames)}Index";
+                dropCmd.ExecuteNonQuery();
+            }
+
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = unique ? "CREATE UNIQUE INDEX " : "CREATE INDEX " + (force ? "" : "IF NOT EXISTS ");
-            cmd.CommandText += string.Join("_", colNames) + "Index ON " + table.TableName + "(" + string.Join(", ", colNames) + ")";
+            cmd.CommandText = (unique ? "CREATE UNIQUE INDEX " : "CREATE INDEX ") + (force ? "" : "IF NOT EXISTS ");
+            cmd.CommandText += $"{string.Join("_", colNames)}Index ON {table.TableName}({string.Join(", ", colNames)})";
             cmd.ExecuteNonQuery();
         }
 
         private static bool Exists(SqliteConnection con, BaseTable table, SqlColumn[] columns, params object[] values)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + table.TableName + " WHERE ";
+            cmd.CommandText = $"SELECT EXISTS(SELECT 1 FROM {table.TableName} WHERE ";
             string[] conditions = new string[columns.Length];
             for (int i = 0; i < columns.Length; i++)
             {
-                string paramName = "@" + columns[i];
-                conditions[i] = columns[i] + " = " + paramName;
+                string paramName = $"@{columns[i]}";
+                conditions[i] = $"{columns[i]} = {paramName}";
                 cmd.Parameters.Add(CreateParameter(paramName, columns[i].SqlType, values[i]));
             }
             cmd.CommandText += string.Join(" AND ", conditions) + ")";
@@ -166,8 +174,7 @@ namespace MusicPlayerForDrummers.Model
         {
             SqliteCommand cmd = con.CreateCommand();
             string[] formattedCols = itemTable.GetAllColumns().Select(x => itemTable.TableName + "." + x).ToArray();
-            cmd.CommandText = "SELECT " + string.Join(", ", formattedCols);
-            cmd.CommandText += " FROM " + itemTable.TableName + " " + condition;
+            cmd.CommandText = $"SELECT {string.Join(", ", formattedCols)} FROM {itemTable.TableName} {condition}";
             cmd.Parameters.AddRange(parameters);
             return cmd.ExecuteReader();
         }
@@ -176,15 +183,14 @@ namespace MusicPlayerForDrummers.Model
         {
             SqliteCommand cmd = con.CreateCommand();
             string[] formattedCols = itemTable.GetAllColumns().Select(x => itemTable.TableName + "." + x).ToArray();
-            cmd.CommandText = "SELECT " + string.Join(", ", formattedCols);
-            cmd.CommandText += " FROM " + itemTable.TableName + " " + safeCondition;
+            cmd.CommandText = $"SELECT {string.Join(", ", formattedCols)} FROM {itemTable.TableName} {safeCondition}";
             return cmd.ExecuteReader();
         }
 
         private static SqliteDataReader GetAllItems(SqliteConnection con, string tableName)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT * FROM " + tableName;
+            cmd.CommandText = $"SELECT * FROM {tableName}";
             return cmd.ExecuteReader();
         }
 
@@ -193,9 +199,6 @@ namespace MusicPlayerForDrummers.Model
         private static void InsertRow(SqliteConnection con, BaseTable table, BaseModelItem row, bool ignoreConflict = false)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = ignoreConflict ? "INSERT OR IGNORE " : "INSERT ";
-            cmd.CommandText += "INTO " + table.TableName + "(";
-
             SqlColumn[] columns = table.GetCustomColumns();
             string[] paramNames = new string[columns.Length];
             object[] formattedValues = row.GetCustomValues();
@@ -204,10 +207,12 @@ namespace MusicPlayerForDrummers.Model
                 paramNames[i] = "@" + columns[i];
                 cmd.Parameters.Add(CreateParameter(paramNames[i], columns[i].SqlType, formattedValues[i]));
             }
+            cmd.CommandText = $"{(ignoreConflict ? "INSERT OR IGNORE " : "INSERT ")} INTO {table.TableName} (";
             cmd.CommandText += string.Join<SqlColumn>(", ", columns);
-            cmd.CommandText += ") VALUES(" + string.Join(',', paramNames) + ")"; //INSERT INTO car(name, price) VALUES(@name, @price)
+            cmd.CommandText += $") VALUES({string.Join(',', paramNames)})";
             cmd.ExecuteNonQuery();
 
+            cmd = con.CreateCommand();
             cmd.CommandText = "select last_insert_rowid()";
             row.Id = Convert.ToInt32(cmd.ExecuteScalar());
         }
@@ -234,19 +239,16 @@ namespace MusicPlayerForDrummers.Model
         private static void UpdateRow(SqliteConnection con, BaseTable table, BaseModelItem row)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "UPDATE " + table.TableName + " SET ";
-
             SqlColumn[] columns = table.GetCustomColumns();
             object[] colValues = row.GetCustomValues();
             string[] preparedUpdate = new string[columns.Length];
             for (int i = 0; i < columns.Length; i++)
             {
                 string paramName = "@" + columns[i];
-                preparedUpdate[i] = columns[i] + " = " + paramName;
+                preparedUpdate[i] = $"{columns[i]} = {paramName}";
                 cmd.Parameters.Add(CreateParameter(paramName, columns[i].SqlType, colValues[i]));
             }
-            cmd.CommandText += string.Join(", ", preparedUpdate);
-            cmd.CommandText += " WHERE " + table.Id + " = " + row.Id;
+            cmd.CommandText = $"UPDATE {table.TableName} SET {string.Join(", ", preparedUpdate)} WHERE {table.Id} = {row.Id}";
             cmd.ExecuteNonQuery();
         }
 
@@ -255,8 +257,7 @@ namespace MusicPlayerForDrummers.Model
             string paramName = "@" + column;
 
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = "DELETE FROM " + table.TableName + " WHERE ";
-            cmd.CommandText += table.Id + " = " + paramName;
+            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {table.Id} = {paramName}";
             cmd.Parameters.Add(CreateParameter(paramName, column.SqlType, value));
             cmd.ExecuteNonQuery();
         }
@@ -268,15 +269,12 @@ namespace MusicPlayerForDrummers.Model
             cmd.ExecuteNonQuery();
         }
 
-/*
-        private static void DeleteRows(SqliteConnection con, BaseTable table, string condition, params SqliteParameter[] parameters)
+        private static bool IsEmpty(SqliteConnection con, BaseTable table)
         {
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = $"DELETE FROM {table.TableName} {condition}";
-            cmd.Parameters.AddRange(parameters);
-            cmd.ExecuteNonQuery();
+            cmd.CommandText = $"SELECT CASE WHEN EXISTS(SELECT 1 FROM {table.TableName}) THEN 0 ELSE 1 END";
+            return Convert.ToBoolean(cmd.ExecuteScalar());
         }
-*/
         #endregion
 
         #region Playlist
@@ -354,7 +352,7 @@ namespace MusicPlayerForDrummers.Model
         {
             SongTable songTable = new SongTable();
             SqliteParameter param = CreateParameter("@" + songTable.PartitionDirectory, songTable.PartitionDirectory.SqlType, partitionDir);
-            string condition = "WHERE " + songTable.TableName + "." + songTable.PartitionDirectory + " = " + param.ParameterName;
+            string condition = $"WHERE {songTable.TableName}.{songTable.PartitionDirectory} = {param.ParameterName}";
             using (var con = CreateConnection())
             {
                 con.Open();
@@ -378,12 +376,12 @@ namespace MusicPlayerForDrummers.Model
             SongTable songTable = new SongTable();
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
             string psName = playlistSongTable.TableName;
-            string condition = "INNER JOIN (SELECT " + playlistSongTable.SongId + " FROM " + psName
-                + " WHERE " + psName + "." + playlistSongTable.PlaylistId + " = " + playlistId + ") ps"
-                + " ON ps." + playlistSongTable.SongId + " = " + songTable.TableName + "." + songTable.Id;
+            string condition = $"INNER JOIN (SELECT {playlistSongTable.SongId} FROM {psName}"
+                + $" WHERE {psName}.{playlistSongTable.PlaylistId} = {playlistId}) ps"
+                + $" ON ps.{playlistSongTable.SongId} = {songTable.TableName}.{songTable.Id}";
 
             if (masteryIDs.Any())
-                condition += " WHERE " + songTable.TableName + "." + songTable.MasteryId + " IN (" + string.Join(", ", masteryIDs) + ")";
+                condition += $" WHERE {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
 
             using (var con = CreateConnection())
             {
@@ -400,9 +398,11 @@ namespace MusicPlayerForDrummers.Model
             List<SongItem> songs = new List<SongItem>();
             SongTable songTable = new SongTable();
 
-            string condition = "";
+            string condition;
             if (masteryIDs.Any())
-                condition += " WHERE " + songTable.TableName + "." + songTable.MasteryId + " IN (" + string.Join(", ", masteryIDs) + ")";
+                condition = $" WHERE {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
+            else
+                condition = "";
 
             using (var con = CreateConnection())
             {
@@ -424,13 +424,13 @@ namespace MusicPlayerForDrummers.Model
                 con.Open();
 
                 SqliteCommand cmd = con.CreateCommand();
-                cmd.CommandText = "SELECT min(" + songTable.TableName + "." + songTable.Id + ")";
+                cmd.CommandText = $"SELECT min({songTable.TableName}.{songTable.Id})";
                 foreach (SqlColumn col in songTable.GetCustomColumns())
-                    cmd.CommandText += ", " + songTable.TableName + "." + col;
-                cmd.CommandText += " FROM " + songTable.TableName + " UNION " + playlistSongTable.TableName;
-                cmd.CommandText += " WHERE " + playlistSongTable.TableName + "." + playlistSongTable.PlaylistId + " == " + playlistId;
-                cmd.CommandText += " AND " + songTable.TableName + "." + songTable.MasteryId + " IN " + "(" + string.Join(", ", masteryIDs) + ")";
-                cmd.CommandText += " AND " + songTable.TableName + "." + songTable.Id + (next ? " > " : " < ") + currentSongId; //TODO: Replace with ID in playlist from playlistSongTable
+                    cmd.CommandText += $", {songTable.TableName}.{col}";
+                cmd.CommandText += $" FROM {songTable.TableName} UNION {playlistSongTable.TableName}";
+                cmd.CommandText += $" WHERE {playlistSongTable.TableName}.{playlistSongTable.PlaylistId} == {playlistId}";
+                cmd.CommandText += $" AND {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
+                cmd.CommandText += $" AND {songTable.TableName}.{songTable.Id} {(next ? ">" : "<")} {currentSongId}"; //TODO: Replace with ID in playlist from playlistSongTable
                 SqliteDataReader dataReader = cmd.ExecuteReader();
                 if (dataReader.Read())
                     return new SongItem(dataReader);
@@ -476,7 +476,7 @@ namespace MusicPlayerForDrummers.Model
         public static void DeleteSongs(int[] songIDs)
         {
             SongTable songTable = new SongTable();
-            string safeCondition = "WHERE " + songTable.Id.Name + " IN (" + string.Join(", ", songIDs) + ")";
+            string safeCondition = $"WHERE {songTable.Id.Name} IN ( {string.Join(", ", songIDs)})";
             using (SqliteConnection con = CreateConnection())
             {
                 con.Open();
@@ -486,19 +486,22 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Mastery
-        public const int DefaultMasteryId = 0;
+        private const int DefaultMasteryId = 0;
         private static void CreateMasteryTable(SqliteConnection con, bool force = false)
         {
             MasteryTable masteryTable = new MasteryTable();
             CreateTable(con, masteryTable, force);
 
-            MasteryItem defaultUnset = new MasteryItem("Unset", true, "#F0FDFA") {Id = DefaultMasteryId};
-            MasteryItem defaultBeginner = new MasteryItem("Beginner", true, "#D8F4EF");
-            MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true, "#B7ECEA");
-            MasteryItem defaultAdvanced = new MasteryItem("Advanced", true, "#97DEE7");
-            MasteryItem defaultMastered = new MasteryItem("Mastered", true, "#78C5DC");
+            if (IsEmpty(con, masteryTable))
+            {
+                MasteryItem defaultUnset = new MasteryItem("Unset", true, "#F0FDFA") { Id = DefaultMasteryId };
+                MasteryItem defaultBeginner = new MasteryItem("Beginner", true, "#D8F4EF");
+                MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true, "#B7ECEA");
+                MasteryItem defaultAdvanced = new MasteryItem("Advanced", true, "#97DEE7");
+                MasteryItem defaultMastered = new MasteryItem("Mastered", true, "#78C5DC");
 
-            InsertRows(con, masteryTable, new BaseModelItem[] { defaultUnset, defaultBeginner, defaultIntermediate, defaultAdvanced, defaultMastered });
+                InsertRows(con, masteryTable, new BaseModelItem[] { defaultUnset, defaultBeginner, defaultIntermediate, defaultAdvanced, defaultMastered });
+            }
         }
 
         public static List<MasteryItem> GetAllMasteryLevels()
@@ -610,8 +613,8 @@ namespace MusicPlayerForDrummers.Model
         public static void RemoveSongsFromPlaylist(int playlistId, int[] songIDs)
         {
             PlaylistSongTable psTable = new PlaylistSongTable();
-            string safeCondition = "WHERE " + psTable.PlaylistId.Name + " = " + playlistId + " AND "
-                + psTable.SongId.Name + " IN(" + string.Join(", ", songIDs) + ")";
+            string safeCondition = $"WHERE {psTable.PlaylistId.Name} = {playlistId} AND "
+                + $"{psTable.SongId.Name} IN( {string.Join(", ", songIDs)})";
 
             using (SqliteConnection con = CreateConnection())
             {

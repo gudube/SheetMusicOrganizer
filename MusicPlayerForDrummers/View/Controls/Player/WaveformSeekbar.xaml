@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+             xmlns:local="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
              mc:Ignorable="d" 
              d:DesignHeight="53" d:DesignWidth="1590"
              Template="{DynamicResource SliderSeekbarTemplate}"
-             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True">
+             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True"
+             d:DataContext="{d:DesignInstance local:WaveformSeekbar}">
     <Slider.Resources>
-        <SolidColorBrush x:Key="SliderThumb.Static.Background" Color="#FFF0F0F0"/>
+        <!--<SolidColorBrush x:Key="SliderThumb.Static.Background" Color="#FFF0F0F0"/>
         <SolidColorBrush x:Key="SliderThumb.Static.Border" Color="#FFACACAC"/>
         <SolidColorBrush x:Key="SliderThumb.MouseOver.Background" Color="#FFDCECFC"/>
         <SolidColorBrush x:Key="SliderThumb.MouseOver.Border" Color="#FF7Eb4EA"/>
@@ -17,7 +18,7 @@
         <SolidColorBrush x:Key="SliderThumb.Pressed.Border" Color="#FF569DE5"/>
         <SolidColorBrush x:Key="SliderThumb.Disabled.Background" Color="#FFF0F0F0"/>
         <SolidColorBrush x:Key="SliderThumb.Disabled.Border" Color="#FFD9D9D9"/>
-        <SolidColorBrush x:Key="SliderThumb.Track.Background" Color="#FFE7EAEA"/>
+        <SolidColorBrush x:Key="SliderThumb.Track.Background" Color="#FFE7EAEA"/>-->
         <SolidColorBrush x:Key="SliderThumb.Track.Border" Color="#FFD6D6D6"/>
         <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
             <Grid VerticalAlignment="Stretch" Width="4">
@@ -26,8 +27,8 @@
                 </Border>
                 <!--<Path x:Name="grip" Data="M 0,0 C0,0 11,0 11,0 11,0 11,18 11,18 11,18 0,18 0,18 0,18 0,0 0,0 z" Fill="{StaticResource SliderThumb.Static.Background}" SnapsToDevicePixels="True" StrokeThickness="1" Stretch="Fill" Stroke="{StaticResource SliderThumb.Static.Border}" UseLayoutRounding="True" VerticalAlignment="Center"/>-->
             </Grid>
-            <ControlTemplate.Triggers>
-                <!--<Trigger Property="IsMouseOver" Value="true">
+            <!--<ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
                     <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.MouseOver.Border}"/>
                 </Trigger>
@@ -38,8 +39,8 @@
                 <Trigger Property="IsEnabled" Value="false">
                     <Setter Property="Fill" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Background}"/>
                     <Setter Property="Stroke" TargetName="grip" Value="{StaticResource SliderThumb.Disabled.Border}"/>
-                </Trigger>-->
-            </ControlTemplate.Triggers>
+                </Trigger>
+            </ControlTemplate.Triggers>-->
         </ControlTemplate>
         <ControlTemplate x:Key="SliderThumbHorizontalPreview" TargetType="{x:Type Thumb}">
             <Rectangle Fill="{StaticResource SpecialSolidColor}" VerticalAlignment="Stretch" Width="2" Opacity="0.5"/>
@@ -96,7 +97,7 @@
                             <Thumb x:Name="PreviewThumb" Focusable="False" OverridesDefaultStyle="True" Template="{StaticResource SliderThumbHorizontalPreview}"/>
                         </Track.Thumb>
                     </Track>
-                    <Popup Name="PreviewPopup" AllowsTransparency="True" Placement="Relative" PlacementTarget="{Binding ElementName=PreviewTrack}" IsOpen="False">
+                    <Popup Grid.Row="1" Name="PreviewPopup" AllowsTransparency="True" Placement="Relative" PlacementTarget="{Binding ElementName=PreviewTrack}" IsOpen="False">
                         <TextBlock Text="{Binding PreviewTime}" Style="{StaticResource PopupTextBlock}"/>
                     </Popup>
                     <Track x:Name="PART_Track" Grid.Row="1">

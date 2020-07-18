@@ -1,11 +1,11 @@
 ﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.ComponentModel;
 using System.IO;
 using MusicPlayerForDrummers.Model.Items;
+using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -79,7 +79,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (!(Session.SelectedPlaylist is PlaylistItem plItem))
             {
-                Trace.WriteLine("Expected to have a PlaylistItem selected when DeleteSelectedPlaylist is called.");
+                Log.Warning("Expected to have a PlaylistItem selected when DeleteSelectedPlaylist is called but is {selected}", Session.SelectedPlaylist);
                 return;
             }
             //Session.SelectedPlaylist = null; //TODO: Go to the next one, or last one if no next
@@ -91,7 +91,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (!(Session.SelectedPlaylist is PlaylistItem plItem))
             {
-                Trace.WriteLine("Expected to have a PlaylistItem selected when RenameSelectedPlaylist is called.");
+                Log.Warning("Expected to have a PlaylistItem selected when RenameSelectedPlaylist is called but is {selected}", Session.SelectedPlaylist);
                 return;
             }
             plItem.Name = playlistName;
@@ -140,10 +140,11 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
-            DbHandler.SetSongsMastery(songs, mastery);
+            IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
+            DbHandler.SetSongsMastery(songItems, mastery);
             if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
-                foreach (SongItem song in songs)
+                foreach (SongItem song in songItems)
                     if (Session.Songs.Contains(song))
                         Session.Songs.Remove(song);
             }
@@ -211,7 +212,7 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 foreach (string subDir in Directory.GetDirectories(dir))
                 {
-                    AddFolder(subDir, recursive, useAudioMD);
+                    AddFolder(subDir, true, useAudioMD);
                 }
             }
 
@@ -256,13 +257,13 @@ namespace MusicPlayerForDrummers.ViewModel
         private void RemoveSelectedSongs()
         {
             if (!(Session.SelectedPlaylist is PlaylistItem)) {
-                Trace.WriteLine("Expected selected playlist to be a PlaylistItem when RemoveSelectedSongs(), but is : " + Session.SelectedPlaylist.GetType().Name);
+                Log.Warning("Expected selected playlist to be a PlaylistItem when RemoveSelectedSongs(), but is {SelectedPlaylist}", Session.SelectedPlaylist);
                 return;
             }
 
             if (Session.SelectedSongs.Count == 0)
             {
-                Trace.WriteLine("Expected songs to be selected when RemoveSelectedSongs()");
+                Log.Warning("Expected songs to be selected when RemoveSelectedSongs()");
                 return;
             }
 

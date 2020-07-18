@@ -17,8 +17,7 @@ namespace MusicPlayerForDrummers.View.Windows
         //TODO: Ouvrir fenetre si chanson existe deja
         public AddNewSongWindow()
         {
-            this.Owner = App.Current.MainWindow;
-            this.DataContext = this;
+            this.Owner = Application.Current.MainWindow;
             Song = new SongItem();
             InitializeComponent();
             ResetSongInformations();
@@ -146,12 +145,13 @@ namespace MusicPlayerForDrummers.View.Windows
                     {
                         try
                         {
+                            throw new Exception("test");
                             mainVM.GoToSong(Song.PartitionDirectory);
                             this.Close();
                         }
                         catch (Exception ex)
                         {
-                            string error = "Could not find the music sheet in the library.";
+                            string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
                             Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
                             ErrorWindow errorWindow = new ErrorWindow(this, error);
                         }

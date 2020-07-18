@@ -3,10 +3,10 @@ using MusicPlayerForDrummers.ViewModel.Tools;
 using NaudioWrapper;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
 using MusicPlayerForDrummers.Model.Items;
+using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -18,7 +18,7 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 Interval = TimeSpan.FromMilliseconds(50)
             };
-            timer.Tick += (sender, e) => PlayerTimerUpdate();
+            timer.Tick += (sender, e) => PlayerTimerUpdate?.Invoke();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
 
             Player = new AudioPlayer(0.25f);
@@ -84,9 +84,9 @@ namespace MusicPlayerForDrummers.ViewModel
         public void SetSelectedSongPlaying()
         {
             if (!(this.SelectedSongs.Count > 0))
-                Trace.WriteLine("Tried to start playing a song without songs selected.");
+                Log.Warning("Tried to start playing a song without songs selected.");
             else if (!(this.SelectedPlaylist is PlaylistItem pl))
-                Trace.WriteLine("Tried to start playing a song without a playlist selected.");
+                Log.Warning("Tried to start playing a song without a valid playlist selected, is {playlist}", SelectedPlaylist);
             else
                 SetPlayingSong(this.SelectedSongs[0], pl, this.SelectedMasteryLevels);
         }

@@ -4,27 +4,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
-             xmlns:model="clr-namespace:MusicPlayerForDrummers.Model"
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:items="clr-namespace:MusicPlayerForDrummers.Model.Items"
-             xmlns:items1="clr-namespace:MusicPlayerForDrummers.View.Controls.Items"
+             xmlns:modelItems="clr-namespace:MusicPlayerForDrummers.Model.Items"
+             xmlns:viewItems="clr-namespace:MusicPlayerForDrummers.View.Controls.Items"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
-             Style="{StaticResource InsideLightControl}">
+             Style="{StaticResource InsideLightControl}"
+             d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Session.Playlists, Mode=OneWay}"
              SelectedItem="{Binding Path=Session.SelectedPlaylist, Mode=TwoWay}" 
              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=PlaylistsUC}">
         <ListBox.Resources>
-            <DataTemplate DataType="{x:Type items:PlaylistItem}">
-                <items1:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
+            <DataTemplate DataType="{x:Type modelItems:PlaylistItem}">
+                <viewItems:SelectableTextItem RenameConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.RenameSelectedPlaylistCommand}"
                                           DeleteConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.DeleteSelectedPlaylistCommand}"
                                           IsLocked="{Binding IsLocked}"
                                           Text="{Binding Name}"/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type items:AddPlaylistItem}">
-                <items1:AdderItem ConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.CreateNewPlaylistCommand}"/>
+            <DataTemplate DataType="{x:Type modelItems:AddPlaylistItem}">
+                <viewItems:AdderItem ConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.CreateNewPlaylistCommand}"/>
             </DataTemplate>
         </ListBox.Resources>
     </ListBox>
