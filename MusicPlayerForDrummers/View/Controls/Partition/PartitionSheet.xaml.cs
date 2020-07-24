@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +12,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
 namespace MusicPlayerForDrummers.View.Controls.Partition
 {
@@ -24,6 +26,12 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             InitializeComponent();
             DataContextChanged += PartitionSheet_DataContextChanged;
             this.KeyDown += PartitionSheet_KeyDown;
+        }
+
+        private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if(!Focus())
+                Log.Warning("Could not get focus on partition sheet once loaded.");
         }
 
         private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -137,20 +145,6 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         private double _zoom = 1.0;
         private void PartitionSheet_KeyDown(object sender, KeyEventArgs e)
         {
-            /*switch (e.Key)
-            {
-                case Key.Add:
-                    zoom += 0.1;
-                    foreach (Image image in PagesContainer.Items)
-                        image.LayoutTransform = new ScaleTransform(zoom, zoom);
-                    break;
-                case Key.Subtract:
-                    zoom -= 0.1;
-                    foreach (Image image in PagesContainer.Items)
-                        image.LayoutTransform = new ScaleTransform(zoom, zoom);
-                    break;
-            }*/
-
             if (e.Key == Key.Add || e.Key == Key.Subtract)
             {
                 double verticalScrollRatio = Math.Abs(Scrollbar.ScrollableHeight) < 0.0001 ? 0 : (Scrollbar.VerticalOffset / Scrollbar.ScrollableHeight);
