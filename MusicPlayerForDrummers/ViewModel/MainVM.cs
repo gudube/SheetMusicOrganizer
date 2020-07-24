@@ -1,6 +1,7 @@
 ﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
+using System.Diagnostics;
 using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
@@ -35,8 +36,8 @@ namespace MusicPlayerForDrummers.ViewModel
         private BaseViewModel _currentViewModel;
         public BaseViewModel CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
 
-        public DelegateCommand SwitchLibraryViewCommand { get; private set; }
-        public DelegateCommand SwitchPartitionViewCommand { get; private set; }
+        public DelegateCommand SwitchLibraryViewCommand { get; }
+        public DelegateCommand SwitchPartitionViewCommand { get; }
 
         private void SetView(BaseViewModel view)
         {
@@ -50,6 +51,11 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Menu
+        public void LoadDatabase(string databasePath)
+        {
+            DbHandler.OpenDatabase(databasePath);
+        }
+
         public void GoToSong(string partitionFilename)
         {
             SongItem song = DbHandler.GetSong(partitionFilename);
@@ -68,8 +74,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
             return false;
         }
-
-        
         #endregion
     }
 }

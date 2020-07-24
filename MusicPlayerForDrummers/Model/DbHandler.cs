@@ -1,11 +1,14 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.Model.Tables;
 using Serilog;
+using Application = System.Windows.Application;
 
 namespace MusicPlayerForDrummers.Model
 {
@@ -16,12 +19,9 @@ namespace MusicPlayerForDrummers.Model
 
 
         #region Init
-        //TODO: Change Database Dir when exporting .exe
-        //private readonly static string _databaseDir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Data");
-        //private readonly static string _databaseFileName = "Application.sqlite";
-        //private readonly static string _databaseFile = Path.Combine(_databaseDir, _databaseFileName);
-        //private const string _databaseFile = @"C:\Users\Guilhem\Documents\Ecole\Ecole\Private\Project\Application.sqlite";
-        //private readonly static string _dataSource = "Data Source = " + _databaseFile;
+        //TODO: put it in settings?
+        public static string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
+
         private static SqliteTransaction _transaction;
 
         public static void InitializeDatabase(bool force = false)
@@ -30,12 +30,14 @@ namespace MusicPlayerForDrummers.Model
             //TODO: Add a button to reset the database with warning that it will reset the software's content
             if(Settings.Default.RecentDBs.Count == 0)
             {
+                Log.Information("Opening the default database");
                 OpenDefaultDatabase();
             }
             else if (!File.Exists(Settings.Default.RecentDBs[0]))
             {
                 //todo: Open warning window that the database couldn't open. Can create a new one or open one
                 //for now:
+                Log.Error("Could not open the database file. Now opening the default one.");
                 OpenDefaultDatabase();
             }
 
@@ -45,14 +47,29 @@ namespace MusicPlayerForDrummers.Model
 
         private static void OpenDefaultDatabase()
         {
-            string defaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
-            Directory.CreateDirectory(defaultDbDir);
-            string defaultDbPath = Path.Combine(defaultDbDir, "Default.sqlite");
+            Directory.CreateDirectory(DefaultDbDir);
+            string defaultDbPath = Path.Combine(DefaultDbDir, "Default.sqlite");
             SaveOpenedDbSettings(defaultDbPath);
             if (!File.Exists(defaultDbPath))
             {
                 File.Create(defaultDbPath).Close();
             }
+        }
+
+        public static void OpenDatabase(string databasePath)
+        {
+            if (!File.Exists(databasePath))
+            {
+                //todo: Open warning window that the database couldn't open. Can create a new one or open one
+                Log.Error("Could not open the database file. Now opening the default one.");
+                OpenDefaultDatabase();
+            }
+
+            SaveOpenedDbSettings(databasePath);
+
+            //todo: Remove all reference in project to the win forms assembly (unless its there for a reason?)
+            Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
         }
 
         private static void SaveOpenedDbSettings(string dBOpenedPath)

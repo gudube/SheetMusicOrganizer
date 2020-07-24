@@ -229,7 +229,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
             if(partitionFiles.Count == 1 && audioFiles.Count == 1)
             {
-                AddSong(new SongItem(partitionFiles[0], audioFiles[0], 0, useAudioMD));
+                AddSong(new SongItem(partitionFiles[0] ?? "", audioFiles[0] ?? "", 0, useAudioMD));
             }
             else
             {

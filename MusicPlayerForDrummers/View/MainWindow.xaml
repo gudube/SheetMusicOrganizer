@@ -11,7 +11,7 @@
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized">
     <Window.DataContext>
-        <vm:MainVM/>
+        <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
@@ -23,9 +23,13 @@
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Height="20">
-            <MenuItem Header="File">
-                <MenuItem Header="Add New Song" Click="AddNewSongMenuItem_Click"/>
-                <MenuItem Header="Open Folder" Click="OpenFolderMenuItem_Click"/>
+            <MenuItem x:Name="FileMenuItem" Header="File">
+                <MenuItem Header="Import Song" Click="AddNewSongMenuItem_Click"/>
+                <MenuItem Header="Import Folder" Click="OpenFolderMenuItem_Click"/>
+                <MenuItem Header="New Library" Click="NewDatabase_OnClick"/>
+                <MenuItem Header="Open Library" Click="LoadDatabase_OnClick"/>
+                <Separator/>
+                <TextBlock Text="Recently Opened"/>
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
