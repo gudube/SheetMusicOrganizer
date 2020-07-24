@@ -40,18 +40,8 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             if(e.Key == Key.Delete)
             {
                 ((LibraryVM)this.DataContext).RemoveSelectedSongsCommand.Execute(null);
+                e.Handled = true;
             }
-        }
-
-        private void SongsGridScroll_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            MouseWheelEventArgs eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-            eventArg.Source = e.Source;
-
-            ScrollViewer scv = (ScrollViewer) sender;
-            scv.RaiseEvent(eventArg);
-            e.Handled = true;
         }
     }
 }

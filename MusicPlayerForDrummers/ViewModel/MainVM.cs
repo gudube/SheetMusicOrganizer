@@ -11,7 +11,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DbHandler.InitializeDatabase(true);
+            DbHandler.InitializeDatabase();
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
@@ -71,11 +71,5 @@ namespace MusicPlayerForDrummers.ViewModel
 
         
         #endregion
-
-        public enum EDirection
-        {
-            Left = -1,
-            Right = +1
-        }
     }
 }
