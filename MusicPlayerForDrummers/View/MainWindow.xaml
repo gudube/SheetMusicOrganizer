@@ -9,7 +9,8 @@
         xmlns:controls="clr-namespace:MusicPlayerForDrummers.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
-        WindowState="Maximized">
+        WindowState="Maximized"
+        PreviewKeyDown="MainWindow_OnPreviewKeyDown">
     <Window.DataContext>
         <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>

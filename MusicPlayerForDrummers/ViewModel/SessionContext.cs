@@ -1,6 +1,6 @@
 ﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
-using NaudioWrapper;
+using NAudioWrapper;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -14,14 +14,24 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public SessionContext()
         {
+            Player = new AudioPlayer();
+
             DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render)
             {
                 Interval = TimeSpan.FromMilliseconds(50)
             };
             timer.Tick += (sender, e) => PlayerTimerUpdate?.Invoke();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
-
-            Player = new AudioPlayer(0.25f);
+            
+            if (Settings.Default.Volume >= 0 && Settings.Default.Volume <= 1)
+            {
+                Player.Volume = Settings.Default.Volume;
+            }
+            else
+            {
+                Log.Warning("Got invalid volume from settings {volume}", Settings.Default.Volume);
+                Player.Volume = 0.75f;
+            }
             Player.PlaybackStarting += () => timer.Start();
             Player.PlaybackStopping += () => timer.Stop();
         }
@@ -114,6 +124,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region AudioPlayer
         public AudioPlayer Player { get; }
+
+        
 
         public event Action PlayerTimerUpdate;
         #endregion

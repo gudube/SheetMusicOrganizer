@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Windows;
+//using System.Windows.Forms;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.Model.Tables;
 using Serilog;
-using Application = System.Windows.Application;
 
 namespace MusicPlayerForDrummers.Model
 {
@@ -66,14 +66,19 @@ namespace MusicPlayerForDrummers.Model
             }
 
             SaveOpenedDbSettings(databasePath);
-
+            
+            Log.Information("Reopening the application with new database path {path}", databasePath);
             //todo: Remove all reference in project to the win forms assembly (unless its there for a reason?)
+            //Application.Restart();
             Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
+            // p.WaitForInputIdle();
+            Application.Current.MainWindow?.Close();
         }
 
         private static void SaveOpenedDbSettings(string dBOpenedPath)
         {
+            Log.Information("Saving new opened database {path}", dBOpenedPath);
+
             if (Settings.Default.RecentDBs.Contains(dBOpenedPath))
             {
                 Settings.Default.RecentDBs.Remove(dBOpenedPath);

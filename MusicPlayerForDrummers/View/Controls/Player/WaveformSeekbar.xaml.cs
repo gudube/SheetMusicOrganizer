@@ -7,11 +7,11 @@ using System.Windows.Input;
 namespace MusicPlayerForDrummers.View.Controls.Player
 {
     /// <summary>
-    /// Interaction logic for WaveformSeekbar.xaml
+    /// Interaction logic for WaveformSeekBar.xaml
     /// </summary>
-    public partial class WaveformSeekbar : Slider
+    public partial class WaveformSeekBar : Slider
     {
-        public WaveformSeekbar()
+        public WaveformSeekBar()
         {
             InitializeComponent();
             DataContext = this;
@@ -30,10 +30,10 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         }
 
         public double PreviewValue { get => (double) GetValue(PreviewValueProperty); set => SetValue(PreviewValueProperty, value); }
-        DependencyProperty PreviewValueProperty = DependencyProperty.Register("PreviewValue", typeof(double), typeof(WaveformSeekbar));
+        DependencyProperty PreviewValueProperty = DependencyProperty.Register("PreviewValue", typeof(double), typeof(WaveformSeekBar));
 
         public string PreviewTime { get => (string)GetValue(PreviewTimeProperty); set => SetValue(PreviewTimeProperty, value); }
-        DependencyProperty PreviewTimeProperty = DependencyProperty.Register("PreviewTime", typeof(string), typeof(WaveformSeekbar));
+        DependencyProperty PreviewTimeProperty = DependencyProperty.Register("PreviewTime", typeof(string), typeof(WaveformSeekBar));
 
         protected override void OnPreviewMouseMove(MouseEventArgs e)
         {

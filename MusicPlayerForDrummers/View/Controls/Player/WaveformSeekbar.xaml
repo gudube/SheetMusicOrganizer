@@ -1,4 +1,4 @@
-﻿<Slider x:Class="MusicPlayerForDrummers.View.Controls.Player.WaveformSeekbar"
+﻿<Slider x:Class="MusicPlayerForDrummers.View.Controls.Player.WaveformSeekBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
              d:DesignHeight="53" d:DesignWidth="1590"
              Template="{DynamicResource SliderSeekbarTemplate}"
              VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True"
-             d:DataContext="{d:DesignInstance local:WaveformSeekbar}">
+             d:DataContext="{d:DesignInstance local:WaveformSeekBar}">
     <Slider.Resources>
         <!--<SolidColorBrush x:Key="SliderThumb.Static.Background" Color="#FFF0F0F0"/>
         <SolidColorBrush x:Key="SliderThumb.Static.Border" Color="#FFACACAC"/>

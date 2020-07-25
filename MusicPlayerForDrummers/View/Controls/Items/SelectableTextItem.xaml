@@ -20,7 +20,7 @@
                          d:DataContext="{d:DesignInstance items:SelectableTextItem}">
                 <ContextMenu.Style>
                     <!-- Hide the ContextMenu if playlist locked -->
-                    <Style>
+                    <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsLocked}" Value="True">
                                 <Setter Property="ContextMenu.Visibility" Value="Hidden"/>
@@ -39,7 +39,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="{Binding Text}">
             <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}" >
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsCustomColor}" Value="true">
                             <Setter Property="Foreground" Value="{Binding TextColor, Converter={StaticResource HexColorConverter}}"/>

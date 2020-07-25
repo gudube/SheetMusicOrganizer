@@ -28,18 +28,18 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             }
         }
 
-        private void WaveformSeekbar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        private void WaveformSeekBar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
             playerVM.StartedSeekCommand.Execute(null);
         }
 
-        private void WaveformSeekbar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        private void WaveformSeekBar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
-            playerVM.StoppedSeekCommand.Execute(Seekbar.Value);
+            playerVM.StoppedSeekCommand.Execute(SeekBar.Value);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace NaudioWrapper
+namespace NAudioWrapper
 {
         public abstract class BaseNotifyPropertyChanged : INotifyPropertyChanged
         {

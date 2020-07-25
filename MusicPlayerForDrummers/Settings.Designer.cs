@@ -62,5 +62,14 @@ namespace MusicPlayerForDrummers {
                 return ((int)(this["DefaultScrollEndTime"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.75")]
+        public float Volume {
+            get {
+                return ((float)(this["Volume"]));
+            }
+        }
     }
 }

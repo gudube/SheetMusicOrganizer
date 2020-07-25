@@ -51,7 +51,7 @@
         <!--<Separator Style="{StaticResource HorizontalSeparator}" BorderBrush="Black"/>-->
         <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">
             <StackPanel.Style>
-                <Style TargetType="StackPanel">
+                <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=Songs, Path=HasItems}" Value="true">
                             <DataTrigger.Setters>

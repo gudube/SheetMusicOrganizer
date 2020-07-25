@@ -1,7 +1,7 @@
 ﻿using NAudio.Wave;
 using System;
 
-namespace NaudioWrapper
+namespace NAudioWrapper
 {
     public class AudioPlayer : BaseNotifyPropertyChanged
     {
@@ -14,11 +14,6 @@ namespace NaudioWrapper
         public event Action PlaybackFinished;
         public event Action PlaybackStarting;
         public event Action PlaybackStopping;
-
-        public AudioPlayer(float volume)
-        {
-            Volume = volume;
-        }
 
         public void SetSong(string filepath)
         {
@@ -46,7 +41,7 @@ namespace NaudioWrapper
         #region Properties
         public double Position
         {
-            get => _audioFileReader == null ? 0 : _audioFileReader.CurrentTime.TotalSeconds;
+            get => _audioFileReader?.CurrentTime.TotalSeconds ?? 0;
             set
             {
                 if (_audioFileReader != null)
@@ -57,10 +52,29 @@ namespace NaudioWrapper
             }
         }
 
-        private float _volume;
-        public float Volume { get => _volume; set { if (SetField(ref _volume, value) && _audioFileReader != null) _audioFileReader.Volume = value; } }
+        private float _volume = 0.5f;
+        public float Volume {
+            get { if (IsAudioMuted) return 0; return _volume; }
+            set { if (SetField(ref _volume, value) && _audioFileReader != null && !IsAudioMuted) _audioFileReader.Volume = value; }
+        }
 
-        public double Length { get => _audioFileReader == null ? 1 : _audioFileReader.TotalTime.TotalSeconds; }
+        private bool _isAudioMuted = false;
+        public bool IsAudioMuted
+        {
+            get => _isAudioMuted;
+            set
+            {
+                if (SetField(ref _isAudioMuted, value))
+                {
+                    OnPropertyChanged(nameof(Volume));
+                    
+                    if(_audioFileReader != null)
+                        _audioFileReader.Volume = Volume;
+                }
+            }
+        }
+
+        public double Length { get => _audioFileReader?.TotalTime.TotalSeconds ?? 1; }
         #endregion
 
         #region Play Controls

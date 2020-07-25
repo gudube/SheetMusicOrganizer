@@ -1,7 +1,6 @@
 ﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
-using System.Diagnostics;
 using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel

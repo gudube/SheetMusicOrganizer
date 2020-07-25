@@ -30,6 +30,8 @@
     <None Remove="View\Resources\switch_view_40.png" />
     <None Remove="View\Resources\switch_view_l_40.png" />
     <None Remove="View\Resources\switch_view_r_40.png" />
+    <None Remove="View\Resources\volume_high_40.png" />
+    <None Remove="View\Resources\volume_mute_40.png" />
     <None Remove="View\Resources\waveform.png" />
   </ItemGroup>
 
@@ -48,6 +50,8 @@
     <Resource Include="View\Resources\random_song_40.png" />
     <Resource Include="View\Resources\stop_song_40.png" />
     <Resource Include="View\Resources\switch_view_40.png" />
+    <Resource Include="View\Resources\volume_high_40.png" />
+    <Resource Include="View\Resources\volume_mute_40.png" />
     <Resource Include="View\Resources\waveform.png" />
   </ItemGroup>
 

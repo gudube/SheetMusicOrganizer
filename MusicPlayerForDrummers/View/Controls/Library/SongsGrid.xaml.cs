@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
 namespace MusicPlayerForDrummers.View.Controls.Library
 {
@@ -37,11 +38,23 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         //TODO: Add warning when deleting song from All Music
         private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Delete)
+            if(!(DataContext is LibraryVM libraryVM))
             {
-                ((LibraryVM)this.DataContext).RemoveSelectedSongsCommand.Execute(null);
+                Log.Warning("DataContext of SongsGrid is not LibraryVM in DataGrid_PreviewKeyDown, but is {type}", DataContext.GetType());
+                return;
+            }
+
+            if (e.Key == Key.Delete)
+            {
+                libraryVM.RemoveSelectedSongsCommand.Execute(null);
+                e.Handled = true;
+            } 
+            else if (e.Key == Key.Enter)
+            {
+                libraryVM.PlaySelectedSongCommand.Execute(null);
                 e.Handled = true;
             }
+
         }
     }
 }

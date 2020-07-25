@@ -15,6 +15,7 @@ namespace MusicPlayerForDrummers.ViewModel
             NextCommand = new DelegateCommand(Next);
             StartedSeekCommand = new DelegateCommand(StartedSeek);
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
+            ChangeMuteCommand = new DelegateCommand(ChangeMute);
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -79,6 +80,13 @@ namespace MusicPlayerForDrummers.ViewModel
 
             if (_resumePlaying)
                 Session.Player.Play();
+        }
+
+        public DelegateCommand ChangeMuteCommand { get; }
+
+        private void ChangeMute(object obj)
+        {
+            Session.Player.IsAudioMuted = !Session.Player.IsAudioMuted;
         }
         #endregion
     }

@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.View.Tools;
 using Serilog;
@@ -51,6 +51,7 @@ namespace MusicPlayerForDrummers.View
             {
                 Filter = "Library File (*.sqlite)|*.sqlite",
                 Multiselect = false,
+                InitialDirectory = DbHandler.DefaultDbDir,
                 FilterIndex = 1
             };
             if (openDialog.ShowDialog() == true)
@@ -70,6 +71,15 @@ namespace MusicPlayerForDrummers.View
             {
                 File.Create(saveFileDialog.FileName);
                 MainVm.LoadDatabase(saveFileDialog.FileName);
+            }
+        }
+
+        private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.M)
+            {
+                MainVm.PlayerVM.ChangeMuteCommand?.Execute(null);
+                e.Handled = true;
             }
         }
     }
