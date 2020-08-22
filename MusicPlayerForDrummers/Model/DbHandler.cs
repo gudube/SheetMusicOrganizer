@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿#nullable enable
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -226,7 +227,7 @@ namespace MusicPlayerForDrummers.Model
             object[] formattedValues = row.GetCustomValues();
             for (int i = 0; i < formattedValues.Length; i++)
             {
-                paramNames[i] = "@" + columns[i];
+                paramNames[i] = "@" + columns[i].Name;
                 cmd.Parameters.Add(CreateParameter(paramNames[i], columns[i].SqlType, formattedValues[i]));
             }
             cmd.CommandText = $"{(ignoreConflict ? "INSERT OR IGNORE " : "INSERT ")} INTO {table.TableName} (";
@@ -270,7 +271,7 @@ namespace MusicPlayerForDrummers.Model
                 preparedUpdate[i] = $"{columns[i]} = {paramName}";
                 cmd.Parameters.Add(CreateParameter(paramName, columns[i].SqlType, colValues[i]));
             }
-            cmd.CommandText = $"UPDATE {table.TableName} SET {string.Join(", ", preparedUpdate)} WHERE {table.Id} = {row.Id}";
+            cmd.CommandText = $"UPDATE {table.TableName} SET {string.Join(", ", preparedUpdate)} WHERE {table.Id.Name} = {row.Id}";
             cmd.ExecuteNonQuery();
         }
 
@@ -279,7 +280,7 @@ namespace MusicPlayerForDrummers.Model
             string paramName = "@" + column;
 
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {table.Id} = {paramName}";
+            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {table.Id.Name} = {paramName}";
             cmd.Parameters.Add(CreateParameter(paramName, column.SqlType, value));
             cmd.ExecuteNonQuery();
         }
@@ -305,6 +306,9 @@ namespace MusicPlayerForDrummers.Model
         {
             PlaylistTable playlistTable = new PlaylistTable();
             CreateTable(con, playlistTable, force);
+            PlaylistItem defaultPlaylist = new PlaylistItem("All Music", true);
+            InsertRow(con, playlistTable, defaultPlaylist);
+
         }
 
         //TODO: Make sure dataReader passed by value doesn't impact perf. pass by ref?
@@ -369,12 +373,11 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
-        /// <exception cref="T:Microsoft.Data.Sqlite.SqliteException">Throws exception when cannot find the song corresponding to the partitionDir.</exception>
         public static SongItem GetSong(string partitionDir)
         {
             SongTable songTable = new SongTable();
             SqliteParameter param = CreateParameter("@" + songTable.PartitionDirectory, songTable.PartitionDirectory.SqlType, partitionDir);
-            string condition = $"WHERE {songTable.TableName}.{songTable.PartitionDirectory} = {param.ParameterName}";
+            string condition = $"WHERE {songTable.TableName}.{songTable.PartitionDirectory.Name} = {param.ParameterName}";
             using (var con = CreateConnection())
             {
                 con.Open();
@@ -385,7 +388,6 @@ namespace MusicPlayerForDrummers.Model
             throw new SqliteException("Could not find the song corresponding to : " + partitionDir, 1);
         }
 
-        //TODO: GetSongs(int playlistID)
         //TODO: Make it better join performance (view?)
         /*
          * SELECT Song.ID, Song.Name, ... FROM Song INNER JOIN
@@ -395,27 +397,48 @@ namespace MusicPlayerForDrummers.Model
         public static List<SongItem> GetSongs(int playlistId, params int[] masteryIDs)
         {
             List<SongItem> songs = new List<SongItem>();
+            List<PlaylistSongItem> psItems = new List<PlaylistSongItem>();
             SongTable songTable = new SongTable();
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
-            string psName = playlistSongTable.TableName;
-            string condition = $"INNER JOIN (SELECT {playlistSongTable.SongId} FROM {psName}"
-                + $" WHERE {psName}.{playlistSongTable.PlaylistId} = {playlistId}) ps"
-                + $" ON ps.{playlistSongTable.SongId} = {songTable.TableName}.{songTable.Id}";
-
-            if (masteryIDs.Any())
-                condition += $" WHERE {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
 
             using (var con = CreateConnection())
             {
                 con.Open();
-                SqliteDataReader dataReader = GetItems(con, songTable, condition);
+                SqliteCommand cmd = con.CreateCommand();
+                List<string> cols = songTable.GetAllColumns().Select(x => songTable.TableName + "." + x.Name).ToList();
+                cols.AddRange(playlistSongTable.GetAllColumns().Select(x => playlistSongTable.TableName + "." + x.Name));
+                cmd.CommandText = $"SELECT {string.Join(", ", cols)} FROM {playlistSongTable.TableName} LEFT JOIN {songTable.TableName}"
+                //cmd.CommandText += $" INNER JOIN (SELECT * FROM {playlistSongTable.TableName}"
+                    + $" ON {playlistSongTable.TableName}.{playlistSongTable.SongId.Name} = {songTable.TableName}.{songTable.Id.Name}"
+                    + $" WHERE {playlistSongTable.TableName}.{playlistSongTable.PlaylistId.Name} = {playlistId}";
+                SqliteDataReader dataReader = cmd.ExecuteReader();
                 while (dataReader.Read())
+                {
                     songs.Add(new SongItem(dataReader));
+                    psItems.Add(new PlaylistSongItem(dataReader));
+                }
             }
-            return songs;
+
+            PlaylistSongItem sortingSong = psItems.Find(x => x.PreviousPSId.HasValue == false);
+            List<SongItem> sortedSongs = new List<SongItem>(songs.Count);
+            while (sortingSong != null)
+            {
+                SongItem toTransfer = songs.Find(song => song.Id == sortingSong.SongId);
+                sortedSongs.Add(toTransfer);
+                songs.Remove(toTransfer); //TODO: better perf with or without this line?
+                if (sortingSong.NextPSId.HasValue)
+                    sortingSong = psItems.Find(x => x.Id == sortingSong.NextPSId);
+                else
+                    sortingSong = null;
+            }
+
+            if (masteryIDs.Any())
+                sortedSongs.RemoveAll(x => !masteryIDs.Contains(x.MasteryId));
+
+            return sortedSongs;
         }
 
-        public static List<SongItem> GetAllSongs(params int[] masteryIDs)
+        /*public static List<SongItem> GetAllSongs(params int[] masteryIDs)
         {
             List<SongItem> songs = new List<SongItem>();
             SongTable songTable = new SongTable();
@@ -434,10 +457,13 @@ namespace MusicPlayerForDrummers.Model
                     songs.Add(new SongItem(dataReader));
             }
             return songs;
-        }
+        }*/
 
         private static SongItem FindPlayingSong(bool next, int currentSongId, int playlistId, params int[] masteryIDs)
         {
+            if (masteryIDs.Length == 0)
+                masteryIDs = MasteryDic.Keys.ToArray();
+
             SongTable songTable = new SongTable();
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
 
@@ -445,17 +471,30 @@ namespace MusicPlayerForDrummers.Model
             {
                 con.Open();
 
-                SqliteCommand cmd = con.CreateCommand();
-                cmd.CommandText = $"SELECT min({songTable.TableName}.{songTable.Id})";
-                foreach (SqlColumn col in songTable.GetCustomColumns())
-                    cmd.CommandText += $", {songTable.TableName}.{col}";
-                cmd.CommandText += $" FROM {songTable.TableName} UNION {playlistSongTable.TableName}";
-                cmd.CommandText += $" WHERE {playlistSongTable.TableName}.{playlistSongTable.PlaylistId} == {playlistId}";
-                cmd.CommandText += $" AND {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
-                cmd.CommandText += $" AND {songTable.TableName}.{songTable.Id} {(next ? ">" : "<")} {currentSongId}"; //TODO: Replace with ID in playlist from playlistSongTable
-                SqliteDataReader dataReader = cmd.ExecuteReader();
-                if (dataReader.Read())
-                    return new SongItem(dataReader);
+                string psIdCondition =
+                    $" WHERE {playlistSongTable.TableName}.{playlistSongTable.SongId.Name} = {currentSongId}"
+                    + $" AND {playlistSongTable.TableName}.{playlistSongTable.PlaylistId.Name} = {playlistId}";
+                SqliteDataReader reader = DbHandler.GetItem(con, playlistSongTable, psIdCondition);
+                reader.Read();
+                int? nextPSId = new PlaylistSongItem(reader).NextPSId;
+
+                while(nextPSId.HasValue)
+                {
+                    SqliteCommand cmd = con.CreateCommand();
+                    cmd.CommandText = $"SELECT * FROM {songTable.TableName} JOIN {playlistSongTable.TableName}";
+                    cmd.CommandText += $" WHERE {playlistSongTable.TableName}.{playlistSongTable.Id.Name} = {nextPSId}";
+                    //cmd.CommandText += $" WHERE {playlistSongTable.TableName}.{playlistSongTable.PlaylistId} == {playlistId}";
+                    //cmd.CommandText += $" AND {songTable.TableName}.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
+                    //cmd.CommandText += $" AND {songTable.TableName}.{songTable.Id} {(next ? ">" : "<")} {currentSongId}"; //TODO: Replace with ID in playlist from playlistSongTable
+                    SqliteDataReader dataReader = cmd.ExecuteReader();
+                    if (dataReader.Read())
+                    {
+                        SongItem song = new SongItem(dataReader);
+                        if (masteryIDs.Contains(song.MasteryId))
+                            return song;
+                        nextPSId = new PlaylistSongItem(dataReader).NextPSId;
+                    }
+                }
             }
             return null;
         }
@@ -475,13 +514,15 @@ namespace MusicPlayerForDrummers.Model
         public static void AddSong(SongItem song, params int[] playlistIds)
         {
             SongTable songTable = new SongTable();
-            PlaylistSongTable playlistSongTable = new PlaylistSongTable();
             using (var con = CreateConnection())
             {
                 con.Open();
                 InsertRow(con, songTable, song);
-                foreach(int playlistId in playlistIds)
-                    InsertRow(con, playlistSongTable, new PlaylistSongItem(playlistId, song.Id));
+            }
+
+            foreach(int playlistId in playlistIds)
+            {
+                AddSongToPlaylist(playlistId, song.Id);
             }
         }
 
@@ -593,17 +634,29 @@ namespace MusicPlayerForDrummers.Model
         {
             PlaylistSongTable table = new PlaylistSongTable();
             CreateTable(con, table, force);
-            CreateIndex(con, table, true, force, table.PlaylistId.Name, table.SongId.Name);
+            CreateIndex(con, table, true, force, table.PlaylistId.Name, table.SongId.Name); //TODO: Is this index usefull?
         }
 
-        public static void AddPlaylistSongLink(int playlistId, int songId)
+        public static PlaylistSongItem? GetPlaylistSongItem(SqliteConnection con, int playlistId, int songId)
         {
-            PlaylistSongItem psItem = new PlaylistSongItem(playlistId, songId);
-            using (SqliteConnection con = CreateConnection())
-            {
-                con.Open();
-                InsertRow(con, new PlaylistSongTable(), psItem, true);
-            }
+            PlaylistSongTable table = new PlaylistSongTable();
+            string condition = $" WHERE {table.TableName}.{table.SongId.Name} = {songId}" +
+                               $" AND {table.TableName}.{table.PlaylistId.Name} = {playlistId}";
+            SqliteDataReader reader = GetItem(con, table, condition);
+            if (reader.Read())
+                return new PlaylistSongItem(reader);
+            return null;
+        }
+
+        private static PlaylistSongItem? GetLastPlaylistSongItem(SqliteConnection con, int playlistId)
+        {
+            PlaylistSongTable table = new PlaylistSongTable();
+            string condition = $" WHERE {table.TableName}.{table.NextPSId.Name} IS NULL" +
+                               $" AND {table.TableName}.{table.PlaylistId.Name} = {playlistId}";
+            SqliteDataReader reader = GetItem(con, table, condition);
+            if (reader.Read())
+                return new PlaylistSongItem(reader);
+            return null;
         }
 
         public static bool IsSongInPlaylist(int playlistId, int songId)
@@ -616,32 +669,106 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
-        public static void AddSongsToPlaylist(int playlistId, IEnumerable<int> songsIDs)
+        //We suppose that this is a link at the end.
+        public static void AddSongToPlaylist(int playlistId, int songId)
         {
-            PlaylistSongTable table = new PlaylistSongTable();
-            int[] iDs = songsIDs as int[] ?? songsIDs.ToArray();
-            BaseModelItem[] items = new BaseModelItem[iDs.Length];
-            for (int i = 0; i < iDs.Length; i++)
-            {
-                items[i] = new PlaylistSongItem(playlistId, iDs.ElementAt(i));
-            }
             using (SqliteConnection con = CreateConnection())
             {
                 con.Open();
-                InsertRows(con, table, items, true);
+
+                PlaylistSongItem lastItem = GetLastPlaylistSongItem(con, playlistId);
+                int? lastPSId = null;
+                if (lastItem != null)
+                    lastPSId = lastItem.Id;
+
+                PlaylistSongItem psItem = new PlaylistSongItem(playlistId, songId, lastPSId, null);
+                InsertRow(con, new PlaylistSongTable(), psItem);
+
+                if (lastItem != null)
+                {
+                    lastItem.NextPSId = psItem.Id;
+                    UpdateRow(con, new PlaylistSongTable(), lastItem);
+                }
+            }
+        }
+
+        public static void AddSongsToPlaylist(int playlistId, IEnumerable<int> songsIDs)
+        {
+            PlaylistSongTable psTable = new PlaylistSongTable();
+            int[] songIDsArray = songsIDs as int[] ?? songsIDs.ToArray();
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+
+                PlaylistSongItem? lastItem = GetLastPlaylistSongItem(con, playlistId);
+                int? lastPSId = null;
+                if (lastItem != null)
+                    lastPSId = lastItem.Id;
+
+                SqliteCommand cmd = con.CreateCommand();
+                cmd.CommandText = $"SELECT MAX({psTable.TableName}.{psTable.Id.Name}) FROM {psTable.TableName}";
+                int? nextPSId = ((int?)cmd.ExecuteScalar()).GetValueOrDefault(0);
+                nextPSId = nextPSId + 2;
+
+                for (int i = 0; i < songIDsArray.Length; i++)
+                {
+                    PlaylistSongItem psItem = new PlaylistSongItem(playlistId, songIDsArray[i], lastPSId, nextPSId);
+                    InsertRow(con, psTable, psItem);
+                    lastPSId = psItem.Id;
+                    if (i < songIDsArray.Length - 1)
+                        nextPSId = psItem.Id + 2;
+                    else
+                        nextPSId = null;
+                    //Update previous row
+                    if (i == 0 && lastItem != null)
+                    {
+                        lastItem.NextPSId = psItem.Id;
+                        UpdateRow(con, psTable, lastItem);
+                    }
+                }
+                
             }
         }
 
         public static void RemoveSongsFromPlaylist(int playlistId, int[] songIDs)
         {
             PlaylistSongTable psTable = new PlaylistSongTable();
-            string safeCondition = $"WHERE {psTable.PlaylistId.Name} = {playlistId} AND "
-                + $"{psTable.SongId.Name} IN( {string.Join(", ", songIDs)})";
 
             using (SqliteConnection con = CreateConnection())
             {
                 con.Open();
-                DeleteRows(con, psTable, safeCondition);
+                foreach (int songId in songIDs)
+                {
+                    PlaylistSongItem? psItem = GetPlaylistSongItem(con, playlistId, songId);
+                    if (psItem == null)
+                    {
+                        Log.Error("Could not find the playlistSongItem associated to the playlistId {playlistId} and the songId {songId}", playlistId, songId);
+                        continue;
+                    }
+
+                    if (psItem.PreviousPSId.HasValue)
+                    {
+                        SqliteDataReader reader = GetItem(con, psTable, $" WHERE {psTable.TableName}.{psTable.Id.Name} = {psItem.PreviousPSId}");
+                        reader.Read();
+                        PlaylistSongItem beforeItem = new PlaylistSongItem(reader);
+                        beforeItem.NextPSId = psItem.NextPSId;
+                        UpdateRow(con, psTable, beforeItem);
+                    }
+
+                    if (psItem.NextPSId.HasValue)
+                    {
+                        SqliteDataReader reader = GetItem(con, psTable, $" WHERE {psTable.TableName}.{psTable.Id.Name} = {psItem.NextPSId}");
+                        reader.Read();
+                        PlaylistSongItem afterItem = new PlaylistSongItem(reader);
+                        afterItem.PreviousPSId = psItem.PreviousPSId;
+                        UpdateRow(con, psTable, afterItem);
+                    }
+
+
+                    string safeCondition = $"WHERE {psTable.TableName}.{psTable.PlaylistId.Name} = {playlistId} AND "
+                                           + $"{psTable.TableName}.{psTable.SongId.Name} = {songId}";
+                    DeleteRows(con, psTable, safeCondition);
+                }
             }
         }
         #endregion

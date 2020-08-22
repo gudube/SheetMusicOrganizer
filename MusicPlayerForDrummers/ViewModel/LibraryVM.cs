@@ -41,7 +41,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region Playlists
         private readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
-        private readonly PlaylistItem _allMusicPlaylist = new PlaylistItem("All music", true);
+        //private readonly PlaylistItem _allMusicPlaylist = new PlaylistItem("All music", true);
         
         public DelegateCommand CreateNewPlaylistCommand { get; private set; }
         public DelegateCommand DeleteSelectedPlaylistCommand { get; private set; }
@@ -49,11 +49,10 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void UpdatePlaylistsFromDb()
         {
-            List<BaseModelItem> playlists = new List<BaseModelItem>{ _allMusicPlaylist };
-            playlists.AddRange(DbHandler.GetAllPlaylists());
+            List<BaseModelItem> playlists = new List<BaseModelItem>(DbHandler.GetAllPlaylists());
             playlists.Add(_addPlaylist);
             Session.Playlists.Reset(playlists);
-            Session.SelectedPlaylist = _allMusicPlaylist;
+            Session.SelectedPlaylist = playlists[0];
         }
         private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -100,7 +99,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
-            DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
+            DbHandler.AddSongToPlaylist(playlist.Id, song.Id);
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
@@ -160,7 +159,7 @@ namespace MusicPlayerForDrummers.ViewModel
             SongItem songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                Session.SelectedPlaylist = _allMusicPlaylist;
+                Session.SelectedPlaylist = Session.Playlists[0];
                 songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
             }
             Session.SelectedSongs.Add(songToSelect);
@@ -170,9 +169,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             int[] masteryIDs = Session.SelectedMasteryLevels.Select(x => x.Id).ToArray();
 
-            if (Session.SelectedPlaylist == _allMusicPlaylist)
-                Session.Songs.Reset(DbHandler.GetAllSongs(masteryIDs));
-            else if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
+            if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
                 Session.Songs.Clear();
             else
                 Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id, masteryIDs));
@@ -196,10 +193,10 @@ namespace MusicPlayerForDrummers.ViewModel
             else
                 song.MasteryId = Session.SelectedMasteryLevels[0].Id;
 
-            if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _allMusicPlaylist)
+            if (!(Session.SelectedPlaylist is PlaylistItem))
                 DbHandler.AddSong(song, Session.SelectedPlaylist.Id);
             else
-                DbHandler.AddSong(song);
+                DbHandler.AddSong(song, Session.Playlists[0].Id);
 
             Session.Songs.Add(song);
         }
@@ -268,7 +265,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
 
             int[] songIDs = Session.SelectedSongs.Select(x => x.Id).ToArray();
-            if (Session.SelectedPlaylist == _allMusicPlaylist)
+            if (Session.SelectedPlaylist == Session.Playlists[0])
             {
                 DbHandler.DeleteSongs(songIDs);
             }
