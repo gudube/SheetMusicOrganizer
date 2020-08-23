@@ -395,7 +395,7 @@ namespace MusicPlayerForDrummers.Model
          *  WHERE Song.MasteryID IN ([masteryIDs[0]], [masteryIDs[1]]...)
          *  ORDER BY ps.PosInPlaylist ASC
          */
-        public static List<SongItem> GetSongs(int playlistId, params int[] masteryIDs)
+        public static List<SongItem> GetSongs(int playlistId)
         {
             List<SongItem> songs = new List<SongItem>();
             SongTable songTable = new SongTable();
@@ -405,8 +405,8 @@ namespace MusicPlayerForDrummers.Model
                                + $" WHERE {psName}.{playlistSongTable.PlaylistId.Name} = {playlistId}) ps"
                                + $" ON ps.{playlistSongTable.SongId.Name} = {songTable.TableName}.{songTable.Id.Name}";
 
-            if (masteryIDs.Any())
-                condition += $" WHERE {songTable.TableName}.{songTable.MasteryId.Name} IN ({string.Join(", ", masteryIDs)})";
+            //if (masteryIDs.Any())
+            //    condition += $" WHERE {songTable.TableName}.{songTable.MasteryId.Name} IN ({string.Join(", ", masteryIDs)})";
 
             condition += $" ORDER BY ps.{playlistSongTable.PosInPlaylist.Name} ASC";
 

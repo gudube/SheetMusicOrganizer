@@ -1,6 +1,12 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
@@ -16,6 +22,47 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             InitializeComponent();
             DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
+            DataContextChanged += SongsGrid_DataContextChanged;
+        }
+
+        private void SongsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(!(DataContext is LibraryVM libraryVM))
+                return;
+
+            CollectionViewSource itemSourceList = new CollectionViewSource() { Source = libraryVM.Session.Songs };
+
+            // ICollectionView the View/UI part 
+            ICollectionView itemList = itemSourceList.View;
+
+            // your Filter
+            var masteryFilter = new Predicate<object>(item => libraryVM.Session.SelectedMasteryLevels.Count == 0 
+                                                                 || libraryVM.Session.SelectedMasteryLevels.Any(x => x.Id == ((SongItem)item).MasteryId));
+            itemSourceList.View.Filter = masteryFilter;
+            
+            Songs.ItemsSource = itemList;
+
+            SubscribeToSongMasteryId(itemList);
+            //todo: any problem with that? since we never unsubscribe but can delete songs
+            libraryVM.Session.SelectedMasteryLevels.CollectionChanged += (a, b) => itemList.Refresh();
+            libraryVM.Session.Songs.CollectionChanged += (a, b) =>
+            {
+                SubscribeToSongMasteryId(itemList);
+            };
+        }
+
+        private void SubscribeToSongMasteryId(ICollectionView itemList)
+        {
+            if (!(DataContext is LibraryVM libraryVM))
+                return;
+            foreach (SongItem song in libraryVM.Session.Songs)
+            {
+                song.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(song.MasteryId))
+                        itemList.Refresh();
+                };
+            }
         }
 
         //TODO: Accept drag-and-drop

@@ -53,6 +53,7 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Songs
+        //All songs in selected playlist (no matter the mastery level)
         private SmartCollection<SongItem> _songs = new SmartCollection<SongItem>();
         public SmartCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
 

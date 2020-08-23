@@ -20,7 +20,6 @@ namespace MusicPlayerForDrummers.ViewModel
             UpdateMasteryLevelsFromDb();
             UpdateSongsFromDb();
             CreateDelegateCommands();
-            Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
             Session.Playlists.CollectionChanged += Playlists_CollectionChanged;
         }
 
@@ -116,10 +115,6 @@ namespace MusicPlayerForDrummers.ViewModel
         //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
         //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
-        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            UpdateSongsFromDb();
-        }
 
         private void UpdateMasteryLevelsFromDb()
         {
@@ -135,19 +130,19 @@ namespace MusicPlayerForDrummers.ViewModel
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
             DbHandler.SetSongMastery(song, mastery);
-            if (!Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
-                Session.Songs.Remove(song);
+            //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
+            //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
             DbHandler.SetSongsMastery(songItems, mastery);
-            if (!Session.SelectedMasteryLevels.Contains(mastery))
+            /*if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songItems)
                     if (Session.Songs.Contains(song))
                         Session.Songs.Remove(song);
-            }
+            }*/
         }
         #endregion
 
@@ -155,7 +150,7 @@ namespace MusicPlayerForDrummers.ViewModel
         public void GoToSong(SongItem song)
         {
             Session.SelectedSongs.Clear();
-            if(Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Any(x => x.Id == song.MasteryId))
+            if(Session.SelectedMasteryLevels.Count > 0 && Session.SelectedMasteryLevels.All(x => x.Id != song.MasteryId))
                 Session.SelectedMasteryLevels.Add(Session.MasteryLevels.First(x => x.Id == song.MasteryId));
             SongItem songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
@@ -173,7 +168,7 @@ namespace MusicPlayerForDrummers.ViewModel
             if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
                 Session.Songs.Clear();
             else
-                Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id, masteryIDs));
+                Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id));
         }
 
         public bool AddSong(SongItem song)

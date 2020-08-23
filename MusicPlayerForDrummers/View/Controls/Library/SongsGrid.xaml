@@ -16,7 +16,7 @@
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
     <Grid>
-        <DataGrid Name="Songs" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.Session).Songs}"
+        <DataGrid Name="Songs"
                   d:DataContext="{d:DesignInstance modelItems:SongItem}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                   SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
             <DataGrid.InputBindings>
