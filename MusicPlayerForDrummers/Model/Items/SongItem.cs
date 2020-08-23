@@ -17,28 +17,28 @@ namespace MusicPlayerForDrummers.Model.Items
         private uint? _number;
         public uint? Number { get => _number; set => SetField(ref _number, value); }
 
-        private string _title;
+        private string _title = "";
         public string Title { get => _title; set => SetField(ref _title, value); }
 
-        private string _artist;
+        private string _artist = "";
         public string Artist { get => _artist; set => SetField(ref _artist, value); }
 
-        private string _album;
+        private string _album = "";
         public string Album { get => _album; set => SetField(ref _album, value); }
 
-        private string _genre;
+        private string _genre = "";
         public string Genre { get => _genre; set => SetField(ref _genre, value); }
 
-        private string _lengthMD;
+        private string _lengthMD = "00:00";
         public string LengthMD { get => _lengthMD; private set => SetField(ref _lengthMD, value); }
 
-        private string _codecMD;
+        private string _codecMD = "";
         public string CodecMD { get => _codecMD; private set => SetField(ref _codecMD, value); }
 
-        private string _bitrateMD;
+        private string _bitrateMD = "";
         public string BitrateMD { get => _bitrateMD; private set => SetField(ref _bitrateMD, value); }
 
-        private uint _rating;
+        private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
         private int _masteryId;

@@ -62,10 +62,43 @@
             </ContentControl.Resources>
         </ContentControl>
         <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
-        <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
-            <StatusBarItem Content="Playing Song: "/>
-            <StatusBarItem>
-                <Binding Path="Session.PlayingSong"/>
+        <StatusBar Grid.Row="5" Height="21" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid Margin="2, -2, 2, 0" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0" Content="Playing Song: "/>
+            <StatusBarItem Grid.Column="0" Content="{Binding Path=Session.PlayingSong}"/>
+            <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
+                <StatusBarItem.Style>
+                    <Style TargetType="{x:Type StatusBarItem}">
+                        <Setter Property="Content" Value="Loading..."/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Session.LoadingStatus}" Value="0">
+                                <Setter Property="Content" Value=""></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StatusBarItem.Style>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2" HorizontalAlignment="Right">
+                <StatusBarItem.Style>
+                    <Style TargetType="{x:Type StatusBarItem}">
+                        <Setter Property="Content" Value="Saving..."/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Session.SavingStatus}" Value="0">
+                                <Setter Property="Content" Value="Saved!"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StatusBarItem.Style>
             </StatusBarItem>
         </StatusBar>
     </Grid>

@@ -52,7 +52,7 @@ namespace MusicPlayerForDrummers.View.Controls
             Right = -90
         }
 
-        public ICommand SwitchViewCommand { get; set; }
+        public ICommand? SwitchViewCommand { get; set; }
         public static readonly DependencyProperty SwitchViewCommandProperty =
             DependencyProperty.Register("SwitchViewCommand", typeof(ICommand), typeof(SwitchViewButton));
     }

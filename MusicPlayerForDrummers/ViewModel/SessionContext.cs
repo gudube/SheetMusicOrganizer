@@ -40,8 +40,8 @@ namespace MusicPlayerForDrummers.ViewModel
         private SmartCollection<BaseModelItem> _playlists = new SmartCollection<BaseModelItem>();
         public SmartCollection<BaseModelItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
 
-        private INotifyPropertyChanged _selectedPlaylist;
-        public BaseModelItem SelectedPlaylist { get => (BaseModelItem) _selectedPlaylist; set => SetField(ref _selectedPlaylist, value); }
+        private INotifyPropertyChanged? _selectedPlaylist;
+        public BaseModelItem? SelectedPlaylist { get => (BaseModelItem?) _selectedPlaylist; set => SetField(ref _selectedPlaylist, value); }
         #endregion
 
         #region Mastery Levels
@@ -68,7 +68,7 @@ namespace MusicPlayerForDrummers.ViewModel
         private INotifyPropertyChanged? _playingPlaylist;
         public PlaylistItem? PlayingPlaylist { get => (PlaylistItem?)_playingPlaylist; private set => SetField(ref _playingPlaylist, value); }
 
-        private SmartCollection<MasteryItem> _playingMasteryLevels;
+        private SmartCollection<MasteryItem> _playingMasteryLevels = new SmartCollection<MasteryItem>();
         public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; private set => SetField(ref _playingMasteryLevels, value); }
 
         public void StopPlayingSong()
@@ -88,7 +88,7 @@ namespace MusicPlayerForDrummers.ViewModel
         private void SetPlayingSong(SongItem song, PlaylistItem playlist, SmartCollection<MasteryItem> masteryLevels)
         {
             PlayingPlaylist = playlist;
-            PlayingMasteryLevels = masteryLevels;
+            PlayingMasteryLevels.Reset(masteryLevels);
             SetPlayingSong(song);
         }
 
@@ -104,6 +104,11 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetNextPlayingSong()
         {
+            if (PlayingSong == null || PlayingPlaylist == null)
+            {
+                Log.Warning("Playing song or playing playlist is null when trying to go to play next song");
+                return;
+            }
             //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
             SongItem? next = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
 
@@ -115,7 +120,13 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetPreviousPlayingSong()
         {
-            SongItem previous = DbHandler.FindPreviousSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            if (PlayingSong == null || PlayingPlaylist == null)
+            {
+                Log.Warning("Playing song or playing playlist is null when trying to go to play previous song");
+                return;
+            }
+
+            SongItem? previous = DbHandler.FindPreviousSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
 
             if (previous == null)
                 StopPlayingSong();
@@ -127,9 +138,15 @@ namespace MusicPlayerForDrummers.ViewModel
         #region AudioPlayer
         public AudioPlayer Player { get; }
 
-        
-
         public event Action PlayerTimerUpdate;
+        #endregion
+
+        #region Status
+        private int _loadingStatus = 0;
+        public int LoadingStatus { get => _loadingStatus; set => SetField(ref _loadingStatus, value); }
+
+        private int _savingStatus = 0;
+        public int SavingStatus { get => _savingStatus; set => SetField(ref _savingStatus, value); }
         #endregion
     }
 }

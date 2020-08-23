@@ -21,10 +21,11 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
-            if(playerVM.Session.PlayingSong != null)
+            if (playerVM.Session.PlayingSong != null)
             {
-                string dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
-                Process.Start("explorer.exe", @dir);
+                string? dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
+                if(dir != null)
+                    Process.Start("explorer.exe", dir);
             }
         }
 

@@ -23,7 +23,7 @@ namespace MusicPlayerForDrummers.Model
         //TODO: put it in settings?
         public static string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
 
-        private static SqliteTransaction _transaction;
+        private static SqliteTransaction? _transaction;
 
         public static void InitializeDatabase(bool force = false)
         {
@@ -114,7 +114,7 @@ namespace MusicPlayerForDrummers.Model
                 CreateSongTable(con, force);
                 CreatePlaylistSongTable(con, force);
                 if (transactionStarted)
-                    _transaction.Commit();
+                    _transaction?.Commit();
             }
         }
         #endregion
@@ -255,7 +255,7 @@ namespace MusicPlayerForDrummers.Model
                 InsertRow(con, table, row, ignoreConflict);
             }
             if (transactionStarted)
-                _transaction.Commit();
+                _transaction?.Commit();
         }
 
         private static void UpdateRow(SqliteConnection con, BaseTable table, BaseModelItem row)
@@ -282,7 +282,7 @@ namespace MusicPlayerForDrummers.Model
                 UpdateRow(con, table, row);
             }
             if(transaction)
-                _transaction.Commit(); //todo: Can have an updaterows async with commitasync where possible
+                _transaction?.Commit(); //todo: Can have an updaterows async with commitasync where possible
         }
 
         private static void DeleteRow(SqliteConnection con, BaseTable table, SqlColumn column, object value)
@@ -585,7 +585,7 @@ namespace MusicPlayerForDrummers.Model
                     UpdateRow(con, table, song);
                 }
                 if (transactionStarted)
-                    _transaction.Commit();
+                    _transaction?.Commit();
             }
         }
         #endregion

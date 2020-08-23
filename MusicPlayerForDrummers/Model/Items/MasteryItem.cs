@@ -16,17 +16,17 @@ namespace MusicPlayerForDrummers.Model.Items
 
         public MasteryItem(string name, bool locked, string color) : base()
         {
-            Name = name;
-            IsLocked = locked;
-            Color = color;
+            _name = name;
+            _isLocked = locked;
+            _color = color;
         }
 
         public MasteryItem(SqliteDataReader dataReader) : base(dataReader)
         {
             MasteryTable masteryTable = new MasteryTable();
-            Name = GetSafeString(dataReader, masteryTable.Name.Name);
-            IsLocked = GetSafeBool(dataReader, masteryTable.IsLocked.Name);
-            Color = GetSafeString(dataReader, masteryTable.Color.Name);
+            _name = GetSafeString(dataReader, masteryTable.Name.Name);
+            _isLocked = GetSafeBool(dataReader, masteryTable.IsLocked.Name);
+            _color = GetSafeString(dataReader, masteryTable.Color.Name);
         }
 
         public override object[] GetCustomValues()

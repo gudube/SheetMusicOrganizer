@@ -20,27 +20,27 @@ namespace MusicPlayerForDrummers.Model.Items
 
         public PlaylistItem(string name, bool locked = false) : base()
         {
-            Name = name;
-            IsLocked = locked;
-            IsSmart = false;
-            SmartDir = "";
+            _name = name;
+            _isLocked = locked;
+            _isSmart = false;
+            _smartDir = "";
         }
 
         public PlaylistItem(string name, string smartDir, bool locked = false) : base()
         {
-            Name = name;
-            IsLocked = locked;
-            IsSmart = true;
-            SmartDir = smartDir;
+            _name = name;
+            _isLocked = locked;
+            _isSmart = true;
+            _smartDir = smartDir;
         }
 
         public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
         {
             PlaylistTable playlistTable = new PlaylistTable();
-            Name = GetSafeString(dataReader, playlistTable.Name.Name);
-            IsLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
-            IsSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
-            SmartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
+            _name = GetSafeString(dataReader, playlistTable.Name.Name);
+            _isLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
+            _isSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
+            _smartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
         }
 
         public override object[] GetCustomValues()

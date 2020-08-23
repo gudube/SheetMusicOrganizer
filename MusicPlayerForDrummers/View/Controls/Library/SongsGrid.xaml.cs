@@ -110,12 +110,12 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
             if (e.Key == Key.Delete)
             {
-                libraryVM.RemoveSelectedSongsCommand.Execute(null);
+                libraryVM.RemoveSelectedSongsCommand?.Execute(null);
                 e.Handled = true;
             } 
             else if (e.Key == Key.Enter)
             {
-                libraryVM.PlaySelectedSongCommand.Execute(null);
+                libraryVM.PlaySelectedSongCommand?.Execute(null);
                 e.Handled = true;
             }
 

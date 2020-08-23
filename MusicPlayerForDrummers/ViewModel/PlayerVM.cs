@@ -28,7 +28,7 @@ namespace MusicPlayerForDrummers.ViewModel
         //Playing song paused? unpause
         //No Playing Song? Play selected
         //No selected? do nothing
-        private void Play(object obj)
+        private void Play(object? obj)
         {
             if (Session.PlayingSong != null)
             {
@@ -44,7 +44,7 @@ namespace MusicPlayerForDrummers.ViewModel
         //Playing song playing? pause it
         //Playing song paused? play it
         //No playing song? do nothing
-        private void Pause(object obj)
+        private void Pause(object? obj)
         {
             Session.Player.Pause();
         }
@@ -52,7 +52,7 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand StopCommand { get; }
         //Playing song? Stop it and remove playing song
         //No playing song? do nothing
-        private void Stop(object obj)
+        private void Stop(object? obj)
         {
             Session.StopPlayingSong();
         }   
@@ -61,20 +61,20 @@ namespace MusicPlayerForDrummers.ViewModel
         //Playing song? Start playing next song
         //No playing song? Play selected song
         //No selected song? do nothing
-        private void Next(object obj)
+        private void Next(object? obj)
         {
             Session.SetNextPlayingSong();
         }
 
         private bool _resumePlaying = false;
         public DelegateCommand StartedSeekCommand { get; }
-        private void StartedSeek(object obj)
+        private void StartedSeek(object? obj)
         {
             _resumePlaying = Session.Player.Stop(true);
         }
 
         public DelegateCommand StoppedSeekCommand { get; }
-        private void StoppedSeek(object obj)
+        private void StoppedSeek(object? obj)
         {
             //Session.Player.Position = (double)obj;
 
@@ -84,7 +84,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public DelegateCommand ChangeMuteCommand { get; }
 
-        private void ChangeMute(object obj)
+        private void ChangeMute(object? obj)
         {
             Session.Player.IsAudioMuted = !Session.Player.IsAudioMuted;
         }

@@ -11,7 +11,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DbHandler.InitializeDatabase();
+            DbHandler.InitializeDatabase(true);
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
@@ -32,8 +32,8 @@ namespace MusicPlayerForDrummers.ViewModel
         public PartitionVM PartitionVM { get; }
         public PlayerVM PlayerVM { get; }
 
-        private BaseViewModel _currentViewModel;
-        public BaseViewModel CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
+        private BaseViewModel? _currentViewModel;
+        public BaseViewModel? CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
 
         public DelegateCommand SwitchLibraryViewCommand { get; }
         public DelegateCommand SwitchPartitionViewCommand { get; }

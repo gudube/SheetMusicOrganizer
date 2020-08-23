@@ -11,7 +11,7 @@ namespace MusicPlayerForDrummers.View.Controls
     /// </summary>
     public partial class OptionalExpander : Expander
     {
-        private GridRow[] _rows;
+        private GridRow[]? _rows;
         private readonly double _defaultOpacity = 0.5;
         private readonly double _changedOpacity = 1;
 
@@ -64,6 +64,9 @@ namespace MusicPlayerForDrummers.View.Controls
         //TODO: Add (default) or (modified) to header to make it more clear
         private void Toggle_Changed(object sender, RoutedEventArgs e)
         {
+            if(_rows == null)
+                return;
+
             GridRow changed = _rows.First(x => x.Toggle == sender);
             if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {

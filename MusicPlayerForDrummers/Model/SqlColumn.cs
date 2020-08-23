@@ -22,6 +22,8 @@ namespace MusicPlayerForDrummers.Model
             CustomType = type;
             PrimaryKey = primaryKey;
             ForeignKey = false;
+            FkTableName = "";
+            FkColumnName = "";
             FkDeleteCascade = false;
             Nullable = nullable && !primaryKey;
         }

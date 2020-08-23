@@ -27,9 +27,9 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void CreateDelegateCommands()
         {
-            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist((string)x));
+            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x == null ? "" : (string)x));
             DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
-            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist((string)x));
+            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x == null ? "" : (string)x));
             PlaySelectedSongCommand = new DelegateCommand(_ => Session.SetSelectedSongPlaying());
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
@@ -43,9 +43,9 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Playlists
         private readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
         
-        public DelegateCommand CreateNewPlaylistCommand { get; private set; }
-        public DelegateCommand DeleteSelectedPlaylistCommand { get; private set; }
-        public DelegateCommand RenameSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
+        public DelegateCommand? DeleteSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
 
         private void UpdatePlaylistsFromDb()
         {
@@ -175,27 +175,14 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SortSongs(string propertyName, bool ascending)
         {
+            if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
+            {
+                Log.Warning("Trying to sort songs when the selected playlist is {playlist}", Session.SelectedPlaylist);
+                return;
+            }
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(Session.SelectedPlaylist.Id, propertyName, ascending);
             Session.Songs.Reset(sortedSongs);
-
-            //Finds the parameter from the column name (string)
-            /*try
-            {
-                ParameterExpression parameter = Expression.Parameter(typeof(SongItem), "x");
-                Expression property = Expression.Property(parameter, propertyName);
-                var lambda = Expression.Lambda(property, parameter);
-
-                if (ascending)
-                    Session.Songs.Reset(Session.Songs.OrderBy(x => ));
-                else
-                    Session.Songs.Reset(Session.Songs.OrderByDescending(x => lambda));
-            }
-            catch (Exception e)
-            {
-                Log.Error("Exception thrown when trying to find parameter {param} in SongItem: {exception}",
-                    propertyName, e.Message);
-            }*/
         }
 
         public bool AddSong(SongItem song)
@@ -273,9 +260,9 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
 
-        public DelegateCommand PlaySelectedSongCommand { get; private set; }
+        public DelegateCommand? PlaySelectedSongCommand { get; private set; }
 
-        public DelegateCommand RemoveSelectedSongsCommand { get; private set; }
+        public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()
         {
             if (!(Session.SelectedPlaylist is PlaylistItem)) {
