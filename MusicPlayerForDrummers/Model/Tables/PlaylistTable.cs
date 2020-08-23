@@ -13,13 +13,10 @@
         }
 
         #region Custom Columns
-        public readonly SqlColumn Name = new SqlColumn("Name", EType.Text);
-
+        public readonly SqlColumn Name = new SqlColumn("Name", EType.Text) { Unique = true };
         public readonly SqlColumn IsLocked = new SqlColumn("IsLocked", EType.Bool);
-        
         public readonly SqlColumn IsSmart = new SqlColumn("IsSmart", EType.Bool);
-        
-        public readonly SqlColumn SmartDir = new SqlColumn("SmartDir", EType.Text);
+        public readonly SqlColumn SmartDir = new SqlColumn("SmartDir", EType.Text) { Nullable = true };
         #endregion
     }
 }

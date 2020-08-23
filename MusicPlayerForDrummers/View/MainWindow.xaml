@@ -68,6 +68,7 @@
                     <Grid Margin="2, -2, 2, 0" VerticalAlignment="Top">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
@@ -75,8 +76,8 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0" Content="Playing Song: "/>
-            <StatusBarItem Grid.Column="0" Content="{Binding Path=Session.PlayingSong}"/>
-            <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
+            <StatusBarItem Grid.Column="1" Content="{Binding Path=Session.PlayingSong}"/>
+            <StatusBarItem Grid.Column="2" HorizontalAlignment="Center">
                 <StatusBarItem.Style>
                     <Style TargetType="{x:Type StatusBarItem}">
                         <Setter Property="Content" Value="Loading..."/>
@@ -88,7 +89,7 @@
                     </Style>
                 </StatusBarItem.Style>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="2" HorizontalAlignment="Right">
+            <StatusBarItem Grid.Column="3" HorizontalAlignment="Right">
                 <StatusBarItem.Style>
                     <Style TargetType="{x:Type StatusBarItem}">
                         <Setter Property="Content" Value="Saving..."/>

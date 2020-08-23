@@ -13,6 +13,8 @@ using Serilog;
 namespace MusicPlayerForDrummers.Model
 {
     //TODO: Pass connection when you do an insert/update/delete that doesnt return anything only and create transactions
+    //TODO: Use parameters everywhere
+    //TODO: Use con at the last moment instead of at the start
     public static class DbHandler
     {
         //private static List<MasteryItem> _masteryItems;
@@ -316,7 +318,10 @@ namespace MusicPlayerForDrummers.Model
         {
             PlaylistTable playlistTable = new PlaylistTable();
             CreateTable(con, playlistTable, force);
-            InsertRow(con, playlistTable, new PlaylistItem("All Music", true), true);
+            if (IsEmpty(con, playlistTable))
+            {
+                InsertRow(con, playlistTable, new PlaylistItem("All Music", true));
+            }
         }
 
         //TODO: Make sure dataReader passed by value doesn't impact perf. pass by ref?
@@ -438,23 +443,30 @@ namespace MusicPlayerForDrummers.Model
 
             using (var con = CreateConnection())
             {
-                con.Open();
-
                 SqliteCommand cmd = con.CreateCommand();
                 string comparator = next ? ">" : "<";
-                string[] formattedCols = songTable.GetAllColumns().Select(x => songTable.TableName + "." + x).ToArray();
-                cmd.CommandText = $"SELECT {string.Join(", ", formattedCols)}, MIN(ps1.{psTable.PosInPlaylist})" +
+                string minMax = next ? "MIN" : "MAX";
+                string[] formattedCols = songTable.GetAllColumns().Select(x => "st." + x).ToArray();
+                cmd.CommandText = $"SELECT {minMax}(ps1.{psTable.PosInPlaylist})," +
+                                  $" {string.Join(", ", formattedCols)}" +
                                   $" FROM {psTable.TableName} ps1 INNER JOIN {songTable.TableName} st" +
-                                  $" WHERE ps1.{psTable.PlaylistId} = {playlistId}";
+                                  $" ON ps1.{psTable.SongId} = st.{songTable.Id}" +
+                                  $" WHERE ps1.{psTable.PlaylistId} = @playlistId";
                 if (masteryIDs.Any())
-                    cmd.CommandText += $" AND st.{songTable.MasteryId} IN ({string.Join(", ", masteryIDs)})";
+                    cmd.CommandText += $" AND st.{songTable.MasteryId} IN (@masteryIDs)";
                 cmd.CommandText += $" AND ps1.{psTable.PosInPlaylist} {comparator} (" +
-                                   $" SELECT ps.{psTable.PosInPlaylist} FROM {psTable} ps WHERE ps.{psTable.SongId} = {currentSongId}" +
-                                   $" AND ps.{psTable.PlaylistId} = {playlistId})";
+                                   $" SELECT ps2.{psTable.PosInPlaylist} FROM {psTable.TableName} ps2 WHERE ps2.{psTable.SongId} = @currentSongId" +
+                                   $" AND ps2.{psTable.PlaylistId} = @playlistId)";
+                cmd.Parameters.AddWithValue("playlistId", playlistId);
+                cmd.Parameters.AddWithValue("masteryIDs", string.Join(", ", masteryIDs));
+                cmd.Parameters.AddWithValue("currentSongId", currentSongId);
+                
+                con.Open();
                 SqliteDataReader dataReader = cmd.ExecuteReader();
                 if (dataReader.Read())
                 {
-                    songFound = new SongItem(dataReader);
+                    if (!dataReader.IsDBNull(0))
+                        songFound = new SongItem(dataReader);
                 }
                 else
                 {

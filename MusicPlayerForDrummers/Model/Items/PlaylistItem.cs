@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
 using MusicPlayerForDrummers.Model.Tables;
+using Serilog;
 
 namespace MusicPlayerForDrummers.Model.Items
 {
@@ -34,9 +35,14 @@ namespace MusicPlayerForDrummers.Model.Items
             _smartDir = smartDir;
         }
 
-        public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
+        public PlaylistItem(SqliteDataReader dataReader)
         {
             PlaylistTable playlistTable = new PlaylistTable();
+            int? id = GetSafeInt(dataReader, playlistTable.Id.Name);
+            if (!id.HasValue)
+                Log.Error("Could not find the id when reading a PlaylistItem from the SqliteDataReader.");
+            _id = id.GetValueOrDefault(-1);
+
             _name = GetSafeString(dataReader, playlistTable.Name.Name);
             _isLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
             _isSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);

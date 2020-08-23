@@ -30,7 +30,12 @@ namespace MusicPlayerForDrummers.Model.Tables
             }
 
             TableName = tableName;
-            Id = new SqlColumn($"{tableName}ID", EType.Int, true);
+            Id = new SqlColumn($"{tableName}ID", EType.Int) { PrimaryKey = true };
+        }
+
+        public override string ToString()
+        {
+            return TableName;
         }
     }
 }

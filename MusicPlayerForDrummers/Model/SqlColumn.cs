@@ -8,24 +8,26 @@ namespace MusicPlayerForDrummers.Model
         public string Name { get; }
         public SqliteType SqlType => GetSqlType();
         public EType CustomType { get; }
-        public bool PrimaryKey { get; }
-        public bool ForeignKey { get; }
-        public string FkTableName { get; }
-        public string FkColumnName { get; }
-        public bool FkDeleteCascade { get; }
-        public bool Nullable { get; }
+        public bool PrimaryKey { get; set; }
+        public bool ForeignKey { get; set; }
+        public string FkTableName { get; set; }
+        public string FkColumnName { get; set; }
+        public bool FkDeleteCascade { get; set; }
+        public bool Nullable { get; set; }
+        public bool Unique { get; set; }
 
 
-        public SqlColumn(string name, EType type, bool primaryKey = false, bool nullable = true)
+        public SqlColumn(string name, EType type)
         {
             Name = name;
             CustomType = type;
-            PrimaryKey = primaryKey;
+            PrimaryKey = false;
             ForeignKey = false;
             FkTableName = "";
             FkColumnName = "";
             FkDeleteCascade = false;
-            Nullable = nullable && !primaryKey;
+            Nullable = false;
+            Unique = false;
         }
 
         public SqlColumn(string name, EType type, string fKTableName, string fKColumnName, bool fkDeleteCascade)
@@ -37,6 +39,8 @@ namespace MusicPlayerForDrummers.Model
             FkTableName = fKTableName;
             FkColumnName = fKColumnName;
             FkDeleteCascade = fkDeleteCascade;
+            Nullable = false;
+            Unique = false;
         }
 
         public string GetFormattedColumnSchema()
@@ -52,8 +56,9 @@ namespace MusicPlayerForDrummers.Model
             string formattedPk = PrimaryKey ? "PRIMARY KEY" : "";
             string formattedFk = ForeignKey ? $"REFERENCES {FkTableName} ({FkColumnName}) ON UPDATE CASCADE ON DELETE CASCADE" : "";
             string fkCascade = FkDeleteCascade ? "ON DELETE CASCADE" : "";
-            string notNull = Nullable ? "" : "NOT NULL";
-            return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull);
+            string notNull = !Nullable || PrimaryKey || ForeignKey ? "NOT NULL" : "";
+            string unique = Unique && !PrimaryKey ? "UNIQUE" : "";
+            return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull, unique);
         }
 
         private SqliteType GetSqlType()

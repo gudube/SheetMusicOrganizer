@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using MusicPlayerForDrummers.Model.Tables;
+using Serilog;
 
 namespace MusicPlayerForDrummers.Model.Items
 {
@@ -21,9 +22,14 @@ namespace MusicPlayerForDrummers.Model.Items
             _color = color;
         }
 
-        public MasteryItem(SqliteDataReader dataReader) : base(dataReader)
+        public MasteryItem(SqliteDataReader dataReader)
         {
             MasteryTable masteryTable = new MasteryTable();
+            int? id = GetSafeInt(dataReader, masteryTable.Id.Name);
+            if (!id.HasValue)
+                Log.Error("Could not find the id when reading a MasteryItem from the SqliteDataReader.");
+            _id = id.GetValueOrDefault(-1);
+
             _name = GetSafeString(dataReader, masteryTable.Name.Name);
             _isLocked = GetSafeBool(dataReader, masteryTable.IsLocked.Name);
             _color = GetSafeString(dataReader, masteryTable.Color.Name);

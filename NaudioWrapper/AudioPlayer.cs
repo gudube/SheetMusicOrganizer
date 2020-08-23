@@ -124,7 +124,8 @@ namespace NAudioWrapper
                 PlaybackStopping?.Invoke();
                 _output.Stop();
             }
-            if(!soft)
+
+            if (!soft)
                 DisposeOutput();
 
             return isPlaying;
@@ -164,6 +165,8 @@ namespace NAudioWrapper
                 _output.Dispose();
                 _output = null;
             }
+            OnPropertyChanged(nameof(Length));
+            OnPropertyChanged(nameof(Position));
         }
         #endregion
     }

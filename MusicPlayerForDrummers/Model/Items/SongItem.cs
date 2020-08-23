@@ -82,9 +82,14 @@ namespace MusicPlayerForDrummers.Model.Items
             _scrollEndTime = Settings.Default.DefaultScrollEndTime;
         }
 
-        public SongItem(SqliteDataReader dataReader) : base(dataReader)
+        public SongItem(SqliteDataReader dataReader)
         {
             SongTable songTable = new SongTable();
+            int? id = GetSafeInt(dataReader, songTable.Id.Name);
+            if (!id.HasValue) //todo: should throw an error in most cases where we have a log.error or log.warning and handle it
+                Log.Error("Could not find the id when reading a SongItem from the SqliteDataReader.");
+            _id = id.GetValueOrDefault(-1);
+
             _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
             _audioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
             _number = GetSafeUInt(dataReader, songTable.Number.Name).GetValueOrDefault(0);

@@ -34,7 +34,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource SimpleButton}">
+                    <Button Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}">
                         <Image Source="/View/Resources/previous_song_40.png"/>
                     </Button>
                     <Button Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}">

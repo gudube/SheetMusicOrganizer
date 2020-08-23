@@ -15,36 +15,26 @@
         }
 
         #region Custom Columns
-        public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.Text, false, false);
-
-        public readonly SqlColumn AudioDirectory = new SqlColumn("AudioDirectory", EType.Text);
-
+        //TODO: should it add the same song twice if there is 1 mp3 and 2 pdfs in a folder? seems logical, opposite too. could disable it by default maybe
+        public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.Text) { Nullable = true };
+        public readonly SqlColumn AudioDirectory = new SqlColumn("AudioDirectory", EType.Text) { Nullable = true };
+        
         //TODO: Verify the files metadata is uptodate when playing: compare each field vs store and look at the modified date?
         #region Metadata
-        public readonly SqlColumn Number = new SqlColumn("Number", EType.Int);
-
+        public readonly SqlColumn Number = new SqlColumn("Number", EType.Int) { Nullable = true };
         public readonly SqlColumn Title = new SqlColumn("Title", EType.Text);
-
-        public readonly SqlColumn Artist = new SqlColumn("Artist", EType.Text);
-
-        public readonly SqlColumn Album = new SqlColumn("Album", EType.Text);
-
-        public readonly SqlColumn Genre = new SqlColumn("Genre", EType.Text);
-
-        public readonly SqlColumn LengthMD = new SqlColumn("LengthMD", EType.Text);
-
+        public readonly SqlColumn Artist = new SqlColumn("Artist", EType.Text) { Nullable = true };
+        public readonly SqlColumn Album = new SqlColumn("Album", EType.Text) { Nullable = true };
+        public readonly SqlColumn Genre = new SqlColumn("Genre", EType.Text) { Nullable = true };
+        public readonly SqlColumn LengthMD = new SqlColumn("LengthMD", EType.Text) { Nullable = true };
         public readonly SqlColumn CodecMD = new SqlColumn("CodecMD", EType.Text);
-
-        public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.Text);
-
-        public readonly SqlColumn Rating = new SqlColumn("Rating", EType.Int);
+        public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.Text) { Nullable = true };
+        public readonly SqlColumn Rating = new SqlColumn("Rating", EType.Int) { Nullable = true };
         #endregion
 
-        //TODO: Make it a Foreign Key field and implement FKs in SqlColumns
         public readonly SqlColumn MasteryId;
-
-        public readonly SqlColumn ScrollStartTime = new SqlColumn("ScrollStartTime", EType.Int);
-        public readonly SqlColumn ScrollEndTime = new SqlColumn("ScrollEndTime", EType.Int);
+        public readonly SqlColumn ScrollStartTime = new SqlColumn("ScrollStartTime", EType.Int) { Nullable = true };
+        public readonly SqlColumn ScrollEndTime = new SqlColumn("ScrollEndTime", EType.Int) { Nullable = true };
         #endregion
     }
 }

@@ -83,6 +83,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             PlayingSong = song;
             Player.SetSong(song.AudioDirectory);
+            //SelectedSongs.Reset(song); //todo: make the playing song a different color to recognize when it changes
         }
 
         private void SetPlayingSong(SongItem song, PlaylistItem playlist, SmartCollection<MasteryItem> masteryLevels)
@@ -102,36 +103,25 @@ namespace MusicPlayerForDrummers.ViewModel
                 SetPlayingSong(this.SelectedSongs[0], pl, this.SelectedMasteryLevels);
         }
 
-        public void SetNextPlayingSong()
+        public void SetNextPlayingSong(bool next)
         {
             if (PlayingSong == null || PlayingPlaylist == null)
             {
-                Log.Warning("Playing song or playing playlist is null when trying to go to play next song");
+                Log.Warning("Playing song or playing playlist is null when trying to go to play {next} song", (next ? "next" : "previous"));
                 return;
             }
+
             //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
-            SongItem? next = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
-
-            if (next == null)
+            SongItem? newSong;
+            if(next)
+                newSong = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            else
+                newSong = DbHandler.FindPreviousSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            
+            if (newSong == null)
                 StopPlayingSong();
             else
-                SetPlayingSong(next);
-        }
-
-        public void SetPreviousPlayingSong()
-        {
-            if (PlayingSong == null || PlayingPlaylist == null)
-            {
-                Log.Warning("Playing song or playing playlist is null when trying to go to play previous song");
-                return;
-            }
-
-            SongItem? previous = DbHandler.FindPreviousSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
-
-            if (previous == null)
-                StopPlayingSong();
-            else
-                SetPlayingSong(previous);
+                SetPlayingSong(newSong);
         }
         #endregion
 

@@ -24,9 +24,14 @@ namespace MusicPlayerForDrummers.Model.Items
         }
 
         
-        public PlaylistSongItem(SqliteDataReader dataReader) : base(dataReader)
+        public PlaylistSongItem(SqliteDataReader dataReader)
         {
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
+            int? id = GetSafeInt(dataReader, playlistSongTable.Id.Name);
+            if (!id.HasValue)
+                Log.Error("Could not find the id when reading a PlaylistSongItem from the SqliteDataReader.");
+            _id = id.GetValueOrDefault(-1);
+
             int? playlistId = GetSafeInt(dataReader, playlistSongTable.PlaylistId.Name);
             if(!playlistId.HasValue)
                 Log.Error("Missing playlist id for PlaylistSongItem with Id {Id}", Id);

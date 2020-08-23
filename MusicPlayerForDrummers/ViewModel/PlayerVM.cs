@@ -13,6 +13,7 @@ namespace MusicPlayerForDrummers.ViewModel
             PauseCommand = new DelegateCommand(Pause);
             StopCommand = new DelegateCommand(Stop);
             NextCommand = new DelegateCommand(Next);
+            PreviousCommand = new DelegateCommand(Previous);
             StartedSeekCommand = new DelegateCommand(StartedSeek);
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
@@ -55,15 +56,18 @@ namespace MusicPlayerForDrummers.ViewModel
         private void Stop(object? obj)
         {
             Session.StopPlayingSong();
-        }   
+        }
+
+        public DelegateCommand PreviousCommand { get; }
+        private void Previous(object? obj)
+        {
+            Session.SetNextPlayingSong(false);
+        }
 
         public DelegateCommand NextCommand { get; }
-        //Playing song? Start playing next song
-        //No playing song? Play selected song
-        //No selected song? do nothing
         private void Next(object? obj)
         {
-            Session.SetNextPlayingSong();
+            Session.SetNextPlayingSong(true);
         }
 
         private bool _resumePlaying = false;

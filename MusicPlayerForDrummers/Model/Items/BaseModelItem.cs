@@ -11,12 +11,7 @@ namespace MusicPlayerForDrummers.Model.Items
             Id = -1;
         }
 
-        protected BaseModelItem(SqliteDataReader dataReader)
-        {
-            Id = dataReader.GetInt32(0);
-        }
-
-        private int _id;
+        protected int _id;
         public int Id { get => _id; set => SetField(ref _id, value); }
 
         public abstract object[] GetCustomValues();
