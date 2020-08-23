@@ -1,9 +1,11 @@
-﻿using MusicPlayerForDrummers.Model;
+﻿using System;
+using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.IO;
+using System.Linq.Expressions;
 using MusicPlayerForDrummers.Model.Items;
 using Serilog;
 
@@ -169,6 +171,31 @@ namespace MusicPlayerForDrummers.ViewModel
                 Session.Songs.Clear();
             else
                 Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id));
+        }
+
+        public void SortSongs(string propertyName, bool ascending)
+        {
+            List<SongItem> sortedSongs =
+                DbHandler.SortSongs(Session.SelectedPlaylist.Id, propertyName, ascending);
+            Session.Songs.Reset(sortedSongs);
+
+            //Finds the parameter from the column name (string)
+            /*try
+            {
+                ParameterExpression parameter = Expression.Parameter(typeof(SongItem), "x");
+                Expression property = Expression.Property(parameter, propertyName);
+                var lambda = Expression.Lambda(property, parameter);
+
+                if (ascending)
+                    Session.Songs.Reset(Session.Songs.OrderBy(x => ));
+                else
+                    Session.Songs.Reset(Session.Songs.OrderByDescending(x => lambda));
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception thrown when trying to find parameter {param} in SongItem: {exception}",
+                    propertyName, e.Message);
+            }*/
         }
 
         public bool AddSong(SongItem song)

@@ -73,10 +73,10 @@ namespace MusicPlayerForDrummers.View.Tools
                 return;
             _isUpdating = true;
             foreach (T item in e.AddedItems)
-                if(!collectionToUpdate.Contains(item))
+                if(item != null && !collectionToUpdate.Contains(item))
                     collectionToUpdate.Add(item);
             foreach (T item in e.RemovedItems)
-                if(collectionToUpdate.Contains(item))
+                if(item != null && collectionToUpdate.Contains(item))
                     collectionToUpdate.Remove(item);
             _isUpdating = false;
         }

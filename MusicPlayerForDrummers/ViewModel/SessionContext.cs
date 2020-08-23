@@ -62,11 +62,11 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region PlayingSong
-        private INotifyPropertyChanged _playingSong;
-        public SongItem PlayingSong { get => (SongItem)_playingSong; private set => SetField(ref _playingSong, value); }
+        private INotifyPropertyChanged? _playingSong;
+        public SongItem? PlayingSong { get => (SongItem?)_playingSong; private set => SetField(ref _playingSong, value); }
 
-        private INotifyPropertyChanged _playingPlaylist;
-        public PlaylistItem PlayingPlaylist { get => (PlaylistItem)_playingPlaylist; private set => SetField(ref _playingPlaylist, value); }
+        private INotifyPropertyChanged? _playingPlaylist;
+        public PlaylistItem? PlayingPlaylist { get => (PlaylistItem?)_playingPlaylist; private set => SetField(ref _playingPlaylist, value); }
 
         private SmartCollection<MasteryItem> _playingMasteryLevels;
         public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; private set => SetField(ref _playingMasteryLevels, value); }
@@ -104,7 +104,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetNextPlayingSong()
         {
-            SongItem next = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
+            SongItem? next = DbHandler.FindNextSong(PlayingSong.Id, PlayingPlaylist.Id, PlayingMasteryLevels.Select(x => x.Id).ToArray());
 
             if (next == null)
                 StopPlayingSong();

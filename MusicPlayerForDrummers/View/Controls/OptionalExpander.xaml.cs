@@ -38,8 +38,10 @@ namespace MusicPlayerForDrummers.View.Controls
             if (this.Content is Grid grid)
             {
                 _rows = new GridRow[grid.RowDefinitions.Count];
-                foreach (UIElement elem in grid.Children)
+                foreach (UIElement? elem in grid.Children)
                 {
+                    if (elem == null)
+                        continue;
                     elem.Opacity = _defaultOpacity;
                     int rowIndex = Grid.GetRow(elem);
                     if (elem is ToggleButton toggle)

@@ -23,6 +23,23 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             InitializeComponent();
             DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
             DataContextChanged += SongsGrid_DataContextChanged;
+            Songs.Sorting += Songs_Sorting;
+        }
+
+        private void Songs_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            DataGridColumn column = e.Column;
+
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column, DataContext);
+                return;
+            }
+            column.SortDirection = column.SortDirection == ListSortDirection.Ascending
+                ? ListSortDirection.Descending
+                : ListSortDirection.Ascending;
+            libraryVM.SortSongs((string)column.Header, column.SortDirection == ListSortDirection.Ascending);
+            e.Handled = true;
         }
 
         private void SongsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

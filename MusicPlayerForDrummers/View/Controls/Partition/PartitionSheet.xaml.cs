@@ -61,7 +61,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         //public static readonly DependencyProperty PartitionDirProperty = DependencyProperty.Register("PdfPath", typeof(string), typeof(PartitionSheet),
         //       new PropertyMetadata(null, propertyChangedCallback: OnPartitionDirChanged));
         //public string PartitionDir { get => (string)GetValue(PartitionDirProperty); set => SetValue(PartitionDirProperty, value); }
-        private void PlayingSong_PropertyChanged(SongItem song)
+        private void PlayingSong_PropertyChanged(SongItem? song)
         {
             if (song == null)
                 return;
@@ -124,20 +124,28 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
 
         private void UpdateScrollPos()
         {
-            if (DataContext is PartitionVM partitionVM)
+            if (!(DataContext is PartitionVM partitionVM))
             {
+                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext.GetType());
+                return;
+            }
 
-                double updatedPos = partitionVM.Session.Player.Position - partitionVM.Session.PlayingSong.ScrollStartTime;
-                double updatedLength = partitionVM.Session.Player.Length - partitionVM.Session.PlayingSong.ScrollStartTime - partitionVM.Session.PlayingSong.ScrollEndTime;
-                if(updatedPos <= 0 || updatedLength <= 0)
-                {
-                    Scrollbar.ScrollToVerticalOffset(0);
-                }
-                else
-                {
-                    updatedPos = (updatedPos / updatedLength) * Scrollbar.ScrollableHeight;
-                    Scrollbar.ScrollToVerticalOffset(updatedPos);
-                }
+            if (partitionVM.Session.PlayingSong == null)
+            {
+                Log.Error("Trying to UpdateScrollPos when playing song is null");
+                return;
+            }
+
+            double updatedPos = partitionVM.Session.Player.Position - partitionVM.Session.PlayingSong.ScrollStartTime;
+            double updatedLength = partitionVM.Session.Player.Length - partitionVM.Session.PlayingSong.ScrollStartTime - partitionVM.Session.PlayingSong.ScrollEndTime;
+            if(updatedPos <= 0 || updatedLength <= 0)
+            {
+                Scrollbar.ScrollToVerticalOffset(0);
+            }
+            else
+            {
+                updatedPos = (updatedPos / updatedLength) * Scrollbar.ScrollableHeight;
+                Scrollbar.ScrollToVerticalOffset(updatedPos);
             }
         }
 
@@ -153,8 +161,9 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                     return;
 
                 _zoom = newZoom;
-                foreach (Image image in PagesContainer.Items)
-                    image.LayoutTransform = new ScaleTransform(_zoom, _zoom);
+                foreach (Image? image in PagesContainer.Items)
+                    if(image != null)
+                        image.LayoutTransform = new ScaleTransform(_zoom, _zoom);
 
                 Scrollbar.UpdateLayout();
                 Scrollbar.ScrollToVerticalOffset(verticalScrollRatio * Scrollbar.ScrollableHeight);

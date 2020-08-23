@@ -59,7 +59,7 @@ namespace MusicPlayerForDrummers.Model.Items
 
         #region Other Properties
         //useful to know the mastery name from SongItem (e.g. in the SongsGrid)
-        public MasteryItem Mastery => DbHandler.MasteryDic[MasteryId];
+        public MasteryItem? Mastery => DbHandler.MasteryDic?[MasteryId];
 
         #endregion
 
@@ -170,8 +170,18 @@ namespace MusicPlayerForDrummers.Model.Items
         //TODO: Better way to do it?
         public override object[] GetCustomValues()
         {
-            return new object[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
-            LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime };
+            if (Number == null)
+                return new object[]
+                {
+                    PartitionDirectory, AudioDirectory, Title, Artist, Album, Genre,
+                    LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
+                };
+            
+            return new object[]
+            {
+                PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
+                LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
+            };
         }
 
         public override string ToString()

@@ -6,6 +6,7 @@ using GongSolutions.Wpf.DragDrop;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
 namespace MusicPlayerForDrummers.View.Controls.Library
 {
@@ -63,7 +64,11 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            MasteryItem targetItem = dropInfo.TargetItem as MasteryItem;
+            if (!(dropInfo.TargetItem is MasteryItem targetItem))
+            {
+                Log.Warning("Trying to drop on a mastery item but targetItem is not a MasteryItem but is a {target}", dropInfo.TargetItem.GetType());
+                return;
+            }
 
             if (dropInfo.Data is SongItem song)
             {

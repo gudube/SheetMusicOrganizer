@@ -1,4 +1,8 @@
 ﻿
+using Microsoft.Data.Sqlite;
+using MusicPlayerForDrummers.Model.Tables;
+using Serilog;
+
 namespace MusicPlayerForDrummers.Model.Items
 {
     public class PlaylistSongItem : BaseModelItem
@@ -19,16 +23,23 @@ namespace MusicPlayerForDrummers.Model.Items
             PosInPlaylist = posInPlaylist;
         }
 
-        /*
+        
         public PlaylistSongItem(SqliteDataReader dataReader) : base(dataReader)
         {
             PlaylistSongTable playlistSongTable = new PlaylistSongTable();
             int? playlistId = GetSafeInt(dataReader, playlistSongTable.PlaylistId.Name);
-            if(playlistId == null)
+            if(!playlistId.HasValue)
                 Log.Error("Missing playlist id for PlaylistSongItem with Id {Id}", Id);
-            PlaylistId = playlistId.GetValueOrDefault()
-            SongId = GetSafeInt(dataReader, playlistSongTable.SongId.Name);
-        }*/
+            PlaylistId = playlistId.GetValueOrDefault(-1);
+            int? songId = GetSafeInt(dataReader, playlistSongTable.SongId.Name);
+            if (!songId.HasValue)
+                Log.Error("Missing song id for PlaylistSongItem with Id {Id}", Id);
+            SongId = songId.GetValueOrDefault(-1);
+            int? posInPlaylist = GetSafeInt(dataReader, playlistSongTable.PosInPlaylist.Name);
+            if (!posInPlaylist.HasValue)
+                Log.Error("Missing position in playlist for PlaylistSongItem with Id {Id}", Id);
+            PosInPlaylist = posInPlaylist.GetValueOrDefault(-1);
+        }
 
         public override object[] GetCustomValues()
         {

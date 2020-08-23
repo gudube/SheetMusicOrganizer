@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using GongSolutions.Wpf.DragDrop;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
 namespace MusicPlayerForDrummers.View.Controls.Library
 {
@@ -61,8 +62,12 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            PlaylistItem targetItem = dropInfo.TargetItem as PlaylistItem;
-            
+            if (!(dropInfo.TargetItem is PlaylistItem targetItem))
+            {
+                Log.Warning("Trying to drop on a playlist item but targetItem is not a PlaylistItem but is a {target}", dropInfo.TargetItem.GetType());
+                return;
+            }
+
             if(dropInfo.Data is SongItem song)
             {
                 ((LibraryVM)DataContext).CopySongToPlaylist(targetItem, song);

@@ -6,7 +6,7 @@ namespace MusicPlayerForDrummers.View.Tools
 {
     public static class WindowManager
     {
-        private static Window _openedWindow;
+        private static Window? _openedWindow;
 
         public static void OpenAddNewSongWindow()
         {
@@ -32,7 +32,7 @@ namespace MusicPlayerForDrummers.View.Tools
             _openedWindow.ShowDialog();
         }
 
-        private static void OpenedWindow_Closed(object sender, EventArgs e)
+        private static void OpenedWindow_Closed(object? sender, EventArgs e)
         {
             if(_openedWindow != null)
             {
