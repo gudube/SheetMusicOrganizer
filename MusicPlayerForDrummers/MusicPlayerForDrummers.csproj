@@ -7,6 +7,7 @@
     <AssemblyName>MusicPlayerForDrummers</AssemblyName>
     <RootNamespace>MusicPlayerForDrummers</RootNamespace>
     <StartupObject>MusicPlayerForDrummers.App</StartupObject>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

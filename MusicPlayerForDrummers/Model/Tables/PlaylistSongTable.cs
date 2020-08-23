@@ -10,15 +10,17 @@
             //TODO: Improve the DB by adding constraints (like not null and OnUpdate)
             PlaylistId = new SqlColumn("PlaylistId", EType.Int, playlistTable.TableName, playlistTable.Id.Name, true);
             SongId = new SqlColumn("SongId", EType.Int, songTable.TableName, songTable.Id.Name, true);
+            PosInPlaylist = new SqlColumn("PosInPlaylist", EType.Int, false, false);
         }
         public override SqlColumn[] GetCustomColumns()
         {
-            return new [] { PlaylistId, SongId };
+            return new [] { PlaylistId, SongId, PosInPlaylist };
         }
 
         #region Custom Columns
         public readonly SqlColumn PlaylistId;
         public readonly SqlColumn SongId;
+        public readonly SqlColumn PosInPlaylist;
         #endregion
     }
 }

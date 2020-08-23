@@ -9,10 +9,14 @@ namespace MusicPlayerForDrummers.Model.Items
         private int _songId;
         public int SongId { get => _songId; set => SetField(ref _songId, value); }
 
-        public PlaylistSongItem(int playlistId, int songId) : base()
+        private int _posInPlaylist;
+        public int PosInPlaylist { get => _posInPlaylist; set => SetField(ref _posInPlaylist, value); }
+
+        public PlaylistSongItem(int playlistId, int songId, int posInPlaylist) : base()
         {
             PlaylistId = playlistId;
             SongId = songId;
+            PosInPlaylist = posInPlaylist;
         }
 
         /*
@@ -28,7 +32,7 @@ namespace MusicPlayerForDrummers.Model.Items
 
         public override object[] GetCustomValues()
         {
-            return new object[] { PlaylistId, SongId };
+            return new object[] { PlaylistId, SongId, PosInPlaylist };
         }
     }
 }
