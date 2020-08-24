@@ -18,9 +18,77 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         public MasteryListBox()
         {
             InitializeComponent();
-            DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedMasteryLevels, MainListBox, MainListBox.SelectedItems);
+            MainListBox.SelectionChanged += MainListBox_SelectionChanged;
+            //DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedMasteryLevels, MainListBox, MainListBox.SelectedItems);
+            DataContextChanged += MasteryListBox_DataContextChanged;
         }
 
+        private void MasteryListBox_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is LibraryVM oldVM)
+            {
+                oldVM.Session.SelectedMasteryLevels.CollectionChanged -= SelectedMasteryLevels_CollectionChanged;
+            }
+
+            if (e.NewValue is LibraryVM newVM)
+            {
+                newVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
+            }
+        }
+
+        private bool _changingCollection = false;
+
+        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (_changingCollection)
+            {
+                _changingCollection = false;
+                return;
+            }
+
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("MainListBox_SelectionChanged when DataContext of MasteryListBox is not LibraryVM but is: {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            _changingCollection = true;
+            MainListBox.SelectedItems.Clear();
+
+            foreach (MasteryItem mastery in libraryVM.Session.SelectedMasteryLevels)
+            {
+                _changingCollection = true;
+                MainListBox.SelectedItems.Add(mastery);
+            }
+        }
+
+        private void MainListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_changingCollection)
+            {
+                _changingCollection = false;
+                return;
+            }
+
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("MainListBox_SelectionChanged when DataContext of MasteryListBox is not LibraryVM but is: {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            foreach (MasteryItem? item in e.AddedItems)
+                if (item != null && !libraryVM.Session.SelectedMasteryLevels.Contains(item))
+                {
+                    _changingCollection = true;
+                    libraryVM.Session.SelectedMasteryLevels.Add(item);
+                }
+            foreach (MasteryItem? item in e.RemovedItems)
+                if (item != null && libraryVM.Session.SelectedMasteryLevels.Contains(item))
+                {
+                    _changingCollection = true;
+                    libraryVM.Session.SelectedMasteryLevels.Remove(item);
+                }
+        }
 
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
