@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Serilog;
 
 namespace MusicPlayerForDrummers.View.Tools
 {
@@ -94,6 +95,7 @@ namespace MusicPlayerForDrummers.View.Tools
         public static DependencyPropertyChangedEventHandler BidirectionalLink<T>(Func<object> dataContext, Func<ObservableCollection<T>> vmCollection, Selector viewList, IList viewItems)
         {
             var instance = new BindingHelper();
+            //todo: need to unsubscribe to that somewhere?
             viewList.SelectionChanged += (listSender, e) => { if (dataContext() != null) instance.ListChanged(vmCollection(), e); };
 
             return (sender, args) =>
@@ -104,6 +106,7 @@ namespace MusicPlayerForDrummers.View.Tools
                 ObservableCollection<T> collection = vmCollection();
                 foreach (T item in collection)
                     viewItems.Add(item);
+                //todo: need to unsubscribe too?
                 vmCollection().CollectionChanged += (vmSender, e) => instance.ObservableCollectionChanged<T>(viewItems, vmSender, e);
             };
         }

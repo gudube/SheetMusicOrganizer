@@ -35,11 +35,17 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
 
         private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DataContext is PartitionVM partitionVM) {
-                PlayingSong_PropertyChanged(partitionVM.Session.PlayingSong);
-                partitionVM.Session.PropertyChanged += Session_PropertyChanged;
+            if (e.OldValue is PartitionVM oldVM)
+            {
+                oldVM.Session.PropertyChanged -= Session_PropertyChanged;
+                oldVM.Session.Player.PropertyChanged -= Player_PropertyChanged;
+            }
+
+            if (e.NewValue is PartitionVM newVM) {
+                PlayingSong_PropertyChanged(newVM.Session.PlayingSong);
+                newVM.Session.PropertyChanged += Session_PropertyChanged;
                 //partitionVM.Session.PlayerTimerUpdate += TimerUpdate;
-                partitionVM.Session.Player.PropertyChanged += Player_PropertyChanged;
+                newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
             }
         }
         
@@ -97,7 +103,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                         Source = bitmap,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         Margin = new Thickness(0, 4, 0, 4),
-                        MaxWidth = 800
+                        Width = 1200 * _zoom
                     };
                     PagesContainer.Items.Add(image);
                 }
@@ -115,6 +121,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream.AsStream();
+                image.DecodePixelWidth = 1400; //todo: Add this option in settings to change that
                 image.EndInit();
             }
 
@@ -126,7 +133,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext.GetType());
+                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
                 return;
             }
 

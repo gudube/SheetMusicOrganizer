@@ -35,7 +35,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column, DataContext);
+                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column, DataContext?.GetType());
                 return;
             }
             column.SortDirection = column.SortDirection == ListSortDirection.Ascending
@@ -47,42 +47,72 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
         private void SongsGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(!(DataContext is LibraryVM libraryVM))
-                return;
-
-            CollectionViewSource itemSourceList = new CollectionViewSource() { Source = libraryVM.Session.Songs };
-
-            // ICollectionView the View/UI part 
-            ICollectionView itemList = itemSourceList.View;
-
-            // your Filter
-            var masteryFilter = new Predicate<object>(item => libraryVM.Session.SelectedMasteryLevels.Count == 0 
-                                                                 || libraryVM.Session.SelectedMasteryLevels.Any(x => x.Id == ((SongItem)item).MasteryId));
-            itemSourceList.View.Filter = masteryFilter;
-            
-            Songs.ItemsSource = itemList;
-
-            SubscribeToSongMasteryId(itemList);
-            //todo: any problem with that? since we never unsubscribe but can delete songs
-            libraryVM.Session.SelectedMasteryLevels.CollectionChanged += (a, b) => itemList.Refresh();
-            libraryVM.Session.Songs.CollectionChanged += (a, b) =>
+            if (e.OldValue is LibraryVM oldVM)
             {
-                SubscribeToSongMasteryId(itemList);
-            };
+                oldVM.Session.Songs.CollectionChanged -= Songs_CollectionChanged;
+                oldVM.Session.SelectedMasteryLevels.CollectionChanged -= SelectedMasteryLevels_CollectionChanged;
+                foreach (SongItem? song in oldVM.Session.Songs)
+                {
+                    if (song != null)
+                        song.PropertyChanged -= Song_PropertyChanged;
+                }
+            }
+
+            if (e.NewValue is LibraryVM newVM)
+            {
+                CollectionViewSource itemSourceList = new CollectionViewSource() { Source = newVM.Session.Songs };
+                ICollectionView itemList = itemSourceList.View;
+
+                var masteryFilter = new Predicate<object>(item => newVM.Session.SelectedMasteryLevels.Count == 0
+                                                                  || newVM.Session.SelectedMasteryLevels.Any(x => x.Id == ((SongItem)item).MasteryId));
+                itemSourceList.View.Filter = masteryFilter;
+
+                Songs.ItemsSource = itemList;
+
+                foreach (SongItem? song in newVM.Session.Songs)
+                {
+                    if (song != null)
+                        song.PropertyChanged += Song_PropertyChanged;
+                }
+                
+                newVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
+                newVM.Session.Songs.CollectionChanged += Songs_CollectionChanged;
+            }
         }
 
-        private void SubscribeToSongMasteryId(ICollectionView itemList)
+        private void Songs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (!(DataContext is LibraryVM libraryVM))
-                return;
-            foreach (SongItem song in libraryVM.Session.Songs)
+            foreach (SongItem? song in e.OldItems)
             {
-                song.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName == nameof(song.MasteryId))
-                        itemList.Refresh();
-                };
+                if (song != null)
+                    song.PropertyChanged -= Song_PropertyChanged;
             }
+
+            foreach (SongItem? song in e.NewItems)
+            {
+                if(song != null)
+                    song.PropertyChanged += Song_PropertyChanged;
+            }
+        }
+
+        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if(Songs.ItemsSource is ICollectionView view)
+                view.Refresh();
+            else
+                Log.Warning("Event SelectedMasteryLevels_CollectionChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
+        }
+
+        private void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!(Songs.ItemsSource is ICollectionView view))
+            {
+                Log.Warning("Song_PropertyChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
+                return;
+            }
+
+            if (e.PropertyName == nameof(SongItem.MasteryId))
+                view.Refresh();
         }
         #endregion
 
@@ -110,7 +140,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             if(!(DataContext is LibraryVM libraryVM))
             {
-                Log.Warning("DataContext of SongsGrid is not LibraryVM in DataGrid_PreviewKeyDown, but is {type}", DataContext.GetType());
+                Log.Warning("DataContext of SongsGrid is not LibraryVM in DataGrid_PreviewKeyDown, but is {type}", DataContext?.GetType());
                 return;
             }
 
@@ -137,13 +167,13 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             if (!(DataContext is LibraryVM libraryVM))
             {
                 //TODO: Popup message in small at the bottom when there's a Log.Error, followed by 'Open Console' link to see all info
-                Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext.GetType());
+                Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext?.GetType());
                 return;
             }
 
             if (!(Songs.ItemsSource is ListCollectionView view))
             {
-                Log.Error("ItemSource of the SongsGrid is not a ListCollectionView, but is a {itemsSource}", Songs.ItemsSource.GetType());
+                Log.Error("ItemSource of the SongsGrid is not a ListCollectionView, but is a {itemsSource}", Songs.ItemsSource?.GetType());
                 return;
             }
 
