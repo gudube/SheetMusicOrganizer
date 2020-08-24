@@ -18,13 +18,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         public MasteryListBox()
         {
             InitializeComponent();
-            //BindingHelper bindingHelper = new BindingHelper();
             DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedMasteryLevels, MainListBox, MainListBox.SelectedItems);
-            //DataContextChanged += (sender, args) => ((LibraryVM)DataContext).Session.SelectedMasteryLevels.CollectionChanged +=
-            //    (sender, e) => bindingHelper.ObservableCollectionChanged<MasteryItem>(MainListBox.SelectedItems, sender, e);
-            
-        //    DataContextChanged += (sender, args) => MainListBox.SelectionChanged +=
-        //        (sender, e) => bindingHelper.ListChanged(((LibraryVM)DataContext).Session.SelectedMasteryLevels, sender, e);
         }
 
 
@@ -82,7 +76,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                     ((LibraryVM)DataContext).SetSongsMastery(songs.Cast<SongItem>(), targetItem);
                 }
             }
-
         }
     }
 }

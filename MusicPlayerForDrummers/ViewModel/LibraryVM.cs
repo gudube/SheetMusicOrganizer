@@ -185,36 +185,61 @@ namespace MusicPlayerForDrummers.ViewModel
             Session.Songs.Reset(sortedSongs);
         }
 
-        public bool AddSong(SongItem song)
+        //Resets the songs in the database for current playlist from the songIDs in the same order
+        public void ResetSongsInCurrentPlaylist(IEnumerable<int> songIDs)
         {
-            if (!DbHandler.IsSongExisting(song.PartitionDirectory))
+            if (Session.SelectedPlaylist == null)
             {
-                AddNewSong(song);
-                return true;
+                Log.Warning("Tried to reset songs in the current playlist when no playlists are selected");
+                return;
             }
 
-            return false;
+            if (Session.SelectedPlaylist == _addPlaylist)
+            {
+                Log.Warning("Tried to reset songs in the current playlist when the selected playlist is the 'Add' playlist");
+                return;
+            }
+            DbHandler.ResetSongsInPlaylist(Session.SelectedPlaylist.Id, songIDs);
         }
 
-        private void AddNewSong(SongItem song)
+        public bool AddSong(SongItem song)
         {
-            if (Session.SelectedMasteryLevels.Count == 0)
-                song.MasteryId = Session.MasteryLevels[0].Id;
-            else
-                song.MasteryId = Session.SelectedMasteryLevels[0].Id;
+            bool songCreated = false;
 
-            if (Session.SelectedPlaylist is PlaylistItem)
-                DbHandler.AddSong(song, Session.SelectedPlaylist.Id);
+            if (DbHandler.IsSongExisting(song.PartitionDirectory))
+            {
+                song = DbHandler.GetSong(song.PartitionDirectory);
+            }
+            else
+            {
+                if (Session.SelectedMasteryLevels.Count == 0)
+                    song.MasteryId = Session.MasteryLevels[0].Id;
+                else
+                    song.MasteryId = Session.SelectedMasteryLevels[0].Id;
+
+                DbHandler.AddSong(song);
+                songCreated = true;
+            }
+
+            if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _addPlaylist)
+            {
+                if (songCreated || Session.Songs.All(x => x.Id != song.Id))
+                {
+                    Session.Songs.Add(song);
+                    DbHandler.AddPlaylistSongLink(Session.SelectedPlaylist.Id, song.Id);
+                }
+            }
             else
             {
                 Log.Error("Tried adding a new song when selected playlist was {playlist}", Session.SelectedPlaylist);
-                DbHandler.AddSong(song, Session.Playlists[0].Id);
             }
-            Session.Songs.Add(song);
+
+            return songCreated;
         }
 
         //TODO: Add advanced options (like import music sheet only, audio only or both)
         //TODO: Add update existing songs (music sheet or audio) vs skip existing songs
+        //TODO: Append songs added to a list to be able to push them to the database in transaction
         public void AddFolder(string dir, bool recursive, bool useAudioMD)
         {
             if (recursive)
@@ -275,6 +300,9 @@ namespace MusicPlayerForDrummers.ViewModel
                 Log.Warning("Expected songs to be selected when RemoveSelectedSongs()");
                 return;
             }
+
+            if(Session.PlayingSong != null && Session.SelectedSongs.Contains(Session.PlayingSong))
+                Session.StopPlayingSong();
 
             int[] songIDs = Session.SelectedSongs.Select(x => x.Id).ToArray();
             if (Session.SelectedPlaylist == Session.Playlists[0])

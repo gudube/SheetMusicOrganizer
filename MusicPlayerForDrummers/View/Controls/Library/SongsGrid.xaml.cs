@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using GongSolutions.Wpf.DragDrop;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
@@ -16,7 +18,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
     /// <summary>
     /// Interaction logic for SongsGrid.xaml
     /// </summary>
-    public partial class SongsGrid : UserControl
+    public partial class SongsGrid : UserControl, IDropTarget
     {
         public SongsGrid()
         {
@@ -26,6 +28,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             Songs.Sorting += Songs_Sorting;
         }
 
+        #region Changed Event
         private void Songs_Sorting(object sender, DataGridSortingEventArgs e)
         {
             DataGridColumn column = e.Column;
@@ -81,6 +84,9 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 };
             }
         }
+        #endregion
+
+        #region Action Event
 
         //TODO: Accept drag-and-drop
         //TODO: Hide button after a song is added
@@ -118,7 +124,33 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 libraryVM.PlaySelectedSongCommand?.Execute(null);
                 e.Handled = true;
             }
-
         }
+
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            DefaultDropHandler handler = new DefaultDropHandler();
+            handler.DragOver(dropInfo);
+        }
+
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                //TODO: Popup message in small at the bottom when there's a Log.Error, followed by 'Open Console' link to see all info
+                Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext.GetType());
+                return;
+            }
+
+            if (!(Songs.ItemsSource is ListCollectionView view))
+            {
+                Log.Error("ItemSource of the SongsGrid is not a ListCollectionView, but is a {itemsSource}", Songs.ItemsSource.GetType());
+                return;
+            }
+
+            DefaultDropHandler handler = new DefaultDropHandler();
+            handler.Drop(dropInfo);
+            libraryVM.ResetSongsInCurrentPlaylist(view.SourceCollection.Cast<SongItem>().Select(x => x.Id));
+        }
+        #endregion
     }
 }

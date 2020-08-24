@@ -495,7 +495,7 @@ namespace MusicPlayerForDrummers.Model
         //we suppose the song doesn't already exist!
         //Adds the song and then adds at the end of the playlists
         //TODO: Block after a certain number of songs (limit to like 100 000 songs? need to do a stress test)
-        public static void AddSong(SongItem song, params int[] playlistIds)
+        public static void AddSong(SongItem song)
         {
             SongTable songTable = new SongTable();
             using (var con = CreateConnection())
@@ -503,10 +503,10 @@ namespace MusicPlayerForDrummers.Model
                 con.Open();
                 InsertRow(con, songTable, song);
             }
-            if (playlistIds.Length == 0)
-                playlistIds = new[] { 0 };
-            foreach (int playlistId in playlistIds)
-                AddPlaylistSongLink(playlistId, song.Id);
+            //if (playlistIds.Length == 0)
+            //    playlistIds = new[] { 0 };
+            //foreach (int playlistId in playlistIds)
+            //    AddPlaylistSongLink(playlistId, song.Id);
         }
 
         //TODO: Would be better to update only the fields necessary?
@@ -664,10 +664,10 @@ namespace MusicPlayerForDrummers.Model
         }
 
         //Adds at the end of the playlist
-        public static void AddSongsToPlaylist(int playlistId, IEnumerable<int> songsIDs)
+        public static void AddSongsToPlaylist(int playlistId, IEnumerable<int> songIDs)
         {
             PlaylistSongTable table = new PlaylistSongTable();
-            int[] iDs = songsIDs as int[] ?? songsIDs.ToArray();
+            int[] iDs = songIDs as int[] ?? songIDs.ToArray();
             List<BaseModelItem> items = new List<BaseModelItem>(iDs.Length);
             
             using (SqliteConnection con = CreateConnection())
@@ -678,7 +678,7 @@ namespace MusicPlayerForDrummers.Model
                 {
                     items.Add(new PlaylistSongItem(playlistId, id, pos++));
                 }
-                InsertRows(con, table, items.ToArray(), true);
+                InsertRows(con, table, items.ToArray());
             }
         }
 
@@ -699,6 +699,29 @@ namespace MusicPlayerForDrummers.Model
                 while(reader.Read())
                     psItems.Add(new PlaylistSongItem(reader){PosInPlaylist = newPos++});
                 UpdateRows(con, psTable, psItems);
+            }
+        }
+
+        public static void ResetSongsInPlaylist(int playlistId, IEnumerable<int> songIDs)
+        {
+            PlaylistSongTable psTable = new PlaylistSongTable();
+            string safeCondition = $"WHERE {psTable.TableName}.{psTable.PlaylistId.Name} = {playlistId}";
+            int[] iDs = songIDs as int[] ?? songIDs.ToArray();
+            List<BaseModelItem> items = new List<BaseModelItem>(iDs.Length);
+            int i = 0;
+            foreach (int id in iDs)
+            {
+                items.Add(new PlaylistSongItem(playlistId, id, i++));
+            }
+
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+                bool transaction = StartTransaction(con);
+                DeleteRows(con, psTable, safeCondition);
+                InsertRows(con, psTable, items.ToArray());
+                if (transaction)
+                    _transaction?.Commit(); //todo: assync
             }
         }
 

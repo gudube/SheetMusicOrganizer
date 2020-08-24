@@ -16,9 +16,9 @@
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
     <Grid>
-        <DataGrid Name="Songs"
+        <DataGrid Name="Songs" SelectionMode="Extended" IsReadOnly="True" PreviewKeyDown="DataGrid_PreviewKeyDown"
                   d:DataContext="{d:DesignInstance modelItems:SongItem}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                  SelectionMode="Extended" IsReadOnly="True" dd:DragDrop.IsDragSource="True" PreviewKeyDown="DataGrid_PreviewKeyDown">
+                  dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
             </DataGrid.InputBindings>
