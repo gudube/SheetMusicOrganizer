@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,12 +29,6 @@ namespace MusicPlayerForDrummers.View
                     retainedFileCountLimit: 15)
                 .CreateLogger();
             InitializeComponent();
-            foreach (string recentDB in Settings.Default.RecentDBs)
-            {
-                MenuItem recentDBItem = new MenuItem { Header = recentDB };
-                recentDBItem.Click += (s, e) => MainVm.LoadDatabase(recentDB);
-                FileMenuItem.Items.Add(recentDBItem);
-            }
         }
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
@@ -84,11 +79,17 @@ namespace MusicPlayerForDrummers.View
             }
         }
 
-        private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        public async Task Configure()
         {
-            if (DataContext is MainVM mainVM)
-                await mainVM.LoadData();
+            foreach (string recentDB in Settings.Default.RecentDBs)
+            {
+                MenuItem recentDBItem = new MenuItem { Header = recentDB };
+                recentDBItem.Click += (s, e) => MainVm.LoadDatabase(recentDB);
+                FileMenuItem.Items.Add(recentDBItem);
+            }
 
+            if (DataContext is MainVM mainVM)
+                await mainVM.LoadData().ConfigureAwait(false);
         }
     }
 }

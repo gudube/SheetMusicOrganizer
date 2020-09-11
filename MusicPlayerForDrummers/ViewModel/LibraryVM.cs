@@ -26,7 +26,7 @@ namespace MusicPlayerForDrummers.ViewModel
             UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
             Task songs = UpdateSongsFromDb();
-            await songs;
+            await songs.ConfigureAwait(false);
             Session.Playlists.CollectionChanged += Playlists_CollectionChanged;
         }
 
@@ -68,7 +68,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             Session.Status.SelectingPlaylist = true;
             Session.SelectedSongs.Clear();
-            await UpdateSongsFromDb();
+            await UpdateSongsFromDb().ConfigureAwait(false);
             Session.Status.SelectingPlaylist = false;
         }
 

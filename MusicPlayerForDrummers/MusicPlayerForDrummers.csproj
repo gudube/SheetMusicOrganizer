@@ -27,6 +27,7 @@
     <None Remove="View\Resources\plus_40.png" />
     <None Remove="View\Resources\previous_song_40.png" />
     <None Remove="View\Resources\random_song_40.png" />
+    <None Remove="View\Resources\splash.png" />
     <None Remove="View\Resources\stop_song_40.png" />
     <None Remove="View\Resources\switch_view_40.png" />
     <None Remove="View\Resources\switch_view_l_40.png" />
@@ -70,6 +71,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NaudioWrapper\NaudioWrapper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="View\Resources\splash.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,8 +10,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized"
-        PreviewKeyDown="MainWindow_OnPreviewKeyDown"
-        Loaded="MainWindow_OnLoaded">
+        PreviewKeyDown="MainWindow_OnPreviewKeyDown">
     <Window.DataContext>
         <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>
