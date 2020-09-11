@@ -12,7 +12,7 @@
              d:DesignHeight="1520" d:DesignWidth="400"
              Style="{StaticResource InsideLightControl}"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
-    <ListBox Name="MainListBox" SelectionMode="Multiple" ItemsSource="{Binding Path=Session.MasteryLevels, Mode=OneWay}"
+    <ListBox Name="MainListBox" SelectionMode="Multiple" ItemsSource="{Binding Path=Session.MasteryLevels, Mode=OneTime}"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MasteryUC}">
         <ListBox.Resources>

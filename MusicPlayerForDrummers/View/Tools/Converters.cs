@@ -14,11 +14,14 @@ namespace MusicPlayerForDrummers.View.Tools
         {
             char emptyStar = '\u2606';
             char fullStar = '\u2605';
-            int rating = 0;
-            if (value != null && value is int valueNum)
-                rating = valueNum;
+            int rating;
+            if (value != null)
+                rating = System.Convert.ToInt32(value);
             else
-                Log.Warning("Could not convert value {value} to a rating (int)", rating);
+            {
+                rating = 0;
+                Log.Warning("Received null value to convert to a rating (int) in RatingConverter");
+            }
 
             return new string(fullStar, rating) + new string(emptyStar, 5 - rating);
         }

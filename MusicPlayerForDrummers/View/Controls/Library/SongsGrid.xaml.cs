@@ -49,34 +49,21 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             if (e.OldValue is LibraryVM oldVM)
             {
                 oldVM.Session.SelectedSongs.CollectionChanged -= SelectedSongs_CollectionChanged;
-                oldVM.Session.Songs.CollectionChanged -= Songs_CollectionChanged;
                 oldVM.Session.SelectedMasteryLevels.CollectionChanged -= SelectedMasteryLevels_CollectionChanged;
-                foreach (SongItem? song in oldVM.Session.Songs)
-                {
-                    if (song != null)
-                        song.PropertyChanged -= Song_PropertyChanged;
-                }
             }
 
             if (e.NewValue is LibraryVM newVM)
             {
-                CollectionViewSource itemSourceList = new CollectionViewSource() { Source = newVM.Session.Songs };
+                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = newVM.Session.Songs
+                    , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
                 ICollectionView itemList = itemSourceList.View;
 
                 var masteryFilter = new Predicate<object>(item => newVM.Session.SelectedMasteryLevels.Count == 0
                                                                   || newVM.Session.SelectedMasteryLevels.Any(x => x.Id == ((SongItem)item).MasteryId));
-                itemSourceList.View.Filter = masteryFilter;
-
+                itemList.Filter = masteryFilter;
                 Songs.ItemsSource = itemList;
 
-                foreach (SongItem? song in newVM.Session.Songs)
-                {
-                    if (song != null)
-                        song.PropertyChanged += Song_PropertyChanged;
-                }
-                
                 newVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
-                newVM.Session.Songs.CollectionChanged += Songs_CollectionChanged;
                 newVM.Session.SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
             }
         }
@@ -93,7 +80,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("VM SelectedSongs changed when DataContext of MasteryListBox is not LibraryVM but is: {dataContext}", DataContext?.GetType());
+                Log.Error("VM SelectedSongs changed when DataContext of SongsGrid is not LibraryVM but is: {dataContext}", DataContext?.GetType());
                 return;
             }
 
@@ -135,19 +122,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 }
         }
 
-        private void Songs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if(e.OldItems != null)
-                foreach (SongItem? song in e.OldItems)
-                    if (song != null)
-                        song.PropertyChanged -= Song_PropertyChanged;
-
-            if(e.NewItems != null)
-                foreach (SongItem? song in e.NewItems)
-                   if(song != null)
-                        song.PropertyChanged += Song_PropertyChanged;
-        }
-
         private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(Songs.ItemsSource is ICollectionView view)
@@ -156,17 +130,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 Log.Warning("Event SelectedMasteryLevels_CollectionChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
         }
 
-        private void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (!(Songs.ItemsSource is ICollectionView view))
-            {
-                Log.Warning("Song_PropertyChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
-                return;
-            }
-
-            if (e.PropertyName == nameof(SongItem.MasteryId))
-                view.Refresh();
-        }
         #endregion
 
         #region Action Event

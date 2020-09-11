@@ -152,9 +152,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             {
                 IEnumerable<object> songs = data as object[] ?? data.ToArray();
                 if (songs.All(x => x is SongItem))
-                {
                     libraryVM.SetSongsMastery(songs.Cast<SongItem>(), targetItem);
-                }
             }
         }
     }

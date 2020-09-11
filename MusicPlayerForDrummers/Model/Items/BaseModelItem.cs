@@ -22,7 +22,7 @@ namespace MusicPlayerForDrummers.Model.Items
             if (!dR.IsDBNull(colNum))
                 return dR.GetString(colNum);
             
-            Log.Warning("Null value for String {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            //Log.Warning("Null value for String {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
             return "";
         }
 
@@ -32,7 +32,7 @@ namespace MusicPlayerForDrummers.Model.Items
             if (!dR.IsDBNull(colNum))
                 return dR.GetInt32(colNum);
 
-            Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            //Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
             return null;
         }
 
@@ -41,14 +41,14 @@ namespace MusicPlayerForDrummers.Model.Items
             int colNum = dR.GetOrdinal(colName);
             if (dR.IsDBNull(colNum))
             {
-                Log.Warning("Null value for Uint {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+                //Log.Warning("Null value for Uint {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
                 return null;
             }
 
             int safeInt = dR.GetInt32(colNum);
             if (safeInt < 0)
             {
-                Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+                Log.Warning("Tried to convert negative value to a uint for {colName} and object {objName} with ID {Id}", colName, this.GetType(), Id);
                 return null;
             }
         
@@ -64,22 +64,5 @@ namespace MusicPlayerForDrummers.Model.Items
             Log.Warning("Null value for Bool {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
             return false;
         }
-        /*protected string GetSqlFormat(string value)
-        {
-            return "'" + value + "'";
-        }
-        protected string[] GetSqlFormat(string[] values)
-        {
-            string[] formated = new string[values.Length];
-            for(int i=0; i<values.Length; i++)
-            {
-                formated[i] = GetSqlFormat(values[i]);
-            }
-            return formated;
-        }
-        protected string GetSqlFormat(bool value)
-        {
-            return value ? "1" : "0";
-        }*/
     }
 }

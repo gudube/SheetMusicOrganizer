@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.IO;
-using System.Linq.Expressions;
+using System.Threading.Tasks;
 using MusicPlayerForDrummers.Model.Items;
 using Serilog;
 
@@ -18,10 +18,15 @@ namespace MusicPlayerForDrummers.ViewModel
         //TODO: Separer le LibraryVM est plusieurs VM?
         public LibraryVM(SessionContext session) : base(session)
         {
+            CreateDelegateCommands();
+        }
+
+        public async Task InitializeData()
+        {
             UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
-            UpdateSongsFromDb();
-            CreateDelegateCommands();
+            Task songs = UpdateSongsFromDb();
+            await songs;
             Session.Playlists.CollectionChanged += Playlists_CollectionChanged;
         }
 
@@ -59,10 +64,12 @@ namespace MusicPlayerForDrummers.ViewModel
                 Session.SelectedPlaylist = null;
         }
 
-        private void SelectedPlaylist_PropertyChanged()
+        private async void SelectedPlaylist_PropertyChanged()
         {
+            Session.Status.SelectingPlaylist = true;
             Session.SelectedSongs.Clear();
-            UpdateSongsFromDb();
+            await UpdateSongsFromDb();
+            Session.Status.SelectingPlaylist = false;
         }
 
         private void CreateNewPlaylist(string playlistName)
@@ -100,12 +107,16 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
+            Session.Status.SavingSongPlaylist = true;
             DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
+            Session.Status.SavingSongPlaylist = false;
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
+            Session.Status.SavingSongPlaylist = true;
             DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
+            Session.Status.SavingSongPlaylist = false;
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
@@ -131,14 +142,20 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
+            Session.Status.SettingSongMastery = true;
+            Session.Status.SavingSongMastery = true;
             DbHandler.SetSongMastery(song, mastery);
+            Session.Status.SavingSongMastery = false;
             //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
             //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
+            Session.Status.SettingSongMastery = true;
+            Session.Status.SavingSongMastery = true;
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
             DbHandler.SetSongsMastery(songItems, mastery);
+            Session.Status.SavingSongMastery = false;
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songItems)
@@ -163,14 +180,16 @@ namespace MusicPlayerForDrummers.ViewModel
             Session.SelectedSongs.Add(songToSelect);
         }
 
-        private void UpdateSongsFromDb()
+        private async Task UpdateSongsFromDb()
         {
-            int[] masteryIDs = Session.SelectedMasteryLevels.Select(x => x.Id).ToArray();
-
             if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
                 Session.Songs.Clear();
             else
-                Session.Songs.Reset(DbHandler.GetSongs(Session.SelectedPlaylist.Id));
+            {
+                //todo: Make the dbhandler methods async and return task? try if that would work
+                List<SongItem> songs = await DbHandler.GetSongs(Session.SelectedPlaylist.Id);
+                Session.Songs.Reset(songs);
+            }
         }
 
         public void SortSongs(string propertyName, bool ascending)
@@ -180,8 +199,12 @@ namespace MusicPlayerForDrummers.ViewModel
                 Log.Warning("Trying to sort songs when the selected playlist is {playlist}", Session.SelectedPlaylist);
                 return;
             }
+
+            Session.Status.SavingSongOrder = true;
+            Session.Status.SortingSongs = true;
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(Session.SelectedPlaylist.Id, propertyName, ascending);
+            Session.Status.SavingSongOrder = false;
             Session.Songs.Reset(sortedSongs);
         }
 
@@ -223,7 +246,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
             if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _addPlaylist)
             {
-                if (songCreated || Session.Songs.All(x => x.Id != song.Id))
+                if (Session.SelectedPlaylist.Id != 0 && (songCreated || Session.Songs.All(x => x.Id != song.Id)))
                 {
                     Session.Songs.Add(song);
                     DbHandler.AddPlaylistSongLink(Session.SelectedPlaylist.Id, song.Id);

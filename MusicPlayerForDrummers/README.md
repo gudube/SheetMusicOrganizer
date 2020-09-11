@@ -19,3 +19,9 @@ When deleting a song or playlist, the foreign key should cascade and the Playlis
 
 ##Playlists
 We suppose the playlist[0] is the locked 'All Music' playlist. It should never be null or another playlist.
+
+##Status
+Every status is associated to a boolean in StatusContext.cs (instance kept in Session).
+Set the correct boolean true right before starting an operation.
+Set the boolean to false as soon as it is done (most of the time, not the same place as when set true)
+If need a new status, add a boolean with its message in the setter (see already existing ones)

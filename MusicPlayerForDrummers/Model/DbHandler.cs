@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 //using System.Windows.Forms;
 using MusicPlayerForDrummers.Model.Items;
@@ -23,9 +24,7 @@ namespace MusicPlayerForDrummers.Model
 
         #region Init
         //TODO: put it in settings?
-        public static string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
-
-        private static SqliteTransaction? _transaction;
+        public static readonly string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
 
         public static void InitializeDatabase(bool force = false)
         {
@@ -122,6 +121,8 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Tools
+        private static SqliteTransaction? _transaction;
+
         private static bool StartTransaction(SqliteConnection con)
         {
             if (_transaction?.Connection != null)
@@ -284,7 +285,7 @@ namespace MusicPlayerForDrummers.Model
                 UpdateRow(con, table, row);
             }
             if(transaction)
-                _transaction?.Commit(); //todo: Can have an updaterows async with commitasync where possible
+                _transaction?.Commit();
         }
 
         private static void DeleteRow(SqliteConnection con, BaseTable table, SqlColumn column, object value)
@@ -410,29 +411,29 @@ namespace MusicPlayerForDrummers.Model
          *  WHERE Song.MasteryID IN ([masteryIDs[0]], [masteryIDs[1]]...)
          *  ORDER BY ps.PosInPlaylist ASC
          */
-        public static List<SongItem> GetSongs(int playlistId)
+        public static async Task<List<SongItem>> GetSongs(int playlistId)
         {
-            List<SongItem> songs = new List<SongItem>();
-            SongTable songTable = new SongTable();
-            PlaylistSongTable playlistSongTable = new PlaylistSongTable();
-            string psName = playlistSongTable.TableName;
-            string condition = $"INNER JOIN (SELECT * FROM {psName}"
-                               + $" WHERE {psName}.{playlistSongTable.PlaylistId.Name} = {playlistId}) ps"
-                               + $" ON ps.{playlistSongTable.SongId.Name} = {songTable.TableName}.{songTable.Id.Name}";
-
-            //if (masteryIDs.Any())
-            //    condition += $" WHERE {songTable.TableName}.{songTable.MasteryId.Name} IN ({string.Join(", ", masteryIDs)})";
-
-            condition += $" ORDER BY ps.{playlistSongTable.PosInPlaylist.Name} ASC";
-
-            using (var con = CreateConnection())
+            return await Task.Run(() =>
             {
-                con.Open();
-                SqliteDataReader dataReader = GetItems(con, songTable, condition);
-                while (dataReader.Read())
-                    songs.Add(new SongItem(dataReader));
-            }
-            return songs;
+                List<SongItem> songs = new List<SongItem>();
+                SongTable songTable = new SongTable();
+                PlaylistSongTable playlistSongTable = new PlaylistSongTable();
+                string psName = playlistSongTable.TableName;
+                string condition = $"INNER JOIN (SELECT * FROM {psName}"
+                                   + $" WHERE {psName}.{playlistSongTable.PlaylistId.Name} = {playlistId}) ps"
+                                   + $" ON ps.{playlistSongTable.SongId.Name} = {songTable.TableName}.{songTable.Id.Name}"
+                                   + $" ORDER BY ps.{playlistSongTable.PosInPlaylist.Name} ASC";
+
+                using (var con = CreateConnection())
+                {
+                    con.Open();
+                    SqliteDataReader dataReader = GetItems(con, songTable, condition);
+                    while (dataReader.Read())
+                        songs.Add(new SongItem(dataReader));
+                }
+
+                return songs;
+            });
         }
         
         private static SongItem? FindPlayingSong(bool next, int currentSongId, int playlistId, params int[] masteryIDs)
@@ -441,22 +442,25 @@ namespace MusicPlayerForDrummers.Model
             PlaylistSongTable psTable = new PlaylistSongTable();
             SongItem? songFound = null;
 
+            string comparator = next ? ">" : "<";
+            string minMax = next ? "MIN" : "MAX";
+            string[] formattedCols = songTable.GetAllColumns().Select(x => "st." + x).ToArray();
+            string query = $"SELECT {minMax}(ps1.{psTable.PosInPlaylist})," +
+                           $" {string.Join(", ", formattedCols)}" +
+                           $" FROM {psTable.TableName} ps1 INNER JOIN {songTable.TableName} st" +
+                           $" ON ps1.{psTable.SongId} = st.{songTable.Id}" +
+                           $" WHERE ps1.{psTable.PlaylistId} = @playlistId";
+            if (masteryIDs.Any())
+                query += $" AND st.{songTable.MasteryId} IN (@masteryIDs)";
+            query += $" AND ps1.{psTable.PosInPlaylist} {comparator} (" +
+                               $" SELECT ps2.{psTable.PosInPlaylist} FROM {psTable.TableName} ps2 WHERE ps2.{psTable.SongId} = @currentSongId" +
+                               $" AND ps2.{psTable.PlaylistId} = @playlistId)";
+
             using (var con = CreateConnection())
             {
                 SqliteCommand cmd = con.CreateCommand();
-                string comparator = next ? ">" : "<";
-                string minMax = next ? "MIN" : "MAX";
-                string[] formattedCols = songTable.GetAllColumns().Select(x => "st." + x).ToArray();
-                cmd.CommandText = $"SELECT {minMax}(ps1.{psTable.PosInPlaylist})," +
-                                  $" {string.Join(", ", formattedCols)}" +
-                                  $" FROM {psTable.TableName} ps1 INNER JOIN {songTable.TableName} st" +
-                                  $" ON ps1.{psTable.SongId} = st.{songTable.Id}" +
-                                  $" WHERE ps1.{psTable.PlaylistId} = @playlistId";
-                if (masteryIDs.Any())
-                    cmd.CommandText += $" AND st.{songTable.MasteryId} IN (@masteryIDs)";
-                cmd.CommandText += $" AND ps1.{psTable.PosInPlaylist} {comparator} (" +
-                                   $" SELECT ps2.{psTable.PosInPlaylist} FROM {psTable.TableName} ps2 WHERE ps2.{psTable.SongId} = @currentSongId" +
-                                   $" AND ps2.{psTable.PlaylistId} = @playlistId)";
+                
+                cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("playlistId", playlistId);
                 cmd.Parameters.AddWithValue("masteryIDs", string.Join(", ", masteryIDs));
                 cmd.Parameters.AddWithValue("currentSongId", currentSongId);
@@ -503,10 +507,7 @@ namespace MusicPlayerForDrummers.Model
                 con.Open();
                 InsertRow(con, songTable, song);
             }
-            //if (playlistIds.Length == 0)
-            //    playlistIds = new[] { 0 };
-            //foreach (int playlistId in playlistIds)
-            //    AddPlaylistSongLink(playlistId, song.Id);
+            AddPlaylistSongLink(0, song.Id);
         }
 
         //TODO: Would be better to update only the fields necessary?
@@ -610,7 +611,7 @@ namespace MusicPlayerForDrummers.Model
             CreateIndex(con, table, true, force, table.PlaylistId.Name, table.SongId.Name);
         }
 
-        private static int GetPositionInPlaylist(SqliteConnection con, int songId, int playlistId)
+        /*private static int GetPositionInPlaylist(SqliteConnection con, int songId, int playlistId)
         {
             PlaylistSongTable psTable = new PlaylistSongTable();
 
@@ -626,7 +627,7 @@ namespace MusicPlayerForDrummers.Model
                 return -1;
             }
             return Convert.ToInt32(answer);
-        }
+        }*/
 
         //TODO: Replace that with the number of songs in playlist (count shown in the playlist name)
         //Returns the first free available position in the playlist
@@ -687,15 +688,16 @@ namespace MusicPlayerForDrummers.Model
             PlaylistSongTable psTable = new PlaylistSongTable();
             string safeCondition = $"WHERE {psTable.PlaylistId.Name} = {playlistId} AND "
                 + $"{psTable.SongId.Name} IN( {string.Join(", ", songIDs)})";
+            
+            List<PlaylistSongItem> psItems = new List<PlaylistSongItem>(songIDs.Length);
+            int newPos = 0;
 
             using (SqliteConnection con = CreateConnection())
             {
                 con.Open();
                 DeleteRows(con, psTable, safeCondition);
 
-                List<PlaylistSongItem> psItems = new List<PlaylistSongItem>(songIDs.Length);
                 SqliteDataReader reader = GetItems(con, psTable, $"WHERE {psTable.PlaylistId.Name} = {playlistId}");
-                int newPos = 0;
                 while(reader.Read())
                     psItems.Add(new PlaylistSongItem(reader){PosInPlaylist = newPos++});
                 UpdateRows(con, psTable, psItems);
@@ -729,19 +731,21 @@ namespace MusicPlayerForDrummers.Model
         {
             PlaylistSongTable psTable = new PlaylistSongTable();
             SongTable songTable = new SongTable();
+            string query = $"SELECT * FROM {psTable.TableName} INNER JOIN {songTable.TableName}" +
+                           $" ON {psTable.TableName}.{psTable.SongId} = {songTable.TableName}.{songTable.Id}" +
+                           $" WHERE {psTable.TableName}.{psTable.PlaylistId} = {playlistId}" +
+                           $" ORDER BY {songTable.TableName}.{colName}" +
+                           (ascending ? " ASC" : " DESC");
+            List<SongItem> orderedSongs = new List<SongItem>();
+            List<PlaylistSongItem> orderedPlSongs = new List<PlaylistSongItem>();
+            int newPos = 0;
+
             using (SqliteConnection con = CreateConnection())
             {
                 con.Open();
                 SqliteCommand command = con.CreateCommand();
-                command.CommandText = $"SELECT * FROM {psTable.TableName} INNER JOIN {songTable.TableName}" +
-                                      $" ON {psTable.TableName}.{psTable.SongId} = {songTable.TableName}.{songTable.Id}" +
-                                      $" WHERE {psTable.TableName}.{psTable.PlaylistId} = {playlistId}" +
-                                      $" ORDER BY {songTable.TableName}.{colName}" +
-                                      (ascending ? " ASC" : " DESC");
+                command.CommandText = query;
                 SqliteDataReader reader = command.ExecuteReader();
-                List<SongItem> orderedSongs = new List<SongItem>();
-                List<PlaylistSongItem> orderedPlSongs = new List<PlaylistSongItem>();
-                int newPos = 0;
                 while (reader.Read())
                 {
                     orderedSongs.Add(new SongItem(reader));

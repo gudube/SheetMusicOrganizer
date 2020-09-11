@@ -14,6 +14,8 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public SessionContext()
         {
+            Status = new StatusContext();
+
             Player = new AudioPlayer();
 
             DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render)
@@ -131,12 +133,6 @@ namespace MusicPlayerForDrummers.ViewModel
         public event Action PlayerTimerUpdate;
         #endregion
 
-        #region Status
-        private int _loadingStatus = 0;
-        public int LoadingStatus { get => _loadingStatus; set => SetField(ref _loadingStatus, value); }
-
-        private int _savingStatus = 0;
-        public int SavingStatus { get => _savingStatus; set => SetField(ref _savingStatus, value); }
-        #endregion
+        public StatusContext Status { get; }
     }
 }

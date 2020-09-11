@@ -15,6 +15,7 @@ namespace MusicPlayerForDrummers.Model
         public bool FkDeleteCascade { get; set; }
         public bool Nullable { get; set; }
         public bool Unique { get; set; }
+        public string? DefaultValue { get; set; }
 
 
         public SqlColumn(string name, EType type)
@@ -58,7 +59,8 @@ namespace MusicPlayerForDrummers.Model
             string fkCascade = FkDeleteCascade ? "ON DELETE CASCADE" : "";
             string notNull = !Nullable || PrimaryKey || ForeignKey ? "NOT NULL" : "";
             string unique = Unique && !PrimaryKey ? "UNIQUE" : "";
-            return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull, unique);
+            string defaultValue = DefaultValue != null ? "DEFAULT " + DefaultValue : "";
+            return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull, unique, defaultValue);
         }
 
         private SqliteType GetSqlType()

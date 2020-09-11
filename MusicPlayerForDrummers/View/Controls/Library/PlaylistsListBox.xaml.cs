@@ -68,17 +68,23 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 return;
             }
 
-            if(dropInfo.Data is SongItem song)
+            if (!(DataContext is LibraryVM libraryVM))
             {
-                ((LibraryVM)DataContext).CopySongToPlaylist(targetItem, song);
+                Log.Error("Trying to drop on PlaylistsListBox when DataContext is not LibraryVM , but is {type}", DataContext?.GetType());
+                return;
+            }
+
+            if (dropInfo.Data is SongItem song)
+            {
+                libraryVM.CopySongToPlaylist(targetItem, song);
             }
             else
             {
                 if (dropInfo.Data is IEnumerable<object> data)
                 {
                     IEnumerable<object> songs = data as object[] ?? data.ToArray();
-                    if(songs.All(x => x is SongItem))
-                        ((LibraryVM)DataContext).CopySongsToPlaylist(targetItem, songs.Cast<SongItem>());
+                    if (songs.All(x => x is SongItem))
+                        libraryVM.CopySongsToPlaylist(targetItem, songs.Cast<SongItem>());
                 }
             } 
             

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.View.Tools;
+using MusicPlayerForDrummers.ViewModel;
 using Serilog;
 
 namespace MusicPlayerForDrummers.View
@@ -81,6 +82,13 @@ namespace MusicPlayerForDrummers.View
                 MainVm.PlayerVM.ChangeMuteCommand?.Execute(null);
                 e.Handled = true;
             }
+        }
+
+        private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainVM mainVM)
+                await mainVM.LoadData();
+
         }
     }
 }

@@ -47,7 +47,7 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
 
             foreach (var item in range)
             {
-                Items.Add(item);
+                this.Items.Add(item);
             }
 
             this.OnPropertyChanged(new PropertyChangedEventArgs("Count"));

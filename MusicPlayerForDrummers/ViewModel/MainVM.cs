@@ -1,6 +1,7 @@
 ﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
@@ -11,16 +12,13 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DbHandler.InitializeDatabase();
+            LibraryVM = new LibraryVM(Session);
+            PartitionVM = new PartitionVM(Session);
+            PlayerVM = new PlayerVM(Session);
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
             Session.SelectedSongs.CollectionChanged += (sender, args) => SwitchPartitionViewCommand.RaiseCanExecuteChanged();
-
-            LibraryVM = new LibraryVM(Session);
-            PartitionVM = new PartitionVM(Session);
-            SetView(LibraryVM);
-            PlayerVM = new PlayerVM(Session);
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -37,6 +35,15 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public DelegateCommand SwitchLibraryViewCommand { get; }
         public DelegateCommand SwitchPartitionViewCommand { get; }
+
+        public async Task LoadData()
+        {
+            DbHandler.InitializeDatabase();
+
+            await LibraryVM.InitializeData();
+            
+            SetView(LibraryVM);
+        }
 
         private void SetView(BaseViewModel view)
         {
