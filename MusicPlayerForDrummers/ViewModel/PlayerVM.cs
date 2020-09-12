@@ -1,5 +1,10 @@
-﻿using MusicPlayerForDrummers.ViewModel.Tools;
+﻿using System;
+using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
+using System.Linq;
+using MusicPlayerForDrummers.Model;
+using MusicPlayerForDrummers.Model.Items;
+using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -17,11 +22,14 @@ namespace MusicPlayerForDrummers.ViewModel
             StartedSeekCommand = new DelegateCommand(StartedSeek);
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
+            Session.Player.PlaybackFinished += (o, e) => SetNextPlayingSong(true);
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
         }
+
+        public event EventHandler<bool>? SetSelectedSongPlaying;
 
         #region Controls
         public DelegateCommand PlayCommand { get; }
@@ -35,9 +43,9 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 Session.Player.Play();
             }
-            else if (Session.SelectedSongs.Count > 0)
+            else
             {
-                Session.SetSelectedSongPlaying();
+                SetSelectedSongPlaying?.Invoke(this, true);
             }
         }
 
@@ -61,13 +69,41 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand PreviousCommand { get; }
         private void Previous(object? obj)
         {
-            Session.SetNextPlayingSong(false);
+            SetNextPlayingSong(false);
         }
 
         public DelegateCommand NextCommand { get; }
         private void Next(object? obj)
         {
-            Session.SetNextPlayingSong(true);
+            SetNextPlayingSong(true);
+        }
+
+        public void SetNextPlayingSong(bool next)
+        {
+            //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
+            if (Session.PlayingSong == null)
+            {
+                SetSelectedSongPlaying?.Invoke(this, true);
+                return;
+            }
+            
+            SongItem? newSong;
+
+            if (Session.PlayingPlaylist == null)
+            {
+                Log.Warning("Playing playlist is null when trying to go to play {next} song", (next ? "next" : "previous"));
+                return;
+            }
+
+            if(next)
+                newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, Session.PlayingPlaylist.Id, Session.PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            else
+                newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, Session.PlayingPlaylist.Id, Session.PlayingMasteryLevels.Select(x => x.Id).ToArray());
+            
+            if (newSong == null)
+                Session.StopPlayingSong();
+            else
+                Session.SetPlayingSong(newSong, true);
         }
 
         private bool _resumePlaying = false;

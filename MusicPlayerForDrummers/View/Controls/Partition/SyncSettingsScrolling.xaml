@@ -24,11 +24,10 @@
                  Text="{Binding ElementName=SpeedSlider, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"/>-->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{StaticResource LabelTextBlock}"/>
         <!--<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding StartScrollTime}" Width="30"/>-->
-        <TextBox Grid.Row="0" Grid.Column="1" Width="30" Text="{Binding Session.PlayingSong.ScrollStartTime}" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Width="30" Text="{Binding ShownSong.ScrollStartTime}" HorizontalAlignment="Center"/>
         <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Stop before " Style="{StaticResource LabelTextBlock}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Text="{Binding Session.PlayingSong.ScrollEndTime}" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Text="{Binding ShownSong.ScrollEndTime}" HorizontalAlignment="Center"/>
         <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}"/>
-
     </Grid>
 </UserControl>

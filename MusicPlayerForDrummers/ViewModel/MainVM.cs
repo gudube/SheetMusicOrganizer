@@ -17,8 +17,8 @@ namespace MusicPlayerForDrummers.ViewModel
             PlayerVM = new PlayerVM(Session);
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
-            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
-            Session.SelectedSongs.CollectionChanged += (sender, args) => SwitchPartitionViewCommand.RaiseCanExecuteChanged();
+            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM));
+            PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -50,9 +50,16 @@ namespace MusicPlayerForDrummers.ViewModel
             if (CurrentViewModel == view)
                 return;
 
-            CurrentViewModel = view;
             if (view == PartitionVM)
-                Session.SetSelectedSongPlaying();
+            {
+                bool foundSongToPlay = LibraryVM.SetSelectedSongPlaying(false);
+                if (foundSongToPlay)
+                    CurrentViewModel = view;
+            }
+            else
+            {
+                CurrentViewModel = view;
+            }
         }
         #endregion
 

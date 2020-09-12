@@ -21,6 +21,7 @@
             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
             dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}"
             IsSynchronizedWithCurrentItem="False"
+            VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
             EnableRowVirtualization="True" EnableColumnVirtualization="True">
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
@@ -50,6 +51,16 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
             </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowedAsPlaying}" Value="true">
+                            <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
         </DataGrid>
         <!--<Separator Style="{StaticResource HorizontalSeparator}" BorderBrush="Black"/>-->
         <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">

@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using GongSolutions.Wpf.DragDrop;
 using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
 

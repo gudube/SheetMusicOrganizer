@@ -55,6 +55,7 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+        /*
         public void Reset(T item)
         {
             this.Items.Clear();
@@ -64,5 +65,6 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
             this.OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
+    */
     }
 }

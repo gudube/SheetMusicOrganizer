@@ -11,6 +11,7 @@ namespace MusicPlayerForDrummers.Model.Items
             Id = -1;
         }
 
+        // ReSharper disable once InconsistentNaming
         protected int _id;
         public int Id { get => _id; set => SetField(ref _id, value); }
 

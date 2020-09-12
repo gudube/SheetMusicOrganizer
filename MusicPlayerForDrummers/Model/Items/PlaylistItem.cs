@@ -53,6 +53,19 @@ namespace MusicPlayerForDrummers.Model.Items
         {
             return new object[] { Name, IsLocked, IsSmart, SmartDir };
         }
+
+        //might be a bad idea? keep it for now
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is PlaylistItem pl))
+                return false;
+            return Id.Equals(pl.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 
     public class AddPlaylistItem : BaseModelItem

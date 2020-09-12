@@ -388,6 +388,22 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
+        /*
+        public static SongItem GetSong(int songId)
+        {
+            SongTable songTable = new SongTable();
+            SqliteParameter param = CreateParameter("@" + songTable.Id, songTable.Id.SqlType, songId);
+            string condition = $"WHERE {songTable.TableName}.{songTable.Id} = {param.ParameterName}";
+            using (var con = CreateConnection())
+            {
+                con.Open();
+                SqliteDataReader dataReader = GetItem(con, songTable, condition, param);
+                if (dataReader.Read())
+                    return new SongItem(dataReader);
+            }
+            throw new SqliteException("Could not find the song corresponding to the id: " + songId, 1);
+        }
+        */
         public static SongItem GetSong(string partitionDir)
         {
             SongTable songTable = new SongTable();

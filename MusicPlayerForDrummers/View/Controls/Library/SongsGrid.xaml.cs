@@ -21,10 +21,8 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         public SongsGrid()
         {
             InitializeComponent();
-            //DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedSongs, Songs, Songs.SelectedItems);
             DataContextChanged += SongsGrid_DataContextChanged;
             Songs.Sorting += Songs_Sorting;
-            Songs.SelectionChanged += Songs_SelectionChanged;
         }
 
         #region Changed Event
@@ -48,13 +46,12 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             if (e.OldValue is LibraryVM oldVM)
             {
-                oldVM.Session.SelectedSongs.CollectionChanged -= SelectedSongs_CollectionChanged;
                 oldVM.Session.SelectedMasteryLevels.CollectionChanged -= SelectedMasteryLevels_CollectionChanged;
             }
 
             if (e.NewValue is LibraryVM newVM)
             {
-                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = newVM.Session.Songs
+                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = newVM.ShownSongs
                     , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
                 ICollectionView itemList = itemSourceList.View;
 
@@ -64,64 +61,8 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 Songs.ItemsSource = itemList;
 
                 newVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
-                newVM.Session.SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
             }
         }
-
-        private bool _changingCollection = false;
-
-        private void SelectedSongs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (_changingCollection)
-            {
-                _changingCollection = false;
-                return;
-            }
-
-            if (!(DataContext is LibraryVM libraryVM))
-            {
-                Log.Error("VM SelectedSongs changed when DataContext of SongsGrid is not LibraryVM but is: {dataContext}", DataContext?.GetType());
-                return;
-            }
-
-            _changingCollection = true;
-            Songs.SelectedItems.Clear();
-
-            foreach (SongItem song in libraryVM.Session.SelectedSongs)
-            {
-                _changingCollection = true;
-                Songs.SelectedItems.Add(song);
-            }
-        }
-
-        private void Songs_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_changingCollection)
-            {
-                _changingCollection = false;
-                return;
-            }
-
-            if (!(DataContext is LibraryVM libraryVM))
-            {
-                Log.Error("SongsGrid selected songs changed when DataContext of MasteryListBox is not LibraryVM but is: {dataContext}", DataContext?.GetType());
-                return;
-            }
-
-            foreach (SongItem? item in e.AddedItems)
-                if (item != null && !libraryVM.Session.SelectedSongs.Contains(item))
-                {
-                    _changingCollection = true;
-                    libraryVM.Session.SelectedSongs.Add(item);
-                }
-            foreach (SongItem? item in e.RemovedItems)
-                if (item != null && libraryVM.Session.SelectedSongs.Contains(item))
-                {
-                    _changingCollection = true;
-                    libraryVM.Session.SelectedSongs.Remove(item);
-                }
-        }
-
         private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(Songs.ItemsSource is ICollectionView view)

@@ -74,7 +74,7 @@ namespace MusicPlayerForDrummers.View
         {
             if (e.Key == Key.M)
             {
-                MainVm.PlayerVM.ChangeMuteCommand?.Execute(null);
+                MainVm.PlayerVM.ChangeMuteCommand.Execute(null);
                 e.Handled = true;
             }
         }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using MusicPlayerForDrummers.Model.Items;
+using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -11,47 +13,59 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public PartitionVM(SessionContext session) : base(session)
         {
-            //session.PlayerTimerUpdate += TimerUpdate;
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Session.PlayingSong))
-                UpdateFromPlayingSong();
+            {
+                if(Session.PlayingSong != null)
+                    ShownSong = Session.PlayingSong;
+            }
         }
 
-        private void UpdateFromPlayingSong()
+        private SongItem? _shownSong;
+        public SongItem? ShownSong
         {
-            //todo: get info from DB
-            //for now:
-            //ScrollSpeed = 1;
-            //if (Session.PlayingSong == null)
-            //    return;
-
-            //StartScrollTime = Session.PlayingSong.Star;
+            get => _shownSong;
+            set => SetField(ref _shownSong, value);
         }
 
-        private int _pageZoom = 100;
-        public int PageZoom { get => _pageZoom; set => SetField(ref _pageZoom, value); }
+        #region Visual properties
+        //todo: can keep these properties in the settings and let the user modify them?
+        private readonly double minZoom = 0.01;
+        private double _zoom = 1.0;
+        public double Zoom
+        {
+            get => _zoom;
+            set
+            {
+                if (value < minZoom) value = minZoom;
+                SetField(ref _zoom, value);
+            }
+        }
 
-        private double _pagePosition = 0.0;
-        public double PagePosition { get => _pagePosition; set => SetField(ref _pagePosition, value); }
+        public double GetSongPercentage()
+        {
+            if (ShownSong == null)
+            {
+                Log.Warning("Tried to get position in song for PartitionVM when shown song is null");
+                return 0;
+            }
 
+            double updatedPos = Session.Player.Position - ShownSong.ScrollStartTime;
+            double updatedLength = Session.Player.Length - ShownSong.ScrollStartTime - ShownSong.ScrollEndTime;
+            if (updatedPos <= 0 || updatedLength <= 0) 
+                return 0;
+            return updatedPos / updatedLength;
+        }
+        #endregion
 
-        #region Sync
-        public IEnumerable<SyncMethod> SyncMethods { get => Enum.GetValues(typeof(SyncMethod)).Cast<SyncMethod>(); }
-        
+        #region Sync Method
+        public IEnumerable<SyncMethod> SyncMethods => Enum.GetValues(typeof(SyncMethod)).Cast<SyncMethod>();
+
         private SyncMethod _selectedSync = SyncMethod.None;
         public SyncMethod SelectedSync { get => _selectedSync; set => SetField(ref _selectedSync, value); }
-        /*
-        private double _scrollSpeed = 1;
-        public double ScrollSpeed { get => _scrollSpeed; set => SetField(ref _scrollSpeed, value); }
-
-        private int _startScrollTime = 0;
-        public int StartScrollTime { get => _startScrollTime; set => SetField(ref _startScrollTime, value); }
-
-        private int _endScrollTime = 0;
-        public int EndScrollTime { get => _endScrollTime; set => SetField(ref _endScrollTime, value); }*/
         #endregion
 
     }

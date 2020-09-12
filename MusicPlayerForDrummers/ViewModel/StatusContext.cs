@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Threading;
 using MusicPlayerForDrummers.Model.Tools;
 
@@ -97,11 +93,11 @@ namespace MusicPlayerForDrummers.ViewModel
                 {
                     _loadingMessages.Add(message);
                     CreateLoadingMessage();
-                    App.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
+                    Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
                 }
                 else
                 {
-                    App.Current.Dispatcher.Invoke(() => { _loadingMessages.Remove(message); }, DispatcherPriority.ContextIdle);
+                    Application.Current.Dispatcher.Invoke(() => { _loadingMessages.Remove(message); }, DispatcherPriority.ContextIdle);
                     CreateLoadingMessage();
                 }
 

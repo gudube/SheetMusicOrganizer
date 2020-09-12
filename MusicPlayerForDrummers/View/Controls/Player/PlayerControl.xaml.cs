@@ -21,12 +21,12 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
-            if (playerVM.Session.PlayingSong != null)
-            {
-                string? dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
-                if(dir != null)
-                    Process.Start("explorer.exe", dir);
-            }
+            if (playerVM.Session.PlayingSong == null)
+                return;
+
+            string? dir = Path.GetDirectoryName(playerVM.Session.PlayingSong.PartitionDirectory);
+            if(dir != null)
+                Process.Start("explorer.exe", dir);
         }
 
         private void WaveformSeekBar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

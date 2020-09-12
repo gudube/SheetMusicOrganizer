@@ -5,21 +5,19 @@ namespace NAudioWrapper
 {
     public class AudioPlayer : BaseNotifyPropertyChanged
     {
-        private AudioFileReader _audioFileReader;
+        private AudioFileReader? _audioFileReader;
         //private DirectSoundOut _output;
-        private WaveOutEvent _output;
+        private WaveOutEvent? _output;
         //private WaveChannel32 _waveChannel;
         private bool _stopMeansEnded = true;
 
-        public event Action PlaybackFinished;
-        public event Action PlaybackStarting;
-        public event Action PlaybackStopping;
+        public event EventHandler? PlaybackFinished;
+        public event EventHandler? PlaybackStarting;
+        public event EventHandler? PlaybackStopping;
 
-        public void SetSong(string filepath)
+        public void SetSong(string filepath, bool startPlaying)
         {
-            //bool resumePlaying = false;
             if (_output != null){
-                //    resumePlaying = _output.PlaybackState == PlaybackState.Playing;
                 Stop();
             }
 
@@ -34,7 +32,7 @@ namespace NAudioWrapper
             OnPropertyChanged(nameof(Position));
             OnPropertyChanged(nameof(Length));
 
-            //if (resumePlaying)
+            if (startPlaying)
                 Play();
         }
 
@@ -88,7 +86,7 @@ namespace NAudioWrapper
             else
             {
                 _output.Play();
-                PlaybackStarting?.Invoke();
+                PlaybackStarting?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -101,7 +99,7 @@ namespace NAudioWrapper
 
             if (force || isPlaying)
             {
-                PlaybackStopping?.Invoke();
+                PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Pause();
             }
             else if (_output.PlaybackState == PlaybackState.Paused)
@@ -121,7 +119,7 @@ namespace NAudioWrapper
             if (_output.PlaybackState != PlaybackState.Stopped)
             {
                 _stopMeansEnded = false;
-                PlaybackStopping?.Invoke();
+                PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Stop();
             }
 
@@ -134,13 +132,17 @@ namespace NAudioWrapper
         #endregion
 
         #region Events
-        private void _output_PlaybackStopped(object sender, StoppedEventArgs e)
+        private void _output_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
             //TODO: Find a way to make it work
             if (_stopMeansEnded)
             {
                 _stopMeansEnded = false;
-                PlaybackFinished?.Invoke();
+                PlaybackFinished?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                _stopMeansEnded = true;
             }
         }
         #endregion
@@ -150,7 +152,7 @@ namespace NAudioWrapper
         {
             if (_output != null && _output.PlaybackState == PlaybackState.Playing)
             {
-                PlaybackStopping?.Invoke();
+                PlaybackStopping?.Invoke(null, EventArgs.Empty);
                 _output.Stop();
             }
 

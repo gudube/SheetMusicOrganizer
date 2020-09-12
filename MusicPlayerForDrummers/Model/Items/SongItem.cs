@@ -61,6 +61,11 @@ namespace MusicPlayerForDrummers.Model.Items
         //useful to know the mastery name from SongItem (e.g. in the SongsGrid)
         public MasteryItem? Mastery => DbHandler.MasteryDic?[MasteryId];
 
+        private bool _showedAsPlaying = false;
+        public bool ShowedAsPlaying { get => _showedAsPlaying; set => SetField(ref _showedAsPlaying, value); }
+
+        private bool _isSelected = false;
+        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
         #endregion
 
         public SongItem(string partitionDir = "", string audioDirectory = "", int masteryId = 0, bool useAudioMD = true) : base()

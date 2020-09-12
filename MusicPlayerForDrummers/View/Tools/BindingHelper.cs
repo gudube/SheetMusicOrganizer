@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Serilog;
 
 namespace MusicPlayerForDrummers.View.Tools
 {

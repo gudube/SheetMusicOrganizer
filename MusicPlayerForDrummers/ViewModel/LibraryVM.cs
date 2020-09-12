@@ -1,5 +1,4 @@
-﻿using System;
-using MusicPlayerForDrummers.Model;
+﻿using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +18,19 @@ namespace MusicPlayerForDrummers.ViewModel
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
+            Session.PropertyChanged += Session_PropertyChanged1;
+        }
+
+        private void Session_PropertyChanged1(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                //case nameof(Session.SelectedPlaylist):
+                case nameof(Session.PlayingPlaylist):
+                case nameof(Session.PlayingSong):
+                    RefreshSongShowedAsPlaying();
+                    break;
+            }
         }
 
         public async Task InitializeData()
@@ -27,7 +39,7 @@ namespace MusicPlayerForDrummers.ViewModel
             UpdateMasteryLevelsFromDb();
             Task songs = UpdateSongsFromDb();
             await songs.ConfigureAwait(false);
-            Session.Playlists.CollectionChanged += Playlists_CollectionChanged;
+            Playlists.CollectionChanged += Playlists_CollectionChanged;
         }
 
         private void CreateDelegateCommands()
@@ -35,7 +47,7 @@ namespace MusicPlayerForDrummers.ViewModel
             CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x == null ? "" : (string)x));
             DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x == null ? "" : (string)x));
-            PlaySelectedSongCommand = new DelegateCommand(_ => Session.SetSelectedSongPlaying());
+            PlaySelectedSongCommand = new DelegateCommand(_ => SetSelectedSongPlaying(true));
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
 
@@ -46,6 +58,8 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         #region Playlists
+        private SmartCollection<BaseModelItem> _playlists = new SmartCollection<BaseModelItem>();
+        public SmartCollection<BaseModelItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
         private readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
         
         public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
@@ -55,20 +69,19 @@ namespace MusicPlayerForDrummers.ViewModel
         private void UpdatePlaylistsFromDb()
         {
             List<BaseModelItem> playlists = new List<BaseModelItem>(DbHandler.GetAllPlaylists()){ _addPlaylist };
-            Session.Playlists.Reset(playlists);
+            Playlists.Reset(playlists);
             Session.SelectedPlaylist = playlists[0];
         }
         private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (Session.SelectedPlaylist != null && !Session.Playlists.Contains(Session.SelectedPlaylist))
+            if (Session.SelectedPlaylist != null && !Playlists.Contains(Session.SelectedPlaylist))
                 Session.SelectedPlaylist = null;
         }
 
         private async void SelectedPlaylist_PropertyChanged()
         {
             Session.Status.SelectingPlaylist = true;
-            Session.SelectedSongs.Clear();
-            await UpdateSongsFromDb().ConfigureAwait(false);
+            await UpdateSongsFromDb();
             Session.Status.SelectingPlaylist = false;
         }
 
@@ -76,7 +89,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             PlaylistItem newPlaylist = new PlaylistItem(playlistName);
             DbHandler.CreateNewPlaylist(newPlaylist);
-            Session.Playlists.Insert(Session.Playlists.Count - 1, newPlaylist);
+            Playlists.Insert(Playlists.Count - 1, newPlaylist);
             Session.SelectedPlaylist = newPlaylist;
         }
 
@@ -87,10 +100,10 @@ namespace MusicPlayerForDrummers.ViewModel
                 Log.Warning("Expected to have a PlaylistItem selected when DeleteSelectedPlaylist is called but is {selected}", Session.SelectedPlaylist);
                 return;
             }
-            int index = Session.Playlists.IndexOf(plItem) + 1;
-            if (index > 0 && index < Session.Playlists.Count)
-                Session.SelectedPlaylist = Session.Playlists[index];
-            Session.Playlists.Remove(plItem);
+            int index = Playlists.IndexOf(plItem) + 1;
+            if (index > 0 && index < Playlists.Count)
+                Session.SelectedPlaylist = Playlists[index];
+            Playlists.Remove(plItem);
             DbHandler.DeletePlaylist(plItem);
         }
 
@@ -166,29 +179,47 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Songs
+        //All the songs in the selected playlist, no matter the mastery levels selected
+        public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
+
         public void GoToSong(SongItem song)
         {
-            Session.SelectedSongs.Clear();
             if(Session.SelectedMasteryLevels.Count > 0 && Session.SelectedMasteryLevels.All(x => x.Id != song.MasteryId))
                 Session.SelectedMasteryLevels.Add(Session.MasteryLevels.First(x => x.Id == song.MasteryId));
-            SongItem songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
+            SongItem songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                Session.SelectedPlaylist = Session.Playlists[0];
-                songToSelect = Session.Songs.FirstOrDefault(x => x.Id == song.Id);
+                Session.SelectedPlaylist = Playlists[0]; //todo: will that work? or manually change playlist and call update of shownsongs
+                songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
+                if (songToSelect == null)
+                {
+                    Log.Error("Could not find the song to select when trying to go to song with id {id}", song.Id);
+                    return;
+                }
             }
-            Session.SelectedSongs.Add(songToSelect);
+            foreach (SongItem existingSong in ShownSongs)
+            {
+                existingSong.IsSelected = false;
+            }
+
+            songToSelect.IsSelected = true;
         }
 
         private async Task UpdateSongsFromDb()
         {
             if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
-                Session.Songs.Clear();
+                ShownSongs.Clear();
             else
             {
                 //todo: Make the dbhandler methods async and return task? try if that would work
                 List<SongItem> songs = await DbHandler.GetSongs(Session.SelectedPlaylist.Id);
-                Session.Songs.Reset(songs);
+                if (Session.PlayingSong != null && Session.SelectedPlaylist != null) //sets if any of the new songs is playing
+                {
+                    SongItem? playingSong = songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
+                    if(playingSong != null)
+                        playingSong.ShowedAsPlaying = (Session.SelectedPlaylist.Equals(Session.PlayingPlaylist));
+                }
+                ShownSongs.Reset(songs);
             }
         }
 
@@ -205,7 +236,7 @@ namespace MusicPlayerForDrummers.ViewModel
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(Session.SelectedPlaylist.Id, propertyName, ascending);
             Session.Status.SavingSongOrder = false;
-            Session.Songs.Reset(sortedSongs);
+            ShownSongs.Reset(sortedSongs);
         }
 
         //Resets the songs in the database for current playlist from the songIDs in the same order
@@ -246,9 +277,9 @@ namespace MusicPlayerForDrummers.ViewModel
 
             if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _addPlaylist)
             {
-                if (Session.SelectedPlaylist.Id != 0 && (songCreated || Session.Songs.All(x => x.Id != song.Id)))
+                if (Session.SelectedPlaylist.Id != 0 && (songCreated || ShownSongs.All(x => x.Id != song.Id)))
                 {
-                    Session.Songs.Add(song);
+                    ShownSongs.Add(song);
                     DbHandler.AddPlaylistSongLink(Session.SelectedPlaylist.Id, song.Id);
                 }
             }
@@ -308,7 +339,6 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
 
-        public DelegateCommand? PlaySelectedSongCommand { get; private set; }
 
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()
@@ -318,26 +348,66 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
 
-            if (Session.SelectedSongs.Count == 0)
+            SongItem[] selectedSongs = ShownSongs.Where(x => x.IsSelected).ToArray();
+
+            if (selectedSongs.Length == 0)
             {
-                Log.Warning("Expected songs to be selected when RemoveSelectedSongs()");
+                Log.Warning("No songs selected when trying to RemoveSelectedSongs()");
                 return;
             }
 
-            if(Session.PlayingSong != null && Session.SelectedSongs.Contains(Session.PlayingSong))
+            int[] selectedSongIDs = selectedSongs.Select(x => x.Id).ToArray();
+
+            if(Session.PlayingSong != null && selectedSongIDs.Contains(Session.PlayingSong.Id))
                 Session.StopPlayingSong();
 
-            int[] songIDs = Session.SelectedSongs.Select(x => x.Id).ToArray();
-            if (Session.SelectedPlaylist == Session.Playlists[0])
+            if (Session.SelectedPlaylist == Playlists[0])
             {
-                DbHandler.DeleteSongs(songIDs);
+                DbHandler.DeleteSongs(selectedSongIDs);
             }
             else
             {
-                DbHandler.RemoveSongsFromPlaylist(Session.SelectedPlaylist.Id, songIDs);
+                DbHandler.RemoveSongsFromPlaylist(Session.SelectedPlaylist.Id, selectedSongIDs);
             }
-            foreach(SongItem song in Session.SelectedSongs.ToList())
-                Session.Songs.Remove(song);
+            foreach(SongItem song in selectedSongs)
+                ShownSongs.Remove(song);
+        }
+        #endregion
+        
+        #region PlayingSong
+        public DelegateCommand? PlaySelectedSongCommand { get; private set; }
+
+        private void RefreshSongShowedAsPlaying()
+        {
+            foreach(SongItem song in ShownSongs)
+                if (song.ShowedAsPlaying)
+                    song.ShowedAsPlaying = false;
+
+            if (Session.PlayingSong != null && Session.SelectedPlaylist != null)
+            {
+                SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
+                if(songStartedPlaying != null)
+                    songStartedPlaying.ShowedAsPlaying = (Session.SelectedPlaylist.Equals(Session.PlayingPlaylist));
+            }
+        }
+
+        public bool SetSelectedSongPlaying(bool startPlaying)
+        {
+            if (!(Session.SelectedPlaylist is PlaylistItem pl))
+            {
+                Log.Error("Tried to start playing a song without a valid playlist selected, is {playlist}", Session.SelectedPlaylist);
+                return false;
+            }
+
+            SongItem? song = ShownSongs.FirstOrDefault(x => x.IsSelected) ?? ShownSongs.FirstOrDefault();
+            if (song == null)
+            {
+                Log.Error("Tried to start playing a song without any songs visible");
+                return false;
+            }
+
+            Session.SetPlayingSong(song, pl, Session.SelectedMasteryLevels, startPlaying);
+            return true;
         }
         #endregion
 
