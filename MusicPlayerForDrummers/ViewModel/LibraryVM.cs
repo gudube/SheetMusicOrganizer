@@ -35,11 +35,11 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public async Task InitializeData()
         {
+            Playlists.CollectionChanged += Playlists_CollectionChanged;
             UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
             Task songs = UpdateSongsFromDb();
             await songs.ConfigureAwait(false);
-            Playlists.CollectionChanged += Playlists_CollectionChanged;
         }
 
         private void CreateDelegateCommands()
@@ -53,8 +53,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Session.SelectedPlaylist))
-                SelectedPlaylist_PropertyChanged();
         }
 
         #region Playlists
@@ -66,19 +64,39 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand? DeleteSelectedPlaylistCommand { get; private set; }
         public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
 
+        //We are assuming there is always only one selected playlist
+        private PlaylistItem? GetSelectedPlaylist()
+        {
+            PlaylistItem? selectedPlaylist = Playlists.OfType<PlaylistItem>().FirstOrDefault(x => x.IsSelected);
+            if (selectedPlaylist == null)
+            {
+                Log.Warning("Trying to get selected playlist when there is no selected playlist");
+            }
+            return selectedPlaylist;
+        }
+
         private void UpdatePlaylistsFromDb()
         {
             List<BaseModelItem> playlists = new List<BaseModelItem>(DbHandler.GetAllPlaylists()){ _addPlaylist };
+            if(playlists.First() is PlaylistItem playlist)
+                playlist.IsSelected = true;
             Playlists.Reset(playlists);
-            Session.SelectedPlaylist = playlists[0];
         }
         private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (Session.SelectedPlaylist != null && !Playlists.Contains(Session.SelectedPlaylist))
-                Session.SelectedPlaylist = null;
+            foreach (BaseModelItem item in Playlists) 
+                item.PropertyChanged += Playlist_PropertyChanged;
         }
 
-        private async void SelectedPlaylist_PropertyChanged()
+        private void Playlist_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PlaylistItem.IsSelected) || e.PropertyName == nameof(AddPlaylistItem.IsSelected))
+                if(sender is PlaylistItem plItem && !plItem.IsSelected
+                || sender is AddPlaylistItem addItem && !addItem.IsSelected) //so that it doesn't refresh twice for selecting and then unselecting
+                    SelectedPlaylistChanged();
+        }
+
+        private async void SelectedPlaylistChanged()
         {
             Session.Status.SelectingPlaylist = true;
             await UpdateSongsFromDb();
@@ -89,33 +107,43 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             PlaylistItem newPlaylist = new PlaylistItem(playlistName);
             DbHandler.CreateNewPlaylist(newPlaylist);
+
+            if (Playlists.Last() is AddPlaylistItem addPlaylist)
+                addPlaylist.IsSelected = false;
+            newPlaylist.IsSelected = true;
             Playlists.Insert(Playlists.Count - 1, newPlaylist);
-            Session.SelectedPlaylist = newPlaylist;
         }
 
+        //todo: add confirmation window when trying to delete a playlist e.g. Are you sure to... it will delete the playlist but the songs are still available in All Songs
         private void DeleteSelectedPlaylist()
         {
-            if (!(Session.SelectedPlaylist is PlaylistItem plItem))
-            {
-                Log.Warning("Expected to have a PlaylistItem selected when DeleteSelectedPlaylist is called but is {selected}", Session.SelectedPlaylist);
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
                 return;
+
+            int currentIndex = Playlists.IndexOf(selectedPlaylist);
+            int nextIndex = currentIndex + 1;
+            if (nextIndex > 0 && nextIndex < Playlists.Count - 1)
+            {
+                ((PlaylistItem)Playlists[nextIndex]).IsSelected = true;
+            } else {
+                int previousIndex = currentIndex - 1;
+                if(previousIndex >= 0)
+                    ((PlaylistItem)Playlists[previousIndex]).IsSelected = true;
             }
-            int index = Playlists.IndexOf(plItem) + 1;
-            if (index > 0 && index < Playlists.Count)
-                Session.SelectedPlaylist = Playlists[index];
-            Playlists.Remove(plItem);
-            DbHandler.DeletePlaylist(plItem);
+            
+            Playlists.Remove(selectedPlaylist);
+            DbHandler.DeletePlaylist(selectedPlaylist);
         }
 
         private void RenameSelectedPlaylist(string playlistName)
         {
-            if (!(Session.SelectedPlaylist is PlaylistItem plItem))
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist != null)
             {
-                Log.Warning("Expected to have a PlaylistItem selected when RenameSelectedPlaylist is called but is {selected}", Session.SelectedPlaylist);
-                return;
+                selectedPlaylist.Name = playlistName;
+                DbHandler.UpdatePlaylist(selectedPlaylist);
             }
-            plItem.Name = playlistName;
-            DbHandler.UpdatePlaylist(plItem);
         }
 
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
@@ -141,7 +169,6 @@ namespace MusicPlayerForDrummers.ViewModel
         //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
         //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
-
         private void UpdateMasteryLevelsFromDb()
         {
             Session.MasteryLevels.Reset(DbHandler.GetAllMasteryLevels());
@@ -184,12 +211,14 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void GoToSong(SongItem song)
         {
-            if(Session.SelectedMasteryLevels.Count > 0 && Session.SelectedMasteryLevels.All(x => x.Id != song.MasteryId))
-                Session.SelectedMasteryLevels.Add(Session.MasteryLevels.First(x => x.Id == song.MasteryId));
+            if(!song.Mastery.IsSelected)
+                song.Mastery.IsSelected = true;
             SongItem songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                Session.SelectedPlaylist = Playlists[0]; //todo: will that work? or manually change playlist and call update of shownsongs
+                foreach (BaseModelItem playlist in Playlists)
+                    if(playlist is PlaylistItem pl) pl.IsSelected = false;
+                ((PlaylistItem)Playlists[0]).IsSelected = true; //todo: will that work? or manually change playlist and call update of shownsongs
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
@@ -207,17 +236,18 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private async Task UpdateSongsFromDb()
         {
-            if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
                 ShownSongs.Clear();
             else
             {
                 //todo: Make the dbhandler methods async and return task? try if that would work
-                List<SongItem> songs = await DbHandler.GetSongs(Session.SelectedPlaylist.Id);
-                if (Session.PlayingSong != null && Session.SelectedPlaylist != null) //sets if any of the new songs is playing
+                List<SongItem> songs = await DbHandler.GetSongs(selectedPlaylist.Id);
+                if (Session.PlayingSong != null) //sets if any of the new songs is playing
                 {
                     SongItem? playingSong = songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
                     if(playingSong != null)
-                        playingSong.ShowedAsPlaying = (Session.SelectedPlaylist.Equals(Session.PlayingPlaylist));
+                        playingSong.ShowedAsPlaying = selectedPlaylist.Equals(Session.PlayingPlaylist);
                 }
                 ShownSongs.Reset(songs);
             }
@@ -225,16 +255,17 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SortSongs(string propertyName, bool ascending)
         {
-            if (Session.SelectedPlaylist == null || Session.SelectedPlaylist == _addPlaylist)
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
             {
-                Log.Warning("Trying to sort songs when the selected playlist is {playlist}", Session.SelectedPlaylist);
+                Log.Warning("Trying to sort songs when there are no selected playlist");
                 return;
             }
 
             Session.Status.SavingSongOrder = true;
             Session.Status.SortingSongs = true;
             List<SongItem> sortedSongs =
-                DbHandler.SortSongs(Session.SelectedPlaylist.Id, propertyName, ascending);
+                DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
             Session.Status.SavingSongOrder = false;
             ShownSongs.Reset(sortedSongs);
         }
@@ -242,53 +273,43 @@ namespace MusicPlayerForDrummers.ViewModel
         //Resets the songs in the database for current playlist from the songIDs in the same order
         public void ResetSongsInCurrentPlaylist(IEnumerable<int> songIDs)
         {
-            if (Session.SelectedPlaylist == null)
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
             {
-                Log.Warning("Tried to reset songs in the current playlist when no playlists are selected");
+                Log.Warning("Trying to save songs in the database when there are no selected playlist");
                 return;
             }
-
-            if (Session.SelectedPlaylist == _addPlaylist)
-            {
-                Log.Warning("Tried to reset songs in the current playlist when the selected playlist is the 'Add' playlist");
-                return;
-            }
-            DbHandler.ResetSongsInPlaylist(Session.SelectedPlaylist.Id, songIDs);
+            
+            DbHandler.ResetSongsInPlaylist(selectedPlaylist.Id, songIDs);
         }
 
         public bool AddSong(SongItem song)
         {
-            bool songCreated = false;
-
             if (DbHandler.IsSongExisting(song.PartitionDirectory))
             {
-                song = DbHandler.GetSong(song.PartitionDirectory);
+                return false;
+                //song = DbHandler.GetSong(song.PartitionDirectory);
+            }
+            MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
+            if (selectedMasteryItems.Length == 0)
+                song.MasteryId = Session.MasteryLevels[0].Id;
+            else
+                song.MasteryId = selectedMasteryItems[0].Id;
+
+            DbHandler.AddSong(song);
+
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
+            {
+                Log.Warning("Trying to add a new song in the database when there are no selected playlist");
             }
             else
             {
-                if (Session.SelectedMasteryLevels.Count == 0)
-                    song.MasteryId = Session.MasteryLevels[0].Id;
-                else
-                    song.MasteryId = Session.SelectedMasteryLevels[0].Id;
-
-                DbHandler.AddSong(song);
-                songCreated = true;
+                ShownSongs.Add(song);
+                DbHandler.AddPlaylistSongLink(selectedPlaylist.Id, song.Id);
             }
 
-            if (Session.SelectedPlaylist is PlaylistItem && Session.SelectedPlaylist != _addPlaylist)
-            {
-                if (Session.SelectedPlaylist.Id != 0 && (songCreated || ShownSongs.All(x => x.Id != song.Id)))
-                {
-                    ShownSongs.Add(song);
-                    DbHandler.AddPlaylistSongLink(Session.SelectedPlaylist.Id, song.Id);
-                }
-            }
-            else
-            {
-                Log.Error("Tried adding a new song when selected playlist was {playlist}", Session.SelectedPlaylist);
-            }
-
-            return songCreated;
+            return true;
         }
 
         //TODO: Add advanced options (like import music sheet only, audio only or both)
@@ -343,11 +364,6 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()
         {
-            if (!(Session.SelectedPlaylist is PlaylistItem)) {
-                Log.Warning("Expected selected playlist to be a PlaylistItem when RemoveSelectedSongs(), but is {SelectedPlaylist}", Session.SelectedPlaylist);
-                return;
-            }
-
             SongItem[] selectedSongs = ShownSongs.Where(x => x.IsSelected).ToArray();
 
             if (selectedSongs.Length == 0)
@@ -361,14 +377,15 @@ namespace MusicPlayerForDrummers.ViewModel
             if(Session.PlayingSong != null && selectedSongIDs.Contains(Session.PlayingSong.Id))
                 Session.StopPlayingSong();
 
-            if (Session.SelectedPlaylist == Playlists[0])
-            {
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+
+            if (selectedPlaylist == null)
+                return;
+            else if (Equals(Playlists[0], selectedPlaylist))
                 DbHandler.DeleteSongs(selectedSongIDs);
-            }
             else
-            {
-                DbHandler.RemoveSongsFromPlaylist(Session.SelectedPlaylist.Id, selectedSongIDs);
-            }
+                DbHandler.RemoveSongsFromPlaylist(selectedPlaylist.Id, selectedSongIDs);
+            
             foreach(SongItem song in selectedSongs)
                 ShownSongs.Remove(song);
         }
@@ -383,19 +400,21 @@ namespace MusicPlayerForDrummers.ViewModel
                 if (song.ShowedAsPlaying)
                     song.ShowedAsPlaying = false;
 
-            if (Session.PlayingSong != null && Session.SelectedPlaylist != null)
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (Session.PlayingSong != null && selectedPlaylist != null)
             {
                 SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
                 if(songStartedPlaying != null)
-                    songStartedPlaying.ShowedAsPlaying = (Session.SelectedPlaylist.Equals(Session.PlayingPlaylist));
+                    songStartedPlaying.ShowedAsPlaying = (selectedPlaylist.Equals(Session.PlayingPlaylist));
             }
         }
 
         public bool SetSelectedSongPlaying(bool startPlaying)
         {
-            if (!(Session.SelectedPlaylist is PlaylistItem pl))
+            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
+            if (selectedPlaylist == null)
             {
-                Log.Error("Tried to start playing a song without a valid playlist selected, is {playlist}", Session.SelectedPlaylist);
+                Log.Error("Tried to start playing a song without a playlist selected");
                 return false;
             }
 
@@ -406,7 +425,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 return false;
             }
 
-            Session.SetPlayingSong(song, pl, Session.SelectedMasteryLevels, startPlaying);
+            Session.SetPlayingSong(song, selectedPlaylist, Session.MasteryLevels.Where(x => x.IsSelected), startPlaying);
             return true;
         }
         #endregion

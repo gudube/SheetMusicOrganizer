@@ -59,7 +59,7 @@ namespace MusicPlayerForDrummers.Model.Items
 
         #region Other Properties
         //useful to know the mastery name from SongItem (e.g. in the SongsGrid)
-        public MasteryItem? Mastery => DbHandler.MasteryDic?[MasteryId];
+        public MasteryItem Mastery => DbHandler.MasteryDic[MasteryId];
 
         private bool _showedAsPlaying = false;
         public bool ShowedAsPlaying { get => _showedAsPlaying; set => SetField(ref _showedAsPlaying, value); }

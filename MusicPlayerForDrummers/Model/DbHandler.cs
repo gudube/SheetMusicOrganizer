@@ -19,7 +19,7 @@ namespace MusicPlayerForDrummers.Model
     public static class DbHandler
     {
         //private static List<MasteryItem> _masteryItems;
-        public static Dictionary<int, MasteryItem>? MasteryDic;
+        public static Dictionary<int, MasteryItem> MasteryDic = new Dictionary<int, MasteryItem>();
 
 
         #region Init
@@ -569,9 +569,6 @@ namespace MusicPlayerForDrummers.Model
 
         public static List<MasteryItem> GetAllMasteryLevels()
         {
-            if(MasteryDic == null)
-                return new List<MasteryItem>();
-
             return MasteryDic.Values.ToList();
         }
 
@@ -666,7 +663,7 @@ namespace MusicPlayerForDrummers.Model
             {
                 con.Open();
                 int pos = GetLastPositionInPlaylist(con, playlistId);
-                InsertRow(con, new PlaylistSongTable(), new PlaylistSongItem(playlistId, songId, pos));
+                InsertRow(con, new PlaylistSongTable(), new PlaylistSongItem(playlistId, songId, pos), true);
             }
         }
 
@@ -695,7 +692,7 @@ namespace MusicPlayerForDrummers.Model
                 {
                     items.Add(new PlaylistSongItem(playlistId, id, pos++));
                 }
-                InsertRows(con, table, items.ToArray());
+                InsertRows(con, table, items.ToArray(), true);
             }
         }
 

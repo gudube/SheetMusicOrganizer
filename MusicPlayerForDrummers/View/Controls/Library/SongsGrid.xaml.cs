@@ -46,7 +46,7 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             if (e.OldValue is LibraryVM oldVM)
             {
-                oldVM.Session.SelectedMasteryLevels.CollectionChanged -= SelectedMasteryLevels_CollectionChanged;
+                oldVM.Session.MasteryLevels.CollectionChanged -= MasteryLevels_CollectionChanged;
             }
 
             if (e.NewValue is LibraryVM newVM)
@@ -55,20 +55,32 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                     , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
                 ICollectionView itemList = itemSourceList.View;
 
-                var masteryFilter = new Predicate<object>(item => newVM.Session.SelectedMasteryLevels.Count == 0
-                                                                  || newVM.Session.SelectedMasteryLevels.Any(x => x.Id == ((SongItem)item).MasteryId));
+                var masteryFilter = new Predicate<object>(item => !newVM.Session.MasteryLevels.Any(x => x.IsSelected)
+                                                                  || ((SongItem)item).Mastery.IsSelected);
                 itemList.Filter = masteryFilter;
                 Songs.ItemsSource = itemList;
 
-                newVM.Session.SelectedMasteryLevels.CollectionChanged += SelectedMasteryLevels_CollectionChanged;
+                newVM.Session.MasteryLevels.CollectionChanged += MasteryLevels_CollectionChanged;
+                foreach(MasteryItem newItem in newVM.Session.MasteryLevels)
+                    newItem.PropertyChanged += MasteryItem_PropertyChanged;
             }
         }
-        private void SelectedMasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void MasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if(Songs.ItemsSource is ICollectionView view)
-                view.Refresh();
-            else
-                Log.Warning("Event SelectedMasteryLevels_CollectionChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
+            if(DataContext is LibraryVM libraryVM)
+                foreach(MasteryItem newItem in libraryVM.Session.MasteryLevels)
+                    newItem.PropertyChanged += MasteryItem_PropertyChanged;
+        }
+
+        private void MasteryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MasteryItem.IsSelected))
+            {
+                if(Songs.ItemsSource is ICollectionView view)
+                    view.Refresh();
+                else
+                    Log.Warning("Event SelectedMasteryLevels_CollectionChanged called when the ItemsSource of the songs grid is not an ICollectionView.");
+            }
         }
 
         #endregion

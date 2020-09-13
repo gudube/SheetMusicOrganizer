@@ -7,6 +7,7 @@ namespace MusicPlayerForDrummers.Model.Items
 {
     public class PlaylistItem : BaseModelItem
     {
+        #region Properties
         private string _name;
         public string Name { get => _name; set => SetField(ref _name, value); }
 
@@ -18,6 +19,12 @@ namespace MusicPlayerForDrummers.Model.Items
 
         private string _smartDir;
         public string SmartDir { get => _smartDir; set => SetField(ref _smartDir, value); }
+        #endregion
+
+        #region Other Properties
+        private bool _isSelected = false;
+        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        #endregion
 
         public PlaylistItem(string name, bool locked = false) : base()
         {
@@ -70,6 +77,9 @@ namespace MusicPlayerForDrummers.Model.Items
 
     public class AddPlaylistItem : BaseModelItem
     {
+        private bool _isSelected = false;
+        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+
         public override object[] GetCustomValues()
         {
             throw new NotImplementedException();

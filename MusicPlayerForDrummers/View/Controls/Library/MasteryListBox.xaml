@@ -17,8 +17,13 @@
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MasteryUC}">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type modelItems:MasteryItem}">
-                <viewItems:SelectableTextItem IsLocked="{Binding IsLocked}" Text="{Binding Name}" IsCustomColor="True" TextColor="{Binding Color}"/>
+                <viewItems:SelectableTextItem IsLocked="{Binding IsLocked, Mode=OneTime}" Text="{Binding Name, Mode=OneTime}" IsCustomColor="True" TextColor="{Binding Color}"/>
             </DataTemplate>
         </ListBox.Resources>
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+            </Style>
+        </ListBox.ItemContainerStyle>
     </ListBox>
 </UserControl>

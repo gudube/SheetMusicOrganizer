@@ -6,6 +6,7 @@ namespace MusicPlayerForDrummers.Model.Items
 {
     public class MasteryItem : BaseModelItem
     {
+        #region Properties
         private string _name;
         public string Name { get => _name; set => SetField(ref _name, value); }
 
@@ -14,6 +15,12 @@ namespace MusicPlayerForDrummers.Model.Items
 
         private string _color;
         public string Color { get => _color; set => SetField(ref _color, value); }
+        #endregion
+
+        #region Other Properties
+        private bool _isSelected = false;
+        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        #endregion
 
         public MasteryItem(string name, bool locked, string color) : base()
         {
