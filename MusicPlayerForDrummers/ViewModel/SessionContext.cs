@@ -1,7 +1,6 @@
 ﻿using MusicPlayerForDrummers.ViewModel.Tools;
 using NAudioWrapper;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Threading;
 using MusicPlayerForDrummers.Model.Items;
@@ -44,35 +43,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #region PlayingSong
         private INotifyPropertyChanged? _playingSong;
-        public SongItem? PlayingSong { get => (SongItem?) _playingSong; private set => SetField(ref _playingSong, value); }
-
-        private INotifyPropertyChanged? _playingPlaylist;
-        public PlaylistItem? PlayingPlaylist { get => (PlaylistItem?)_playingPlaylist; private set => SetField(ref _playingPlaylist, value); }
-
-        private SmartCollection<MasteryItem> _playingMasteryLevels = new SmartCollection<MasteryItem>();
-        public SmartCollection<MasteryItem> PlayingMasteryLevels { get => _playingMasteryLevels; private set => SetField(ref _playingMasteryLevels, value); }
-
-        public void StopPlayingSong()
-        {
-            Player.Stop();
-            PlayingSong = null;
-            PlayingPlaylist = null;
-            PlayingMasteryLevels.Clear();
-        }
-
-        //Sets the playing song with the same playing playlist and mastery level
-        public void SetPlayingSong(SongItem song, bool startPlaying)
-        {
-            PlayingSong = song;
-            Player.SetSong(song.AudioDirectory, startPlaying);
-        }
-
-        public void SetPlayingSong(SongItem song, PlaylistItem playlist, IEnumerable<MasteryItem> masteryLevels, bool startPlaying)
-        {
-            PlayingPlaylist = playlist;
-            PlayingMasteryLevels.Reset(masteryLevels);
-            SetPlayingSong(song, startPlaying);
-        }
+        public SongItem? PlayingSong { get => (SongItem?) _playingSong; set => SetField(ref _playingSong, value); }
         #endregion
 
         #region AudioPlayer

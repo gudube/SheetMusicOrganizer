@@ -11,7 +11,7 @@
         <tools:HexColorConverter x:Key="HexColorConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
-    <Grid>
+        <Grid>
         <Grid.DataContext>
             <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type items:SelectableTextItem}}" />
         </Grid.DataContext>
@@ -34,6 +34,7 @@
             </ContextMenu>
         </Grid.ContextMenu>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
@@ -49,7 +50,9 @@
             </TextBlock.Style>
         </TextBlock>
         <TextBox Grid.Column="0" x:Name="MainTextBox"  KeyDown="TextBox_KeyDown" Visibility="Collapsed"/>
-        <Image Grid.Column="1" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
+        <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
+                   Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVis}}"></TextBlock>
+        <Image Grid.Column="2" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
                                Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}}"/>
     </Grid>
 </UserControl>

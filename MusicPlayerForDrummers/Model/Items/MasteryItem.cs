@@ -20,6 +20,9 @@ namespace MusicPlayerForDrummers.Model.Items
         #region Other Properties
         private bool _isSelected = false;
         public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+
+        private bool _isPlaying = false;
+        public bool IsPlaying { get => _isPlaying; set => SetField(ref _isPlaying, value); }
         #endregion
 
         public MasteryItem(string name, bool locked, string color) : base()

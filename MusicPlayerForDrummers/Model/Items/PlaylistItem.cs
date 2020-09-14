@@ -5,7 +5,17 @@ using Serilog;
 
 namespace MusicPlayerForDrummers.Model.Items
 {
-    public class PlaylistItem : BaseModelItem
+    public class BasePlaylistItem : BaseModelItem
+    {
+        private bool _isSelected = false;
+        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        public override object[] GetCustomValues()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PlaylistItem : BasePlaylistItem
     {
         #region Properties
         private string _name;
@@ -22,8 +32,8 @@ namespace MusicPlayerForDrummers.Model.Items
         #endregion
 
         #region Other Properties
-        private bool _isSelected = false;
-        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        private bool _isPlaying = false;
+        public bool IsPlaying { get => _isPlaying; set => SetField(ref _isPlaying, value); }
         #endregion
 
         public PlaylistItem(string name, bool locked = false) : base()
@@ -75,11 +85,8 @@ namespace MusicPlayerForDrummers.Model.Items
         }
     }
 
-    public class AddPlaylistItem : BaseModelItem
+    public class AddPlaylistItem : BasePlaylistItem
     {
-        private bool _isSelected = false;
-        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
-
         public override object[] GetCustomValues()
         {
             throw new NotImplementedException();

@@ -18,21 +18,9 @@ namespace MusicPlayerForDrummers.ViewModel
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
-            Session.PropertyChanged += Session_PropertyChanged1;
         }
 
-        private void Session_PropertyChanged1(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                //case nameof(Session.SelectedPlaylist):
-                case nameof(Session.PlayingPlaylist):
-                case nameof(Session.PlayingSong):
-                    RefreshSongShowedAsPlaying();
-                    break;
-            }
-        }
-
+        #region Initialization
         public async Task InitializeData()
         {
             Playlists.CollectionChanged += Playlists_CollectionChanged;
@@ -53,11 +41,15 @@ namespace MusicPlayerForDrummers.ViewModel
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if(e.PropertyName == nameof(Session.PlayingSong))
+                RefreshSongShowedAsPlaying();
         }
+        #endregion
 
         #region Playlists
-        private SmartCollection<BaseModelItem> _playlists = new SmartCollection<BaseModelItem>();
-        public SmartCollection<BaseModelItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
+        private SmartCollection<BasePlaylistItem> _playlists = new SmartCollection<BasePlaylistItem>();
+        public SmartCollection<BasePlaylistItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
+
         private readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
         
         public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
@@ -77,14 +69,14 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void UpdatePlaylistsFromDb()
         {
-            List<BaseModelItem> playlists = new List<BaseModelItem>(DbHandler.GetAllPlaylists()){ _addPlaylist };
+            List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(DbHandler.GetAllPlaylists()){ _addPlaylist };
             if(playlists.First() is PlaylistItem playlist)
                 playlist.IsSelected = true;
             Playlists.Reset(playlists);
         }
         private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            foreach (BaseModelItem item in Playlists) 
+            foreach (BasePlaylistItem item in Playlists) 
                 item.PropertyChanged += Playlist_PropertyChanged;
         }
 
@@ -94,6 +86,9 @@ namespace MusicPlayerForDrummers.ViewModel
                 if(sender is PlaylistItem plItem && !plItem.IsSelected
                 || sender is AddPlaylistItem addItem && !addItem.IsSelected) //so that it doesn't refresh twice for selecting and then unselecting
                     SelectedPlaylistChanged();
+            if(e.PropertyName == nameof(PlaylistItem.IsPlaying))
+                RefreshSongShowedAsPlaying();
+
         }
 
         private async void SelectedPlaylistChanged()
@@ -216,8 +211,8 @@ namespace MusicPlayerForDrummers.ViewModel
             SongItem songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                foreach (BaseModelItem playlist in Playlists)
-                    if(playlist is PlaylistItem pl) pl.IsSelected = false;
+                foreach (BasePlaylistItem playlist in Playlists)
+                    playlist.IsSelected = false;
                 ((PlaylistItem)Playlists[0]).IsSelected = true; //todo: will that work? or manually change playlist and call update of shownsongs
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
@@ -247,7 +242,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 {
                     SongItem? playingSong = songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
                     if(playingSong != null)
-                        playingSong.ShowedAsPlaying = selectedPlaylist.Equals(Session.PlayingPlaylist);
+                        playingSong.ShowedAsPlaying = Playlists.OfType<PlaylistItem>().Any(x => x.IsPlaying && x.IsSelected);
                 }
                 ShownSongs.Reset(songs);
             }
@@ -375,7 +370,7 @@ namespace MusicPlayerForDrummers.ViewModel
             int[] selectedSongIDs = selectedSongs.Select(x => x.Id).ToArray();
 
             if(Session.PlayingSong != null && selectedSongIDs.Contains(Session.PlayingSong.Id))
-                Session.StopPlayingSong();
+                StopPlayingSong();
 
             PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
 
@@ -405,19 +400,13 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
                 if(songStartedPlaying != null)
-                    songStartedPlaying.ShowedAsPlaying = (selectedPlaylist.Equals(Session.PlayingPlaylist));
+                    songStartedPlaying.ShowedAsPlaying = Playlists.OfType<PlaylistItem>().Any(x => x.IsPlaying && x.IsSelected);
             }
         }
 
         public bool SetSelectedSongPlaying(bool startPlaying)
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
-            {
-                Log.Error("Tried to start playing a song without a playlist selected");
-                return false;
-            }
-
+            //todo: should also consider if there is a song playing before. what if no song playing nor shown?
             SongItem? song = ShownSongs.FirstOrDefault(x => x.IsSelected) ?? ShownSongs.FirstOrDefault();
             if (song == null)
             {
@@ -425,8 +414,81 @@ namespace MusicPlayerForDrummers.ViewModel
                 return false;
             }
 
-            Session.SetPlayingSong(song, selectedPlaylist, Session.MasteryLevels.Where(x => x.IsSelected), startPlaying);
+            foreach(BasePlaylistItem item in Playlists)
+                if (item is PlaylistItem pl)
+                    pl.IsPlaying = pl.IsSelected;
+
+            bool anyMasterySelected = false;
+            foreach (MasteryItem mastery in Session.MasteryLevels)
+            {
+                if (mastery.IsSelected)
+                {
+                    mastery.IsPlaying = true;
+                    anyMasterySelected = true;
+                }
+                else
+                    mastery.IsPlaying = false;
+            }
+
+            if(!anyMasterySelected)
+                foreach (MasteryItem mastery in Session.MasteryLevels)
+                    mastery.IsPlaying = true;
+
+            SetPlayingSong(song, startPlaying);
+
             return true;
+        }
+
+        //Sets the playing song with the same playing playlist and mastery level
+        public void SetPlayingSong(SongItem song, bool startPlaying)
+        {
+            Session.PlayingSong = song;
+            Session.Player.SetSong(song.AudioDirectory, startPlaying);
+        }
+
+        public void StopPlayingSong()
+        {
+            Session.Player.Stop();
+            Session.PlayingSong = null;
+            
+            foreach (BasePlaylistItem item in Playlists)
+                if (item is PlaylistItem playlist)
+                    playlist.IsPlaying = false;
+            
+            foreach (MasteryItem mastery in Session.MasteryLevels)
+                mastery.IsPlaying = false;
+        }
+
+        public void SetNextPlayingSong(bool next)
+        {
+            //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
+            if (Session.PlayingSong == null)
+            {
+                SetSelectedSongPlaying(true);
+                return;
+            }
+            
+            SongItem? newSong;
+
+            PlaylistItem? playingPlaylist = Playlists.FirstOrDefault(x => x is PlaylistItem pl && pl.IsPlaying) as PlaylistItem;
+
+            if (playingPlaylist == null)
+            {
+                Log.Warning("Playing playlist is null when trying to go to play {next} song", (next ? "next" : "previous"));
+                return;
+            }
+
+            if(next)
+                newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, 
+                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
+            else
+                newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, 
+                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
+            
+            if (newSong == null)
+                StopPlayingSong();
+            else
+                SetPlayingSong(newSong, true);
         }
         #endregion
 

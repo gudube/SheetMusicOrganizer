@@ -18,7 +18,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
             SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
             SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM));
-            PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
+
+            SetupEvents();
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -87,6 +88,18 @@ namespace MusicPlayerForDrummers.ViewModel
 
             return false;
         }
+        #endregion
+
+        #region Common Tasks
+        private void SetupEvents()
+        {
+            PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
+            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(true);
+            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(false);
+            PlayerVM.StopPlayingSong += (o, e) => LibraryVM.StopPlayingSong();
+        }
+
+
         #endregion
     }
 }
