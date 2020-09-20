@@ -5,12 +5,13 @@ using System.Linq;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using Windows.Media.Playlists;
 using MusicPlayerForDrummers.Model.Items;
 using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
-    public class LibraryVM : BaseViewModel
+    public class LibraryVM : BaseViewModel, IDataErrorInfo
     {
         public override string ViewModelName => "LIBRARY";
 
@@ -32,7 +33,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void CreateDelegateCommands()
         {
-            CreateNewPlaylistCommand = new DelegateCommand(x => CreateNewPlaylist(x == null ? "" : (string)x));
+            CreateNewPlaylistCommand = new DelegateCommand(_ => CreateNewPlaylist());
+            CancelNewPlaylistCommand = new DelegateCommand(_ => CancelNewPlaylist());
             DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x == null ? "" : (string)x));
             PlaySelectedSongCommand = new DelegateCommand(_ => SetSelectedSongPlaying(true));
@@ -50,26 +52,11 @@ namespace MusicPlayerForDrummers.ViewModel
         private SmartCollection<BasePlaylistItem> _playlists = new SmartCollection<BasePlaylistItem>();
         public SmartCollection<BasePlaylistItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
 
-        private readonly AddPlaylistItem _addPlaylist = new AddPlaylistItem();
-        
-        public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
-        public DelegateCommand? DeleteSelectedPlaylistCommand { get; private set; }
-        public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
-
-        //We are assuming there is always only one selected playlist
-        private PlaylistItem? GetSelectedPlaylist()
-        {
-            PlaylistItem? selectedPlaylist = Playlists.OfType<PlaylistItem>().FirstOrDefault(x => x.IsSelected);
-            if (selectedPlaylist == null)
-            {
-                Log.Warning("Trying to get selected playlist when there is no selected playlist");
-            }
-            return selectedPlaylist;
-        }
+        #region All Playlists
 
         private void UpdatePlaylistsFromDb()
         {
-            List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(DbHandler.GetAllPlaylists()){ _addPlaylist };
+            List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(DbHandler.GetAllPlaylists()){ AddPlaylist };
             if(playlists.First() is PlaylistItem playlist)
                 playlist.IsSelected = true;
             Playlists.Reset(playlists);
@@ -91,6 +78,23 @@ namespace MusicPlayerForDrummers.ViewModel
 
         }
 
+        #endregion
+
+        #region Selected Playlist
+        public DelegateCommand? DeleteSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
+
+        //We are assuming there is always only one selected playlist
+        private BasePlaylistItem? GetSelectedPlaylist()
+        {
+            BasePlaylistItem? selectedPlaylist = Playlists.FirstOrDefault(x => x.IsSelected);
+            if (selectedPlaylist == null)
+            {
+                Log.Warning("Trying to get selected playlist when there is no selected playlist");
+            }
+            return selectedPlaylist;
+        }
+
         private async void SelectedPlaylistChanged()
         {
             Session.Status.SelectingPlaylist = true;
@@ -98,23 +102,20 @@ namespace MusicPlayerForDrummers.ViewModel
             Session.Status.SelectingPlaylist = false;
         }
 
-        private void CreateNewPlaylist(string playlistName)
-        {
-            PlaylistItem newPlaylist = new PlaylistItem(playlistName);
-            DbHandler.CreateNewPlaylist(newPlaylist);
-
-            if (Playlists.Last() is AddPlaylistItem addPlaylist)
-                addPlaylist.IsSelected = false;
-            newPlaylist.IsSelected = true;
-            Playlists.Insert(Playlists.Count - 1, newPlaylist);
-        }
-
         //todo: add confirmation window when trying to delete a playlist e.g. Are you sure to... it will delete the playlist but the songs are still available in All Songs
         private void DeleteSelectedPlaylist()
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
+            {
+                Log.Warning("Trying to delete a playlist that is not a playlist item or is null");
                 return;
+            }
+
+            if (selectedPlaylist.IsLocked)
+            {
+                Log.Warning("Trying to delete a locked playlist: {playlistName}", selectedPlaylist.Name);
+                return;
+            }
 
             int currentIndex = Playlists.IndexOf(selectedPlaylist);
             int nextIndex = currentIndex + 1;
@@ -133,14 +134,23 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void RenameSelectedPlaylist(string playlistName)
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist != null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
             {
-                selectedPlaylist.Name = playlistName;
-                DbHandler.UpdatePlaylist(selectedPlaylist);
+                Log.Warning("Trying to rename a playlist that is not a playlist item or is null");
+                return;
             }
-        }
+            if (selectedPlaylist.IsLocked)
+            {
+                Log.Warning("Trying to rename a locked playlist: {playlistName}", selectedPlaylist.Name);
+                return;
+            }
 
+            selectedPlaylist.Name = playlistName;
+            DbHandler.UpdatePlaylist(selectedPlaylist);
+        }
+        #endregion
+        
+        #region Song in playlist
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
             Session.Status.SavingSongPlaylist = true;
@@ -159,6 +169,54 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             return DbHandler.IsSongInPlaylist(playlist.Id, song.Id);
         }
+        #endregion
+
+        #region Adding playlist
+        public AddPlaylistItem AddPlaylist { get; } = new AddPlaylistItem();
+        
+        private string _addingPlaylistName = "";
+        public string AddingPlaylistName { get => _addingPlaylistName; set => SetField(ref _addingPlaylistName, value); }
+
+        private string ValidatePlaylistName()
+        {
+            if (string.IsNullOrWhiteSpace(AddingPlaylistName))
+                return "Playlist name is empty";
+
+            foreach (BasePlaylistItem item in Playlists)
+            {
+                if(item is PlaylistItem playlist && playlist.Name == AddingPlaylistName)
+                    return "Playlist name already exists";
+            }
+            
+            return "";
+        }
+        public DelegateCommand? CancelNewPlaylistCommand { get; private set; }
+        private void CancelNewPlaylist()
+        {
+            AddPlaylist.IsSelected = false;
+            Playlists[^2].IsSelected = true;
+            AddingPlaylistName = "";
+        }
+
+        public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
+        private void CreateNewPlaylist()
+        {
+            string error = ValidatePlaylistName();
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                Log.Warning("Trying to create a new playlist with an error: {error}", error);
+                return;
+            }
+
+            PlaylistItem newPlaylist = new PlaylistItem(AddingPlaylistName);
+            DbHandler.CreateNewPlaylist(newPlaylist);
+            int beforeLast = Playlists.Count - 1;
+            Playlists.Insert(beforeLast, newPlaylist);
+            AddPlaylist.IsSelected = false;
+            newPlaylist.IsSelected = true;
+            AddingPlaylistName = "";
+        }
+        #endregion
         #endregion
 
         //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
@@ -231,8 +289,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private async Task UpdateSongsFromDb()
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
                 ShownSongs.Clear();
             else
             {
@@ -250,10 +307,9 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SortSongs(string propertyName, bool ascending)
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
             {
-                Log.Warning("Trying to sort songs when there are no selected playlist");
+                Log.Warning("Trying to sort songs when there are no selected PlaylistItem");
                 return;
             }
 
@@ -268,10 +324,9 @@ namespace MusicPlayerForDrummers.ViewModel
         //Resets the songs in the database for current playlist from the songIDs in the same order
         public void ResetSongsInCurrentPlaylist(IEnumerable<int> songIDs)
         {
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
             {
-                Log.Warning("Trying to save songs in the database when there are no selected playlist");
+                Log.Warning("Trying to save songs in the database when there are no selected PlaylistItem");
                 return;
             }
             
@@ -293,10 +348,9 @@ namespace MusicPlayerForDrummers.ViewModel
 
             DbHandler.AddSong(song);
 
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
             {
-                Log.Warning("Trying to add a new song in the database when there are no selected playlist");
+                Log.Warning("Trying to add a new song in the database when there are no selected PlaylistItem");
             }
             else
             {
@@ -372,11 +426,12 @@ namespace MusicPlayerForDrummers.ViewModel
             if(Session.PlayingSong != null && selectedSongIDs.Contains(Session.PlayingSong.Id))
                 StopPlayingSong();
 
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-
-            if (selectedPlaylist == null)
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
+            {
+                Log.Warning("Trying to remove selected songs when there is no selected PlaylistItem");
                 return;
-            else if (Equals(Playlists[0], selectedPlaylist))
+            }
+            if (Equals(Playlists[0], selectedPlaylist))
                 DbHandler.DeleteSongs(selectedSongIDs);
             else
                 DbHandler.RemoveSongsFromPlaylist(selectedPlaylist.Id, selectedSongIDs);
@@ -395,8 +450,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 if (song.ShowedAsPlaying)
                     song.ShowedAsPlaying = false;
 
-            PlaylistItem? selectedPlaylist = GetSelectedPlaylist();
-            if (Session.PlayingSong != null && selectedPlaylist != null)
+            if (Session.PlayingSong != null && GetSelectedPlaylist() is PlaylistItem)
             {
                 SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
                 if(songStartedPlaying != null)
@@ -492,6 +546,22 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
+        public string Error { get => null; }
+
+        public string this[string columnName] {
+            get
+            {
+                if (columnName == nameof(AddingPlaylistName))
+                {
+                    string error = ValidatePlaylistName();
+                    if (!string.IsNullOrWhiteSpace(error))
+                        return error;
+                }
+
+                return null;
+            }
+        }
+        
         public enum PlaybackOrder
         {
             Default,

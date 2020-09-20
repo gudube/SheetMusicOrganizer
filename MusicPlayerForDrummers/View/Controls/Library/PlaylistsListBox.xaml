@@ -24,7 +24,7 @@
                                                   IsPlaying="{Binding IsPlaying, Mode=OneWay}"/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type modelItems:AddPlaylistItem}">
-                <viewItems:AdderItem ConfirmCommand="{Binding ElementName=MainListBox, Path=DataContext.CreateNewPlaylistCommand}"/>
+                <viewItems:PlaylistAdderItem DataContext="{Binding ElementName=MainListBox, Path=DataContext}"/>
             </DataTemplate>
         </ListBox.Resources>
         <ListBox.ItemContainerStyle>
