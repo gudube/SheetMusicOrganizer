@@ -5,7 +5,6 @@ using System.Linq;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.Media.Playlists;
 using MusicPlayerForDrummers.Model.Items;
 using Serilog;
 
@@ -27,7 +26,7 @@ namespace MusicPlayerForDrummers.ViewModel
             Playlists.CollectionChanged += Playlists_CollectionChanged;
             UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
-            Task songs = UpdateSongsFromDb();
+            Task songs = UpdateSongsFromDb(Playlists.First());
             await songs.ConfigureAwait(false);
         }
 
@@ -35,8 +34,10 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             CreateNewPlaylistCommand = new DelegateCommand(_ => CreateNewPlaylist());
             CancelNewPlaylistCommand = new DelegateCommand(_ => CancelNewPlaylist());
+            EditSelectedPlaylistCommand = new DelegateCommand(_ => EditSelectedPlaylist());
+            CancelEditPlaylistCommand = new DelegateCommand(_ => CancelEditSelectedPlaylist());
+            RenameSelectedPlaylistCommand = new DelegateCommand(_ => RenameSelectedPlaylist());
             DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
-            RenameSelectedPlaylistCommand = new DelegateCommand(x => RenameSelectedPlaylist(x == null ? "" : (string)x));
             PlaySelectedSongCommand = new DelegateCommand(_ => SetSelectedSongPlaying(true));
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
@@ -70,18 +71,18 @@ namespace MusicPlayerForDrummers.ViewModel
         private void Playlist_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PlaylistItem.IsSelected) || e.PropertyName == nameof(AddPlaylistItem.IsSelected))
-                if(sender is PlaylistItem plItem && !plItem.IsSelected
-                || sender is AddPlaylistItem addItem && !addItem.IsSelected) //so that it doesn't refresh twice for selecting and then unselecting
-                    SelectedPlaylistChanged();
+                if(sender is BasePlaylistItem plItem && plItem.IsSelected) //so that it doesn't refresh twice for selecting and then unselecting
+                    SelectedPlaylistChanged(plItem);
             if(e.PropertyName == nameof(PlaylistItem.IsPlaying))
                 RefreshSongShowedAsPlaying();
-
         }
 
         #endregion
 
         #region Selected Playlist
         public DelegateCommand? DeleteSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand? EditSelectedPlaylistCommand { get; private set; }
+        public DelegateCommand? CancelEditPlaylistCommand { get; private set; }
         public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
 
         //We are assuming there is always only one selected playlist
@@ -95,10 +96,10 @@ namespace MusicPlayerForDrummers.ViewModel
             return selectedPlaylist;
         }
 
-        private async void SelectedPlaylistChanged()
+        private async void SelectedPlaylistChanged(BasePlaylistItem playlist)
         {
             Session.Status.SelectingPlaylist = true;
-            await UpdateSongsFromDb();
+            await UpdateSongsFromDb(playlist);
             Session.Status.SelectingPlaylist = false;
         }
 
@@ -132,7 +133,59 @@ namespace MusicPlayerForDrummers.ViewModel
             DbHandler.DeletePlaylist(selectedPlaylist);
         }
 
-        private void RenameSelectedPlaylist(string playlistName)
+        private string _editPlaylistName = "";
+        public string EditPlaylistName { get => _editPlaylistName; set => SetField(ref _editPlaylistName, value); }
+
+        private void EditSelectedPlaylist()
+        {
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
+            {
+                Log.Warning("Trying to edit a playlist that is not a playlist item or is null");
+                return;
+            }
+
+            if (selectedPlaylist.IsLocked)
+            {
+                Log.Warning("Trying to edit a locked playlist: {playlistName}", selectedPlaylist.Name);
+                return;
+            }
+
+            foreach (BasePlaylistItem item in Playlists)
+            {
+                if (item is PlaylistItem playlist)
+                    playlist.IsEditing = false;
+            }
+
+            EditPlaylistName = selectedPlaylist.Name;
+            selectedPlaylist.IsEditing = true;
+        }
+
+        private string ValidateEditPlaylistName()
+        {
+            if (string.IsNullOrWhiteSpace(EditPlaylistName))
+                return "Playlist name is empty";
+
+            foreach (BasePlaylistItem item in Playlists)
+            {
+                if(item is PlaylistItem playlist && !playlist.IsSelected && playlist.Name == EditPlaylistName)
+                    return "Playlist name already exists";
+            }
+            
+            return "";
+        }
+
+        private void CancelEditSelectedPlaylist()
+        {
+            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
+            {
+                Log.Warning("Trying to edit a playlist that is not a playlist item or is null");
+                return;
+            }
+
+            selectedPlaylist.IsEditing = false;
+        }
+
+        private void RenameSelectedPlaylist()
         {
             if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
             {
@@ -145,8 +198,15 @@ namespace MusicPlayerForDrummers.ViewModel
                 return;
             }
 
-            selectedPlaylist.Name = playlistName;
-            DbHandler.UpdatePlaylist(selectedPlaylist);
+            if (string.IsNullOrWhiteSpace(ValidateEditPlaylistName()))
+            {
+                if (!selectedPlaylist.Name.Equals(EditPlaylistName))
+                {
+                    selectedPlaylist.Name = EditPlaylistName;
+                    DbHandler.UpdatePlaylist(selectedPlaylist);
+                }
+                selectedPlaylist.IsEditing = false;
+            }
         }
         #endregion
         
@@ -177,7 +237,7 @@ namespace MusicPlayerForDrummers.ViewModel
         private string _addingPlaylistName = "";
         public string AddingPlaylistName { get => _addingPlaylistName; set => SetField(ref _addingPlaylistName, value); }
 
-        private string ValidatePlaylistName()
+        private string ValidateAddingPlaylistName()
         {
             if (string.IsNullOrWhiteSpace(AddingPlaylistName))
                 return "Playlist name is empty";
@@ -193,15 +253,15 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand? CancelNewPlaylistCommand { get; private set; }
         private void CancelNewPlaylist()
         {
-            AddPlaylist.IsSelected = false;
             Playlists[^2].IsSelected = true;
+            AddPlaylist.IsSelected = false;
             AddingPlaylistName = "";
         }
 
         public DelegateCommand? CreateNewPlaylistCommand { get; private set; }
         private void CreateNewPlaylist()
         {
-            string error = ValidatePlaylistName();
+            string error = ValidateAddingPlaylistName();
             if (!string.IsNullOrWhiteSpace(error))
             {
                 Log.Warning("Trying to create a new playlist with an error: {error}", error);
@@ -287,9 +347,9 @@ namespace MusicPlayerForDrummers.ViewModel
             songToSelect.IsSelected = true;
         }
 
-        private async Task UpdateSongsFromDb()
+        private async Task UpdateSongsFromDb(BasePlaylistItem playlist)
         {
-            if (!(GetSelectedPlaylist() is PlaylistItem selectedPlaylist))
+            if (!(playlist is PlaylistItem selectedPlaylist))
                 ShownSongs.Clear();
             else
             {
@@ -546,19 +606,23 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
-        public string Error { get => null; }
+        public string? Error => null;
 
-        public string this[string columnName] {
+        public string? this[string columnName] {
             get
             {
-                if (columnName == nameof(AddingPlaylistName))
+                string? error = null;
+                switch (columnName)
                 {
-                    string error = ValidatePlaylistName();
-                    if (!string.IsNullOrWhiteSpace(error))
-                        return error;
+                    case (nameof(AddingPlaylistName)):
+                        error = ValidateAddingPlaylistName();
+                        break;
+                    case (nameof(EditPlaylistName)):
+                        error = ValidateEditPlaylistName();
+                        break;
                 }
 
-                return null;
+                return error;
             }
         }
         

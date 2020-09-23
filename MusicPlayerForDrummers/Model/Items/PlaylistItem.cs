@@ -7,8 +7,9 @@ namespace MusicPlayerForDrummers.Model.Items
 {
     public class BasePlaylistItem : BaseModelItem
     {
-        private bool _isSelected = false;
-        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        // ReSharper disable once InconsistentNaming
+        protected bool _isSelected = false;
+        public virtual bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
         public override object[] GetCustomValues()
         {
             throw new NotImplementedException();
@@ -34,6 +35,19 @@ namespace MusicPlayerForDrummers.Model.Items
         #region Other Properties
         private bool _isPlaying = false;
         public bool IsPlaying { get => _isPlaying; set => SetField(ref _isPlaying, value); }
+
+        private bool _isEditing = false;
+        public bool IsEditing { get => _isEditing; set => SetField(ref _isEditing, value); }
+
+        public override bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (SetField(ref _isSelected, value) && !value)
+                    IsEditing = false;
+            }
+        }
         #endregion
 
         public PlaylistItem(string name, bool locked = false) : base()

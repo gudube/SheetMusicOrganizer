@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using GongSolutions.Wpf.DragDrop;
 using MusicPlayerForDrummers.Model.Items;
 using MusicPlayerForDrummers.ViewModel;
@@ -88,6 +89,25 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                 }
             } 
             
+        }
+
+        private void MainListBox_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Warning("DataContext is not LibraryVM when OnKeyDown of PlaylistsListBox");
+                return;
+            }
+
+            if (e.Key == Key.F2)
+            {
+                libraryVM.EditSelectedPlaylistCommand?.Execute(null);
+                e.Handled = true;
+            }else if(e.Key == Key.Delete)
+            {
+                libraryVM.DeleteSelectedPlaylistCommand?.Execute(null);
+                e.Handled = true;
+            }
         }
     }
 }
