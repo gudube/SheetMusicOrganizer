@@ -25,10 +25,5 @@
                 <viewItems:PlaylistAdderItem DataContext="{Binding ElementName=MainListBox, Path=DataContext}"/>
             </DataTemplate>
         </ListBox.Resources>
-        <!--<ListBox.ItemContainerStyle>
-            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=(modelItems:BasePlaylistItem.IsSelected)}"/>
-            </Style>
-        </ListBox.ItemContainerStyle>-->
     </ListBox>
 </UserControl>

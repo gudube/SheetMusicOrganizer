@@ -467,7 +467,12 @@ namespace MusicPlayerForDrummers.Model
                            $" ON ps1.{psTable.SongId} = st.{songTable.Id}" +
                            $" WHERE ps1.{psTable.PlaylistId} = @playlistId";
             if (masteryIDs.Any())
-                query += $" AND st.{songTable.MasteryId} IN (@masteryIDs)";
+            {
+                string[] masteryParams = new string[masteryIDs.Length];
+                for (int i = 0; i < masteryIDs.Length; i++)
+                    masteryParams[i] = "@masteryId" + i;
+                query += $" AND st.{songTable.MasteryId} IN (" + string.Join(", ", masteryParams) + ")";
+            }
             query += $" AND ps1.{psTable.PosInPlaylist} {comparator} (" +
                                $" SELECT ps2.{psTable.PosInPlaylist} FROM {psTable.TableName} ps2 WHERE ps2.{psTable.SongId} = @currentSongId" +
                                $" AND ps2.{psTable.PlaylistId} = @playlistId)";
@@ -478,15 +483,15 @@ namespace MusicPlayerForDrummers.Model
                 
                 cmd.CommandText = query;
                 cmd.Parameters.AddWithValue("playlistId", playlistId);
-                cmd.Parameters.AddWithValue("masteryIDs", string.Join(", ", masteryIDs));
+                for (int i = 0; i < masteryIDs.Length; i++)
+                    cmd.Parameters.AddWithValue("masteryId" + i, masteryIDs[i]);
                 cmd.Parameters.AddWithValue("currentSongId", currentSongId);
                 
                 con.Open();
                 SqliteDataReader dataReader = cmd.ExecuteReader();
-                if (dataReader.Read())
+                if (dataReader.Read() && !dataReader.IsDBNull(0))
                 {
-                    if (!dataReader.IsDBNull(0))
-                        songFound = new SongItem(dataReader);
+                    songFound = new SongItem(dataReader);
                 }
                 else
                 {
