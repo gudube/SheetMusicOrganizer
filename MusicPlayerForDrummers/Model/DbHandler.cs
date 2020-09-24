@@ -132,7 +132,7 @@ namespace MusicPlayerForDrummers.Model
             return true;
         }
 
-        private static SqliteParameter CreateParameter(string name, SqliteType type, object value)
+        private static SqliteParameter CreateParameter(string name, SqliteType type, object? value)
         {
             SqliteParameter param = new SqliteParameter(name, type);
             if (value == null || (value is string strValue && string.IsNullOrWhiteSpace(strValue)))

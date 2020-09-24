@@ -8,9 +8,6 @@
              d:DesignHeight="25" d:DesignWidth="200"
              Background="Transparent"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </UserControl.Resources>
     <Grid>
         <Image Source="/View/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center">
             <Image.Style>
@@ -24,9 +21,8 @@
                 </Style>
             </Image.Style>
         </Image>
-        <TextBox x:Name="AdderTextBox" Visibility="{Binding Path=AddPlaylist.IsSelected, Mode=OneWay, Converter={StaticResource BoolToVis}}" Margin="4, 2, 4, 2"
-                 Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                 IsVisibleChanged="AdderTextBox_OnIsVisibleChanged" HorizontalAlignment="Stretch">
+        <TextBox x:Name="AdderTextBox" Margin="4, 2, 4, 2" HorizontalAlignment="Stretch" Visibility="Hidden"
+                 Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
             <TextBox.InputBindings>
                 <KeyBinding Command="{Binding CreateNewPlaylistCommand}" Key="Return" />
                 <KeyBinding Command="{Binding CancelNewPlaylistCommand}" Key="Escape" />

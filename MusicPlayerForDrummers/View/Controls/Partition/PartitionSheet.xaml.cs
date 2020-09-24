@@ -95,7 +95,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             }
         }
 
-        private async Task PdfToImages(PdfDocument pdfDoc)
+        private async Task PdfToImages(PdfDocument? pdfDoc)
         {
             if (!(DataContext is PartitionVM partitionVM))
             {

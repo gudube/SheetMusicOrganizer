@@ -53,9 +53,7 @@ namespace MusicPlayerForDrummers.View.Controls
                     }
                     else
                     {
-                        if (_rows[rowIndex].Elements == null)
-                            _rows[rowIndex].Elements = new List<UIElement>();
-                        _rows[rowIndex].Elements.Add(elem);
+                        _rows[rowIndex].Elements = new List<UIElement> { elem };
                     }
                 }
             }
@@ -71,17 +69,15 @@ namespace MusicPlayerForDrummers.View.Controls
             if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {
                 changed.Toggle.Opacity = _changedOpacity;
-                if(changed.Elements != null)
-                    foreach (UIElement elem in changed.Elements)
-                        elem.Opacity = _changedOpacity;
+                foreach (UIElement elem in changed.Elements)
+                    elem.Opacity = _changedOpacity;
                 HeaderOpacity = _changedOpacity;
             }
             else //toggle became default, need to check other toggles
             {
                 changed.Toggle.Opacity = _defaultOpacity;
-                if(changed.Elements != null)
-                    foreach (UIElement elem in changed.Elements)
-                        elem.Opacity = _defaultOpacity;
+                foreach (UIElement elem in changed.Elements)
+                    elem.Opacity = _defaultOpacity;
 
                 foreach (GridRow row in _rows)
                 {

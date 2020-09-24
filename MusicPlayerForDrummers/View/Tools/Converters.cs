@@ -10,7 +10,7 @@ namespace MusicPlayerForDrummers.View.Tools
 {
     public class RatingConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             char emptyStar = '\u2606';
             char fullStar = '\u2605';
@@ -34,9 +34,13 @@ namespace MusicPlayerForDrummers.View.Tools
 
     public class HexColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (SolidColorBrush)(new BrushConverter().ConvertFrom(value));
+            if(new BrushConverter().ConvertFrom(value) is SolidColorBrush brush)
+                return brush;
+            
+            Log.Error("Could not convert HEX to color: ", value);
+            return Brushes.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
