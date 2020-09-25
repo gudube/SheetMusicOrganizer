@@ -43,7 +43,7 @@ namespace MusicPlayerForDrummers.View.Controls.Items
             if (libraryVM.SelectedPlaylistIndex == libraryVM.Playlists.Count - 1 && AdderTextBox.Visibility == Visibility.Hidden)
             {
                 AdderTextBox.Visibility = Visibility.Visible;
-                App.Current.Dispatcher.BeginInvoke(() =>
+                Application.Current.Dispatcher.BeginInvoke(() =>
                 {
                     Keyboard.Focus(AdderTextBox);
                 }, DispatcherPriority.ApplicationIdle);

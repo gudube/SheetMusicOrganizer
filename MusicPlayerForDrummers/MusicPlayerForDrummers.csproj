@@ -17,6 +17,7 @@
   <ItemGroup>
     <None Remove="View\Resources\error_emoji.png" />
     <None Remove="View\Resources\lock_64.png" />
+    <None Remove="View\Resources\minus_64.png" />
     <None Remove="View\Resources\music_40.png" />
     <None Remove="View\Resources\music_dir_40.png" />
     <None Remove="View\Resources\music_file_40.png" />
@@ -25,6 +26,7 @@
     <None Remove="View\Resources\pause_song_40.png" />
     <None Remove="View\Resources\play_song_40.png" />
     <None Remove="View\Resources\plus_40.png" />
+    <None Remove="View\Resources\plus_64.png" />
     <None Remove="View\Resources\previous_song_40.png" />
     <None Remove="View\Resources\random_song_40.png" />
     <None Remove="View\Resources\splash.png" />
@@ -40,6 +42,7 @@
   <ItemGroup>
     <Resource Include="View\Resources\error_emoji.png" />
     <Resource Include="View\Resources\lock_64.png" />
+    <Resource Include="View\Resources\minus_64.png" />
     <Resource Include="View\Resources\music_40.png" />
     <Resource Include="View\Resources\music_dir_40.png" />
     <Resource Include="View\Resources\music_file_40.png" />
@@ -48,6 +51,7 @@
     <Resource Include="View\Resources\pause_song_40.png" />
     <Resource Include="View\Resources\play_song_40.png" />
     <Resource Include="View\Resources\plus_40.png" />
+    <Resource Include="View\Resources\plus_64.png" />
     <Resource Include="View\Resources\previous_song_40.png" />
     <Resource Include="View\Resources\random_song_40.png" />
     <Resource Include="View\Resources\stop_song_40.png" />

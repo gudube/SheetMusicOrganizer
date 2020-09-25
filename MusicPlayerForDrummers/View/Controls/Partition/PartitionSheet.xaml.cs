@@ -180,7 +180,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                Log.Error("Trying to zoom/unzoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
                 return;
             }
 
@@ -188,6 +188,28 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             {
                 partitionVM.Zoom += (e.Key == Key.Add ? 0.1 : -0.1);
             }
+        }
+
+        private void PlusButton_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            partitionVM.Zoom += 0.1;
+        }
+
+        private void MinusButton_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            partitionVM.Zoom -= 0.1;
         }
         #endregion
     }
