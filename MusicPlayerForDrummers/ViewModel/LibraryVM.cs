@@ -272,6 +272,7 @@ namespace MusicPlayerForDrummers.ViewModel
             AddingPlaylistName = "";
         }
         #endregion
+
         #endregion
 
         //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
@@ -314,6 +315,7 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Songs
+
         //All the songs in the selected playlist, no matter the mastery levels selected
         public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
 
@@ -601,6 +603,8 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
+        #region Validation
+
         public string? Error => null;
 
         public string? this[string columnName] {
@@ -620,6 +624,8 @@ namespace MusicPlayerForDrummers.ViewModel
                 return error;
             }
         }
+
+        #endregion
         
         public enum PlaybackOrder
         {

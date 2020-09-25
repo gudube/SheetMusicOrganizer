@@ -22,10 +22,10 @@
             </Image.Style>
         </Image>
         <TextBox x:Name="AdderTextBox" Margin="4, 2, 4, 2" HorizontalAlignment="Stretch" Visibility="Hidden"
-                 Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}">
+                 Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                 LostKeyboardFocus="AdderTextBox_OnLostKeyboardFocus" KeyDown="AdderTextBox_OnKeyDown">
             <TextBox.InputBindings>
                 <KeyBinding Command="{Binding CreateNewPlaylistCommand}" Key="Return" />
-                <KeyBinding Command="{Binding CancelNewPlaylistCommand}" Key="Escape" />
             </TextBox.InputBindings>
         </TextBox>
     </Grid>
