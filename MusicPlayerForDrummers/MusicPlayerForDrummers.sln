@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicPlayerForDrummers", "MusicPlayerForDrummers.csproj", "{682C80A2-AC22-4DC6-A371-07EC87012AA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaudioWrapper", "..\NaudioWrapper\NaudioWrapper.csproj", "{CA753289-4217-43B2-B69D-2F784CF4BCCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudioWrapper", "..\NaudioWrapper\NAudioWrapper.csproj", "{CA753289-4217-43B2-B69D-2F784CF4BCCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

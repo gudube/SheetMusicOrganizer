@@ -74,7 +74,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NaudioWrapper\NaudioWrapper.csproj" />
+    <ProjectReference Include="..\NaudioWrapper\NAudioWrapper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
