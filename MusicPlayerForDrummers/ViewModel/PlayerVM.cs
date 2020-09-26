@@ -1,10 +1,6 @@
 ﻿using System;
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Windows.Media.Imaging;
-using NAudioWrapper.WaveFormRendererLib;
 
 namespace MusicPlayerForDrummers.ViewModel
 {

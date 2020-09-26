@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using MusicPlayerForDrummers.ViewModel;
 using NAudioWrapper.WaveFormRendererLib;
 using Serilog;
@@ -91,7 +90,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         private WaveFormRendererSettings? _darkRendererSettings;
 
-        private void UpdateWaveForm(string audioDirectory)
+        private async void UpdateWaveForm(string audioDirectory)
         {
             if (string.IsNullOrEmpty(audioDirectory))
             {
@@ -112,10 +111,9 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
-            
-            App.Current.Dispatcher.InvokeAsync(() =>
+            BitmapImage imageSource = await Task.Run(() =>
             {
-                //TODO: add more invokeasync like that (or using thread?) to improve performance
+                //TODO: do this as often as possible as the performance is a game changer!
                 Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings);
                 using (MemoryStream memory = new MemoryStream())
                 {
@@ -127,13 +125,14 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                     bitmapImage.EndInit();
                     bitmapImage.Freeze();
-
-                    WaveFormImage.Source = bitmapImage;
+                    return bitmapImage;
                 }
+            });
 
-                WaveFormImage.Visibility = Visibility.Visible;
-                LoadingWaveFormText.Visibility = Visibility.Hidden;
-            }, DispatcherPriority.Background);
+            WaveFormImage.Source = imageSource;
+
+            WaveFormImage.Visibility = Visibility.Visible;
+            LoadingWaveFormText.Visibility = Visibility.Hidden;
         }
 
         #endregion

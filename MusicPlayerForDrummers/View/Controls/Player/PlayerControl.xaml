@@ -100,7 +100,7 @@
                 <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{StaticResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
                     LOADING ...
                 </TextBlock>
-                <Image x:Name="WaveFormImage" Source="{Binding WaveFormImage}" Stretch="Fill" Visibility="Hidden"></Image>
+                <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>
                 <!-- todo: use binding OneTime as much as possible -->
                 <player:WaveformSeekBar x:Name="SeekBar" Minimum="0"
                                         Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
