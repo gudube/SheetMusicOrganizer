@@ -127,6 +127,10 @@
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
         <Setter Property="BorderThickness" Value="0,0,1,1"/>
     </Style>
+    <Style x:Key="InsideLightBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    </Style>
     <Style x:Key="OutsideLightBorder" TargetType="{x:Type Border}">
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
         <Setter Property="BorderThickness" Value="1,1,0,0"/>
@@ -300,8 +304,6 @@
     
     <!-- TEXTBOX -->
     <Style TargetType="{x:Type TextBox}">
-        <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Height" Value="20"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
