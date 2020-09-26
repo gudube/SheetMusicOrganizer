@@ -10,6 +10,7 @@
              Style="{StaticResource InsideLightControl}"
              BorderThickness="0,0,0,1"
              Background="{StaticResource BackgroundLv2SolidColor}"
+             x:Name="Control"
              d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
     <Border x:Name="PlayerBorder" Style="{StaticResource BaseBlackBorder}" BorderThickness="0,0,0,1">
         <Grid>
@@ -95,23 +96,29 @@
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <!-- todo: use binding OneTime as much as possible -->
-            <player:WaveformSeekBar x:Name="SeekBar" Grid.Column="2" Minimum="0"
-                Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
-                Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
-                Thumb.DragStarted="WaveformSeekBar_DragStarted"
-                Thumb.DragCompleted="WaveformSeekBar_DragCompleted">
-                <player:WaveformSeekBar.Style>
-                    <Style TargetType="{x:Type player:WaveformSeekBar}">
-                        <Setter Property="IsEnabled" Value="True"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </player:WaveformSeekBar.Style>
-            </player:WaveformSeekBar>
+            <Grid Grid.Column="2">
+                <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{StaticResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
+                    LOADING ...
+                </TextBlock>
+                <Image x:Name="WaveFormImage" Source="{Binding WaveFormImage}" Stretch="Fill" Visibility="Hidden"></Image>
+                <!-- todo: use binding OneTime as much as possible -->
+                <player:WaveformSeekBar x:Name="SeekBar" Minimum="0"
+                                        Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
+                                        Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
+                                        Thumb.DragStarted="WaveformSeekBar_DragStarted"
+                                        Thumb.DragCompleted="WaveformSeekBar_DragCompleted">
+                    <player:WaveformSeekBar.Style>
+                        <Style TargetType="{x:Type player:WaveformSeekBar}">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </player:WaveformSeekBar.Style>
+                </player:WaveformSeekBar>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>
