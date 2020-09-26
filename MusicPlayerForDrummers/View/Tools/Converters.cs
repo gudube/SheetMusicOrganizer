@@ -100,20 +100,40 @@ namespace MusicPlayerForDrummers.View.Tools
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is float num)
+            if (value is float num)
                 return num * 100;
-            
+
             Log.Warning("Could not convert value {value} as float to transform to /100 percentage", value);
             return 0.0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is double num)
+            if (value is double num)
                 return num / 100;
-            
+
             Log.Warning("Could not convert value {value} as double to transform to /1.0 percentage", value);
             return 0.0;
+        }
+    }
+
+    public class CrossMultiplicationConverter : IMultiValueConverter
+    {
+        //input values: a,b,c so that (a/b)*(?/d)
+        //ex: posSong, lengthSong, lengthPixels
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && !Double.IsNaN(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && !Double.IsNaN(b) &&
+                Double.TryParse(System.Convert.ToString(values[2]), out var d) && !Double.IsNaN(d))
+                return d * a / b;
+            
+            return 0.0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

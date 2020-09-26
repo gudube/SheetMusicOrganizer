@@ -96,29 +96,7 @@
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <Grid Grid.Column="2">
-                <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{StaticResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
-                    LOADING ...
-                </TextBlock>
-                <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>
-                <!-- todo: use binding OneTime as much as possible -->
-                <player:WaveformSeekBar x:Name="SeekBar" Minimum="0"
-                                        Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
-                                        Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
-                                        Thumb.DragStarted="WaveformSeekBar_DragStarted"
-                                        Thumb.DragCompleted="WaveformSeekBar_DragCompleted">
-                    <player:WaveformSeekBar.Style>
-                        <Style TargetType="{x:Type player:WaveformSeekBar}">
-                            <Setter Property="IsEnabled" Value="True"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </player:WaveformSeekBar.Style>
-                </player:WaveformSeekBar>
-            </Grid>
+            <player:WaveFormSeekBar Grid.Column="2"></player:WaveFormSeekBar>
         </Grid>
     </Border>
 </UserControl>

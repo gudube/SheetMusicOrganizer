@@ -1,82 +1,124 @@
-﻿using System;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using MusicPlayerForDrummers.ViewModel;
+using NAudioWrapper.WaveFormRendererLib;
 using Serilog;
+using Color = System.Drawing.Color;
+using Image = System.Drawing.Image;
 
 namespace MusicPlayerForDrummers.View.Controls.Player
 {
     /// <summary>
-    /// Interaction logic for WaveformSeekBar.xaml
+    /// Interaction logic for WaveFormSeekBar.xaml
     /// </summary>
-    public partial class WaveformSeekBar : Slider
+    public partial class WaveFormSeekBar : UserControl
     {
-        public WaveformSeekBar()
+        public WaveFormSeekBar()
         {
             InitializeComponent();
-            DataContext = this;
-            this.Loaded += WaveformSeekbar_Loaded;
+            Loaded += WaveFormSeekBar_Loaded;
+            DataContextChanged += WaveFormSeekBar_DataContextChanged;
         }
         
-        private Track? _mainTrack;
-        private Track? _previewTrack;
-        private Popup? _previewPopup;
-
-        private void WaveformSeekbar_Loaded(object sender, RoutedEventArgs e)
+        private void WaveFormSeekBar_Loaded(object sender, RoutedEventArgs e)
         {
-            _mainTrack = (Track)this.Template.FindName("PART_Track", this);
-            _previewTrack = (Track)this.Template.FindName("PreviewTrack", this);
-            _previewPopup = (Popup)this.Template.FindName("PreviewPopup", this);
+
+            //Color color = ((SolidColorBrush) Control.Background).Color;
+            _darkRendererSettings = new SoundCloudOriginalSettings
+            {
+                Width = (int) SeekBar.ActualWidth,
+                TopHeight = (int) (SeekBar.ActualHeight*0.6), 
+                BottomHeight = (int) (SeekBar.ActualHeight*0.4),
+             //   BackgroundColor = System.Drawing.Color.FromArgb(255, color.R, color.G, color.B)
+                BackgroundColor = Color.Transparent
+            };
         }
 
-        public double PreviewValue { get => (double) GetValue(PreviewValueProperty); set => SetValue(PreviewValueProperty, value); }
-        DependencyProperty PreviewValueProperty = DependencyProperty.Register("PreviewValue", typeof(double), typeof(WaveformSeekBar));
-
-        public string PreviewTime { get => (string)GetValue(PreviewTimeProperty); set => SetValue(PreviewTimeProperty, value); }
-        DependencyProperty PreviewTimeProperty = DependencyProperty.Register("PreviewTime", typeof(string), typeof(WaveformSeekBar));
-
-        protected override void OnPreviewMouseMove(MouseEventArgs e)
+        private void WaveFormSeekBar_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            //if (e.LeftButton == MouseButtonState.Pressed)
-                //OnPreviewMouseLeftButtonDown(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left) { RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent});
+            if (e.OldValue is PlayerVM oldPlayerVM)
+                oldPlayerVM.Session.PropertyChanged -= Session_PropertyChanged;
 
-            if (_previewTrack == null || _previewPopup == null)
+            if(e.NewValue is PlayerVM playerVM)
+                playerVM.Session.PropertyChanged += Session_PropertyChanged;
+        }
+
+        private void Session_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
             {
-                Log.Warning("OnPreviewMouseMove on waveform seekbar when the track wasn't loaded");
+                Log.Warning("DataContext not PlayerVM in WaveFormSeekBar when Session property changed");
                 return;
             }
-            Point currentPos = e.GetPosition(_previewTrack);
-            PreviewValue = _previewTrack.ValueFromPoint(currentPos);
-            PreviewTime = TimeSpan.FromSeconds(_previewTrack.Value).ToString(@"mm\:ss"); //TODO: Add hour if possible and there is?
-            _previewPopup.HorizontalOffset = currentPos.X;
-            _previewPopup.VerticalOffset = currentPos.Y;
+            if(e.PropertyName == nameof(playerVM.Session.PlayingSong))
+                UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory ?? string.Empty);
         }
 
-        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        private void WaveformSeekBar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            base.OnPreviewMouseLeftButtonDown(e);
-            //https://stackoverflow.com/questions/2909862/slider-does-not-drag-in-combination-with-ismovetopointenabled-behaviour
-            // It's important to check `track.Thumb.IsMouseOver`, because if it's `true` then
-            // the Thumb will already have its `OnMouseLeftButtonDown` method called - there's
-            // no need for us to manually trigger it (and doing so would result in firing the
-            // event twice, which is bad).
-            if (!IsMoveToPointEnabled || _mainTrack == null || _mainTrack.Thumb.IsMouseOver)
+            if (!(DataContext is PlayerVM playerVM))
                 return;
-
-            // When `IsMoveToPointEnabled` is true, the Slider's `OnPreviewMouseLeftButtonDown`
-            // method updates the slider's value to where the user clicked. However, the Thumb
-            // hasn't had its position updated yet to reflect the change. As a result, we must
-            // call `UpdateLayout` on the Thumb to make sure its position is correct before we
-            // trigger a `MouseLeftButtonDownEvent` on it.
-            _mainTrack.Thumb.UpdateLayout();
-
-
-            _mainTrack.Thumb.RaiseEvent(new MouseButtonEventArgs(e.MouseDevice, e.Timestamp, MouseButton.Left)
-            {
-                RoutedEvent = MouseLeftButtonDownEvent,
-                Source = _mainTrack.Thumb
-            });
+            playerVM.StartedSeekCommand.Execute(null);
         }
+
+        private void WaveformSeekBar_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
+                return;
+            playerVM.StoppedSeekCommand.Execute(SeekBar.Value);
+        }
+
+        private readonly WaveFormRenderer _waveFormRenderer = new WaveFormRenderer();
+
+        private WaveFormRendererSettings? _darkRendererSettings;
+
+        private async void UpdateWaveForm(string audioDirectory)
+        {
+            if (string.IsNullOrEmpty(audioDirectory))
+            {
+                WaveFormImage.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            if (_darkRendererSettings == null)
+            {
+                Log.Warning("WaveFormRendererSettings is null when trying to update the waveform.");
+                _darkRendererSettings = new SoundCloudOriginalSettings
+                {
+                    Width = 1500,
+                    TopHeight = 45, 
+                    BottomHeight = 30
+                };
+            }
+
+            LoadingWaveFormText.Visibility = Visibility.Visible;
+            WaveFormImage.Visibility = Visibility.Hidden;
+            BitmapImage imageSource = await Task.Run(() =>
+            {
+                //TODO: do this as often as possible as the performance is a game changer!
+                Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings);
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                    memory.Position = 0;
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                }
+            });
+
+            WaveFormImage.Source = imageSource;
+
+            WaveFormImage.Visibility = Visibility.Visible;
+            LoadingWaveFormText.Visibility = Visibility.Hidden;
+        }
+
     }
 }

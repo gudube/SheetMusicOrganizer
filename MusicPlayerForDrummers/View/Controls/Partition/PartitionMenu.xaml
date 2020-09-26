@@ -10,7 +10,7 @@
              d:DesignHeight="1520" d:DesignWidth="400"
              d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
     <StackPanel Orientation="Vertical">
-        <Expander Grid.Row="0" Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
+        <Expander Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
                     <TextBlock Background="{StaticResource BackgroundLv3SolidColor}">There will be some stuff here!</TextBlock>
@@ -18,7 +18,7 @@
             </Border>
         </Expander>
         <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
-        <Expander Grid.Row="1" Header="Sync" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
+        <Expander Header="Sync" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
                     <StackPanel Orientation="Vertical" Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">

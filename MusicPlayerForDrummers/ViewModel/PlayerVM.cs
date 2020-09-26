@@ -103,5 +103,11 @@ namespace MusicPlayerForDrummers.ViewModel
         }
         #endregion
 
+        private bool _showAdvancedOptions;
+        public bool ShowAdvancedOptions
+        {
+            get => _showAdvancedOptions;
+            set => SetField(ref _showAdvancedOptions, value);
+        }
     }
 }

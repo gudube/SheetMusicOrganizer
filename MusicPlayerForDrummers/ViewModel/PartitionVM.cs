@@ -19,7 +19,7 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 _noSyncVM, _scrollSyncVM, _pageSyncVM
             };
-            _selectedSyncVM = _noSyncVM;
+            _selectedSyncVM = _scrollSyncVM;
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
