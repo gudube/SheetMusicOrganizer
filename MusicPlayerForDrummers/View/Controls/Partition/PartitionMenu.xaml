@@ -5,18 +5,35 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:partition="clr-namespace:MusicPlayerForDrummers.View.Controls.Partition"
              xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
+             xmlns:sync="clr-namespace:MusicPlayerForDrummers.ViewModel.Sync"
              mc:Ignorable="d"
              d:DesignHeight="1520" d:DesignWidth="400"
              d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Vertical">
-                <ComboBox ItemsSource="{Binding SyncMethods}" SelectedItem="{Binding SelectedSync}"/>
-            <partition:SyncSettingsScrolling/>
-        </StackPanel>
-        <Grid Grid.Row="1"/>
+        <Expander Grid.Row="0" Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
+        </Expander>
+        <Expander Grid.Row="1" Header="Sync" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
+            <StackPanel Orientation="Vertical">
+                <ComboBox ItemsSource="{Binding SyncViewModels, Mode=OneTime}"
+                          DisplayMemberPath="ViewModelName" SelectedItem="{Binding SelectedSyncVM}"/>
+                <ContentControl Content="{Binding SelectedSyncVM}">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type sync:NoSyncVM}">
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
+                            <partition:SyncSettingsScrolling/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type sync:PageSyncVM}">
+                        </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+            </StackPanel>
+        </Expander>
+        <Grid Grid.Row="2"/>
     </Grid>
 </UserControl>

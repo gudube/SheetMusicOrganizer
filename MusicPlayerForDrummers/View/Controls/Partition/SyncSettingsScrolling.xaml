@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel.Sync"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400"
-             d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
+             d:DataContext="{d:DesignInstance viewModel:ScrollSyncVM}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -17,17 +17,11 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <!--<TextBlock Grid.Row="0" Grid.Column="0" Text="Speed" Style="{StaticResource LabelTextBlock}"/>
-        <Slider x:Name="SpeedSlider" Grid.Row="0" Grid.Column="1" Height="Auto" VerticalAlignment="Center" IsMoveToPointEnabled="True"
-                IsSnapToTickEnabled="True" TickFrequency="0.01" Value="{Binding ScrollSpeed}" Minimum="0.1" Maximum="1.9"/>
-        <TextBox Grid.Row="0" Grid.Column="2" Margin="5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                 Text="{Binding ElementName=SpeedSlider, Path=Value, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}"/>-->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{StaticResource LabelTextBlock}"/>
-        <!--<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding StartScrollTime}" Width="30"/>-->
-        <TextBox Grid.Row="0" Grid.Column="1" Width="30" Text="{Binding ShownSong.ScrollStartTime}" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Width="30" Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
         <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Stop before " Style="{StaticResource LabelTextBlock}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Text="{Binding ShownSong.ScrollEndTime}" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Text="{Binding SyncingSong.ScrollEndTime, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
         <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}"/>
     </Grid>
 </UserControl>
