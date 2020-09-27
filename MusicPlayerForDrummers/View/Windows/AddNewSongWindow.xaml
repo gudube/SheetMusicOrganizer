@@ -22,9 +22,9 @@
                 <ColumnDefinition Width="6"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="15"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.PartitionDirectory}"/>
             <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButton}" FontSize="12" Click="SelectMusicSheetButton_Click"

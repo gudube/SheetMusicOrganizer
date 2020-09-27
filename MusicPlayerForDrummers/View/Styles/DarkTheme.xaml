@@ -211,7 +211,7 @@
     <!-- Button -->
     <!-- TODO: Simplify styles (especially borders) -->
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
-        <Setter Property="Padding" Value="7, 5"/>
+        <Setter Property="Padding" Value="4,0"></Setter>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
