@@ -1,21 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using Serilog;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Tools
 {
     public class RatingConverter : IValueConverter
     {
-        public object Convert(object value, Type TargetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             char emptyStar = '\u2606';
             char fullStar = '\u2605';
-            int rating = (int)((uint)value);
+            int rating;
+            if (value != null)
+                rating = System.Convert.ToInt32(value);
+            else
+            {
+                rating = 0;
+                Log.Warning("Received null value to convert to a rating (int) in RatingConverter");
+            }
+
             return new string(fullStar, rating) + new string(emptyStar, 5 - rating);
         }
 
@@ -27,14 +34,23 @@ namespace MusicPlayerForDrummers.View
 
     public class HexColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (SolidColorBrush)(new BrushConverter().ConvertFrom(value));
+            if(new BrushConverter().ConvertFrom(value) is SolidColorBrush brush)
+                return brush;
+            
+            Log.Error("Could not convert HEX to color: ", value);
+            return Brushes.Black;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((SolidColorBrush)value).Color.ToString();
+            throw new NotImplementedException();
+            /*
+            if(value is SolidColorBrush color) 
+                return color.Color.ToString();
+
+            Log.Warning("Could not convert value {value} to SolidColorBrush");*/
         }
     }
 
@@ -84,12 +100,20 @@ namespace MusicPlayerForDrummers.View
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)((float)value * 100);
+            if(value is float num)
+                return num * 100;
+            
+            Log.Warning("Could not convert value {value} as float to transform to /100 percentage", value);
+            return 0.0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (float)((double)value / 100);
+            if(value is double num)
+                return num / 100;
+            
+            Log.Warning("Could not convert value {value} as double to transform to /1.0 percentage", value);
+            return 0.0;
         }
     }
 }

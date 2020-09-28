@@ -1,15 +1,17 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.PlayerControl"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.Controls.Player.PlayerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+             xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="1820"
              Style="{StaticResource InsideLightControl}"
              BorderThickness="0,0,0,1"
              Background="{StaticResource BackgroundLv2SolidColor}"
-             DataContext="{Binding PlayerVM}">
+             x:Name="Control"
+             d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
     <Border x:Name="PlayerBorder" Style="{StaticResource BaseBlackBorder}" BorderThickness="0,0,0,1">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,8 +21,8 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" Margin="2,2,0,0" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
@@ -33,7 +35,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource SimpleButton}">
+                    <Button Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}">
                         <Image Source="/View/Resources/previous_song_40.png"/>
                     </Button>
                     <Button Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}">
@@ -56,32 +58,67 @@
                         <Image Source="/View/Resources/open_folder_song_40.png"/>
                     </Button>
                 </Grid>
-                <Grid Grid.Row="1" Margin="2,0,2,5" VerticalAlignment="Center">
+                <Grid Grid.Row="1" Margin="2,0,2,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5,0"/>
-                    <Slider Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Volume}" VerticalAlignment="Top" IsMoveToPointEnabled="True"/>
+                    <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                    <Button Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}">
+                        <Image>
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="False">
+                                            <Setter Property="Source" Value="/View/Resources/volume_high_40.png"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="True">
+                                            <Setter Property="Source" Value="/View/Resources/volume_mute_40.png"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
+                    <Slider Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=TwoWay}"
+                            VerticalAlignment="Center" IsMoveToPointEnabled="True" TickFrequency="0.01" IsSnapToTickEnabled="True">
+                        <Slider.Style>
+                            <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="true">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Slider.Style>
+                    </Slider>
                 </Grid>
             </Grid>
             <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <local:WaveformSeekbar x:Name="Seekbar" Grid.Column="2" Minimum="0"
-                Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Length, Mode=OneWay}"
-                Value="{Binding ElementName=PlayerBorder, Path=DataContext.Position, Mode=OneWay}"
-                Thumb.DragStarted="WaveformSeekbar_DragStarted"
-                Thumb.DragCompleted="WaveformSeekbar_DragCompleted">
-                <local:WaveformSeekbar.Style>
-                    <Style TargetType="{x:Type local:WaveformSeekbar}">
-                        <Setter Property="IsEnabled" Value="True"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </local:WaveformSeekbar.Style>
-            </local:WaveformSeekbar>
+            <Grid Grid.Column="2">
+                <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{StaticResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
+                    LOADING ...
+                </TextBlock>
+                <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>
+                <!-- todo: use binding OneTime as much as possible -->
+                <player:WaveformSeekBar x:Name="SeekBar" Minimum="0"
+                                        Maximum="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Length, Mode=OneWay}"
+                                        Value="{Binding ElementName=PlayerBorder, Path=DataContext.Session.Player.Position, Mode=TwoWay}"
+                                        Thumb.DragStarted="WaveformSeekBar_DragStarted"
+                                        Thumb.DragCompleted="WaveformSeekBar_DragCompleted">
+                    <player:WaveformSeekBar.Style>
+                        <Style TargetType="{x:Type player:WaveformSeekBar}">
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=PlayerBorder, Path=DataContext.Session.PlayingSong}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </player:WaveformSeekBar.Style>
+                </player:WaveformSeekBar>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

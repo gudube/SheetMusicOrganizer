@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+﻿using System.Windows.Controls;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Library
 {
     /// <summary>
     /// Interaction logic for LibraryMenu.xaml

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Guilhem\AppData\Local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Guilhem\AppData\Local\JetBrains\Rider2020.1\resharper-host\Local\Transient\ReSharperHost\v201\SolutionCaches\_MusicPlayerForDrummers.-2000621054.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Guilhem\AppData\Roaming\JetBrains\Rider2020.1\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\Guilhem\source\repos\MusicPlayerForDrummers\MusicPlayerForDrummers" t="IncludeRecursive">
+      <e p="App.xaml" t="Include" />
+      <e p="App.xaml.cs" t="Include" />
+      <e p="AssemblyInfo.cs" t="Include" />
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="Infos.txt" t="Include" />
+      <e p="Model" t="Include">
+        <e p="DBHandler.cs" t="Include" />
+        <e p="Items" t="Include">
+          <e p="BaseModelItem.cs" t="Include" />
+          <e p="MasteryItem.cs" t="Include" />
+          <e p="PlaylistItem.cs" t="Include" />
+          <e p="PlaylistSongItem.cs" t="Include" />
+          <e p="SongItem.cs" t="Include" />
+        </e>
+        <e p="SqlColumn.cs" t="Include" />
+        <e p="Tables" t="Include">
+          <e p="BaseTable.cs" t="Include" />
+          <e p="MasteryTable.cs" t="Include" />
+          <e p="PlaylistSongTable.cs" t="Include" />
+          <e p="PlaylistTable.cs" t="Include" />
+          <e p="SongTable.cs" t="Include" />
+        </e>
+        <e p="Tools" t="Include">
+          <e p="BaseNotifyPropertyChanged.cs" t="Include" />
+        </e>
+      </e>
+      <e p="MusicPlayerForDrummers.csproj" t="IncludeRecursive" />
+      <e p="MusicPlayerForDrummers.sln" t="IncludeFlat" />
+      <e p="MusicPlayerForDrummers.sln.DotSettings" t="Include" />
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netcoreapp3.1" t="Include">
+            <e p="App.g.cs" t="Include" />
+            <e p="GeneratedInternalTypeHelper.g.cs" t="Include" />
+            <e p="MusicPlayerForDrummers.AssemblyInfo.cs" t="Include" />
+            <e p="View" t="Include">
+              <e p="Controls" t="Include">
+                <e p="Items" t="Include">
+                  <e p="AdderItem.g.cs" t="Include" />
+                  <e p="SelectableTextItem.g.cs" t="Include" />
+                </e>
+                <e p="Library" t="Include">
+                  <e p="LibraryMenu.g.cs" t="Include" />
+                  <e p="MasteryListBox.g.cs" t="Include" />
+                  <e p="PlaylistsListBox.g.cs" t="Include" />
+                  <e p="SongsGrid.g.cs" t="Include" />
+                </e>
+                <e p="OptionalExpander.g.cs" t="Include" />
+                <e p="Partition" t="Include">
+                  <e p="PartitionMenu.g.cs" t="Include" />
+                  <e p="PartitionSheet.g.cs" t="Include" />
+                  <e p="SyncSettingsScrolling.g.cs" t="Include" />
+                </e>
+                <e p="Player" t="Include">
+                  <e p="PlayerControl.g.cs" t="Include" />
+                  <e p="WaveformSeekbar.g.cs" t="Include" />
+                </e>
+                <e p="SwitchViewButton.g.cs" t="Include" />
+              </e>
+              <e p="MainWindow.g.cs" t="Include" />
+              <e p="Pages" t="Include">
+                <e p="LibraryView.g.cs" t="Include" />
+                <e p="PartitionView.g.cs" t="Include" />
+              </e>
+              <e p="Windows" t="Include">
+                <e p="AddNewSongWindow.g.cs" t="Include" />
+                <e p="ErrorWindow.g.cs" t="Include" />
+                <e p="GenericWindow.g.cs" t="Include" />
+                <e p="OpenFolderWindow.g.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Settings.Designer.cs" t="Include" />
+      <e p="Settings.settings" t="Include" />
+      <e p="View" t="Include">
+        <e p="Controls" t="Include">
+          <e p="Items" t="Include">
+            <e p="AdderItem.xaml" t="Include" />
+            <e p="AdderItem.xaml.cs" t="Include" />
+            <e p="SelectableTextItem.xaml" t="Include" />
+            <e p="SelectableTextItem.xaml.cs" t="Include" />
+          </e>
+          <e p="Library" t="Include">
+            <e p="LibraryMenu.xaml" t="Include" />
+            <e p="LibraryMenu.xaml.cs" t="Include" />
+            <e p="MasteryListBox.xaml" t="Include" />
+            <e p="MasteryListBox.xaml.cs" t="Include" />
+            <e p="PlaylistsListBox.xaml" t="Include" />
+            <e p="PlaylistsListBox.xaml.cs" t="Include" />
+            <e p="SongsGrid.xaml" t="Include" />
+            <e p="SongsGrid.xaml.cs" t="Include" />
+          </e>
+          <e p="OptionalExpander.xaml" t="Include" />
+          <e p="OptionalExpander.xaml.cs" t="Include" />
+          <e p="Partition" t="Include">
+            <e p="PartitionMenu.xaml" t="Include" />
+            <e p="PartitionMenu.xaml.cs" t="Include" />
+            <e p="PartitionSheet.xaml" t="Include" />
+            <e p="PartitionSheet.xaml.cs" t="Include" />
+            <e p="SyncSettingsScrolling.xaml" t="Include" />
+            <e p="SyncSettingsScrolling.xaml.cs" t="Include" />
+          </e>
+          <e p="Player" t="Include">
+            <e p="PlayerControl.xaml" t="Include" />
+            <e p="PlayerControl.xaml.cs" t="Include" />
+            <e p="WaveformSeekbar.xaml" t="Include" />
+            <e p="WaveformSeekbar.xaml.cs" t="Include" />
+          </e>
+          <e p="SwitchViewButton.xaml" t="Include" />
+          <e p="SwitchViewButton.xaml.cs" t="Include" />
+        </e>
+        <e p="MainWindow.xaml" t="Include" />
+        <e p="MainWindow.xaml.cs" t="Include" />
+        <e p="Pages" t="Include">
+          <e p="LibraryView.xaml" t="Include" />
+          <e p="LibraryView.xaml.cs" t="Include" />
+          <e p="PartitionView.xaml" t="Include" />
+          <e p="PartitionView.xaml.cs" t="Include" />
+        </e>
+        <e p="Resources" t="Include">
+          <e p="lock_64.png" t="Include" />
+          <e p="music_40.png" t="Include" />
+          <e p="music_dir_40.png" t="Include" />
+          <e p="music_file_40.png" t="Include" />
+          <e p="next_song_40.png" t="Include" />
+          <e p="open_folder_song_40.png" t="Include" />
+          <e p="pause_song_40.png" t="Include" />
+          <e p="play_song_40.png" t="Include" />
+          <e p="plus_40.png" t="Include" />
+          <e p="previous_song_40.png" t="Include" />
+          <e p="random_song_40.png" t="Include" />
+          <e p="stop_song_40.png" t="Include" />
+          <e p="switch_view_40.png" t="Include" />
+          <e p="waveform.png" t="Include" />
+        </e>
+        <e p="Styles" t="Include">
+          <e p="DarkTheme.xaml" t="Include" />
+        </e>
+        <e p="Tools" t="Include">
+          <e p="BindingHelper.cs" t="Include" />
+          <e p="Converters.cs" t="Include" />
+          <e p="WindowManager.cs" t="Include" />
+        </e>
+        <e p="Windows" t="Include">
+          <e p="AddNewSongWindow.xaml" t="Include" />
+          <e p="AddNewSongWindow.xaml.cs" t="Include" />
+          <e p="ErrorWindow.xaml" t="Include" />
+          <e p="ErrorWindow.xaml.cs" t="Include" />
+          <e p="GenericWindow.xaml" t="Include" />
+          <e p="GenericWindow.xaml.cs" t="Include" />
+          <e p="OpenFolderWindow.xaml" t="Include" />
+          <e p="OpenFolderWindow.xaml.cs" t="Include" />
+        </e>
+      </e>
+      <e p="ViewModel" t="Include">
+        <e p="BaseVM.cs" t="Include" />
+        <e p="LibraryVM.cs" t="Include" />
+        <e p="MainVM.cs" t="Include" />
+        <e p="PartitionVM.cs" t="Include" />
+        <e p="PlayerVM.cs" t="Include" />
+        <e p="SessionContext.cs" t="Include" />
+        <e p="Tools" t="Include">
+          <e p="DelegateCommand.cs" t="Include" />
+          <e p="SmartCollection.cs" t="Include" />
+        </e>
+      </e>
+    </e>
+    <e p="C:\Users\Guilhem\source\repos\MusicPlayerForDrummers\NaudioWrapper" t="IncludeRecursive">
+      <e p="AudioPlayer.cs" t="Include" />
+      <e p="BaseNotifyPropertyChanged.cs" t="Include" />
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="NaudioWrapper.csproj" t="IncludeRecursive" />
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netcoreapp3.1" t="Include">
+            <e p="NaudioWrapper.AssemblyInfo.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+    </e>
+  </component>
+</project>

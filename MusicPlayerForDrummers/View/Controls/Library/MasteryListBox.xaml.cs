@@ -1,17 +1,13 @@
-﻿using GongSolutions.Wpf.DragDrop;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.View.Tools;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using IList = System.Collections.IList;
+using GongSolutions.Wpf.DragDrop;
+using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
-
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Library
 {
     /// <summary>
     /// Interaction logic for MasteryListBox.xaml
@@ -21,35 +17,32 @@ namespace MusicPlayerForDrummers.View
         public MasteryListBox()
         {
             InitializeComponent();
-            //BindingHelper bindingHelper = new BindingHelper();
-            DataContextChanged += BindingHelper.BidirectionalLink(() => DataContext, () => ((LibraryVM)DataContext).Session.SelectedMasteryLevels, MainListBox, MainListBox.SelectedItems);
-            //DataContextChanged += (sender, args) => ((LibraryVM)DataContext).Session.SelectedMasteryLevels.CollectionChanged +=
-            //    (sender, e) => bindingHelper.ObservableCollectionChanged<MasteryItem>(MainListBox.SelectedItems, sender, e);
-            
-        //    DataContextChanged += (sender, args) => MainListBox.SelectionChanged +=
-        //        (sender, e) => bindingHelper.ListChanged(((LibraryVM)DataContext).Session.SelectedMasteryLevels, sender, e);
         }
-
-
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             if (!(dropInfo.TargetItem is MasteryItem mastery))
                 return;
 
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("Trying to drag over MasteryListBox when DataContext is not LibraryVM , but is {type}", DataContext?.GetType());
+                return;
+            }
+
             bool canDrop = false;
 
             if (dropInfo.Data is SongItem song)
             {
-                if (((LibraryVM)DataContext).IsSongInMastery(mastery, song))
+                if (libraryVM.IsSongInMastery(mastery, song))
                 {
                     //AdornerText = "Song already set to this mastery";
                 }
                 else
                     canDrop = true;
             }
-            else if (dropInfo.Data is IEnumerable<object> data && data.All(x => x is SongItem))
+            else if (dropInfo.Data is IEnumerable<object> data)
             {
-                if (data.All(x => ((LibraryVM)DataContext).IsSongInMastery(mastery, (SongItem)x)))
+                if (data.All(x => x is SongItem item && libraryVM.IsSongInMastery(mastery, item)))
                 {
                     //AdornerText = "Songs already set to this mastery";
                 }
@@ -67,21 +60,28 @@ namespace MusicPlayerForDrummers.View
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            MasteryItem targetItem = dropInfo.TargetItem as MasteryItem;
+            if (!(dropInfo.TargetItem is MasteryItem targetItem))
+            {
+                Log.Warning("Trying to drop on a mastery item but targetItem is not a MasteryItem but is a {target}", dropInfo.TargetItem.GetType());
+                return;
+            }
+
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("Trying to drop on MasteryListBox when DataContext is not LibraryVM , but is {type}", DataContext?.GetType());
+                return;
+            }
 
             if (dropInfo.Data is SongItem song)
             {
-                ((LibraryVM)DataContext).SetSongMastery(song, targetItem);
+                libraryVM.SetSongMastery(song, targetItem);
             }
-            else
+            else if (dropInfo.Data is IEnumerable<object> data)
             {
-                IEnumerable<object> data = dropInfo.Data as IEnumerable<object>;
-                if (data != null && data.All(x => x is SongItem))
-                {
-                    ((LibraryVM)DataContext).SetSongsMastery(data.Cast<SongItem>(), targetItem);
-                }
+                IEnumerable<object> songs = data as object[] ?? data.ToArray();
+                if (songs.All(x => x is SongItem))
+                    libraryVM.SetSongsMastery(songs.Cast<SongItem>(), targetItem);
             }
-
         }
     }
 }

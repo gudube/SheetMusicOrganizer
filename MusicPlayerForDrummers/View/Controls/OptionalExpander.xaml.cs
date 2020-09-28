@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls
 {
     /// <summary>
     /// Interaction logic for OptionalExpander.xaml
     /// </summary>
     public partial class OptionalExpander : Expander
     {
-        private GridRow[] _rows;
+        private GridRow[]? _rows;
         private readonly double _defaultOpacity = 0.5;
         private readonly double _changedOpacity = 1;
 
         private struct GridRow
         {
-            public ToggleButton toggle;
-            public bool? defaultValue;
-            public List<UIElement> elements;
+            public ToggleButton Toggle;
+            public bool? DefaultValue;
+            public List<UIElement> Elements;
         }
 
         public OptionalExpander()
@@ -47,22 +38,22 @@ namespace MusicPlayerForDrummers.View
             if (this.Content is Grid grid)
             {
                 _rows = new GridRow[grid.RowDefinitions.Count];
-                foreach (UIElement elem in grid.Children)
+                foreach (UIElement? elem in grid.Children)
                 {
+                    if (elem == null)
+                        continue;
                     elem.Opacity = _defaultOpacity;
                     int rowIndex = Grid.GetRow(elem);
                     if (elem is ToggleButton toggle)
                     {
-                        _rows[rowIndex].toggle = toggle;
-                        _rows[rowIndex].defaultValue = toggle.IsChecked;
+                        _rows[rowIndex].Toggle = toggle;
+                        _rows[rowIndex].DefaultValue = toggle.IsChecked;
                         toggle.Checked += Toggle_Changed; //TODO: need to unsubscribe?
                         toggle.Unchecked += Toggle_Changed; //TODO: need to unsubscribe?
                     }
                     else
                     {
-                        if (_rows[rowIndex].elements == null)
-                            _rows[rowIndex].elements = new List<UIElement>();
-                        _rows[rowIndex].elements.Add(elem);
+                        _rows[rowIndex].Elements = new List<UIElement> { elem };
                     }
                 }
             }
@@ -71,25 +62,26 @@ namespace MusicPlayerForDrummers.View
         //TODO: Add (default) or (modified) to header to make it more clear
         private void Toggle_Changed(object sender, RoutedEventArgs e)
         {
-            GridRow changed = _rows.First(x => x.toggle == sender);
-            if(changed.toggle.IsChecked != changed.defaultValue) //togle became nondefault
+            if(_rows == null)
+                return;
+
+            GridRow changed = _rows.First(x => x.Toggle == sender);
+            if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {
-                changed.toggle.Opacity = _changedOpacity;
-                if(changed.elements != null)
-                    foreach (UIElement elem in changed.elements)
-                        elem.Opacity = _changedOpacity;
+                changed.Toggle.Opacity = _changedOpacity;
+                foreach (UIElement elem in changed.Elements)
+                    elem.Opacity = _changedOpacity;
                 HeaderOpacity = _changedOpacity;
             }
             else //toggle became default, need to check other toggles
             {
-                changed.toggle.Opacity = _defaultOpacity;
-                if(changed.elements != null)
-                    foreach (UIElement elem in changed.elements)
-                        elem.Opacity = _defaultOpacity;
+                changed.Toggle.Opacity = _defaultOpacity;
+                foreach (UIElement elem in changed.Elements)
+                    elem.Opacity = _defaultOpacity;
 
                 foreach (GridRow row in _rows)
                 {
-                    if (row.toggle != null && row.toggle.IsChecked != row.defaultValue)
+                    if (row.Toggle != null && row.Toggle.IsChecked != row.DefaultValue)
                     {
                         HeaderOpacity = _changedOpacity;
                         return;

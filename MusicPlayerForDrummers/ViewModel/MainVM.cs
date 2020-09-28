@@ -1,12 +1,8 @@
 ﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.View;
 using MusicPlayerForDrummers.ViewModel.Tools;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
+using MusicPlayerForDrummers.Model.Items;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -16,16 +12,14 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public MainVM() : base(new SessionContext())
         {
-            DBHandler.InitializeDatabase();
-
-            SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
-            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM), x => Session.SelectedSongs.Count > 0);
-            Session.SelectedSongs.CollectionChanged += (sender, args) => SwitchPartitionViewCommand.RaiseCanExecuteChanged();
-
             LibraryVM = new LibraryVM(Session);
             PartitionVM = new PartitionVM(Session);
-            SetView(LibraryVM);
             PlayerVM = new PlayerVM(Session);
+
+            SwitchLibraryViewCommand = new DelegateCommand(x => SetView(LibraryVM));
+            SwitchPartitionViewCommand = new DelegateCommand(x => SetView(PartitionVM));
+
+            SetupEvents();
         }
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -37,27 +31,48 @@ namespace MusicPlayerForDrummers.ViewModel
         public PartitionVM PartitionVM { get; }
         public PlayerVM PlayerVM { get; }
 
-        private BaseViewModel _currentViewModel;
-        public BaseViewModel CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
+        private BaseViewModel? _currentViewModel;
+        public BaseViewModel? CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
 
-        public DelegateCommand SwitchLibraryViewCommand { get; private set; }
-        public DelegateCommand SwitchPartitionViewCommand { get; private set; }
+        public DelegateCommand SwitchLibraryViewCommand { get; }
+        public DelegateCommand SwitchPartitionViewCommand { get; }
+
+        public async Task LoadData()
+        {
+            DbHandler.InitializeDatabase();
+
+            await LibraryVM.InitializeData();
+            
+            SetView(LibraryVM);
+        }
 
         private void SetView(BaseViewModel view)
         {
             if (CurrentViewModel == view)
                 return;
 
-            CurrentViewModel = view;
             if (view == PartitionVM)
-                Session.SetSelectedSongPlaying();
+            {
+                bool foundSongToPlay = LibraryVM.SetSelectedSongPlaying(false);
+                if (foundSongToPlay)
+                    CurrentViewModel = view;
+            }
+            else
+            {
+                CurrentViewModel = view;
+            }
         }
         #endregion
 
         #region Menu
+        public void LoadDatabase(string databasePath)
+        {
+            DbHandler.OpenDatabase(databasePath);
+        }
+
         public void GoToSong(string partitionFilename)
         {
-            SongItem song = DBHandler.GetSong(partitionFilename);
+            SongItem song = DbHandler.GetSong(partitionFilename);
             SetView(LibraryVM);
             LibraryVM.GoToSong(song);
         }
@@ -73,14 +88,18 @@ namespace MusicPlayerForDrummers.ViewModel
 
             return false;
         }
-
-        
         #endregion
 
-        public enum EDirection
+        #region Common Tasks
+        private void SetupEvents()
         {
-            Left = -1,
-            Right = +1
+            PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
+            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(true);
+            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(false);
+            PlayerVM.StopPlayingSong += (o, e) => LibraryVM.StopPlayingSong();
         }
+
+
+        #endregion
     }
 }

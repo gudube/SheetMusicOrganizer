@@ -1,17 +1,21 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.PartitionMenu"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.Controls.Partition.PartitionMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+             xmlns:partition="clr-namespace:MusicPlayerForDrummers.View.Controls.Partition"
+             xmlns:viewModel="clr-namespace:MusicPlayerForDrummers.ViewModel"
              mc:Ignorable="d"
-             d:DesignHeight="1520" d:DesignWidth="400">
+             d:DesignHeight="1520" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical">
+                <ComboBox ItemsSource="{Binding SyncMethods}" SelectedItem="{Binding SelectedSync}"/>
+            <partition:SyncSettingsScrolling/>
         </StackPanel>
         <Grid Grid.Row="1"/>
     </Grid>

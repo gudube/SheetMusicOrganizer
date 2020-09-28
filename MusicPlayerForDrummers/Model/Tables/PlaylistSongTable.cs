@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MusicPlayerForDrummers.Model
+﻿namespace MusicPlayerForDrummers.Model.Tables
 {
     public class PlaylistSongTable : BaseTable
     {
-        public PlaylistSongTable() : base()
+        public PlaylistSongTable() : base("PlaylistSong")
         {
             PlaylistTable playlistTable = new PlaylistTable();
             SongTable songTable = new SongTable();
 
             //TODO: Improve the DB by adding constraints (like not null and OnUpdate)
-            PlaylistID = new SqlColumn("PlaylistID", EType.INT, playlistTable.TableName, playlistTable.ID.Name, true);
-            SongID = new SqlColumn("SongID", EType.INT, songTable.TableName, songTable.ID.Name, true);
+            PlaylistId = new SqlColumn("PlaylistId", EType.Int, playlistTable.TableName, playlistTable.Id.Name, true);
+            SongId = new SqlColumn("SongId", EType.Int, songTable.TableName, songTable.Id.Name, true);
+            PosInPlaylist = new SqlColumn("PosInPlaylist", EType.Int);
         }
-        public override string TableName => "PlaylistSong";
-
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { PlaylistID, SongID };
+            return new [] { PlaylistId, SongId, PosInPlaylist };
         }
 
         #region Custom Columns
-        public readonly SqlColumn PlaylistID;
-        public readonly SqlColumn SongID;
+        public readonly SqlColumn PlaylistId;
+        public readonly SqlColumn SongId;
+        public readonly SqlColumn PosInPlaylist;
         #endregion
     }
 }

@@ -3,16 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
         xmlns:vm="clr-namespace:MusicPlayerForDrummers.ViewModel"
+        xmlns:player="clr-namespace:MusicPlayerForDrummers.View.Controls.Player"
+        xmlns:pages="clr-namespace:MusicPlayerForDrummers.View.Pages"
+        xmlns:controls="clr-namespace:MusicPlayerForDrummers.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
-        WindowState="Maximized">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </Window.Resources>
+        WindowState="Maximized"
+        PreviewKeyDown="MainWindow_OnPreviewKeyDown">
     <Window.DataContext>
-        <vm:MainVM/>
+        <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
@@ -24,13 +24,17 @@
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Height="20">
-            <MenuItem Header="File">
-                <MenuItem Header="Add New Song" Click="AddNewSongMenuItem_Click"/>
-                <MenuItem Header="Open Folder" Click="OpenFolderMenuItem_Click"/>
+            <MenuItem x:Name="FileMenuItem" Header="File">
+                <MenuItem Header="Import Song" Click="AddNewSongMenuItem_Click"/>
+                <MenuItem Header="Import Folder" Click="OpenFolderMenuItem_Click"/>
+                <MenuItem Header="New Library" Click="NewDatabase_OnClick"/>
+                <MenuItem Header="Open Library" Click="LoadDatabase_OnClick"/>
+                <Separator/>
+                <TextBlock Text="Recently Opened"/>
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <local:PlayerControl Grid.Row="2" Height="60"/>
+        <player:PlayerControl Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:LibraryVM}">
@@ -39,8 +43,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                    <local:LibraryView Grid.Column="0"/>
-                    <local:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
+                    <pages:LibraryView Grid.Column="0"/>
+                    <controls:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
                                 SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchPartitionViewCommand}"/>
                     </Grid>
                 </DataTemplate>
@@ -50,19 +54,14 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <local:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
+                        <controls:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
                                 SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchLibraryViewCommand}"/>
-                        <local:PartitionView Grid.Column="1"/>
+                        <pages:PartitionView Grid.Column="1"/>
                     </Grid>
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
         <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
-        <StatusBar Grid.Row="5" Height="20" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
-            <StatusBarItem Content="Playing Song: "/>
-            <StatusBarItem>
-                <Binding Path="Session.PlayingSong"/>
-            </StatusBarItem>
-        </StatusBar>
+        <controls:MainStatusBar Grid.Row="5"></controls:MainStatusBar>
     </Grid>
 </Window>

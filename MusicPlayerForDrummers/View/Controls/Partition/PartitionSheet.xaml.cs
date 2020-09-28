@@ -1,70 +1,108 @@
-﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Windows.Data.Pdf;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Partition
 {
     /// <summary>
     /// Interaction logic for PartitionSheet.xaml
     /// </summary>
     public partial class PartitionSheet : UserControl
     {
+        //todo: hide scrollbar and disable scrolling when the song is playing
         public PartitionSheet()
         {
             InitializeComponent();
-            DataContextChanged += (sender, args) => { if (DataContext != null) PlayingSong_PropertyChanged(((PartitionVM)DataContext).Session.PlayingSong); };
-            DataContextChanged += (sender, args) => { if (DataContext != null) ((PartitionVM)DataContext).Session.PropertyChanged += Session_PropertyChanged; };
+            DataContextChanged += PartitionSheet_DataContextChanged;
+            this.KeyDown += PartitionSheet_KeyDown;
         }
 
-        private void Session_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
         {
-            SessionContext sessionContext = (SessionContext)sender;
-            if (e.PropertyName == nameof(sessionContext.PlayingSong))
-                PlayingSong_PropertyChanged(sessionContext.PlayingSong);
+            if(!Focus())
+                Log.Warning("Could not get focus on partition sheet once loaded.");
         }
+
+        #region Changed events
+        private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is PartitionVM oldVM)
+            {
+                oldVM.Session.Player.PropertyChanged -= Player_PropertyChanged;
+                oldVM.PropertyChanged -= PartitionVM_PropertyChanged;
+            }
+
+            if (e.NewValue is PartitionVM newVM) {
+                OpenShownSongPartition();
+                newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
+                newVM.PropertyChanged += PartitionVM_PropertyChanged;
+            }
+        }
+
+        private void PartitionVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PartitionVM.Zoom))
+                UpdateZoom();
+            else if (e.PropertyName == nameof(PartitionVM.ShownSong))
+                OpenShownSongPartition();
+        }
+
+        private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PartitionVM.Session.Player.Position))
+                UpdateScrollPos();
+        }
+
+        #endregion
 
         #region PDFViewer
-        //public static readonly DependencyProperty PartitionDirProperty = DependencyProperty.Register("PdfPath", typeof(string), typeof(PartitionSheet),
-        //       new PropertyMetadata(null, propertyChangedCallback: OnPartitionDirChanged));
-        //public string PartitionDir { get => (string)GetValue(PartitionDirProperty); set => SetValue(PartitionDirProperty, value); }
-        private void PlayingSong_PropertyChanged(SongItem song)
+        private void OpenShownSongPartition()
         {
-            if (song == null)
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to open partition when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
                 return;
+            }
 
-            string partitionDir = song.PartitionDirectory;
+            if (partitionVM.ShownSong == null)
+            {
+                Log.Error("Trying to open partition when shown song is null");
+                return;
+            }
+
+            string partitionDir = partitionVM.ShownSong.PartitionDirectory;
 
             if (!string.IsNullOrWhiteSpace(partitionDir))
             {
                 //making sure it's an absolute path
-                var path = System.IO.Path.GetFullPath(partitionDir);
+                var path = Path.GetFullPath(partitionDir);
 
                 StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
-                  //Then load pdf document on background thread
-                  .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
-                  //Finally display on UI Thread
-                  .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
+                    //Then load pdf document on background thread
+                    .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
+                    //Finally display on UI Thread
+                    .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
-        private async Task PdfToImages(PdfDocument pdfDoc)
+        private async Task PdfToImages(PdfDocument? pdfDoc)
         {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
             PagesContainer.Items.Clear();
 
             if (pdfDoc == null) return;
@@ -79,7 +117,7 @@ namespace MusicPlayerForDrummers.View
                         Source = bitmap,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         Margin = new Thickness(0, 4, 0, 4),
-                        MaxWidth = 800
+                        Width = 1200 * partitionVM.Zoom
                     };
                     PagesContainer.Items.Add(image);
                 }
@@ -97,10 +135,81 @@ namespace MusicPlayerForDrummers.View
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream.AsStream();
+                image.DecodePixelWidth = 1400; //todo: Add this option in settings to change that
                 image.EndInit();
             }
 
             return image;
+        }
+        #endregion
+
+        #region Controls
+        private void UpdateScrollPos()
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            double posPercentage = partitionVM.GetSongPercentage();
+            Scrollbar.ScrollToVerticalOffset(posPercentage * Scrollbar.ScrollableHeight);
+        }
+
+        private void UpdateZoom()
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            double verticalScrollRatio = Math.Abs(Scrollbar.ScrollableHeight) < 0.0001 ? 0 : (Scrollbar.VerticalOffset / Scrollbar.ScrollableHeight);
+            double horizontalScrollRatio = Math.Abs(Scrollbar.ScrollableWidth) < 0.0001 ? 0.5 : (Scrollbar.HorizontalOffset / Scrollbar.ScrollableWidth);
+
+            foreach (Image? image in PagesContainer.Items)
+                if (image != null)
+                    image.LayoutTransform = new ScaleTransform(partitionVM.Zoom, partitionVM.Zoom);
+
+            Scrollbar.UpdateLayout();
+            Scrollbar.ScrollToVerticalOffset(verticalScrollRatio * Scrollbar.ScrollableHeight);
+            Scrollbar.ScrollToHorizontalOffset(horizontalScrollRatio * Scrollbar.ScrollableWidth);
+        }
+
+        private void PartitionSheet_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to zoom/unzoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            if (e.Key == Key.Add || e.Key == Key.Subtract)
+            {
+                partitionVM.Zoom += (e.Key == Key.Add ? 0.1 : -0.1);
+            }
+        }
+
+        private void PlusButton_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            partitionVM.Zoom += 0.1;
+        }
+
+        private void MinusButton_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is PartitionVM partitionVM))
+            {
+                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                return;
+            }
+
+            partitionVM.Zoom -= 0.1;
         }
         #endregion
     }

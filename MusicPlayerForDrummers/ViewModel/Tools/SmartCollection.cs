@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Text;
 
 namespace MusicPlayerForDrummers.ViewModel.Tools
 {
@@ -49,7 +47,7 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
 
             foreach (var item in range)
             {
-                Items.Add(item);
+                this.Items.Add(item);
             }
 
             this.OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -57,6 +55,7 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+        /*
         public void Reset(T item)
         {
             this.Items.Clear();
@@ -66,5 +65,6 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
             this.OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
+    */
     }
 }

@@ -1,9 +1,8 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -20,7 +19,8 @@ namespace MusicPlayerForDrummers.View.Tools
         /// <summary>
         /// Updates a List to copy changes from an ObservableCollection_CollectionChanged event
         /// E.g. Binding a ViewModel ObservableCollection to a ViewList :
-        /// ((LibraryVM)DataContext).Session.SelectedMasteryLevels.CollectionChanged += (sender, e) => BindingHelper.ObservableCollectionChanged<MasteryItem>(MainListBox.SelectedItems, sender, e);
+        /// ((LibraryVM)DataContext).Session.SelectedMasteryLevels.CollectionChanged += (sender, e) =>
+        /// BindingHelper.ObservableCollectionChanged(MainListBox.SelectedItems, sender, e);
         /// </summary>
         /// <typeparam name="T">Type of items in the list/collection</typeparam>
         /// <param name="listToUpdate">List to update (e.g. in the view)</param>
@@ -36,27 +36,26 @@ namespace MusicPlayerForDrummers.View.Tools
                 case NotifyCollectionChangedAction.Add:
                     foreach (T item in e.NewItems)
                         //if (!listToUpdate.Contains(item))
-                            listToUpdate.Add(item);
+                        listToUpdate.Add(item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (T item in e.OldItems)
                         //if (listToUpdate.Contains(item))
-                            listToUpdate.Remove(item);
+                        listToUpdate.Remove(item);
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     listToUpdate.Clear();
-                    foreach (T item in sender as ObservableCollection<T>)
+                    foreach (T item in (ObservableCollection<T>) sender)
                         listToUpdate.Add(item);
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     foreach (T item in e.OldItems)
                         //if (listToUpdate.Contains(item))
-                            listToUpdate.Remove(item);
+                        listToUpdate.Remove(item);
                     foreach (T item in e.NewItems)
                         //if (!listToUpdate.Contains(item))
-                            listToUpdate.Add(item);
+                        listToUpdate.Add(item);
                     break;
-                default: break;
             }
             _isUpdating = false;
         }
@@ -68,18 +67,17 @@ namespace MusicPlayerForDrummers.View.Tools
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collectionToUpdate"></param>
-        /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ListChanged<T>(ObservableCollection<T> collectionToUpdate, object sender, SelectionChangedEventArgs e)
+        private void ListChanged<T>(ObservableCollection<T> collectionToUpdate, SelectionChangedEventArgs e)
         {
             if (_isUpdating)
                 return;
             _isUpdating = true;
             foreach (T item in e.AddedItems)
-                //if(!collectionToUpdate.Contains(item))
+                if(item != null && !collectionToUpdate.Contains(item))
                     collectionToUpdate.Add(item);
             foreach (T item in e.RemovedItems)
-                //if(collectionToUpdate.Contains(item))
+                if(item != null && collectionToUpdate.Contains(item))
                     collectionToUpdate.Remove(item);
             _isUpdating = false;
         }
@@ -97,12 +95,21 @@ namespace MusicPlayerForDrummers.View.Tools
         public static DependencyPropertyChangedEventHandler BidirectionalLink<T>(Func<object> dataContext, Func<ObservableCollection<T>> vmCollection, Selector viewList, IList viewItems)
         {
             var instance = new BindingHelper();
+            //todo: need to unsubscribe to that somewhere?
+            viewList.SelectionChanged += (listSender, e) => { if (dataContext() != null) instance.ListChanged(vmCollection(), e); };
+
             return (sender, args) =>
             {
-                if(dataContext() != null)
-                    vmCollection().CollectionChanged += (sender, e) => instance.ObservableCollectionChanged<T>(viewItems, sender, e);
-                viewList.SelectionChanged += (sender, e) => { if (dataContext() != null) instance.ListChanged(vmCollection(), sender, e); };
+                if (dataContext() == null)
+                    return;
+                viewItems.Clear();
+                ObservableCollection<T> collection = vmCollection();
+                foreach (T item in collection)
+                    viewItems.Add(item);
+                //todo: need to unsubscribe too?
+                vmCollection().CollectionChanged += (vmSender, e) => instance.ObservableCollectionChanged<T>(viewItems, vmSender, e);
             };
         }
     }
 }
+*/

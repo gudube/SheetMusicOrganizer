@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Items
 {
     /// <summary>
     /// Interaction logic for SelectableNameItem.xaml
@@ -40,15 +31,22 @@ namespace MusicPlayerForDrummers.View
             DependencyProperty.Register("DeleteConfirmCommand", typeof(ICommand), typeof(SelectableTextItem));
 
         public static readonly DependencyProperty IsLockedProperty = DependencyProperty.Register("IsLocked", typeof(bool), typeof(SelectableTextItem));
-
         public bool IsLocked
         {
             get => (bool)GetValue(IsLockedProperty);
             set => SetValue(IsLockedProperty, value);
         }
         
-        public static readonly DependencyProperty  TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectableTextItem));
+        public static readonly DependencyProperty  IsPlayingProperty = DependencyProperty.Register("IsPlaying", typeof(bool),
+            typeof(SelectableTextItem), new PropertyMetadata(false));
 
+        public bool IsPlaying
+        {
+            get => (bool)GetValue(IsPlayingProperty);
+            set => SetValue(IsPlayingProperty, value);
+        }
+
+        public static readonly DependencyProperty  TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(SelectableTextItem));
         public string Text
         {
             get => (string)GetValue(TextProperty);
@@ -56,7 +54,6 @@ namespace MusicPlayerForDrummers.View
         }
 
         public static readonly DependencyProperty IsCustomColorProperty = DependencyProperty.Register("IsCustomColor", typeof(bool), typeof(SelectableTextItem));
-
         public bool IsCustomColor
         {
             get => (bool)GetValue(IsCustomColorProperty);
@@ -64,7 +61,6 @@ namespace MusicPlayerForDrummers.View
         }
 
         public static readonly DependencyProperty TextColorProperty = DependencyProperty.Register("TextColor", typeof(string), typeof(SelectableTextItem));
-
         public string TextColor
         {
             get => (string)GetValue(TextColorProperty);

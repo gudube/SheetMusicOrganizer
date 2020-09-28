@@ -1,15 +1,18 @@
-﻿<Window x:Class="MusicPlayerForDrummers.View.OpenFolderWindow"
+﻿<Window x:Class="MusicPlayerForDrummers.View.Windows.OpenFolderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+        xmlns:tools="clr-namespace:MusicPlayerForDrummers.View.Tools"
+        xmlns:controls="clr-namespace:MusicPlayerForDrummers.View.Controls"
+        xmlns:windows="clr-namespace:MusicPlayerForDrummers.View.Windows"
         mc:Ignorable="d"
         Title="Open Folder" SizeToContent="WidthAndHeight"
         Style="{StaticResource ControlBackgroundLv1}"
-        x:Name="MainOpenFolderWindow">
+        x:Name="MainOpenFolderWindow"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
-        <local:StringNotEmptyConverter x:Key="stringNotEmptyConverter"/>
+        <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
     </Window.Resources>
     <StackPanel Orientation="Vertical" Margin="18, 18, 8, 18">
         <Grid>
@@ -29,24 +32,24 @@
             2. One filename per song.
         </TextBlock>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 10"/>
-        <local:OptionalExpander Grid.IsSharedSizeScope="True">
+        <controls:OptionalExpander Grid.IsSharedSizeScope="True">
             <Grid Margin="10,2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" SharedSizeGroup="A"/>
                     <RowDefinition Height="Auto" SharedSizeGroup="A"/>
                 </Grid.RowDefinitions>
-                <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.UseMetadataAO, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
+                <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.UseMetadataAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
                     <Label Content="Use audio metadata (if found)"/>
                 </CheckBox>
-                <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.RecursiveAO, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
+                <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.RecursiveAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
                     <Label Content="Recursive scan (in subfolders)"/>
                 </CheckBox>
             </Grid>
-        </local:OptionalExpander>
+        </controls:OptionalExpander>
         <Grid Margin="0, 10, 0, 0">
             <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource 3DButton}"/>
             <Button Content="Confirm" Click="ConfirmButton_Click"  HorizontalAlignment="Right" FontSize="12" Style="{StaticResource SelectedButton}"
-                    IsEnabled="{Binding Path=Folder, Converter={StaticResource stringNotEmptyConverter}}"/>
+                    IsEnabled="{Binding Path=Folder, Converter={StaticResource StringNotEmptyConverter}}"/>
         </Grid>
     </StackPanel>
 </Window>

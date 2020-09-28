@@ -1,20 +1,11 @@
-﻿using Microsoft.Win32;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using TagLib.Mpeg;
+using Microsoft.Win32;
+using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Windows
 {
     /// <summary>
     /// Interaction logic for AddNewSongWindow.xaml
@@ -22,12 +13,11 @@ namespace MusicPlayerForDrummers.View
     public partial class AddNewSongWindow : Window
     {
         //TODO: Rajouter bouton pour enlever le champ audio file
-        //TODO: Changer couleur texte textbox
-        //TODO: Ouvrir fenetre si chanson existe deja
+        //TODO: Changer couleur texte text-box
+        //TODO: Ouvrir fenêtre si chanson existe déjà
         public AddNewSongWindow()
         {
-            this.Owner = App.Current.MainWindow;
-            this.DataContext = this;
+            this.Owner = Application.Current.MainWindow;
             Song = new SongItem();
             InitializeComponent();
             ResetSongInformations();
@@ -149,13 +139,20 @@ namespace MusicPlayerForDrummers.View
                 else
                 {
                     string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
-                    GenericWindow songExistingWindow = new GenericWindow(message, "Go To Song");
-                    songExistingWindow.Owner = this;
-                    songExistingWindow.ShowDialog();
+                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Go To Song");
                     if (songExistingWindow.DialogResult.HasValue && songExistingWindow.DialogResult.Value)
                     {
-                        mainVM.GoToSong(Song.PartitionDirectory);
-                        this.Close();
+                        try
+                        {
+                            mainVM.GoToSong(Song.PartitionDirectory);
+                            this.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
+                            Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
+                            ErrorWindow unused = new ErrorWindow(this, error);
+                        }
                     }
                 }
             }

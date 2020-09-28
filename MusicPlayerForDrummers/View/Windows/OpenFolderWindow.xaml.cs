@@ -1,29 +1,20 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using MusicPlayerForDrummers.ViewModel;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Windows
 {
     //TODO: Add ? button with an image that explains the two ways to bind audio file to song
     /// <summary>
     /// Interaction logic for OpenFolderWindow.xaml
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public partial class OpenFolderWindow : Window
     {
         public OpenFolderWindow()
         {
-            this.Owner = App.Current.MainWindow;
-            this.DataContext = this;
+            this.Owner = Application.Current.MainWindow;
             InitializeComponent();
 
         }
@@ -40,8 +31,7 @@ namespace MusicPlayerForDrummers.View
         //TODO: Be able to import only audio
         private void SelectFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
-            dialog.IsFolderPicker = true;
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 Folder = dialog.FileName;

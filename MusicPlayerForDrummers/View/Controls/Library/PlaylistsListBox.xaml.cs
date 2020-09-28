@@ -1,21 +1,14 @@
-﻿using GongSolutions.Wpf.DragDrop;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using GongSolutions.Wpf.DragDrop;
+using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.ViewModel;
+using Serilog;
 
-namespace MusicPlayerForDrummers.View
+namespace MusicPlayerForDrummers.View.Controls.Library
 {
     /// <summary>
     /// Interaction logic for LibraryListBox.xaml
@@ -50,9 +43,9 @@ namespace MusicPlayerForDrummers.View
                 else
                     canDrop = true;
             }
-            else if(dropInfo.Data is IEnumerable<object> data && data.All(x => x is SongItem))
+            else if(dropInfo.Data is IEnumerable<object> data)
             {
-                if(data.All(x => ((LibraryVM)DataContext).IsSongInPlaylist(playlist, (SongItem)x)))
+                if(data.All(x => x is SongItem item && ((LibraryVM)DataContext).IsSongInPlaylist(playlist, item)))
                 {
                     //AdornerText = "Song(s) already in playlist";
                 }
@@ -70,21 +63,51 @@ namespace MusicPlayerForDrummers.View
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            PlaylistItem targetItem = dropInfo.TargetItem as PlaylistItem;
-            
-            if(dropInfo.Data is SongItem song)
+            if (!(dropInfo.TargetItem is PlaylistItem targetItem))
             {
-                ((LibraryVM)DataContext).CopySongToPlaylist(targetItem, song);
+                Log.Warning("Trying to drop on a playlist item but targetItem is not a PlaylistItem but is a {target}", dropInfo.TargetItem.GetType());
+                return;
+            }
+
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Error("Trying to drop on PlaylistsListBox when DataContext is not LibraryVM , but is {type}", DataContext?.GetType());
+                return;
+            }
+
+            if (dropInfo.Data is SongItem song)
+            {
+                libraryVM.CopySongToPlaylist(targetItem, song);
             }
             else
             {
-                IEnumerable<object> data = dropInfo.Data as IEnumerable<object>;
-                if (data != null && data.All(x => x is SongItem))
+                if (dropInfo.Data is IEnumerable<object> data)
                 {
-                    ((LibraryVM)DataContext).CopySongsToPlaylist(targetItem, data.Cast<SongItem>());
+                    IEnumerable<object> songs = data as object[] ?? data.ToArray();
+                    if (songs.All(x => x is SongItem))
+                        libraryVM.CopySongsToPlaylist(targetItem, songs.Cast<SongItem>());
                 }
             } 
             
+        }
+
+        private void MainListBox_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!(DataContext is LibraryVM libraryVM))
+            {
+                Log.Warning("DataContext is not LibraryVM when OnKeyDown of PlaylistsListBox");
+                return;
+            }
+
+            if (e.Key == Key.F2)
+            {
+                libraryVM.EditSelectedPlaylistCommand?.Execute(null);
+                e.Handled = true;
+            }else if(e.Key == Key.Delete)
+            {
+                libraryVM.DeleteSelectedPlaylistCommand?.Execute(null);
+                e.Handled = true;
+            }
         }
     }
 }

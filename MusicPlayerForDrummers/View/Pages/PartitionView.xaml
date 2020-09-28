@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="MusicPlayerForDrummers.View.PartitionView"
+﻿<UserControl x:Class="MusicPlayerForDrummers.View.Pages.PartitionView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MusicPlayerForDrummers.View"
+      xmlns:partition="clr-namespace:MusicPlayerForDrummers.View.Controls.Partition"
       mc:Ignorable="d" 
       d:DesignHeight="855" d:DesignWidth="1520"
       Style="{StaticResource ControlBackgroundLv1}">
@@ -13,8 +13,8 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition MinWidth="50" Width="300" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
-        <local:PartitionSheet Grid.Column="0" Style="{StaticResource InsideLightControl}" BorderThickness="0,0,1,0"/>
+        <partition:PartitionSheet x:Name="PartitionSheet" Grid.Column="0" Style="{StaticResource InsideLightControl}" BorderThickness="0,0,1,0"/>
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" BorderThickness="1,0,0,0"/>
-        <local:PartitionMenu Grid.Column="2" HorizontalAlignment="Stretch" Style="{StaticResource ControlBackgroundLv2}"/>
+        <partition:PartitionMenu Grid.Column="2" HorizontalAlignment="Stretch" Style="{StaticResource ControlBackgroundLv2}"/>
     </Grid>
 </UserControl>

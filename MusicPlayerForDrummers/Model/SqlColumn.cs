@@ -1,34 +1,34 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MusicPlayerForDrummers.Model
 {
     public class SqlColumn
     {
         //TODO: private set; property vs readonly field
-        public string Name { get; private set; }
-        public SqliteType SQLType {
-            get { return GetSQLType(); }
-        }
-        public EType CustomType { get; private set; }
-        public bool PrimaryKey { get; private set; }
-        public bool ForeignKey { get; private set; }
-        public string FKTableName { get; private set; }
-        public string FKColumnName { get; private set; }
-        public bool FKDeleteCascade { get; private set; }
-        public bool Nullable { get; private set; }
+        public string Name { get; }
+        public SqliteType SqlType => GetSqlType();
+        public EType CustomType { get; }
+        public bool PrimaryKey { get; set; }
+        public bool ForeignKey { get; set; }
+        public string FkTableName { get; set; }
+        public string FkColumnName { get; set; }
+        public bool FkDeleteCascade { get; set; }
+        public bool Nullable { get; set; }
+        public bool Unique { get; set; }
+        public string? DefaultValue { get; set; }
 
 
-        public SqlColumn(string name, EType type, bool primaryKey = false, bool nullable = true)
+        public SqlColumn(string name, EType type)
         {
             Name = name;
             CustomType = type;
-            PrimaryKey = primaryKey;
+            PrimaryKey = false;
             ForeignKey = false;
-            FKDeleteCascade = false;
-            Nullable = nullable && !primaryKey;
+            FkTableName = "";
+            FkColumnName = "";
+            FkDeleteCascade = false;
+            Nullable = false;
+            Unique = false;
         }
 
         public SqlColumn(string name, EType type, string fKTableName, string fKColumnName, bool fkDeleteCascade)
@@ -37,36 +37,40 @@ namespace MusicPlayerForDrummers.Model
             CustomType = type;
             PrimaryKey = false;
             ForeignKey = true;
-            FKTableName = fKTableName;
-            FKColumnName = fKColumnName;
-            FKDeleteCascade = fkDeleteCascade;
+            FkTableName = fKTableName;
+            FkColumnName = fKColumnName;
+            FkDeleteCascade = fkDeleteCascade;
+            Nullable = false;
+            Unique = false;
         }
 
-        public string GetFormatedColumnSchema()
+        public string GetFormattedColumnSchema()
         {
-            string formatedType = "";
+            string formattedType = "";
             switch (CustomType)
             {
-                case EType.INT: formatedType = "INTEGER"; break;
-                case EType.REAL: formatedType = "REAL"; break;
-                case EType.TEXT: formatedType = "TEXT"; break;
-                case EType.BOOL: formatedType = "INTEGER CHECK (" + Name + " IN (0,1))"; break;
+                case EType.Int: formattedType = "INTEGER"; break;
+                case EType.Real: formattedType = "REAL"; break;
+                case EType.Text: formattedType = "TEXT"; break;
+                case EType.Bool: formattedType = $"INTEGER CHECK ({Name} IN (0,1))"; break;
             }
-            string formatedPK = PrimaryKey ? "PRIMARY KEY" : "";
-            string formatedFK = ForeignKey? ("REFERENCES " + FKTableName + "(" + FKColumnName + ")") : "";
-            string fkCascade = FKDeleteCascade ? "ON DELETE CASCADE" : "";
-            string notNull = Nullable ? "" : "NOT NULL";
-            return string.Join(" ", Name, formatedType, formatedPK, formatedFK, fkCascade, notNull);
+            string formattedPk = PrimaryKey ? "PRIMARY KEY" : "";
+            string formattedFk = ForeignKey ? $"REFERENCES {FkTableName} ({FkColumnName}) ON UPDATE CASCADE ON DELETE CASCADE" : "";
+            string fkCascade = FkDeleteCascade ? "ON DELETE CASCADE" : "";
+            string notNull = !Nullable || PrimaryKey || ForeignKey ? "NOT NULL" : "";
+            string unique = Unique && !PrimaryKey ? "UNIQUE" : "";
+            string defaultValue = DefaultValue != null ? "DEFAULT " + DefaultValue : "";
+            return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull, unique, defaultValue);
         }
 
-        private SqliteType GetSQLType()
+        private SqliteType GetSqlType()
         {
             switch (CustomType)
             {
-                case EType.BOOL: return SqliteType.Integer;
-                case EType.INT: return SqliteType.Integer;
-                case EType.REAL: return SqliteType.Real;
-                case EType.TEXT: return SqliteType.Text;
+                case EType.Bool: return SqliteType.Integer;
+                case EType.Int: return SqliteType.Integer;
+                case EType.Real: return SqliteType.Real;
+                case EType.Text: return SqliteType.Text;
                 default: return SqliteType.Blob;
             }
         }
@@ -79,9 +83,9 @@ namespace MusicPlayerForDrummers.Model
 
     public enum EType
     {
-        INT,
-        REAL,
-        TEXT,
-        BOOL
+        Int,
+        Real,
+        Text,
+        Bool
     }
 }

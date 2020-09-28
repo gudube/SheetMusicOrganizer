@@ -1,30 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Serilog;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Tables
 {
     public abstract class BaseTable
     {
-        abstract public string TableName { get; }
+        public string TableName { get; }
 
-        public readonly SqlColumn ID;
+        public readonly SqlColumn Id;
 
         //TODO: Or keep an array of all the fields as a field and just return it
-        abstract public SqlColumn[] GetCustomColumns();
+        public abstract SqlColumn[] GetCustomColumns();
 
         public SqlColumn[] GetAllColumns()
         {
             SqlColumn[] customCols = GetCustomColumns();
             SqlColumn[] allCols = new SqlColumn[customCols.Length + 1];
-            allCols[0] = ID;
+            allCols[0] = Id;
             Array.Copy(customCols, 0, allCols, 1, customCols.Length);
             return allCols;
         }
 
-        protected BaseTable()
+        protected BaseTable(string tableName)
         {
-            ID = new SqlColumn(TableName + "ID", EType.INT, true);
+            if (string.IsNullOrWhiteSpace(tableName))
+            {
+                Log.Error("Tried creating a table without a TableName.");
+                throw new NullReferenceException("TableName is empty or null.");
+            }
+
+            TableName = tableName;
+            Id = new SqlColumn($"{tableName}ID", EType.Int) { PrimaryKey = true };
+        }
+
+        public override string ToString()
+        {
+            return TableName;
         }
     }
 }

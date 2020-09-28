@@ -1,15 +1,24 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System;
+using Microsoft.Data.Sqlite;
+using MusicPlayerForDrummers.Model.Tables;
+using Serilog;
 
-namespace MusicPlayerForDrummers.Model
+namespace MusicPlayerForDrummers.Model.Items
 {
-    public class PlaylistItem : BaseModelItem
+    public class BasePlaylistItem : BaseModelItem
     {
+        // ReSharper disable once InconsistentNaming
+        //protected bool _isSelected = false;
+        //public virtual bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+        public override object[] GetCustomValues()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PlaylistItem : BasePlaylistItem
+    {
+        #region Properties
         private string _name;
         public string Name { get => _name; set => SetField(ref _name, value); }
 
@@ -21,39 +30,67 @@ namespace MusicPlayerForDrummers.Model
 
         private string _smartDir;
         public string SmartDir { get => _smartDir; set => SetField(ref _smartDir, value); }
+        #endregion
+
+        #region Other Properties
+        private bool _isPlaying = false;
+        public bool IsPlaying { get => _isPlaying; set => SetField(ref _isPlaying, value); }
+
+        private bool _isEditing = false;
+        public bool IsEditing { get => _isEditing; set => SetField(ref _isEditing, value); }
+
+        #endregion
 
         public PlaylistItem(string name, bool locked = false) : base()
         {
-            Name = name;
-            IsLocked = locked;
-            IsSmart = false;
-            SmartDir = "";
+            _name = name;
+            _isLocked = locked;
+            _isSmart = false;
+            _smartDir = "";
         }
 
         public PlaylistItem(string name, string smartDir, bool locked = false) : base()
         {
-            Name = name;
-            IsLocked = locked;
-            IsSmart = true;
-            SmartDir = smartDir;
+            _name = name;
+            _isLocked = locked;
+            _isSmart = true;
+            _smartDir = smartDir;
         }
 
-        public PlaylistItem(SqliteDataReader dataReader) : base(dataReader)
+        public PlaylistItem(SqliteDataReader dataReader)
         {
             PlaylistTable playlistTable = new PlaylistTable();
-            Name = GetSafeString(dataReader, playlistTable.Name.Name);
-            IsLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
-            IsSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
-            SmartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
+            int? id = GetSafeInt(dataReader, playlistTable.Id.Name);
+            if (!id.HasValue)
+                Log.Error("Could not find the id when reading a PlaylistItem from the SqliteDataReader.");
+            _id = id.GetValueOrDefault(-1);
+
+            _name = GetSafeString(dataReader, playlistTable.Name.Name);
+            _isLocked = GetSafeBool(dataReader, playlistTable.IsLocked.Name);
+            _isSmart = GetSafeBool(dataReader, playlistTable.IsSmart.Name);
+            _smartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
         }
 
         public override object[] GetCustomValues()
         {
             return new object[] { Name, IsLocked, IsSmart, SmartDir };
         }
+
+        //might be a bad idea? keep it for now
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is PlaylistItem pl))
+                return false;
+            return Id.Equals(pl.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 
-    public class AddPlaylistItem : BaseModelItem
+    public class AddPlaylistItem : BasePlaylistItem
     {
         public override object[] GetCustomValues()
         {
