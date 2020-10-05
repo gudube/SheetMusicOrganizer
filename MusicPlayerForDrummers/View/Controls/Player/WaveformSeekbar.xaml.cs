@@ -96,6 +96,8 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
+            //todo: add cancelation token for when changing songs fast
+            //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-cancellation
             BitmapImage imageSource = await Task.Run(() =>
             {
                 //TODO: do this as often as possible as the performance is a game changer!

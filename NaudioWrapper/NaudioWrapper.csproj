@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="SoundTouch.Net" Version="2.1.3" />
+    <PackageReference Include="SoundTouch.Net.NAudioSupport" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>

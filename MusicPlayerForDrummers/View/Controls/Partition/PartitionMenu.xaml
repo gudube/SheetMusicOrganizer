@@ -13,7 +13,38 @@
         <Expander Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
-                    <TextBlock Background="{StaticResource BackgroundLv3SolidColor}">There will be some stuff here!</TextBlock>
+                    <StackPanel Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
+                        <Grid Margin="5,5,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"></ColumnDefinition>
+                                <ColumnDefinition Width="40"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
+                            <TextBox Grid.Column="1" HorizontalAlignment="Stretch"></TextBox>
+                            <TextBlock Grid.Column="2" Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
+                            <Button Grid.Column="3" Width="60" HorizontalAlignment="Right" Style="{StaticResource 3DButton}">Reset</Button>
+                        </Grid>
+                        <Grid Margin="5,5,5,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!--todo: use knob control instead of textbox. that way we have more control over input. better than checking errors-->
+                            <TextBlock Grid.Column="0" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
+                            <TextBlock Grid.Column="1" Text="Between" Style="{StaticResource LabelTextBlock}"></TextBlock>
+                            <TextBox Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0" Width="40"></TextBox>
+                            <TextBlock Grid.Column="3" Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
+                            <TextBox Grid.Column="4" HorizontalAlignment="Stretch" Margin="5,0" Width="40"></TextBox>
+                            <CheckBox Grid.Column="5" HorizontalAlignment="Right"></CheckBox>
+                        </Grid>
+
+                    </StackPanel>
                 </Border>
             </Border>
         </Expander>

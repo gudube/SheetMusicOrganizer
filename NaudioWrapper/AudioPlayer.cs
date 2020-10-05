@@ -1,14 +1,14 @@
 ﻿using NAudio.Wave;
 using System;
+using SoundTouch;
+using SoundTouch.Net.NAudioSupport;
 
 namespace NAudioWrapper
 {
     public class AudioPlayer : BaseNotifyPropertyChanged
     {
         private AudioFileReader? _audioFileReader;
-        //private DirectSoundOut _output;
         private WaveOutEvent? _output;
-        //private WaveChannel32 _waveChannel;
         private bool _stopMeansEnded = true;
 
         public event EventHandler? PlaybackFinished;
@@ -27,7 +27,10 @@ namespace NAudioWrapper
             //_waveChannel = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
             //_output = new DirectSoundOut(200);
             //_output.Init(_waveChannel);
-            _output.Init(_audioFileReader);
+            SoundTouchProcessor processor = new SoundTouchProcessor(); //change any option here
+            //processor.SetSetting(SettingId.SequenceDurationMs, 10);
+            SoundTouchWaveProvider provider = new SoundTouchWaveProvider(_audioFileReader, processor);
+            _output.Init(provider);
 
             OnPropertyChanged(nameof(Position));
             OnPropertyChanged(nameof(Length));
