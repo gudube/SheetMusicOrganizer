@@ -14,7 +14,7 @@
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
                     <StackPanel Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
-                        <Grid Margin="5,5,5,0">
+                        <Grid Margin="5,5,5,5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="70"></ColumnDefinition>
                                 <ColumnDefinition Width="40"></ColumnDefinition>
@@ -24,7 +24,16 @@
                             <TextBlock Grid.Column="0" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <TextBox Grid.Column="1" HorizontalAlignment="Stretch"></TextBox>
                             <TextBlock Grid.Column="2" Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
-                            <Button Grid.Column="3" Width="60" HorizontalAlignment="Right" Style="{StaticResource 3DButton}">Reset</Button>
+                            <CheckBox Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"></CheckBox>
+                        </Grid>
+                        <Grid Margin="5,0,5,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="1"></CheckBox>
+                            <TextBlock Grid.Column="2" Margin="5,0,0,0" Style="{StaticResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
                         </Grid>
                         <Grid Margin="5,5,5,5">
                             <Grid.ColumnDefinitions>
@@ -41,9 +50,8 @@
                             <TextBox Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0" Width="40"></TextBox>
                             <TextBlock Grid.Column="3" Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <TextBox Grid.Column="4" HorizontalAlignment="Stretch" Margin="5,0" Width="40"></TextBox>
-                            <CheckBox Grid.Column="5" HorizontalAlignment="Right"></CheckBox>
+                            <CheckBox Grid.Column="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"></CheckBox>
                         </Grid>
-
                     </StackPanel>
                 </Border>
             </Border>
@@ -71,6 +79,25 @@
                             </ContentControl.Resources>
                         </ContentControl>
                     </StackPanel>
+                </Border>
+            </Border>
+        </Expander>
+        <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
+        <Expander Header="Notes" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
+            <Border Style="{StaticResource InsideLightBorder}">
+                <Border Style="{StaticResource BaseBlackBorder}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <!--todo: prevent notes from going over the window max-->
+                            <RowDefinition MinHeight="25" Height="100" MaxHeight="500"></RowDefinition>
+                            <RowDefinition Height="5"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                 Background="{StaticResource ClickableSolidColor}" MaxLength="1000" TextWrapping="Wrap"
+                                 VerticalScrollBarVisibility="Auto"></TextBox>
+                        <GridSplitter Grid.Row="1" ResizeDirection="Rows"></GridSplitter>
+                    </Grid>
                 </Border>
             </Border>
         </Expander>

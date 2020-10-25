@@ -8,7 +8,7 @@
         xmlns:pages="clr-namespace:MusicPlayerForDrummers.View.Pages"
         xmlns:controls="clr-namespace:MusicPlayerForDrummers.View.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
+        Title="Music Sheet Organizer" Height="855" Width="1520" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized"
         PreviewKeyDown="MainWindow_OnPreviewKeyDown">
     <Window.DataContext>

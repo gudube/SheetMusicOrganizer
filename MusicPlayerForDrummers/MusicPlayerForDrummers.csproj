@@ -8,6 +8,7 @@
     <RootNamespace>MusicPlayerForDrummers</RootNamespace>
     <StartupObject>MusicPlayerForDrummers.App</StartupObject>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
