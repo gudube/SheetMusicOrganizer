@@ -55,53 +55,39 @@
                 </Style>
             </Canvas.Style>
             <Canvas.Resources>
-                <tools:CrossMultiplicationConverter x:Key="CrossMultiplicationConverter"/>
+                <tools:DivisionConverter x:Key="DivisionConverter"/>
             </Canvas.Resources>
             <Grid Canvas.Bottom="0">
                 <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
+                    <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.PlayingSong.ScrollStartTime"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
+                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
+                                    <Binding Path="ScrollStartPercentage"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Session.PlayingSong, Mode=OneWay}" Value="{x:Null}">
-                                <Setter Property="Canvas.Left" Value="0"></Setter>
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Polygon Points="-8, 0, 0, -14, 8, 0" VerticalAlignment="Bottom" Stroke="LightGreen" Fill="LightGreen"/>
-                <TextBlock Margin="-3, 0, 0, -2" Text="S" FontSize="12" Foreground="Black"/>
+                <Polygon/>
+                <TextBlock Text="S"/>
             </Grid>
             <Grid Canvas.Bottom="0" Margin="0,0,-8,0">
                 <Grid.Style>
-                    <Style TargetType="{x:Type Grid}">
+                    <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Right">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.PlayingSong.ScrollEndTime"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
+                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
+                                    <Binding Path="ScrollEndPercentage"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Session.PlayingSong, Mode=OneWay}" Value="{x:Null}">
-                                <Setter Property="Canvas.Right" Value="0"></Setter>
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
-                <Polygon Points="-8, 0, 0, -14, 8, 0"  VerticalAlignment="Bottom" Stroke="LightGreen" Fill="LightGreen"/>
-                <TextBlock Margin="-3, 0, 0, -2" Text="E" FontSize="12"/>
+                <Polygon/>
+                <TextBlock Text="E"/>
             </Grid>
         </Canvas>
     </Grid>

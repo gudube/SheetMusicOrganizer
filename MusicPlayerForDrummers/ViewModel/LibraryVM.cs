@@ -553,8 +553,11 @@ namespace MusicPlayerForDrummers.ViewModel
         //Sets the playing song with the same playing playlist and mastery level
         public void SetPlayingSong(SongItem song, bool startPlaying)
         {
-            Session.PlayingSong = song;
-            Session.Player.SetSong(song.AudioDirectory, startPlaying);
+            if (Session.PlayingSong != song)
+            {
+                Session.PlayingSong = song;
+                Session.Player.SetSong(song.AudioDirectory, startPlaying);
+            }
         }
 
         public void StopPlayingSong()

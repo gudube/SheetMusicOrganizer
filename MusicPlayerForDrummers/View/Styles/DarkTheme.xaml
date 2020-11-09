@@ -345,5 +345,21 @@
         <Setter Property="Margin" Value="0,0,0,10"></Setter>
     </Style>
 
+    <!-- WaveForm Triangles -->
+    <Style x:Key="BottomWaveFormFlag" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="LightGreen"></Setter>
+                <Setter Property="Fill" Value="LightGreen"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, -14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -3, 0, 0, -2"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+    
 </ResourceDictionary>
    

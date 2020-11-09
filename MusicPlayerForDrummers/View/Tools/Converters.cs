@@ -136,4 +136,21 @@ namespace MusicPlayerForDrummers.View.Tools
             throw new NotImplementedException();
         }
     }
+
+    public class DivisionConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && !Double.IsNaN(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && !Double.IsNaN(b))
+                return a * b;
+
+            return 0.0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
