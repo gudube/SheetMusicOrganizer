@@ -79,14 +79,14 @@ namespace MusicPlayerForDrummers.ViewModel
         public double ScrollStartPercentage
         {
             get => _scrollStartPercentage;
-            private set => SetField(ref _scrollStartPercentage, value);
+            set => SetField(ref _scrollStartPercentage, value);
         }
 
         private double _scrollEndPercentage;
         public double ScrollEndPercentage
         {
             get => _scrollEndPercentage;
-            private set => SetField(ref _scrollEndPercentage, value);
+            set => SetField(ref _scrollEndPercentage, value);
         }
         #endregion
 

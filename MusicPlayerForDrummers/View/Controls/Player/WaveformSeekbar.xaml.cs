@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MusicPlayerForDrummers.ViewModel;
 using NAudioWrapper.WaveFormRendererLib;
@@ -75,6 +77,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         private WaveFormRendererSettings? _darkRendererSettings;
 
+        #region Render WaveForm
         private async void UpdateWaveForm(string audioDirectory)
         {
             if (string.IsNullOrEmpty(audioDirectory))
@@ -121,6 +124,74 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             WaveFormImage.Visibility = Visibility.Visible;
             LoadingWaveFormText.Visibility = Visibility.Hidden;
         }
+        #endregion
 
+        #region Flags
+        //private bool _draggingFlag = false;
+        private double _minPos = 0;
+        private double _maxPos = 1;
+        private Grid? _flag;
+        private void Flag_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Grid grid)
+            {
+                double percentageGap = 0.02 * Canvas.ActualWidth;
+                grid.CaptureMouse();
+                if (grid == StartScrollFlag)
+                {
+                    _minPos = 0;
+                    _maxPos = Canvas.ActualWidth - Canvas.GetRight(EndScrollFlag) - percentageGap;
+                }
+                else if (grid == EndScrollFlag)
+                {
+                    _minPos = Canvas.GetLeft(StartScrollFlag) + percentageGap;
+                    _maxPos = Canvas.ActualWidth;
+                }
+
+                _flag = grid;
+            }
+        }
+
+        private void Flag_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_flag != null)
+            {
+                double posX = e.GetPosition(Canvas).X;
+                if (posX < _minPos)
+                    posX = _minPos;
+                else if (posX > _maxPos)
+                    posX = _maxPos;
+                
+                if(_flag == EndScrollFlag)
+                    Canvas.SetRight(_flag, Canvas.ActualWidth - posX);
+                else
+                    Canvas.SetLeft(_flag, posX);
+            }
+        }
+
+        private void Flag_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_flag != null)
+            {
+                _flag.ReleaseMouseCapture();
+                if (!(DataContext is PlayerVM playerVM))
+                {
+                    Log.Error("Can't save the flag position because WaveFormSeekBar DataContext is not PlayerVM.");
+                    return;
+                }
+                if (playerVM.Session.PlayingSong == null)
+                {
+                    Log.Error("Can't save the flag position because PlayingSong is not PlayerVM.");
+                    return;
+                }
+                if (_flag == StartScrollFlag)
+                    playerVM.Session.PlayingSong.ScrollStartTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(StartScrollFlag) / Canvas.ActualWidth);
+                else if (_flag == EndScrollFlag)
+                    playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(EndScrollFlag) / Canvas.ActualWidth);
+                _flag = null;
+            }
+        }
+
+        #endregion
     }
 }

@@ -43,7 +43,7 @@
                 </Style>
             </local:SeekBarSlider.Style>
         </local:SeekBarSlider>
-        <Canvas>
+        <Canvas x:Name="Canvas">
             <Canvas.Style>
                 <Style TargetType="{x:Type Canvas}">
                     <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -57,7 +57,8 @@
             <Canvas.Resources>
                 <tools:DivisionConverter x:Key="DivisionConverter"/>
             </Canvas.Resources>
-            <Grid Canvas.Bottom="0">
+            <Grid x:Name="StartScrollFlag" Canvas.Bottom="0"
+                  MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
                 <Grid.Style>
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
@@ -73,7 +74,8 @@
                 <Polygon/>
                 <TextBlock Text="S"/>
             </Grid>
-            <Grid Canvas.Bottom="0" Margin="0,0,-8,0">
+            <Grid x:Name="EndScrollFlag" Canvas.Bottom="0" Margin="0,0,-8,0"
+                  MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
                 <Grid.Style>
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Right">
