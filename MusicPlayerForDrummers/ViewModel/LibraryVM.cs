@@ -391,15 +391,10 @@ namespace MusicPlayerForDrummers.ViewModel
         public bool AddSong(SongItem song)
         {
             if (DbHandler.IsSongExisting(song.PartitionDirectory))
-            {
                 return false;
-                //song = DbHandler.GetSong(song.PartitionDirectory);
-            }
+            
             MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
-            if (selectedMasteryItems.Length == 0)
-                song.MasteryId = Session.MasteryLevels[0].Id;
-            else
-                song.MasteryId = selectedMasteryItems[0].Id;
+            song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
 
             DbHandler.AddSong(song);
 
@@ -416,10 +411,108 @@ namespace MusicPlayerForDrummers.ViewModel
             return true;
         }
 
-        //TODO: Add advanced options (like import music sheet only, audio only or both)
-        //TODO: Add update existing songs (music sheet or audio) vs skip existing songs
-        //TODO: Append songs added to a list to be able to push them to the database in transaction
-        public void AddFolder(string dir, bool recursive, bool useAudioMD)
+        public void AddDirByFolder(string dir, bool recursive, bool useAudioMD)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    AddDirByFolder(subDir, true, useAudioMD);
+
+            List<string> pdfFiles = new List<string>();
+            List<string> audioFiles = new List<string>();
+            foreach (string fileDir in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(fileDir);
+                if (ext == ".pdf")
+                    pdfFiles.Add(fileDir);
+                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
+                    audioFiles.Add(fileDir);
+            }
+
+            string audio1 = "";
+            string audio2 = "";
+            if (audioFiles.Count >= 1)
+            {
+                audio1 = audioFiles[0];
+                if (audioFiles.Count >= 2)
+                {
+                    if (Path.GetFileNameWithoutExtension(audio1).Length >
+                        Path.GetFileNameWithoutExtension(audioFiles[1]).Length)
+                    {
+                        audio2 = audio1;
+                        audio1 = audioFiles[1];
+                    }
+                    else
+                    {
+                        audio2 = audioFiles[1];
+                    }
+                }
+            }
+
+            foreach (string pdfFile in pdfFiles)
+            {
+                AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+            }
+        }
+
+        public void AddDirByFilename(string dir, bool recursive, bool useAudioMD)
+        {
+            List<string> pdfFiles = new List<string>();
+            List<string> audioFiles = new List<string>();
+            GetAllFilenames(dir, recursive, pdfFiles, audioFiles);
+            foreach (string pdfFile in pdfFiles)
+            {
+                string pdfName = Path.GetFileNameWithoutExtension(pdfFile);
+                List<string> audios = audioFiles.FindAll(x => Path.GetFileNameWithoutExtension(x).StartsWith(pdfName));
+                string audio1 = "";
+                string audio2 = "";
+                if (audios.Count >= 1)
+                {
+                    audio1 = audios[0];
+                    audioFiles.Remove(audio1); //todo: not necessary, check if makes perfomance better or worse
+                    if (audios.Count >= 2)
+                    {
+                        audio2 = audios[1];
+                        audioFiles.Remove(audio2);
+                    }
+                }
+                if(Path.GetFileNameWithoutExtension(audio1).Length <= Path.GetFileNameWithoutExtension(audio2).Length)
+                    AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+                else
+                    AddSong(new SongItem(pdfFile, audio2, audio1, 0, useAudioMD));
+            }
+
+        }
+
+        public void GetAllFilenames(string dir, bool recursive, List<string> pdfFiles, List<string> audioFiles)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    GetAllFilenames(subDir, true, pdfFiles, audioFiles);
+
+            string[] allFiles = Directory.GetFiles(dir);
+            pdfFiles.AddRange(allFiles.Where(x => Path.GetExtension(x) == ".pdf"));
+            audioFiles.AddRange(allFiles.Where(x => {
+                string ext = Path.GetExtension(x);
+                return ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a";
+            }));
+        }
+
+        //todo: Add update existing songs (metadata and/or audio) vs skip them
+        public void AddDirWithoutAudio(string dir, bool recursive)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    AddDirWithoutAudio(subDir, true);
+
+            foreach (string fileDir in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(fileDir);
+                if (ext == ".pdf")
+                    AddSong(new SongItem(fileDir, "", "", 0, false));
+            }
+        }
+        
+        /*public void AddFolder(string dir, bool recursive, bool useAudioMD)
         {
             if (recursive)
             {
@@ -446,7 +539,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
             else
             {
-                foreach(string partition in partitionFiles) //TODO: More performance way to do it?
+                foreach(string partition in partitionFiles)
                 {
                     //bool audioFound = false;
                     foreach(string audio in audioFiles)
@@ -459,10 +552,10 @@ namespace MusicPlayerForDrummers.ViewModel
                         }
                     }
                     //if(!audioFound)
-                    //    AddSong(new SongItem(partition)); //todo: Make this work eventually
+                    //    AddSong(new SongItem(partition));
                 }
             }
-        }
+        }*/
 
 
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
@@ -556,7 +649,7 @@ namespace MusicPlayerForDrummers.ViewModel
             if (Session.PlayingSong != song)
             {
                 Session.PlayingSong = song;
-                Session.Player.SetSong(song.AudioDirectory, startPlaying);
+                Session.Player.SetSong(song.AudioDirectory1, startPlaying);
             }
         }
 

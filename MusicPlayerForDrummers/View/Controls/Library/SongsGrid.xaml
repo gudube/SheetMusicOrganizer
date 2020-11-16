@@ -75,7 +75,7 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <Border Style="{StaticResource OutsideLightBorder}" Width="150" Height="40" Margin="5,0">
+            <Border Style="{StaticResource OutsideLightBorder}" Margin="5,0">
                 <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{StaticResource 3DButton}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/View/Resources/music_file_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
@@ -83,7 +83,7 @@
                     </StackPanel>
                 </Button>
             </Border>
-            <Border Style="{StaticResource OutsideLightBorder}" Width="150" Height="40" Margin="5,0">
+            <Border Style="{StaticResource OutsideLightBorder}" Margin="5,0">
                 <Button Name="AddFolderButton" Click="AddFolderButton_Click" Style="{StaticResource 3DButton}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/View/Resources/music_dir_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>

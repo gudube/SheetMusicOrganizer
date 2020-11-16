@@ -56,7 +56,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 return;
             }
             if(e.PropertyName == nameof(playerVM.Session.PlayingSong))
-                UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory ?? string.Empty);
+                UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
         }
 
         private void WaveformSeekBar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

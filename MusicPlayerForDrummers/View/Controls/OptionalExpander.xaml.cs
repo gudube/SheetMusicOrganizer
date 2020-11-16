@@ -19,7 +19,7 @@ namespace MusicPlayerForDrummers.View.Controls
         {
             public ToggleButton Toggle;
             public bool? DefaultValue;
-            public List<UIElement> Elements;
+            public List<UIElement>? Elements;
         }
 
         public OptionalExpander()
@@ -69,15 +69,17 @@ namespace MusicPlayerForDrummers.View.Controls
             if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {
                 changed.Toggle.Opacity = _changedOpacity;
-                foreach (UIElement elem in changed.Elements)
-                    elem.Opacity = _changedOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
+                        elem.Opacity = _changedOpacity;
                 HeaderOpacity = _changedOpacity;
             }
             else //toggle became default, need to check other toggles
             {
                 changed.Toggle.Opacity = _defaultOpacity;
-                foreach (UIElement elem in changed.Elements)
-                    elem.Opacity = _defaultOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
+                        elem.Opacity = _defaultOpacity;
 
                 foreach (GridRow row in _rows)
                 {

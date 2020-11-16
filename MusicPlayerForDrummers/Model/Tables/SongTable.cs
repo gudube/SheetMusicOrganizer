@@ -10,14 +10,15 @@
 
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
-               LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime};
+            return new SqlColumn[] { PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
+               LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime };
         }
 
         #region Custom Columns
         //TODO: should it add the same song twice if there is 1 mp3 and 2 pdfs in a folder? seems logical, opposite too. could disable it by default maybe
         public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.Text) { Unique = true };
-        public readonly SqlColumn AudioDirectory = new SqlColumn("AudioDirectory", EType.Text) { Nullable = true };
+        public readonly SqlColumn AudioDirectory1 = new SqlColumn("AudioDirectory1", EType.Text) { Nullable = true };
+        public readonly SqlColumn AudioDirectory2 = new SqlColumn("AudioDirectory2", EType.Text) { Nullable = true };
         
         //TODO: Verify the files metadata is uptodate when playing: compare each field vs store and look at the modified date?
         #region Metadata

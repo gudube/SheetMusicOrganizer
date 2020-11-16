@@ -135,7 +135,7 @@ namespace MusicPlayerForDrummers.Model
         private static SqliteParameter CreateParameter(string name, SqliteType type, object? value)
         {
             SqliteParameter param = new SqliteParameter(name, type);
-            if (value == null || (value is string strValue && string.IsNullOrWhiteSpace(strValue)))
+            if (value == null)
                 param.Value = DBNull.Value;
             else
                 param.Value = value;
@@ -227,7 +227,7 @@ namespace MusicPlayerForDrummers.Model
             SqliteCommand cmd = con.CreateCommand();
             SqlColumn[] columns = table.GetCustomColumns();
             string[] paramNames = new string[columns.Length];
-            object[] formattedValues = row.GetCustomValues();
+            object?[] formattedValues = row.GetCustomValues();
             for (int i = 0; i < formattedValues.Length; i++)
             {
                 paramNames[i] = "@" + columns[i];
@@ -265,7 +265,7 @@ namespace MusicPlayerForDrummers.Model
         {
             SqliteCommand cmd = con.CreateCommand();
             SqlColumn[] columns = table.GetCustomColumns();
-            object[] colValues = row.GetCustomValues();
+            object?[] colValues = row.GetCustomValues();
             string[] preparedUpdate = new string[columns.Length];
             for (int i = 0; i < columns.Length; i++)
             {
@@ -528,7 +528,7 @@ namespace MusicPlayerForDrummers.Model
                 con.Open();
                 InsertRow(con, songTable, song);
             }
-            AddPlaylistSongLink(0, song.Id);
+            AddPlaylistSongLink(1, song.Id);
         }
 
         //TODO: Would be better to update only the fields necessary?
@@ -554,7 +554,7 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Mastery
-        private const int DefaultMasteryId = 0;
+        private const int DefaultMasteryId = 1;
         private static void CreateMasteryTable(SqliteConnection con, bool force = false)
         {
             MasteryTable masteryTable = new MasteryTable();

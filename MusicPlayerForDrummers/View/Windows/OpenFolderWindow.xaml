@@ -17,20 +17,19 @@
     <StackPanel Orientation="Vertical" Margin="18, 18, 8, 18">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="10"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="{Binding Folder}" Style="{StaticResource InputTextBlock}"/>
-            <Button Grid.Column="2" Content="Select Folder" Click="SelectFolderButton_Click" FontSize="12" Style="{StaticResource 3DButton}"/>
+            <Button Grid.Column="2" Content="Select Folder" Click="SelectFolderButton_Click" FontSize="12" Style="{StaticResource 3DButtonSmall}"/>
             <TextBlock Grid.Column="3" Style="{StaticResource ErrorTextBlock}"/>
         </Grid>
-        <TextBlock Style="{StaticResource LabelTextBlock}">
-            Two ways to link music sheets and audio files:<LineBreak/>
-            1. One folder per song.<LineBreak/>
-            2. One filename per song.
-        </TextBlock>
+        <Label Style="{StaticResource UnclickableLabel}">Link music sheet and audio:</Label>
+        <RadioButton x:Name="ImportByFolder" IsChecked="True">By folder (pdf and audio files are in the same folder)</RadioButton>
+        <RadioButton x:Name="ImportByFilename">By file names (pdf and audio files have the same name)</RadioButton>
+        <RadioButton x:Name="ImportPdfOnly">Don't import audio - Only import pdf files</RadioButton>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 10"/>
         <controls:OptionalExpander Grid.IsSharedSizeScope="True">
             <Grid Margin="10,2">
@@ -47,7 +46,7 @@
             </Grid>
         </controls:OptionalExpander>
         <Grid Margin="0, 10, 0, 0">
-            <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource 3DButton}"/>
+            <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource 3DButtonSmall}"/>
             <Button Content="Confirm" Click="ConfirmButton_Click"  HorizontalAlignment="Right" FontSize="12" Style="{StaticResource SelectedButton}"
                     IsEnabled="{Binding Path=Folder, Converter={StaticResource StringNotEmptyConverter}}"/>
         </Grid>

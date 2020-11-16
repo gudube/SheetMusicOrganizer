@@ -23,6 +23,6 @@
                        Height="{Binding ElementName=ErrorMessage, Path=ActualHeight}" MaxHeight="200"/>
                 <TextBlock x:Name="ErrorMessage" Width="400" TextWrapping="Wrap" Margin="0,9" Style="{StaticResource LabelTextBlock}"/>
             </StackPanel>
-            <Button Grid.Row="2" Margin="10" HorizontalAlignment="Left" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButton}"/>
+            <Button Grid.Row="2" Margin="10" HorizontalAlignment="Left" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
         </Grid>
 </Window>

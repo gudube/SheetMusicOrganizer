@@ -25,14 +25,20 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="15"/>
                 <RowDefinition Height="30"/>
+                <RowDefinition Height="15"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.PartitionDirectory}"/>
-            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButton}" FontSize="12" Click="SelectMusicSheetButton_Click"
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButtonSmall}" FontSize="12" Click="SelectMusicSheetButton_Click"
                     Content="Select Music Sheet"/>
             <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource ErrorTextBlock}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory}"/>
-            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButton}" FontSize="12" Click="SelectAudioFileButton_Click"
-                    Content="Select Audio File"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory1}"/>
+            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButtonSmall}" FontSize="12" Click="SelectAudioFile1Button_Click"
+                    Content="Select Main Audio"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory2}"/>
+            <Button Grid.Row="4" Grid.Column="2" FontSize="12" Click="SelectAudioFile2Button_Click"
+                    Content="Select 2nd Audio" Style="{StaticResource 3DButtonSmall}"/>
+            <!-- todo: add small 'C' for clear after the main button.-->
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
             <TextBlock Text="Use Audio Metadata" Style="{StaticResource LabelTextBlock}"/>
@@ -72,7 +78,7 @@
             <TextBox Grid.Row="5" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding RatingText}"/> <!-- TODO: Replace with clickable stars-->
         </Grid>
         <Grid Margin="0, 18, 0, 0">
-            <Button Style="{StaticResource 3DButton}" FontSize="12" IsCancel="True" HorizontalAlignment="Left">
+            <Button Style="{StaticResource 3DButtonSmall}" FontSize="12" IsCancel="True" HorizontalAlignment="Left">
                 Cancel
             </Button>
             <Button FontSize="12" HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource SelectedButton}">

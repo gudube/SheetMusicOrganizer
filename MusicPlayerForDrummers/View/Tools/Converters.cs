@@ -71,8 +71,8 @@ namespace MusicPlayerForDrummers.View.Tools
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            foreach (string text in values)
-                if (string.IsNullOrWhiteSpace(text))
+            foreach (object value in values)
+                if (value is string text && string.IsNullOrWhiteSpace(text))
                     return false;
             return true;
         }
