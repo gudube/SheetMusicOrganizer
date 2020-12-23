@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.Threading.Tasks;
 using SoundTouch;
 using SoundTouch.Net.NAudioSupport;
 
@@ -15,18 +16,33 @@ namespace NAudioWrapper
         public event EventHandler? PlaybackStarting;
         public event EventHandler? PlaybackStopping;
 
-        public void SetSong(string filepath, bool startPlaying)
+        public AudioPlayer()
         {
-            if (_output != null){
-                Stop();
+        }
+
+        public async void SetSong(string filepath, bool startPlaying, bool keepPosition)
+        {
+            //todo: crash when switching version fast, bc of changing song quickly?
+            long newPosition = 0;
+            if (_audioFileReader != null && keepPosition)
+            {
+                newPosition = _audioFileReader.Position;
+            }
+
+            Stop();
+
+            while (_output != null)
+            {
+                // todo: better way of waiting for the output to be disposed?
+                await Task.Delay(50);
             }
 
             _output = new WaveOutEvent();
             _output.PlaybackStopped += _output_PlaybackStopped;
+            //todo: add try catch and show error window if there is an error. for example, cant find the file
             _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume }; //TODO: Check other options
-            //_waveChannel = new WaveChannel32(_audioFileReader) { PadWithZeroes = false };
-            //_output = new DirectSoundOut(200);
-            //_output.Init(_waveChannel);
+            if (keepPosition && newPosition < _audioFileReader.Length)
+                _audioFileReader.Position = newPosition;
             SoundTouchProcessor processor = new SoundTouchProcessor(); //change any option here
             //processor.SetSetting(SettingId.SequenceDurationMs, 10);
             SoundTouchWaveProvider provider = new SoundTouchWaveProvider(_audioFileReader, processor);
@@ -75,16 +91,19 @@ namespace NAudioWrapper
             }
         }
 
-        public double Length { get => _audioFileReader?.TotalTime.TotalSeconds ?? 1; }
+        public double Length => _audioFileReader?.TotalTime.TotalSeconds ?? 1;
+
+        public bool IsPlaying => _output.PlaybackState == PlaybackState.Playing;
+
         #endregion
 
         #region Play Controls
         public void Play()
         {
-            if (_output == null)
+            if (_audioFileReader == null || _output == null)
                 return;
 
-            if (_output.PlaybackState == PlaybackState.Playing)
+            if (IsPlaying)
                 Position = 0;
             else
             {
@@ -95,17 +114,17 @@ namespace NAudioWrapper
 
         public bool Pause(bool force = false)
         {
-            if (_output == null)
+            if (_audioFileReader == null || _output == null)
                 return false;
 
-            bool isPlaying = _output.PlaybackState == PlaybackState.Playing;
+            bool isPlaying = IsPlaying;
 
-            if (force || isPlaying)
+            if (isPlaying)
             {
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Pause();
             }
-            else if (_output.PlaybackState == PlaybackState.Paused)
+            else if (!force && _output.PlaybackState == PlaybackState.Paused)
                 Play();
 
             return isPlaying;
@@ -115,21 +134,20 @@ namespace NAudioWrapper
         public bool Stop(bool soft = false)
         {
             if (_output == null)
-                return false;
-
-            bool isPlaying = _output.PlaybackState == PlaybackState.Playing;
+                return true;
 
             if (_output.PlaybackState != PlaybackState.Stopped)
             {
                 _stopMeansEnded = false;
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Stop();
+                return false;
             }
-
-            if (!soft)
+            else
+            {
                 DisposeOutput();
-
-            return isPlaying;
+                return true;
+            }
         }
 
         #endregion
@@ -145,6 +163,7 @@ namespace NAudioWrapper
             }
             else
             {
+                DisposeOutput();
                 _stopMeansEnded = true;
             }
         }
@@ -153,10 +172,10 @@ namespace NAudioWrapper
         #region Tools
         private void DisposeOutput()
         {
-            if (_output != null && _output.PlaybackState == PlaybackState.Playing)
+            if (IsPlaying)
             {
                 PlaybackStopping?.Invoke(null, EventArgs.Empty);
-                _output.Stop();
+                _output?.Stop();
             }
 
             if (_audioFileReader != null)

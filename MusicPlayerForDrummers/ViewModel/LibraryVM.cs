@@ -649,7 +649,7 @@ namespace MusicPlayerForDrummers.ViewModel
             if (Session.PlayingSong != song)
             {
                 Session.PlayingSong = song;
-                Session.Player.SetSong(song.AudioDirectory1, startPlaying);
+                Session.Player.SetSong(song.AudioDirectory1, startPlaying, false);
             }
         }
 

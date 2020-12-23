@@ -34,6 +34,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}">
                         <Image Source="/View/Resources/previous_song_40.png"/>
@@ -57,6 +58,19 @@
                     <Button Grid.Column="7" Style="{StaticResource SimpleButton}" Click="OpenFolderButton_Click">
                         <Image Source="/View/Resources/open_folder_song_40.png"/>
                     </Button>
+                    <ToggleButton Grid.Column="8" Command="{Binding ChangeAudioCommand}" IsChecked="{Binding PlayingSecondaryAudio, Mode=OneWay}">
+                        <ToggleButton.Style>
+                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource SimpleButton}">
+                                <Setter Property="Background" Value="Transparent"></Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <Image Source="/View/Resources/replace_40.png"/>
+                    </ToggleButton>
                 </Grid>
                 <Grid Grid.Row="1" Margin="2,0,2,5">
                     <Grid.ColumnDefinitions>

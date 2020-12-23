@@ -235,7 +235,7 @@
         <Setter Property="Height" Value="30"></Setter>
     </Style>
 
-    <Style x:Key="SimpleButton" TargetType="{x:Type Button}" BasedOn="{StaticResource ClickableTitle}">
+    <Style x:Key="SimpleButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ClickableTitle}">
         <Setter Property="Width" Value="27"/>
         <Setter Property="Height" Value="27"/>
         <Setter Property="Padding" Value="5"/>
@@ -252,7 +252,7 @@
         </Style.Triggers>
         <!--<Setter Property="IsDefault" Value="True"/>-->
     </Style>
-    
+
     <!-- CHECKBOX -->
     <Style TargetType="{x:Type CheckBox}">
         <Setter Property="VerticalContentAlignment" Value="Center"/>

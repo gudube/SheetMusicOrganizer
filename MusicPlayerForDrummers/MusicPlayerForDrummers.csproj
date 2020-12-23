@@ -30,6 +30,8 @@
     <None Remove="View\Resources\plus_64.png" />
     <None Remove="View\Resources\previous_song_40.png" />
     <None Remove="View\Resources\random_song_40.png" />
+    <None Remove="View\Resources\replace_40.png" />
+    <None Remove="View\Resources\replace_64.png" />
     <None Remove="View\Resources\splash.png" />
     <None Remove="View\Resources\stop_song_40.png" />
     <None Remove="View\Resources\switch_view_40.png" />
@@ -55,6 +57,7 @@
     <Resource Include="View\Resources\plus_64.png" />
     <Resource Include="View\Resources\previous_song_40.png" />
     <Resource Include="View\Resources\random_song_40.png" />
+    <Resource Include="View\Resources\replace_40.png" />
     <Resource Include="View\Resources\stop_song_40.png" />
     <Resource Include="View\Resources\switch_view_40.png" />
     <Resource Include="View\Resources\volume_high_40.png" />

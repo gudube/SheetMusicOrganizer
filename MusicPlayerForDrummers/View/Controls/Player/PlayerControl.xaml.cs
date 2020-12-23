@@ -29,5 +29,16 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             if(dir != null)
                 Process.Start("explorer.exe", dir);
         }
+
+        /*private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is PlayerVM playerVM))
+                return;
+        }
+
+        private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }*/
     }
 }

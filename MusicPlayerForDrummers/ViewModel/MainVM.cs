@@ -48,7 +48,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public async Task LoadData()
         {
-            DbHandler.InitializeDatabase(true);
+            DbHandler.InitializeDatabase();
 
             await LibraryVM.InitializeData();
             

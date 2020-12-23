@@ -19,6 +19,7 @@ namespace MusicPlayerForDrummers.ViewModel
             StartedSeekCommand = new DelegateCommand(StartedSeek);
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
+            ChangeAudioCommand = new DelegateCommand(ChangeAudio);
             Session.Player.PlaybackFinished += PlayNextSong;
             Session.Player.PropertyChanged += Player_PropertyChanged;
             if(UpdateScrollPercentage() && Session.PlayingSong != null) {
@@ -37,14 +38,8 @@ namespace MusicPlayerForDrummers.ViewModel
 
         protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //if (e.PropertyName == nameof(Session.PlayingSong)) {
-                //if(UpdateScrollPercentage() && Session.PlayingSong != null)
-                //    Session.PlayingSong.PropertyChanged += PlayingSong_PropertyChanged;
-            //} else 
-            //if (e.PropertyName == nameof(Session.Player)) {
-            //    if(UpdateScrollPercentage())
-            //        Session.Player.PropertyChanged += Player_PropertyChanged;
-            //}
+            if (e.PropertyName == nameof(Session.PlayingSong))
+                PlayingSecondaryAudio = false;
         }
 
         private void PlayingSong_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -88,6 +83,14 @@ namespace MusicPlayerForDrummers.ViewModel
             get => _scrollEndPercentage;
             set => SetField(ref _scrollEndPercentage, value);
         }
+
+        private bool _playingSecondaryAudio = false;
+        public bool PlayingSecondaryAudio
+        {
+            get => _playingSecondaryAudio;
+            set => SetField(ref _playingSecondaryAudio, value);
+        }
+
         #endregion
 
         #region Controls
@@ -141,7 +144,7 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand StartedSeekCommand { get; }
         private void StartedSeek(object? obj)
         {
-            _resumePlaying = Session.Player.Stop(true);
+            _resumePlaying = Session.Player.Pause(true);
         }
 
         public DelegateCommand StoppedSeekCommand { get; }
@@ -154,10 +157,28 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         public DelegateCommand ChangeMuteCommand { get; }
-
         private void ChangeMute(object? obj)
         {
             Session.Player.IsAudioMuted = !Session.Player.IsAudioMuted;
+        }
+
+        public DelegateCommand ChangeAudioCommand { get; }
+        private void ChangeAudio(object? obj)
+        {
+            if (Session.PlayingSong != null && !string.IsNullOrWhiteSpace(Session.PlayingSong.AudioDirectory2))
+            {
+                if (PlayingSecondaryAudio)
+                {
+                    //todo: add options: Keep playing when switching audio and keep position when switching audio
+                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory1, Session.Player.IsPlaying, true);
+                    PlayingSecondaryAudio = false;
+                }
+                else
+                {
+                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory2, Session.Player.IsPlaying, true);
+                    PlayingSecondaryAudio = true;
+                }
+            }
         }
         #endregion
 
