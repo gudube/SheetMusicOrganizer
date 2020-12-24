@@ -20,7 +20,7 @@ namespace NAudioWrapper
         {
         }
 
-        public async void SetSong(string filepath, bool startPlaying, bool keepPosition)
+        public void SetSong(string filepath, bool startPlaying, bool keepPosition)
         {
             //todo: crash when switching version fast, bc of changing song quickly?
             long newPosition = 0;
@@ -29,19 +29,13 @@ namespace NAudioWrapper
                 newPosition = _audioFileReader.Position;
             }
 
-            Stop();
-
-            while (_output != null)
-            {
-                // todo: better way of waiting for the output to be disposed?
-                await Task.Delay(50);
-            }
-
+            Stop(false);
+            
             _output = new WaveOutEvent();
             _output.PlaybackStopped += _output_PlaybackStopped;
             //todo: add try catch and show error window if there is an error. for example, cant find the file
-            _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume }; //TODO: Check other options
-            if (keepPosition && newPosition < _audioFileReader.Length)
+            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume}; //TODO: Check other options
+            if (newPosition < _audioFileReader.Length)
                 _audioFileReader.Position = newPosition;
             SoundTouchProcessor processor = new SoundTouchProcessor(); //change any option here
             //processor.SetSetting(SettingId.SequenceDurationMs, 10);
@@ -93,7 +87,7 @@ namespace NAudioWrapper
 
         public double Length => _audioFileReader?.TotalTime.TotalSeconds ?? 1;
 
-        public bool IsPlaying => _output.PlaybackState == PlaybackState.Playing;
+        public bool IsPlaying => _output != null && _output.PlaybackState == PlaybackState.Playing;
 
         #endregion
 
@@ -130,24 +124,15 @@ namespace NAudioWrapper
             return isPlaying;
         }
 
-        //Soft clears the buffer but doesn't dispose anything. Usefull when changing position in song.
-        public bool Stop(bool soft = false)
+        public void Stop(bool notifyChanges = true)
         {
-            if (_output == null)
-                return true;
-
-            if (_output.PlaybackState != PlaybackState.Stopped)
+            if (_output != null && IsPlaying)
             {
                 _stopMeansEnded = false;
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Stop();
-                return false;
             }
-            else
-            {
-                DisposeOutput();
-                return true;
-            }
+            DisposeOutput(notifyChanges);
         }
 
         #endregion
@@ -163,19 +148,24 @@ namespace NAudioWrapper
             }
             else
             {
-                DisposeOutput();
                 _stopMeansEnded = true;
             }
         }
         #endregion
 
         #region Tools
-        private void DisposeOutput()
+        private void DisposeOutput(bool notifyChanges = true)
         {
-            if (IsPlaying)
+            if (_output != null)
             {
-                PlaybackStopping?.Invoke(null, EventArgs.Empty);
-                _output?.Stop();
+                if (IsPlaying)
+                {
+                    _stopMeansEnded = false;
+                    PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                    _output.Stop();
+                }
+                _output.Dispose();
+                _output = null;
             }
 
             if (_audioFileReader != null)
@@ -184,13 +174,11 @@ namespace NAudioWrapper
                 _audioFileReader = null;
             }
 
-            if (_output != null)
+            if (notifyChanges)
             {
-                _output.Dispose();
-                _output = null;
+                OnPropertyChanged(nameof(Length));
+                OnPropertyChanged(nameof(Position));
             }
-            OnPropertyChanged(nameof(Length));
-            OnPropertyChanged(nameof(Position));
         }
         #endregion
     }
