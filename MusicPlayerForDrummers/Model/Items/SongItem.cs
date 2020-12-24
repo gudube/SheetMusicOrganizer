@@ -127,7 +127,7 @@ namespace MusicPlayerForDrummers.Model.Items
             if(!string.IsNullOrWhiteSpace(AudioDirectory1))
                 ReadAudioMetadata(AudioDirectory1, true);
             if(!string.IsNullOrWhiteSpace(AudioDirectory2))
-                ReadAudioMetadata(AudioDirectory2, true);
+                ReadAudioMetadata(AudioDirectory2, false);
         }
 
         private void ReadAudioMetadata(string audioDir, bool updateExisting)

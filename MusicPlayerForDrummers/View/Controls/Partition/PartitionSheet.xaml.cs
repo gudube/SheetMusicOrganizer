@@ -128,15 +128,16 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         {
             BitmapImage image = new BitmapImage();
 
-            using (var stream = new InMemoryRandomAccessStream())
+            using (var stream = new WrappingStream(new MemoryStream()))
             {
-                await page.RenderToStreamAsync(stream);
+                await page.RenderToStreamAsync(stream.AsRandomAccessStream());
 
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream.AsStream();
+                image.StreamSource = stream;
                 image.DecodePixelWidth = 1400; //todo: Add this option in settings to change that
                 image.EndInit();
+                image.Freeze();
             }
 
             return image;
