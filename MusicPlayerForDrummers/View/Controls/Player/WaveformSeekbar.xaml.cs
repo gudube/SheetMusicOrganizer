@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -75,9 +76,13 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         private readonly WaveFormRenderer _waveFormRenderer = new WaveFormRenderer();
 
-        private WaveFormRendererSettings? _darkRendererSettings;
+        private WaveFormRendererSettings _darkRendererSettings;
 
         #region Render WaveForm
+
+        private Task<BitmapImage>? _createImageTask;
+        private CancellationTokenSource _cancelImageCreation = new CancellationTokenSource();
+
         private async void UpdateWaveForm(string audioDirectory)
         {
             if (string.IsNullOrEmpty(audioDirectory))
@@ -86,28 +91,37 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 return;
             }
 
-            if (_darkRendererSettings == null)
-            {
-                Log.Warning("WaveFormRendererSettings is null when trying to update the waveform.");
-                _darkRendererSettings = new SoundCloudOriginalSettings
-                {
-                    Width = 1500,
-                    TopHeight = 45, 
-                    BottomHeight = 30
-                };
-            }
-
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
-            //todo: add cancelation token for when changing songs fast
-            //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-cancellation
-            BitmapImage imageSource = await Task.Run(() =>
+
+            if (_createImageTask != null && !_createImageTask.IsCompleted)
             {
+                //the task is running, cancel it and wait for it to be done before continuing
+                _cancelImageCreation.Cancel();
+                try
+                {
+                    await _createImageTask;
+                }
+                catch(OperationCanceledException ex)
+                {
+                    _cancelImageCreation.Dispose();
+                }
+                _cancelImageCreation = new CancellationTokenSource();
+            }
+            
+            CancellationToken ct = _cancelImageCreation.Token;
+
+            _createImageTask = Task.Run(() =>
+            {
+                ct.ThrowIfCancellationRequested();
+
                 //TODO: do this as often as possible as the performance is a game changer!
-                Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings);
+                Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                ct.ThrowIfCancellationRequested();
                 using (MemoryStream memory = new MemoryStream())
                 {
                     image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                    ct.ThrowIfCancellationRequested();
                     memory.Position = 0;
                     BitmapImage bitmapImage = new BitmapImage();
                     bitmapImage.BeginInit();
@@ -117,10 +131,18 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                     bitmapImage.Freeze();
                     return bitmapImage;
                 }
-            });
+            }, ct);
 
-            WaveFormImage.Source = imageSource;
-
+            try
+            {
+                BitmapImage imageSource = await _createImageTask;
+                WaveFormImage.Source = imageSource;
+            }
+            catch (OperationCanceledException ex)
+            {
+                //nothing to do
+            }
+            
             WaveFormImage.Visibility = Visibility.Visible;
             LoadingWaveFormText.Visibility = Visibility.Hidden;
         }

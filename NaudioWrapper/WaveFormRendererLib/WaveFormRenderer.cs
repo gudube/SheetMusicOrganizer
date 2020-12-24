@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using NAudio.Wave;
 
 namespace NAudioWrapper.WaveFormRendererLib
@@ -11,21 +12,26 @@ namespace NAudioWrapper.WaveFormRendererLib
             return Render(selectedFile, new MaxPeakProvider(), settings);
         }        
 
-        public Image Render(string selectedFile, IPeakProvider peakProvider, WaveFormRendererSettings settings)
+        public Image Render(string selectedFile, IPeakProvider peakProvider, WaveFormRendererSettings settings, CancellationToken? ct = null)
         {
+            ct?.ThrowIfCancellationRequested();
+
             using (var reader = new AudioFileReader(selectedFile))
             {
                 int bytesPerSample = (reader.WaveFormat.BitsPerSample / 8);
                 var samples = reader.Length / (bytesPerSample);
                 var samplesPerPixel = (int)(samples / settings.Width);
                 var stepSize = settings.PixelsPerPeak + settings.SpacerPixels;
+                ct?.ThrowIfCancellationRequested();
                 peakProvider.Init(reader, samplesPerPixel * stepSize);
-                return Render(peakProvider, settings);
+                return Render(peakProvider, settings, ct);
             }
         }
 
-        private static Image Render(IPeakProvider peakProvider, WaveFormRendererSettings settings)
+        private static Image Render(IPeakProvider peakProvider, WaveFormRendererSettings settings, CancellationToken? ct = null)
         {
+            ct?.ThrowIfCancellationRequested();
+
             if (settings.DecibelScale)
                 peakProvider = new DecibelPeakProvider(peakProvider, 48);
 
@@ -34,6 +40,9 @@ namespace NAudioWrapper.WaveFormRendererLib
             {
                 b.MakeTransparent();
             }
+
+            ct?.ThrowIfCancellationRequested();
+
             using (var g = Graphics.FromImage(b))
             {
                 g.FillRectangle(settings.BackgroundBrush, 0,0,b.Width,b.Height);
@@ -43,10 +52,14 @@ namespace NAudioWrapper.WaveFormRendererLib
                 var currentPeak = peakProvider.GetNextPeak();
                 while (x < settings.Width)
                 {
+                    ct?.ThrowIfCancellationRequested();
+
                     var nextPeak = peakProvider.GetNextPeak();
                     
                     for (int n = 0; n < settings.PixelsPerPeak; n++)
                     {
+                        ct?.ThrowIfCancellationRequested();
+
                         var lineHeight = settings.TopHeight * currentPeak.Max;
                         g.DrawLine(settings.TopPeakPen, x, midPoint, x, midPoint - lineHeight);
                         lineHeight = settings.BottomHeight * currentPeak.Min;
@@ -56,6 +69,8 @@ namespace NAudioWrapper.WaveFormRendererLib
 
                     for (int n = 0; n < settings.SpacerPixels; n++)
                     {
+                        ct?.ThrowIfCancellationRequested();
+
                         // spacer bars are always the lower of the 
                         var max = Math.Min(currentPeak.Max, nextPeak.Max);
                         var min = Math.Max(currentPeak.Min, nextPeak.Min);
