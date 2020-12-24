@@ -70,11 +70,9 @@ namespace MusicPlayerForDrummers.Model
             SaveOpenedDbSettings(databasePath);
             
             Log.Information("Reopening the application with new database path {path}", databasePath);
-            //todo: Remove all reference in project to the win forms assembly (unless its there for a reason?)
-            //Application.Restart();
+            //todo: fix restarting app
             Process.Start(Application.ResourceAssembly.Location);
-            // p.WaitForInputIdle();
-            Application.Current.MainWindow?.Close();
+            Application.Current.Shutdown();
         }
 
         private static void SaveOpenedDbSettings(string dBOpenedPath)
