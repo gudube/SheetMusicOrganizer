@@ -43,19 +43,9 @@
                 </Style>
             </local:SeekBarSlider.Style>
         </local:SeekBarSlider>
-        <Canvas x:Name="Canvas">
-            <Canvas.Style>
-                <Style TargetType="{x:Type Canvas}">
-                    <Setter Property="Visibility" Value="Hidden"></Setter>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ShowAdvancedOptions, Mode=OneWay}" Value="True">
-                            <Setter Property="Visibility" Value="Visible"></Setter>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Canvas.Style>
+        <Canvas x:Name="FlagsCanvas">
             <Canvas.Resources>
-                <tools:DivisionConverter x:Key="DivisionConverter"/>
+                <tools:CrossMultiplicationConverter x:Key="CrossMultiplicationConverter"/>
             </Canvas.Resources>
             <Grid x:Name="StartScrollFlag" Canvas.Bottom="0"
                   MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
@@ -63,12 +53,19 @@
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
-                                    <Binding Path="ScrollStartPercentage"></Binding>
+                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
+                                    <Binding Path="Session.PlayingSong.ScrollStartTime"></Binding>
+                                    <Binding Path="Session.Player.Length"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowAdvancedOptions, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
                 <Polygon/>
@@ -80,12 +77,19 @@
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Right">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
-                                    <Binding Path="ScrollEndPercentage"></Binding>
+                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
+                                    <Binding Path="Session.PlayingSong.ScrollEndTime"></Binding>
+                                    <Binding Path="Session.Player.Length"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowAdvancedOptions, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
                 <Polygon/>
@@ -97,33 +101,47 @@
                     <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
-                                    <Binding Path="ScrollStartPercentage"></Binding>
+                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
+                                    <Binding Path="Session.Player.LoopStart"></Binding>
+                                    <Binding Path="Session.Player.Length"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Session.Player.IsLooping, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
                 <Polygon/>
-                <TextBlock Text="S"/>
+                <TextBlock Text="&gt;"/>
             </Grid>
-            <Grid x:Name="EndLoopFlag" Canvas.Bottom="0" Margin="0,0,-8,0"
+            <Grid x:Name="EndLoopFlag" Canvas.Top="0" Margin="0,0,-8,0"
                   MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
                 <Grid.Style>
                     <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
-                        <Setter Property="Canvas.Right">
+                        <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
-                                    <Binding Path="ScrollEndPercentage"></Binding>
+                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
+                                    <Binding Path="Session.Player.LoopEnd"></Binding>
+                                    <Binding Path="Session.Player.Length"></Binding>
                                     <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
                                 </MultiBinding>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Session.Player.IsLooping, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
                     </Style>
                 </Grid.Style>
                 <Polygon/>
-                <TextBlock Text="E"/>
+                <TextBlock Text="&lt;"/>
             </Grid>
         </Canvas>
     </Grid>

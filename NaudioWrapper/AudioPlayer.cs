@@ -114,6 +114,27 @@ namespace NAudioWrapper
             get => _keepPitch;
             set { if (SetField(ref _keepPitch, value)) UpdateProviderSpeed(); }
         }
+        
+        private bool _isLooping = false;
+        public bool IsLooping
+        {
+            get => _isLooping;
+            set => SetField(ref _isLooping, value);
+        }
+
+        private double _loopStart = 0.0;
+        public double LoopStart
+        {
+            get => _loopStart ;
+            set => SetField(ref _loopStart , value);
+        }
+
+        private double _loopEnd = 1.0;
+        public double LoopEnd
+        {
+            get => _loopEnd;
+            set => SetField(ref _loopEnd, value);
+        }
         #endregion
 
         #region Play Controls
@@ -184,7 +205,6 @@ namespace NAudioWrapper
         #endregion
 
         #region Tools
-
         private void UpdateProviderSpeed()
         {
             if (_stream == null)

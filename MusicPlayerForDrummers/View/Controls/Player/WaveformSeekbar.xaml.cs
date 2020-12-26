@@ -49,7 +49,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 playerVM.Session.PropertyChanged += Session_PropertyChanged;
         }
 
-        private void Session_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Session_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
             {
@@ -60,7 +60,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
         }
 
-        private void WaveformSeekBar_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        private void WaveformSeekBar_DragStarted(object? sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))
                 return;
@@ -76,7 +76,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         private readonly WaveFormRenderer _waveFormRenderer = new WaveFormRenderer();
 
-        private WaveFormRendererSettings _darkRendererSettings;
+        private WaveFormRendererSettings? _darkRendererSettings;
 
         #region Render WaveForm
 
@@ -85,6 +85,12 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         private async void UpdateWaveForm(string audioDirectory)
         {
+            if (_darkRendererSettings == null)
+            {
+                Log.Error("RendererSettings null when trying to create the waveform.");
+                return;
+            }
+
             if (string.IsNullOrEmpty(audioDirectory))
             {
                 WaveFormImage.Visibility = Visibility.Hidden;
@@ -102,7 +108,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 {
                     await _createImageTask;
                 }
-                catch(OperationCanceledException ex)
+                catch(OperationCanceledException)
                 {
                     _cancelImageCreation.Dispose();
                 }
@@ -138,7 +144,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 BitmapImage imageSource = await _createImageTask;
                 WaveFormImage.Source = imageSource;
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 //nothing to do
             }
@@ -157,28 +163,28 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         {
             if (sender is Grid grid)
             {
-                double percentageGap = 0.02 * Canvas.ActualWidth;
+                double percentageGap = 0.05 * FlagsCanvas.ActualWidth;
                 grid.CaptureMouse();
                 if (grid == StartScrollFlag)
                 {
                     _minPos = 0;
-                    _maxPos = Canvas.ActualWidth - Canvas.GetRight(EndScrollFlag) - percentageGap;
+                    _maxPos = FlagsCanvas.ActualWidth - Canvas.GetRight(EndScrollFlag) - percentageGap;
                 }
                 else if (grid == EndScrollFlag)
                 {
                     _minPos = Canvas.GetLeft(StartScrollFlag) + percentageGap;
-                    _maxPos = Canvas.ActualWidth;
+                    _maxPos = FlagsCanvas.ActualWidth;
                 }
                 else if (grid == StartLoopFlag)
                 {
                     _minPos = 0;
-                    _maxPos = Canvas.ActualWidth - Canvas.GetRight(EndLoopFlag) - percentageGap;
+                    _maxPos = FlagsCanvas.ActualWidth - Canvas.GetRight(EndLoopFlag) - percentageGap;
                     //todo: might need to change percentageGap to a gap just for loops (higher tha 2%)
                 }
                 else if (grid == EndLoopFlag)
                 {
                     _minPos = Canvas.GetLeft(StartLoopFlag) + percentageGap;
-                    _maxPos = Canvas.ActualWidth;
+                    _maxPos = FlagsCanvas.ActualWidth;
                 }
 
                 _flag = grid;
@@ -189,14 +195,14 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         {
             if (_flag != null)
             {
-                double posX = e.GetPosition(Canvas).X;
+                double posX = e.GetPosition(FlagsCanvas).X;
                 if (posX < _minPos)
                     posX = _minPos;
                 else if (posX > _maxPos)
                     posX = _maxPos;
                 
                 if(_flag == EndScrollFlag)
-                    Canvas.SetRight(_flag, Canvas.ActualWidth - posX);
+                    Canvas.SetRight(_flag, FlagsCanvas.ActualWidth - posX);
                 else
                     Canvas.SetLeft(_flag, posX);
             }
@@ -218,9 +224,14 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                     return;
                 }
                 if (_flag == StartScrollFlag)
-                    playerVM.Session.PlayingSong.ScrollStartTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(StartScrollFlag) / Canvas.ActualWidth);
+                    playerVM.Session.PlayingSong.ScrollStartTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
                 else if (_flag == EndScrollFlag)
-                    playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(EndScrollFlag) / Canvas.ActualWidth);
+                    playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(_flag) / FlagsCanvas.ActualWidth);
+                else if (_flag == StartLoopFlag)
+                    playerVM.Session.Player.LoopStart = (double) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+                else if (_flag == EndLoopFlag)
+                    playerVM.Session.Player.LoopEnd = (double) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+
                 _flag = null;
             }
         }

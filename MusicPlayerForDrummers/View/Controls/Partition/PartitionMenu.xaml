@@ -27,7 +27,7 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
                             <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="CustomSpeed" Style="{StaticResource LabelTextBlock}"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
                                 <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
@@ -37,13 +37,13 @@
                                 <TextBlock Margin="5,0,0,0" Style="{StaticResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
                             </StackPanel>
                             <!--todo: use knob control instead of textbox. that way we have more control over input. better than checking errors-->
-                            <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsLooping}"></CheckBox>
+                            <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.IsLooping}"></CheckBox>
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
                                 <TextBlock Text="Between" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding LoopStart}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding Session.Player.LoopStart}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding LoopEnd}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding Session.Player.LoopEnd}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

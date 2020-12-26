@@ -119,13 +119,13 @@ namespace MusicPlayerForDrummers.View.Tools
 
     public class CrossMultiplicationConverter : IMultiValueConverter
     {
-        //input values: a,b,c so that (a/b)*(?/d)
+        //input values: a,b,d so that (a/b)*(?/d)
         //ex: posSong, lengthSong, lengthPixels
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && !Double.IsNaN(a) &&
-                Double.TryParse(System.Convert.ToString(values[1]), out var b) && !Double.IsNaN(b) &&
-                Double.TryParse(System.Convert.ToString(values[2]), out var d) && !Double.IsNaN(d))
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b) && Math.Abs(b) > 0.0000001 &&
+                Double.TryParse(System.Convert.ToString(values[2]), out var d) && Double.IsFinite(d))
                 return d * a / b;
             
             return 0.0;

@@ -61,13 +61,13 @@ namespace MusicPlayerForDrummers.ViewModel
             Playlists.Reset(playlists);
         }
 
-        private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             foreach (BasePlaylistItem item in Playlists) 
                 item.PropertyChanged += Playlist_PropertyChanged;
         }
 
-        private void Playlist_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Playlist_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(PlaylistItem.IsPlaying))
                 RefreshSongShowedAsPlaying();
