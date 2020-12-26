@@ -374,6 +374,21 @@
         </Style.Resources>
     </Style>
 
+    <Style x:Key="TopWaveFormFlag" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="DarkRed"></Setter>
+                <Setter Property="Fill" Value="DarkRed"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, 14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -3, 0, 0, -2"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+
     <!-- Radio buttons -->
     <Style BasedOn="{StaticResource ClickableText}" TargetType="{x:Type RadioButton}">
         <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"></Setter>

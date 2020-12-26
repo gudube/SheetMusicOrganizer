@@ -73,7 +73,6 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Sync Method
-
         private readonly NoSyncVM _noSyncVM;
         private readonly ScrollSyncVM _scrollSyncVM;
         private readonly PageSyncVM _pageSyncVM;
@@ -84,6 +83,35 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             get => _selectedSyncVM;
             set => SetField(ref _selectedSyncVM, value);
+        }
+        #endregion
+
+        #region Playback settings
+
+        public bool UseCustomSpeed => Session.Player.UseCustomSpeed;
+
+        public double CustomSpeed => Session.Player.CustomSpeed;
+        public bool KeepPitch => Session.Player.KeepPitch;
+
+        private bool _isLooping = false;
+        public bool IsLooping
+        {
+            get => _isLooping;
+            set => SetField(ref _isLooping, value);
+        }
+
+        private double _loopStart = 1.0;
+        public double LoopStart
+        {
+            get => _loopStart ;
+            set => SetField(ref _loopStart , value);
+        }
+
+        private double _loopEnd = 1.0;
+        public double LoopEnd
+        {
+            get => _loopEnd;
+            set => SetField(ref _loopEnd, value);
         }
         #endregion
     }

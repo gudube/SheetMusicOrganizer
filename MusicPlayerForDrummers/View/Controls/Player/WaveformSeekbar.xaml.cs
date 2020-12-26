@@ -169,6 +169,17 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                     _minPos = Canvas.GetLeft(StartScrollFlag) + percentageGap;
                     _maxPos = Canvas.ActualWidth;
                 }
+                else if (grid == StartLoopFlag)
+                {
+                    _minPos = 0;
+                    _maxPos = Canvas.ActualWidth - Canvas.GetRight(EndLoopFlag) - percentageGap;
+                    //todo: might need to change percentageGap to a gap just for loops (higher tha 2%)
+                }
+                else if (grid == EndLoopFlag)
+                {
+                    _minPos = Canvas.GetLeft(StartLoopFlag) + percentageGap;
+                    _maxPos = Canvas.ActualWidth;
+                }
 
                 _flag = grid;
             }

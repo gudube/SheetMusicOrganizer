@@ -91,6 +91,40 @@
                 <Polygon/>
                 <TextBlock Text="E"/>
             </Grid>
+            <Grid x:Name="StartLoopFlag" Canvas.Top="0"
+                  MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
+                <Grid.Style>
+                    <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
+                        <Setter Property="Canvas.Left">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
+                                    <Binding Path="ScrollStartPercentage"></Binding>
+                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Grid.Style>
+                <Polygon/>
+                <TextBlock Text="S"/>
+            </Grid>
+            <Grid x:Name="EndLoopFlag" Canvas.Bottom="0" Margin="0,0,-8,0"
+                  MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
+                <Grid.Style>
+                    <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
+                        <Setter Property="Canvas.Right">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource DivisionConverter}" Mode="OneWay">
+                                    <Binding Path="ScrollEndPercentage"></Binding>
+                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Grid.Style>
+                <Polygon/>
+                <TextBlock Text="E"/>
+            </Grid>
         </Canvas>
     </Grid>
 </UserControl>

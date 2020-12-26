@@ -90,7 +90,6 @@ namespace MusicPlayerForDrummers.ViewModel
             get => _playingSecondaryAudio;
             set => SetField(ref _playingSecondaryAudio, value);
         }
-
         #endregion
 
         #region Controls
@@ -144,14 +143,12 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand StartedSeekCommand { get; }
         private void StartedSeek(object? obj)
         {
-            _resumePlaying = Session.Player.Pause(true);
+            _resumePlaying = Session.Player.Stop(false);
         }
 
         public DelegateCommand StoppedSeekCommand { get; }
         private void StoppedSeek(object? obj)
         {
-            //Session.Player.Position = (double)obj;
-
             if (_resumePlaying)
                 Session.Player.Play();
         }
