@@ -8,8 +8,9 @@ namespace NAudioWrapper
 {
     public class AudioPlayer : BaseNotifyPropertyChanged
     {
-        private SoundTouchProcessor ? _processor;
-        private SoundTouchWaveProvider? _provider;
+        private SoundTouchWaveStream? _stream;
+        //private SoundTouchProcessor ? _processor;
+        //private SoundTouchWaveProvider? _provider;
         private AudioFileReader? _audioFileReader;
         private WaveOutEvent? _output;
         private bool _stopMeansEnded = true;
@@ -39,11 +40,12 @@ namespace NAudioWrapper
             _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume}; //TODO: Check other options
             if (newPosition < _audioFileReader.Length)
                 _audioFileReader.Position = newPosition;
-            _processor = new SoundTouchProcessor();
+            _stream = new SoundTouchWaveStream(_audioFileReader);
+            //_processor = new SoundTouchProcessor();
             //processor.SetSetting(SettingId.SequenceDurationMs, 10);
-            _provider = new SoundTouchWaveProvider(_audioFileReader, _processor);
+            //_provider = new SoundTouchWaveProvider(_audioFileReader, _processor);
             UpdateProviderSpeed();
-            _output.Init(_provider);
+            _output.Init(_stream);
 
             OnPropertyChanged(nameof(Position));
             OnPropertyChanged(nameof(Length));
@@ -185,26 +187,26 @@ namespace NAudioWrapper
 
         private void UpdateProviderSpeed()
         {
-            if (_processor == null)
+            if (_stream == null)
                 return;
 
             if (UseCustomSpeed)
             {
                 if (KeepPitch)
                 {
-                    _processor.RateChange = 1.0;
-                    _processor.TempoChange = CustomSpeed;
+                    _stream.Rate = 1.0;
+                    _stream.Tempo = CustomSpeed;
                 }
                 else
                 {
-                    _processor.TempoChange = 1.0;
-                    _processor.RateChange = CustomSpeed;
+                    _stream.Tempo = 1.0;
+                    _stream.Rate = CustomSpeed;
                 }
             }
             else
             {
-                _processor.RateChange = 1.0;
-                _processor.TempoChange = 1.0;
+                _stream.Rate = 1.0;
+                _stream.Tempo = 1.0;
             }
         }
 
@@ -222,13 +224,17 @@ namespace NAudioWrapper
                 _output = null;
             }
 
+            if (_stream != null)
+            {
+                _stream.Dispose();
+                _stream = null;
+            }
+
             if (_audioFileReader != null)
             {
                 _audioFileReader.Dispose();
                 _audioFileReader = null;
             }
-            _provider = null;
-            _processor = null;
 
             CustomSpeed = 1.0;
             KeepPitch = false;
