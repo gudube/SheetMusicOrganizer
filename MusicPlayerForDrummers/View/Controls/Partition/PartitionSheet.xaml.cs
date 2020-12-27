@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Data.Pdf;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
 
@@ -49,7 +48,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             }
         }
 
-        private void PartitionVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Zoom))
                 UpdateZoom();
@@ -57,7 +56,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 OpenShownSongPartition();
         }
 
-        private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Player_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Session.Player.Position))
                 UpdateScrollPos();

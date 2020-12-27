@@ -65,14 +65,14 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
             }
         }
-        private void MasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(DataContext is LibraryVM libraryVM)
                 foreach(MasteryItem newItem in libraryVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
         }
 
-        private void MasteryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void MasteryItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(MasteryItem.IsSelected))
             {

@@ -22,7 +22,7 @@ namespace MusicPlayerForDrummers.ViewModel
             SetupEvents();
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
         }
 

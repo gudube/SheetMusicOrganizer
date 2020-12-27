@@ -42,7 +42,7 @@ namespace MusicPlayerForDrummers.ViewModel
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(Session.PlayingSong))
                 RefreshSongShowedAsPlaying();

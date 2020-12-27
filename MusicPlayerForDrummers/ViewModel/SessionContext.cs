@@ -20,7 +20,7 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 Interval = TimeSpan.FromMilliseconds(50)
             };
-            timer.Tick += (sender, e) => PlayerTimerUpdate.Invoke();
+            timer.Tick += (sender, e) => PlayerTimerUpdate?.Invoke();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
             
             if (Settings.Default.Volume >= 0 && Settings.Default.Volume <= 1)

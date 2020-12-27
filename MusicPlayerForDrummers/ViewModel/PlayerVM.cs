@@ -27,7 +27,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
 
-        private void Player_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Player_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             //todo: transfom playingsong length from string to int (seconds) and use it here (simpler), also think of displaying it correctly in grid
             if (e.PropertyName == nameof(Session.Player.Length))
@@ -36,13 +36,13 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Session.PlayingSong))
                 PlayingSecondaryAudio = false;
         }
 
-        private void PlayingSong_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void PlayingSong_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SongItem.ScrollStartTime) || e.PropertyName == nameof(SongItem.ScrollEndTime))
                 UpdateScrollPercentage();

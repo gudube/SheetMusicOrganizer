@@ -22,7 +22,7 @@ namespace MusicPlayerForDrummers.ViewModel
             _selectedSyncVM = _scrollSyncVM;
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Session.PlayingSong))
             {

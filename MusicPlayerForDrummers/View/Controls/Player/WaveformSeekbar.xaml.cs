@@ -228,9 +228,9 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 else if (_flag == EndScrollFlag)
                     playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(_flag) / FlagsCanvas.ActualWidth);
                 else if (_flag == StartLoopFlag)
-                    playerVM.Session.Player.LoopStart = (double) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+                    playerVM.Session.Player.LoopStart = Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
                 else if (_flag == EndLoopFlag)
-                    playerVM.Session.Player.LoopEnd = (double) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+                    playerVM.Session.Player.LoopEnd = Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
 
                 _flag = null;
             }

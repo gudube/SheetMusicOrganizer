@@ -81,11 +81,14 @@ namespace MusicPlayerForDrummers.View
 
         public async Task Configure()
         {
-            foreach (string recentDB in Settings.Default.RecentDBs)
+            foreach (string? recentDB in Settings.Default.RecentDBs)
             {
-                MenuItem recentDBItem = new MenuItem { Header = recentDB };
-                recentDBItem.Click += (s, e) => MainVm.LoadDatabase(recentDB);
-                FileMenuItem.Items.Add(recentDBItem);
+                if (recentDB != null)
+                {
+                    MenuItem recentDBItem = new MenuItem { Header = recentDB };
+                    recentDBItem.Click += (s, e) => MainVm.LoadDatabase(recentDB);
+                    FileMenuItem.Items.Add(recentDBItem);
+                }
             }
 
             if (DataContext is MainVM mainVM)

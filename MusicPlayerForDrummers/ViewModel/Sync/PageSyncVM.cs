@@ -8,7 +8,7 @@ namespace MusicPlayerForDrummers.ViewModel.Sync
         {
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
         }
 

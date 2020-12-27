@@ -13,7 +13,7 @@ namespace MusicPlayerForDrummers.ViewModel.Sync
             SetEndNowCommand = new DelegateCommand(SetEndNow);
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
         }
 

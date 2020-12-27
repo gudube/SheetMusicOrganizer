@@ -1,14 +1,11 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Threading.Tasks;
-using SoundTouch;
-using SoundTouch.Net.NAudioSupport;
 
 namespace NAudioWrapper
 {
     public class AudioPlayer : BaseNotifyPropertyChanged
     {
-        private SoundTouchWaveStream? _stream;
+        private CustomStream? _stream;
         //private SoundTouchProcessor ? _processor;
         //private SoundTouchWaveProvider? _provider;
         private AudioFileReader? _audioFileReader;
@@ -28,23 +25,22 @@ namespace NAudioWrapper
             //todo: crash when switching version fast, bc of changing song quickly?
             long newPosition = 0;
             if (_audioFileReader != null && keepPosition)
-            {
-                newPosition = _audioFileReader.Position;
-            }
+                newPosition = _audioFileReader.Position; // when changing track version
 
-            Stop(true, false);
+            Stop(true, false); // stop if playing
             
+            //todo: add try catch and show error window if there is an error. for example, cant find the file
             _output = new WaveOutEvent();
             _output.PlaybackStopped += _output_PlaybackStopped;
-            //todo: add try catch and show error window if there is an error. for example, cant find the file
-            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume}; //TODO: Check other options
+
+            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume}; //TODO: Check other options, e.g. antialiasing
             if (newPosition < _audioFileReader.Length)
-                _audioFileReader.Position = newPosition;
-            _stream = new SoundTouchWaveStream(_audioFileReader);
-            //_processor = new SoundTouchProcessor();
-            //processor.SetSetting(SettingId.SequenceDurationMs, 10);
-            //_provider = new SoundTouchWaveProvider(_audioFileReader, _processor);
-            UpdateProviderSpeed();
+                _audioFileReader.Position = newPosition; //set the new position if is valid
+            LoopStart = 0; // set the loop times to be the whole song by default
+            LoopEnd = _audioFileReader.TotalTime.TotalSeconds;
+
+            _stream = new CustomStream(_audioFileReader, IsLooping, LoopStart, LoopEnd);
+            UpdateStreamSpeed();
             _output.Init(_stream);
 
             OnPropertyChanged(nameof(Position));
@@ -62,6 +58,13 @@ namespace NAudioWrapper
             {
                 if (_audioFileReader != null)
                 {
+                    if (IsLooping)
+                    {
+                        if (value < LoopStart)
+                            value = LoopStart;
+                        else if (value > LoopEnd)
+                            value = LoopEnd;
+                    }
                     _audioFileReader.CurrentTime = TimeSpan.FromSeconds(value);
                     OnPropertyChanged(nameof(Position));
                 }
@@ -98,42 +101,66 @@ namespace NAudioWrapper
         public bool UseCustomSpeed
         {
             get => _useCustomSpeed;
-            set { if (SetField(ref _useCustomSpeed, value)) UpdateProviderSpeed(); }
+            set { if (SetField(ref _useCustomSpeed, value)) UpdateStreamSpeed(); }
         }
 
-        private double _customSpeed = 1.0;
+        private double _customSpeed = 1;
         public double CustomSpeed
         {
             get => _customSpeed;
-            set { if (SetField(ref _customSpeed, value)) UpdateProviderSpeed(); }
+            set { if (SetField(ref _customSpeed, value)) UpdateStreamSpeed(); }
         }
 
         private bool _keepPitch = false;
         public bool KeepPitch
         {
             get => _keepPitch;
-            set { if (SetField(ref _keepPitch, value)) UpdateProviderSpeed(); }
+            set { if (SetField(ref _keepPitch, value)) UpdateStreamSpeed(); }
         }
         
         private bool _isLooping = false;
         public bool IsLooping
         {
             get => _isLooping;
-            set => SetField(ref _isLooping, value);
+            set
+            {
+                if (SetField(ref _isLooping, value) && _stream != null)
+                {
+                    _stream.EnableLooping = IsLooping;
+                    if (IsLooping && Position < LoopStart || Position > LoopEnd)
+                        Position = LoopStart;
+                }
+            }
         }
 
-        private double _loopStart = 0.0;
+        private double _loopStart = 0;
         public double LoopStart
         {
             get => _loopStart ;
-            set => SetField(ref _loopStart , value);
+            set
+            {
+                if (SetField(ref _loopStart, value))
+                {
+                    _stream?.SetLoopStart(value);
+                    if (IsLooping && Position < LoopStart || Position > LoopEnd)
+                        Position = LoopStart;
+                }
+            }
         }
 
-        private double _loopEnd = 1.0;
+        private double _loopEnd = 1;
         public double LoopEnd
         {
             get => _loopEnd;
-            set => SetField(ref _loopEnd, value);
+            set
+            {
+                if (SetField(ref _loopEnd, value))
+                {
+                    _stream?.SetLoopEnd(value);
+                    if (IsLooping && Position < LoopStart || Position > LoopEnd)
+                        Position = LoopStart;
+                }
+            }
         }
         #endregion
 
@@ -205,7 +232,7 @@ namespace NAudioWrapper
         #endregion
 
         #region Tools
-        private void UpdateProviderSpeed()
+        private void UpdateStreamSpeed()
         {
             if (_stream == null)
                 return;
@@ -214,19 +241,19 @@ namespace NAudioWrapper
             {
                 if (KeepPitch)
                 {
-                    _stream.Rate = 1.0;
+                    _stream.Rate = 1;
                     _stream.Tempo = CustomSpeed;
                 }
                 else
                 {
-                    _stream.Tempo = 1.0;
+                    _stream.Tempo = 1;
                     _stream.Rate = CustomSpeed;
                 }
             }
             else
             {
-                _stream.Rate = 1.0;
-                _stream.Tempo = 1.0;
+                _stream.Rate = 1;
+                _stream.Tempo = 1;
             }
         }
 
@@ -256,8 +283,11 @@ namespace NAudioWrapper
                 _audioFileReader = null;
             }
 
-            CustomSpeed = 1.0;
+            CustomSpeed = 1;
             KeepPitch = false;
+            IsLooping = false;
+            LoopStart = 0;
+            LoopEnd = 1;
 
             if (notifyChanges)
             {
