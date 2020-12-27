@@ -18,7 +18,6 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
     /// </summary>
     public partial class PartitionSheet : UserControl
     {
-        //todo: hide scrollbar and disable scrolling when the song is playing
         public PartitionSheet()
         {
             InitializeComponent();
@@ -134,7 +133,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream;
-                image.DecodePixelWidth = 1400; //todo: Add this option in settings to change that
+                image.DecodePixelWidth = 1400;
                 image.EndInit();
                 image.Freeze();
             }

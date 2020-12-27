@@ -12,9 +12,6 @@ namespace MusicPlayerForDrummers.View.Windows
     /// </summary>
     public partial class AddNewSongWindow : Window
     {
-        //TODO: Rajouter bouton pour enlever le champ audio file
-        //TODO: Changer couleur texte text-box
-        //TODO: Ouvrir fenêtre si chanson existe déjà
         public AddNewSongWindow()
         {
             this.Owner = Application.Current.MainWindow;

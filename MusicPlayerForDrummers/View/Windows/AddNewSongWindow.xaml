@@ -40,7 +40,6 @@
             <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory2}"/>
             <Button Grid.Row="4" Grid.Column="2" Click="SelectAudioFile2Button_Click"
                     Content="Select 2nd Audio" Style="{StaticResource 3DButtonSmall}"/>
-            <!-- todo: add small 'C' for clear after the main button.-->
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
             <TextBlock Text="Use Audio Metadata" Style="{StaticResource LabelTextBlock}"/>

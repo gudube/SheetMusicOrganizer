@@ -7,7 +7,6 @@ namespace MusicPlayerForDrummers.View.Controls
     /// <summary>
     /// Interaction logic for SwitchPageBar.xaml
     /// </summary>
-    /// TODO: Should it be a UserControl containing a button?
     public partial class SwitchViewButton : UserControl
     {
         public SwitchViewButton()

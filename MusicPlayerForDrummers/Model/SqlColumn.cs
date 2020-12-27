@@ -4,7 +4,6 @@ namespace MusicPlayerForDrummers.Model
 {
     public class SqlColumn
     {
-        //TODO: private set; property vs readonly field
         public string Name { get; }
         public SqliteType SqlType => GetSqlType();
         public EType CustomType { get; }

@@ -92,7 +92,7 @@ namespace MusicPlayerForDrummers.Model.Items
         {
             SongTable songTable = new SongTable();
             int? id = GetSafeInt(dataReader, songTable.Id.Name);
-            if (!id.HasValue) //todo: should throw an error in most cases where we have a log.error or log.warning and handle it
+            if (!id.HasValue)
                 Log.Error("Could not find the id when reading a SongItem from the SqliteDataReader.");
             _id = id.GetValueOrDefault(-1);
 
@@ -117,11 +117,6 @@ namespace MusicPlayerForDrummers.Model.Items
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
         }
 
-        //TODO: Block files that are more than 99:99 minutes? what about really short sounds? test it
-        //TODO: Better to add a ReadMetadataSilently that writes private fields instead
-        //(for performance and not calling tons of events)
-        //Verify ATL .NET vs TagLibSharp (performance, etc.)
-        //ATL Rating tag easier to find, but Codec harder to find
         public void ReadAudioMetadata()
         {
             if(!string.IsNullOrWhiteSpace(AudioDirectory1))
@@ -148,7 +143,7 @@ namespace MusicPlayerForDrummers.Model.Items
                 _album = tFile.Tag.Album;
             if(_genre == "" || updateExisting)
                 _genre = tFile.Tag.JoinedGenres;
-            if(_lengthMD == "00:00") //todo: or default value of Duration?
+            if(_lengthMD == "00:00")
                 _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
             if (_codecMD == "" || updateExisting)
             {
@@ -158,7 +153,6 @@ namespace MusicPlayerForDrummers.Model.Items
             }
             if(_bitrateMD == "" || updateExisting)
                 _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
-            //TODO: Crashes when opening something else than mp3? make the field empty if null
             if (_rating == 0 || updateExisting)
             {
                 TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);
@@ -182,7 +176,6 @@ namespace MusicPlayerForDrummers.Model.Items
             }
         }
 
-        //TODO: Better way to do it?
         public override object?[] GetCustomValues()
         {
             return new object?[]

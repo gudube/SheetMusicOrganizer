@@ -46,7 +46,7 @@ namespace MusicPlayerForDrummers.ViewModel.Sync
             {
                 double timeFromStart = Session.Player.Position;
                 if (timeFromStart < SyncingSong.ScrollStartTime + 10)
-                    return; //todo: add error somehow
+                    return;
                 SyncingSong.ScrollEndTime = (int) Math.Floor(Session.Player.Length - timeFromStart);
             }
         }

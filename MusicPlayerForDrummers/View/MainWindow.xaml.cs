@@ -17,7 +17,6 @@ namespace MusicPlayerForDrummers.View
     // ReSharper disable once UnusedMember.Global
     public partial class MainWindow : Window
     {
-        //TODO: Add Load Playlist, Save Playlist
         public MainWindow()
         {
             Log.Logger = new LoggerConfiguration()
@@ -33,7 +32,7 @@ namespace MusicPlayerForDrummers.View
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow(); //TODO: Add update button when song already existing
+            WindowManager.OpenAddNewSongWindow();
         }
 
         private void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)

@@ -162,7 +162,6 @@
     <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource ControlBackgroundLv1}">
         <Style.Resources>
             <Style TargetType="ScrollBar">
-                <!--todo: Change style of scrollbar to be dark on background and darker on thumb. probably needs to change template-->
             </Style>
         </Style.Resources>
         <Style.Triggers>

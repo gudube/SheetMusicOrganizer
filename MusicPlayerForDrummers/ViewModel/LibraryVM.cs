@@ -14,7 +14,6 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public override string ViewModelName => "LIBRARY";
 
-        //TODO: Separer le LibraryVM est plusieurs VM?
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
@@ -103,7 +102,6 @@ namespace MusicPlayerForDrummers.ViewModel
             Session.Status.SelectingPlaylist = false;
         }
 
-        //todo: add confirmation window when trying to delete a playlist e.g. Are you sure to... it will delete the playlist but the songs are still available in All Songs
         private void DeleteSelectedPlaylist()
         {
             if (SelectedPlaylistIndex < 0 || SelectedPlaylistIndex >= Playlists.Count - 1 
@@ -275,8 +273,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #endregion
 
-        //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
-        //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
         private void UpdateMasteryLevelsFromDb()
         {
@@ -326,7 +322,7 @@ namespace MusicPlayerForDrummers.ViewModel
             SongItem? songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                SelectedPlaylistIndex = 0; //todo: will that work? or manually change playlist and call update of shownsongs
+                SelectedPlaylistIndex = 0;
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
@@ -348,7 +344,6 @@ namespace MusicPlayerForDrummers.ViewModel
                 ShownSongs.Clear();
             else
             {
-                //todo: Make the dbhandler methods async and return task? try if that would work
                 List<SongItem> songs = await DbHandler.GetSongs(selectedPlaylist.Id);
                 if (Session.PlayingSong != null) //sets if any of the new songs is playing
                 {
@@ -468,7 +463,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 if (audios.Count >= 1)
                 {
                     audio1 = audios[0];
-                    audioFiles.Remove(audio1); //todo: not necessary, check if makes perfomance better or worse
+                    audioFiles.Remove(audio1);
                     if (audios.Count >= 2)
                     {
                         audio2 = audios[1];
@@ -497,7 +492,6 @@ namespace MusicPlayerForDrummers.ViewModel
             }));
         }
 
-        //todo: Add update existing songs (metadata and/or audio) vs skip them
         public void AddDirWithoutAudio(string dir, bool recursive)
         {
             if (recursive)
@@ -607,7 +601,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public bool SetSelectedSongPlaying(bool startPlaying)
         {
-            //todo: should also consider if there is a song playing before. what if no song playing nor shown?
             SongItem? song = ShownSongs.FirstOrDefault(x => x.IsSelected) ?? ShownSongs.FirstOrDefault();
             if (song == null)
             {
@@ -668,7 +661,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetNextPlayingSong(bool next)
         {
-            //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
             if (Session.PlayingSong == null)
             {
                 SetSelectedSongPlaying(true);

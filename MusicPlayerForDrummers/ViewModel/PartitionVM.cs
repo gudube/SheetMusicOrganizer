@@ -43,7 +43,6 @@ namespace MusicPlayerForDrummers.ViewModel
         }
 
         #region Visual properties
-        //todo: can keep these properties in the settings and let the user modify them?
         private readonly double minZoom = 0.01;
         private double _zoom = 1.0;
         public double Zoom

@@ -35,7 +35,6 @@
                                 <CheckBox VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Session.Player.KeepPitch}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></CheckBox>
                                 <TextBlock Margin="5,0,0,0" Style="{StaticResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
                             </StackPanel>
-                            <!--todo: use knob control instead of textbox. that way we have more control over input. better than checking errors-->
                             <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.IsLooping}"></CheckBox>
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
@@ -81,7 +80,6 @@
                 <Border Style="{StaticResource BaseBlackBorder}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <!--todo: prevent notes from going over the window max-->
                             <RowDefinition MinHeight="25" Height="100" MaxHeight="500"></RowDefinition>
                             <RowDefinition Height="5"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>

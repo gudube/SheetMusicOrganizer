@@ -48,7 +48,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             }
             Point currentPos = e.GetPosition(_previewTrack);
             PreviewValue = _previewTrack.ValueFromPoint(currentPos);
-            PreviewTime = TimeSpan.FromSeconds(_previewTrack.Value).ToString(@"mm\:ss"); //TODO: Add hour if possible and there is?
+            PreviewTime = TimeSpan.FromSeconds(_previewTrack.Value).ToString(@"mm\:ss");
             _previewPopup.HorizontalOffset = currentPos.X;
             _previewPopup.VerticalOffset = currentPos.Y;
         }

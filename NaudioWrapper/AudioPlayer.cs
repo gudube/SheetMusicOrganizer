@@ -22,18 +22,16 @@ namespace NAudioWrapper
 
         public void SetSong(string filepath, bool startPlaying, bool keepPosition)
         {
-            //todo: crash when switching version fast, bc of changing song quickly?
             long newPosition = 0;
             if (_audioFileReader != null && keepPosition)
                 newPosition = _audioFileReader.Position; // when changing track version
 
             Stop(true, false); // stop if playing
             
-            //todo: add try catch and show error window if there is an error. for example, cant find the file
             _output = new WaveOutEvent();
             _output.PlaybackStopped += _output_PlaybackStopped;
 
-            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume}; //TODO: Check other options, e.g. antialiasing
+            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume};
             if (newPosition < _audioFileReader.Length)
                 _audioFileReader.Position = newPosition; //set the new position if is valid
             LoopStart = 0; // set the loop times to be the whole song by default
@@ -218,7 +216,6 @@ namespace NAudioWrapper
         #region Events
         private void _output_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            //TODO: Find a way to make it work
             if (_stopMeansEnded)
             {
                 _stopMeansEnded = false;

@@ -19,7 +19,6 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <!--todo: replace with 'start at 00:10' and only be able to change using button and dragging indicator on playback bar. less control = simpler-->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{StaticResource LabelTextBlock}"/>
         <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0" HorizontalAlignment="Stretch"
                  Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged}"/>

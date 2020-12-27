@@ -48,8 +48,8 @@ namespace MusicPlayerForDrummers.View.Controls
                     {
                         _rows[rowIndex].Toggle = toggle;
                         _rows[rowIndex].DefaultValue = toggle.IsChecked;
-                        toggle.Checked += Toggle_Changed; //TODO: need to unsubscribe?
-                        toggle.Unchecked += Toggle_Changed; //TODO: need to unsubscribe?
+                        toggle.Checked += Toggle_Changed;
+                        toggle.Unchecked += Toggle_Changed;
                     }
                     else
                     {
@@ -59,7 +59,6 @@ namespace MusicPlayerForDrummers.View.Controls
             }
         }
 
-        //TODO: Add (default) or (modified) to header to make it more clear
         private void Toggle_Changed(object sender, RoutedEventArgs e)
         {
             if(_rows == null)

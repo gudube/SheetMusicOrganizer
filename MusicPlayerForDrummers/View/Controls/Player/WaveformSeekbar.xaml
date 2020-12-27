@@ -26,7 +26,6 @@
             LOADING ...
         </TextBlock>
         <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>
-        <!-- todo: use binding OneTime as much as possible -->
         <local:SeekBarSlider x:Name="SeekBar" Minimum="0"
                               Maximum="{Binding Path=DataContext.Session.Player.Length, ElementName=Control, Mode=OneWay}"
                               Value="{Binding Path=DataContext.Session.Player.Position, ElementName=Control, Mode=TwoWay}"

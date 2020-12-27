@@ -121,7 +121,6 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             {
                 ct.ThrowIfCancellationRequested();
 
-                //TODO: do this as often as possible as the performance is a game changer!
                 Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
                 ct.ThrowIfCancellationRequested();
                 using (MemoryStream memory = new MemoryStream())
@@ -186,7 +185,6 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 {
                     _minPos = 0;
                     _maxPos = Canvas.GetLeft(EndLoopFlag) - minDistancePixels;
-                    //todo: might need to change percentageGap to a gap just for loops (higher tha 2%)
                 }
                 else if (grid == EndLoopFlag)
                 {

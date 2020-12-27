@@ -29,7 +29,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private void Player_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            //todo: transfom playingsong length from string to int (seconds) and use it here (simpler), also think of displaying it correctly in grid
             if (e.PropertyName == nameof(Session.Player.Length))
             {
                 UpdateScrollPercentage();
@@ -166,7 +165,6 @@ namespace MusicPlayerForDrummers.ViewModel
             {
                 if (PlayingSecondaryAudio)
                 {
-                    //todo: add options: Keep playing when switching audio and keep position when switching audio
                     Session.Player.SetSong(Session.PlayingSong.AudioDirectory1, Session.Player.IsPlaying, true);
                     PlayingSecondaryAudio = false;
                 }

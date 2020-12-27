@@ -6,7 +6,6 @@ using Serilog;
 
 namespace MusicPlayerForDrummers.View.Windows
 {
-    //TODO: Add ? button with an image that explains the two ways to bind audio file to song
     /// <summary>
     /// Interaction logic for OpenFolderWindow.xaml
     /// </summary>
@@ -29,7 +28,6 @@ namespace MusicPlayerForDrummers.View.Windows
         public static readonly DependencyProperty RecursiveAOProperty = DependencyProperty.Register("RecursiveAO", typeof(bool), typeof(OpenFolderWindow), new PropertyMetadata(true));
         public bool RecursiveAO { get => (bool)GetValue(RecursiveAOProperty); set => SetValue(RecursiveAOProperty, value); }
 
-        //TODO: Be able to import only audio
         private void SelectFolderButton_Click(object sender, RoutedEventArgs e)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog { IsFolderPicker = true };
