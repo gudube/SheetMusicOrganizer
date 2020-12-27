@@ -163,27 +163,34 @@ namespace MusicPlayerForDrummers.View.Controls.Player
         {
             if (sender is Grid grid)
             {
-                double percentageGap = 0.05 * FlagsCanvas.ActualWidth;
                 grid.CaptureMouse();
+                if (!(DataContext is PlayerVM playerVM))
+                {
+                    Log.Error("Can't evaluate the song length when DataContext is not PlayerVM.");
+                    return;
+                }
+                // minimum 1 second gap between flags
+                double minDistancePixels = FlagsCanvas.ActualWidth * 1 / playerVM.Session.Player.Length;
+
                 if (grid == StartScrollFlag)
                 {
                     _minPos = 0;
-                    _maxPos = FlagsCanvas.ActualWidth - Canvas.GetRight(EndScrollFlag) - percentageGap;
+                    _maxPos = FlagsCanvas.ActualWidth - Canvas.GetRight(EndScrollFlag) - minDistancePixels;
                 }
                 else if (grid == EndScrollFlag)
                 {
-                    _minPos = Canvas.GetLeft(StartScrollFlag) + percentageGap;
+                    _minPos = Canvas.GetLeft(StartScrollFlag) + minDistancePixels;
                     _maxPos = FlagsCanvas.ActualWidth;
                 }
                 else if (grid == StartLoopFlag)
                 {
                     _minPos = 0;
-                    _maxPos = FlagsCanvas.ActualWidth - Canvas.GetRight(EndLoopFlag) - percentageGap;
+                    _maxPos = Canvas.GetLeft(EndLoopFlag) - minDistancePixels;
                     //todo: might need to change percentageGap to a gap just for loops (higher tha 2%)
                 }
                 else if (grid == EndLoopFlag)
                 {
-                    _minPos = Canvas.GetLeft(StartLoopFlag) + percentageGap;
+                    _minPos = Canvas.GetLeft(StartLoopFlag) + minDistancePixels;
                     _maxPos = FlagsCanvas.ActualWidth;
                 }
 
@@ -228,9 +235,9 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 else if (_flag == EndScrollFlag)
                     playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(_flag) / FlagsCanvas.ActualWidth);
                 else if (_flag == StartLoopFlag)
-                    playerVM.Session.Player.LoopStart = Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+                    playerVM.Session.Player.LoopStart = Math.Round(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth, 1, MidpointRounding.ToZero);
                 else if (_flag == EndLoopFlag)
-                    playerVM.Session.Player.LoopEnd = Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
+                    playerVM.Session.Player.LoopEnd = Math.Round(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth, 1, MidpointRounding.ToPositiveInfinity);
 
                 _flag = null;
             }

@@ -46,7 +46,32 @@
         <Canvas x:Name="FlagsCanvas">
             <Canvas.Resources>
                 <tools:CrossMultiplicationConverter x:Key="CrossMultiplicationConverter"/>
+                <tools:SubstractionConverter x:Key="SubstractionConverter"/>
             </Canvas.Resources>
+            <Grid x:Name="LeftLoopCover" Canvas.Top="0" Canvas.Left="0"
+                  Height="{Binding ElementName=FlagsCanvas, Path=ActualHeight}"
+                  Width="{Binding ElementName=StartLoopFlag, Path=(Canvas.Left)}"
+                  Visibility="{Binding ElementName=StartLoopFlag, Path=Visibility}"
+                  Style="{StaticResource TopFlagCover}">
+            </Grid>
+            <Grid x:Name="RightLoopCover" Canvas.Top="0" HorizontalAlignment="Stretch"
+                  Width="{Binding ElementName=FlagsCanvas, Path=ActualWidth}"
+                  Height="{Binding ElementName=FlagsCanvas, Path=ActualHeight}"
+                  Canvas.Left="{Binding ElementName=EndLoopFlag, Path=(Canvas.Left)}"
+                  Visibility="{Binding ElementName=EndLoopFlag, Path=Visibility}">
+                <Grid.Style>
+                    <Style BasedOn="{StaticResource TopFlagCover}" TargetType="{x:Type Grid}">
+                        <Setter Property="Width">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource SubstractionConverter}">
+                                    <Binding ElementName="FlagsCanvas" Path="ActualWidth"></Binding>
+                                    <Binding ElementName="EndLoopFlag" Path="(Canvas.Left)"></Binding>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Grid.Style>
+            </Grid>
             <Grid x:Name="StartScrollFlag" Canvas.Bottom="0"
                   MouseLeftButtonDown="Flag_OnMouseLeftButtonDown" MouseMove="Flag_OnMouseMove" MouseLeftButtonUp="Flag_OnMouseLeftButtonUp">
                 <Grid.Style>

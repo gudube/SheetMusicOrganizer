@@ -127,7 +127,7 @@ namespace NAudioWrapper
                 if (SetField(ref _isLooping, value) && _stream != null)
                 {
                     _stream.EnableLooping = IsLooping;
-                    if (IsLooping && Position < LoopStart || Position > LoopEnd)
+                    if (IsLooping && (Position < LoopStart || Position > LoopEnd))
                         Position = LoopStart;
                 }
             }
@@ -139,7 +139,7 @@ namespace NAudioWrapper
             get => _loopStart ;
             set
             {
-                if (SetField(ref _loopStart, value))
+                if (value < LoopEnd && SetField(ref _loopStart, value))
                 {
                     _stream?.SetLoopStart(value);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)
@@ -154,7 +154,7 @@ namespace NAudioWrapper
             get => _loopEnd;
             set
             {
-                if (SetField(ref _loopEnd, value))
+                if (value > LoopStart && SetField(ref _loopEnd, value))
                 {
                     _stream?.SetLoopEnd(value);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)

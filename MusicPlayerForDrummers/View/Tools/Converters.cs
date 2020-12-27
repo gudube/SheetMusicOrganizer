@@ -137,15 +137,19 @@ namespace MusicPlayerForDrummers.View.Tools
         }
     }
 
-    public class DivisionConverter : IMultiValueConverter
+    public class SubstractionConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && !Double.IsNaN(a) &&
-                Double.TryParse(System.Convert.ToString(values[1]), out var b) && !Double.IsNaN(b))
-                return a * b;
+            double value = 0.0;
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b))
+                value = a - b;
 
-            return 0.0;
+            if (value < 0)
+                return 0.0;
+           
+            return value;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

@@ -383,10 +383,15 @@
                 <Setter Property="VerticalAlignment" Value="Top"></Setter>
             </Style>
             <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Margin" Value=" -3, 0, 0, 2"></Setter>
+                <Setter Property="Margin" Value=" -4, -4, 0, 0"></Setter>
                 <Setter Property="FontSize" Value="12"></Setter>
             </Style>
         </Style.Resources>
+    </Style>
+
+    <Style x:Key="TopFlagCover" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="Red"></Setter>
+        <Setter Property="Opacity" Value="0.5"></Setter>
     </Style>
 
     <!-- Radio buttons -->

@@ -57,19 +57,14 @@ namespace NAudioWrapper
             {
                 int required = count - read;
                 int readThisTime = _sourceStream.Read(buffer, offset + read, required);
-                if (readThisTime < required && EnableLooping)
-                {
-                    _sourceStream.Position = _loopStart;
-                }
 
-                if (_sourceStream.Position >= _loopEnd && EnableLooping)
+                if (EnableLooping)
                 {
-                    _sourceStream.Position = _loopStart;
-                }
-
-                if (_sourceStream.Position < _loopStart)
-                {
-                    _sourceStream.Position = _loopStart;
+                    if (readThisTime < required || _sourceStream.Position >= _loopEnd ||
+                        _sourceStream.Position < _loopStart)
+                    {
+                        _sourceStream.Position = _loopStart;
+                    }
                 }
 
                 read += readThisTime;
