@@ -41,7 +41,7 @@ namespace NAudioWrapper
                 _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
             } catch(Exception ex)
             {
-                throw ex; // new FileFormatException(ex.Message);
+                throw new FileFormatException(new Uri(filepath), ex.Message);
             }
             if (newPosition < _audioFileReader.Length)
                 _audioFileReader.Position = newPosition; //set the new position if is valid
