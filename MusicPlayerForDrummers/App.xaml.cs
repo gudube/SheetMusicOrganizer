@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using MusicPlayerForDrummers.View;
+using Serilog;
 
 namespace MusicPlayerForDrummers
 {
@@ -11,6 +12,11 @@ namespace MusicPlayerForDrummers
     {
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            {
+                Log.Warning(eventArgs.Exception.ToString());
+            };
+
             SplashScreen splash = new SplashScreen("/View/Resources/splash.png");
             splash.Show(false);
 
