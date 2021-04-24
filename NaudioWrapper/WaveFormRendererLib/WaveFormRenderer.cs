@@ -15,7 +15,6 @@ namespace NAudioWrapper.WaveFormRendererLib
         public Image Render(string selectedFile, IPeakProvider peakProvider, WaveFormRendererSettings settings, CancellationToken? ct = null)
         {
             ct?.ThrowIfCancellationRequested();
-
             using (var reader = new AudioFileReader(selectedFile))
             {
                 int bytesPerSample = (reader.WaveFormat.BitsPerSample / 8);

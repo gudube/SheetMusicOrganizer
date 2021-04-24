@@ -15,6 +15,8 @@ namespace MusicPlayerForDrummers.View.Windows
         public OpenFolderWindow()
         {
             this.Owner = Application.Current.MainWindow;
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
 
         }

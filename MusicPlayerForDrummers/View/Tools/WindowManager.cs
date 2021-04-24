@@ -10,44 +10,32 @@ namespace MusicPlayerForDrummers.View.Tools
 
         public static void OpenAddNewSongWindow()
         {
-            if(_openedWindow != null)
-            {
-                _openedWindow.Closed -= OpenedWindow_Closed;
-                _openedWindow.Close();
-            }
+            OpenOptionWindow(new AddNewSongWindow());
+        }
+
+        public static void OpenOpenFolderWindow()
+        {
+            OpenOptionWindow(new OpenFolderWindow());
+        }
+
+        private static void OpenOptionWindow(Window window)
+        {
+            _openedWindow?.Close();
             _openedWindow = new AddNewSongWindow();
             _openedWindow.Closed += OpenedWindow_Closed;
             _openedWindow.ShowDialog();
         }
 
-        public static void OpenOpenFolderWindow()
-        {
-            if (_openedWindow != null)
-            {
-                _openedWindow.Closed -= OpenedWindow_Closed;
-                _openedWindow.Close();
-            }
-            _openedWindow = new OpenFolderWindow();
-            _openedWindow.Closed += OpenedWindow_Closed;
-            _openedWindow.ShowDialog();
-        }
-
-        public static void OpenErrorWindow(Exception exception, string? customMessage = null, bool closeOtherWindows = false)
-        {
-            if (closeOtherWindows && _openedWindow != null)
-            {
-                _openedWindow.Closed -= OpenedWindow_Closed;
-                _openedWindow.Close();
-            }
-            ErrorWindow errorWindow = new ErrorWindow(_openedWindow ?? Application.Current.MainWindow, exception, customMessage);
+        public static void OpenErrorWindow(Exception exception, string? customMessage = null, Window? parent = null)
+        {          
+            ErrorWindow errorWindow = new ErrorWindow(parent ?? Application.Current.MainWindow, exception, customMessage);
             errorWindow.ShowDialog();
         }
 
         private static void OpenedWindow_Closed(object? sender, EventArgs e)
         {
-            if(_openedWindow != null)
+            if(_openedWindow == sender)
             {
-                _openedWindow.Closed -= OpenedWindow_Closed;
                 _openedWindow = null;
             }
         }

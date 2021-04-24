@@ -19,14 +19,6 @@ namespace MusicPlayerForDrummers.View
     {
         public MainWindow()
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Debug()
-                .WriteTo.File("log.txt",
-                    rollingInterval: RollingInterval.Day,
-                    fileSizeLimitBytes: 20000000,
-                    retainedFileCountLimit: 15)
-                .CreateLogger();
             InitializeComponent();
             Loaded += (s, a) => {
                 GlobalEvents.ErrorMessage += Status_ErrorMessage;

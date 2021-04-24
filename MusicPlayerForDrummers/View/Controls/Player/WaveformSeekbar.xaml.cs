@@ -58,13 +58,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 return;
             }
             if(e.PropertyName == nameof(playerVM.Session.PlayingSong))
-                try
-                {
-                    UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
-                } catch(Exception ex)
-                {
-                    WindowManager.OpenErrorWindow(ex, "Error when trying to create the WaveForm.", true);
-                }
+                UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
         }
 
         private void WaveformSeekBar_DragStarted(object? sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -127,8 +121,15 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             _createImageTask = Task.Run(() =>
             {
                 ct.ThrowIfCancellationRequested();
-
-                Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                Image image;
+                try
+                {
+                    image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                }catch(InvalidOperationException ex)
+                {
+                    _cancelImageCreation.Cancel();
+                    throw new FileFormatException(new Uri(audioDirectory), ex.Message);
+                }
                 ct.ThrowIfCancellationRequested();
                 using (MemoryStream memory = new MemoryStream())
                 {
@@ -153,8 +154,16 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             catch (OperationCanceledException)
             {
                 //nothing to do
+            }catch(FileFormatException ex)
+            {
+                WindowManager.OpenErrorWindow(ex, $"Error when trying to create the waveform from the file: {audioDirectory}.\n" +
+                    $"The file might be corrupt or the format is not supported.");
             }
-            
+            catch (Exception ex)
+            {
+                WindowManager.OpenErrorWindow(ex, "Error when trying to create the WaveForm.");
+            }
+
             WaveFormImage.Visibility = Visibility.Visible;
             LoadingWaveFormText.Visibility = Visibility.Hidden;
         }

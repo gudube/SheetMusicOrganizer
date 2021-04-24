@@ -17,6 +17,8 @@ namespace MusicPlayerForDrummers.View.Windows
         {
             this.Owner = Application.Current.MainWindow;
             Song = new SongItem();
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             ResetSongInformations();
         }

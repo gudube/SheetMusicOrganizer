@@ -12,6 +12,15 @@ namespace MusicPlayerForDrummers
     {
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.Debug()
+                .WriteTo.File("log.txt",
+                    rollingInterval: RollingInterval.Day,
+                    fileSizeLimitBytes: 20000000,
+                    retainedFileCountLimit: 15)
+                .CreateLogger();
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
             {
                 Log.Warning(eventArgs.Exception.ToString());
