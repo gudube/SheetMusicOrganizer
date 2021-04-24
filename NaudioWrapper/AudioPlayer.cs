@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.IO;
 
 namespace NAudioWrapper
 {
@@ -31,7 +32,17 @@ namespace NAudioWrapper
             _output = new WaveOutEvent();
             _output.PlaybackStopped += _output_PlaybackStopped;
 
-            _audioFileReader = new AudioFileReader(filepath) {Volume = this.Volume};
+            if (!File.Exists(filepath))
+            {
+                throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);
+            }
+            try
+            {
+                _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
+            } catch(Exception ex)
+            {
+                throw ex;
+            }
             if (newPosition < _audioFileReader.Length)
                 _audioFileReader.Position = newPosition; //set the new position if is valid
             LoopStart = 0; // set the loop times to be the whole song by default

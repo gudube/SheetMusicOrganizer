@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Win32;
 using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
 
@@ -159,9 +160,9 @@ namespace MusicPlayerForDrummers.View.Windows
                         }
                         catch (Exception ex)
                         {
-                            string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
-                            Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
-                            ErrorWindow unused = new ErrorWindow(this, error);
+                            string exMessage = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
+                            Log.Error("Error: {error} Exception message: {message}", exMessage, ex.Message);
+                            WindowManager.OpenErrorWindow(ex, exMessage);
                         }
                     }
                 }

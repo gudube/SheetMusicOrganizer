@@ -28,6 +28,17 @@ namespace MusicPlayerForDrummers.View
                     retainedFileCountLimit: 15)
                 .CreateLogger();
             InitializeComponent();
+            Loaded += (s, a) => {
+                GlobalEvents.ErrorMessage += Status_ErrorMessage;
+            };
+            Unloaded += (s, a) => {
+                GlobalEvents.ErrorMessage -= Status_ErrorMessage;
+            };
+        }
+
+        private void Status_ErrorMessage(object sender, ErrorEventArgs e)
+        {
+            WindowManager.OpenErrorWindow(e.GetException());
         }
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using MusicPlayerForDrummers.Model.Tools;
@@ -104,5 +106,6 @@ namespace MusicPlayerForDrummers.ViewModel
             }
         }
         #endregion
+
     }
 }

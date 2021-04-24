@@ -32,6 +32,17 @@ namespace MusicPlayerForDrummers.View.Tools
             _openedWindow.ShowDialog();
         }
 
+        public static void OpenErrorWindow(Exception exception, string? customMessage = null, bool closeOtherWindows = false)
+        {
+            if (closeOtherWindows && _openedWindow != null)
+            {
+                _openedWindow.Closed -= OpenedWindow_Closed;
+                _openedWindow.Close();
+            }
+            ErrorWindow errorWindow = new ErrorWindow(_openedWindow ?? Application.Current.MainWindow, exception, customMessage);
+            errorWindow.ShowDialog();
+        }
+
         private static void OpenedWindow_Closed(object? sender, EventArgs e)
         {
             if(_openedWindow != null)

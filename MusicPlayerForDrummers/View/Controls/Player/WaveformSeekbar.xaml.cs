@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using NAudioWrapper.WaveFormRendererLib;
 using Serilog;
@@ -57,7 +58,13 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                 return;
             }
             if(e.PropertyName == nameof(playerVM.Session.PlayingSong))
-                UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
+                try
+                {
+                    UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
+                } catch(Exception ex)
+                {
+                    WindowManager.OpenErrorWindow(ex, "Error when trying to create the WaveForm.", true);
+                }
         }
 
         private void WaveformSeekBar_DragStarted(object? sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

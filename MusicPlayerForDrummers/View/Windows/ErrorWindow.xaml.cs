@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Windows;
 
 namespace MusicPlayerForDrummers.View.Windows
 {
@@ -7,13 +9,24 @@ namespace MusicPlayerForDrummers.View.Windows
     /// </summary>
     public partial class ErrorWindow : Window
     {
-        public ErrorWindow(Window owner, string errorMessage)
+        public ErrorWindow(Window owner, Exception exception, string? customMessage)
         {
             this.DataContext = this;
             Owner = owner;
             InitializeComponent();
-            ErrorMessage.Text = errorMessage;
-            ShowDialog();
+            ErrorMessage.Text = customMessage ?? createErrorMessage(exception);
+        }
+
+        private string createErrorMessage(Exception exception)
+        {
+            switch (exception)
+            {
+                case FileNotFoundException specific:
+                    return $"Could not find the file: '{specific.FileName}'";
+                default:
+                    return exception.Message;
+            }
+
         }
     }
 }

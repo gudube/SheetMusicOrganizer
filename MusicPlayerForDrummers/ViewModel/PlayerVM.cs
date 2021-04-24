@@ -163,16 +163,9 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             if (Session.PlayingSong != null && !string.IsNullOrWhiteSpace(Session.PlayingSong.AudioDirectory2))
             {
-                if (PlayingSecondaryAudio)
-                {
-                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory1, Session.Player.IsPlaying, true);
-                    PlayingSecondaryAudio = false;
-                }
-                else
-                {
-                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory2, Session.Player.IsPlaying, true);
-                    PlayingSecondaryAudio = true;
-                }
+                PlayingSecondaryAudio = !PlayingSecondaryAudio;
+                string audioDir = PlayingSecondaryAudio ? Session.PlayingSong.AudioDirectory2 : Session.PlayingSong.AudioDirectory1;
+                Session.Player.SetSong(audioDir, Session.Player.IsPlaying, true);
             }
         }
         #endregion

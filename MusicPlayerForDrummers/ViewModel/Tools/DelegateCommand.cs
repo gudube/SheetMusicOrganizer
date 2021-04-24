@@ -15,7 +15,16 @@ namespace MusicPlayerForDrummers.ViewModel.Tools
         }
 
         public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
-        public void Execute(object? parameter) => _execute(parameter);
+        public void Execute(object? parameter)
+        {
+            try
+            {
+                _execute(parameter);
+            }catch(Exception ex)
+            {
+                GlobalEvents.raiseErrorEvent(ex);
+            }
+        }
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
         public event EventHandler? CanExecuteChanged;
