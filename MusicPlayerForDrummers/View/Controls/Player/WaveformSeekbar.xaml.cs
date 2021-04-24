@@ -154,14 +154,9 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             catch (OperationCanceledException)
             {
                 //nothing to do
-            }catch(FileFormatException ex)
+            }catch(Exception ex)
             {
-                WindowManager.OpenErrorWindow(ex, $"Error when trying to create the waveform from the file: {audioDirectory}.\n" +
-                    $"The file might be corrupt or the format is not supported.");
-            }
-            catch (Exception ex)
-            {
-                WindowManager.OpenErrorWindow(ex, "Error when trying to create the WaveForm.");
+                WindowManager.OpenErrorWindow(ex);
             }
 
             WaveFormImage.Visibility = Visibility.Visible;

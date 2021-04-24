@@ -101,7 +101,18 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Margin" Value="3,0,0,0"/>
     </Style>
-    
+
+    <Style x:Key="SelectableTextBlock" TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
     <!-- LABEL -->
     <Style TargetType="{x:Type Label}">
         <Setter Property="FontSize" Value="11"/>

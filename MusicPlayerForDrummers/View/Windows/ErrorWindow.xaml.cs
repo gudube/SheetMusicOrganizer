@@ -33,18 +33,29 @@ namespace MusicPlayerForDrummers.View.Windows
             {
                 case FileFormatException specific:
                     title = "Error reading file";
-                    description = $"There was an error when trying to read the file: {specific.SourceUri.AbsoluteUri}.\n" +
+                    description = $"There was an error when trying to read the file: '{cleanInput(specific.SourceUri?.LocalPath)}'.\n" +
                         $"The file might have the wrong format or be corrupt.";
                     break;
                 case FileNotFoundException specific:
                     title = "File not found";
-                    description = $"Could not find the file: '{specific.FileName}'.";
+                    description = $"Could not find the file: '{cleanInput(specific.FileName)}'.";
                     //todo: add option to relocate file or erase song from library if that's the case
                     break;
                 default:
                     break;
             }
+        }
 
+        private string cleanInput(string? text)
+        {
+            if (text == null)
+                return "";
+            text = text.Trim();
+            if(text.Length > 200)
+            {
+                return text.Substring(0, 98) + "..." + text.Substring(text.Length - 99, 98);
+            }
+            return text;
         }
     }
 }
