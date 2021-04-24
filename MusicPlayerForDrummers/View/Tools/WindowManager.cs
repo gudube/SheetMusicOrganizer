@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media.Effects;
 using MusicPlayerForDrummers.View.Windows;
 
 namespace MusicPlayerForDrummers.View.Tools
@@ -25,6 +26,7 @@ namespace MusicPlayerForDrummers.View.Tools
             _openedOptionWindow?.Close();
             _openedOptionWindow = new AddNewSongWindow();
             _openedOptionWindow.Closed += OpenedWindow_Closed;
+            DarkenBackground(true);
             _openedOptionWindow.ShowDialog();
         }
 
@@ -33,7 +35,14 @@ namespace MusicPlayerForDrummers.View.Tools
             _openedErrorWindow?.Close();
             _openedErrorWindow = new ErrorWindow(parent ?? Application.Current.MainWindow, exception, customMessage);
             _openedErrorWindow.Closed += OpenedWindow_Closed;
+            DarkenBackground(true);
             _openedErrorWindow.ShowDialog();
+        }
+
+        private static void DarkenBackground(bool darken)
+        {
+            Application.Current.MainWindow.Opacity = darken ? 0.5 : 1;
+            Application.Current.MainWindow.Effect = darken ? new BlurEffect() : null;
         }
 
         private static void OpenedWindow_Closed(object? sender, EventArgs e)
@@ -42,6 +51,9 @@ namespace MusicPlayerForDrummers.View.Tools
                 _openedOptionWindow = null;
             else if(_openedErrorWindow == sender)
                 _openedErrorWindow = null;
+
+            if(_openedErrorWindow == null && _openedOptionWindow == null)
+                DarkenBackground(false);
         }
     }
 }
