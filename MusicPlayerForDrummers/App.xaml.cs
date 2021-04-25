@@ -21,9 +21,10 @@ namespace MusicPlayerForDrummers
                     fileSizeLimitBytes: 20000000,
                     retainedFileCountLimit: 15)
                 .CreateLogger();
-            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
-                Log.Warning(eventArgs.Exception.ToString());
+                Exception? ex = (e.ExceptionObject as Exception);
+                Log.Warning("Exception Thrown: {message}\n{trace}", ex?.Message, ex?.StackTrace);
             };
 
             SplashScreen splash = new SplashScreen("/View/Resources/splash.png");

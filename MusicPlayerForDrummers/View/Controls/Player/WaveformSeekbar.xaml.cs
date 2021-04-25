@@ -81,7 +81,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
         #region Render WaveForm
 
-        private Task<BitmapImage>? _createImageTask;
+        private Task<BitmapImage?>? _createImageTask;
         private CancellationTokenSource _cancelImageCreation = new CancellationTokenSource();
 
         private async void UpdateWaveForm(string audioDirectory)
@@ -120,35 +120,42 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
             _createImageTask = Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-                Image image;
                 try
                 {
-                    image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
-                }catch(InvalidOperationException ex)
-                {
-                    _cancelImageCreation.Cancel();
-                    throw new FileFormatException(new Uri(audioDirectory), ex.Message);
-                }
-                ct.ThrowIfCancellationRequested();
-                using (MemoryStream memory = new MemoryStream())
-                {
-                    image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                     ct.ThrowIfCancellationRequested();
-                    memory.Position = 0;
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = memory;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                    return bitmapImage;
+                    Image image;
+                    try
+                    {
+                        image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                    }catch(InvalidOperationException ex)
+                    {
+                        _cancelImageCreation.Cancel();
+                        throw new FileFormatException(new Uri(audioDirectory), ex.Message);
+                    }
+                    ct.ThrowIfCancellationRequested();
+                    using (MemoryStream memory = new MemoryStream())
+                    {
+                        image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                        ct.ThrowIfCancellationRequested();
+                        memory.Position = 0;
+                        BitmapImage bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.StreamSource = memory;
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+                        return bitmapImage;
+                    }
+                }catch(OperationCanceledException ex)
+                {
+                    //normal behaviour, nothing to do here
+                    return null;
                 }
             }, ct);
 
             try
             {
-                BitmapImage imageSource = await _createImageTask;
+                BitmapImage? imageSource = await _createImageTask;
                 WaveFormImage.Source = imageSource;
             }
             catch (OperationCanceledException)

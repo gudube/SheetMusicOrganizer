@@ -1,12 +1,13 @@
 ﻿using NAudio.Wave;
 using SoundTouch;
 using SoundTouch.Net.NAudioSupport;
+using System;
 
 namespace NAudioWrapper
 {
     class CustomStream : SoundTouchWaveStream
     {
-        readonly WaveStream _sourceStream;
+        private WaveStream? _sourceStream;
 
         public CustomStream(WaveStream sourceStream, bool enableLooping, double loopStart, double loopEnd, SoundTouchProcessor? processor = null) : base(sourceStream, processor)
         {
@@ -28,53 +29,76 @@ namespace NAudioWrapper
 
         public void SetLoopStart(double time)
         {
-            _loopStart = (long) (_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            if(_sourceStream != null)
+            {
+                _loopStart = (long)(_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            }
         }
         public void SetLoopEnd(double time)
         {
-            _loopEnd = (long) (_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            if (_sourceStream != null)
+            {
+                _loopEnd = (long)(_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            }
         }
+        public override WaveFormat WaveFormat => _sourceStream?.WaveFormat ?? new WaveFormat();
 
-        public override WaveFormat WaveFormat => _sourceStream.WaveFormat;
-
-        public override long Length => long.MaxValue / 32;
+        public override long Length => EnableLooping ? long.MaxValue / 32 : (_sourceStream?.Length ?? 0);
 
         public override long Position
         {
-            get => _sourceStream.Position;
-            set => _sourceStream.Position = value;
+            get => _sourceStream?.Position ?? 0L;
+            set {
+                if (_sourceStream != null)
+                    _sourceStream.Position = value;
+            }
         }
 
         public override bool HasData(int count)
         {
-            return true; // infinite loop
+            // infinite data when looping
+            return EnableLooping || (_sourceStream?.HasData(count) ?? false);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int read = 0;
-            while (read < count)
+            try
             {
-                int required = count - read;
-                int readThisTime = _sourceStream.Read(buffer, offset + read, required);
-
-                if (EnableLooping)
+                int read = 0;
+                while (read < count && _sourceStream != null)
                 {
-                    if (readThisTime < required || _sourceStream.Position >= _loopEnd ||
-                        _sourceStream.Position < _loopStart)
-                    {
-                        _sourceStream.Position = _loopStart;
-                    }
-                }
+                    int required = count - read;
+                    int readThisTime = _sourceStream.Read(buffer, offset + read, required);
 
-                read += readThisTime;
+                    if (EnableLooping)
+                    {
+                        if (readThisTime < required || _sourceStream.Position >= _loopEnd ||
+                            _sourceStream.Position < _loopStart)
+                        {
+                            _sourceStream.Position = _loopStart;
+                        }
+                    }
+
+                    read += readThisTime;
+                }
+                return read;
             }
-            return read;
+            catch(Exception ex)
+            {
+                if(ex is NullReferenceException || ex is ObjectDisposedException)
+                {
+                    //nothing to do, will be disposed
+                    return 0;
+                }
+                throw;
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
-            _sourceStream.Dispose();
+            _sourceStream?.Flush();
+            _sourceStream?.Dispose();
+            _sourceStream = null;
             base.Dispose(disposing);
         }
 

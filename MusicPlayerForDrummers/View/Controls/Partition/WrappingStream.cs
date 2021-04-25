@@ -6,7 +6,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
 {
     public class WrappingStream: Stream
     {
-        readonly Stream _streamBase;
+        private Stream? _streamBase;
 
         public WrappingStream (Stream streamBase)
         {
@@ -17,51 +17,62 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             this._streamBase = streamBase; // Keep the passed Stream as an internal stream
         }
 
-        public override bool CanRead => _streamBase.CanRead;
+        public override bool CanRead => _streamBase?.CanRead ?? false;
 
-        public override bool CanSeek => _streamBase.CanSeek;
+        public override bool CanSeek => _streamBase?.CanSeek ?? false;
 
-        public override bool CanWrite => _streamBase.CanWrite;
+        public override bool CanWrite => _streamBase?.CanWrite ?? false;
 
-        public override long Length => _streamBase.Length;
+        public override long Length => _streamBase?.Length ?? 0;
 
-        public override long Position { get => _streamBase.Position; set => _streamBase.Position = value; }
+        public override long Position { get => _streamBase?.Position ?? 0;
+            set {
+                if (_streamBase != null)
+                    _streamBase.Position = value;
+            }
+        }
 
         public override void Flush()
         {
-            _streamBase.Flush();
+            _streamBase?.Flush();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            return _streamBase.Read(buffer, offset, count);
+            return _streamBase?.Read(buffer, offset, count) ?? 0;
         }
 
         // Override the method of Stream class and just call the same method of internal stream as it is 
-        public  override Task < int > ReadAsync ( byte [] buffer, int offset, int count, System.Threading.CancellationToken cancellationToken)
+        public override Task < int > ReadAsync ( byte [] buffer, int offset, int count, System.Threading.CancellationToken cancellationToken)
         {
-            ThrowIfDisposed ();
-            return _streamBase.ReadAsync (buffer, offset, count, cancellationToken);
+            if (_streamBase == null)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+            return _streamBase.ReadAsync(buffer, offset, count, cancellationToken);
         }
-        public  new Task < int > ReadAsync ( byte [] buffer, int offset, int count)
+        public new Task < int > ReadAsync ( byte [] buffer, int offset, int count)
         {
-            ThrowIfDisposed ();
-            return _streamBase.ReadAsync (buffer, offset, count);
+            if (_streamBase == null)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+            return _streamBase.ReadAsync(buffer, offset, count);
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            return _streamBase.Seek(offset, origin);
+            return _streamBase?.Seek(offset, origin) ?? 0L;
         }
 
         public override void SetLength(long value)
         {
-            _streamBase.SetLength(value);
+            _streamBase?.SetLength(value);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            _streamBase.Write(buffer, offset, count);
+            _streamBase?.Write(buffer, offset, count);
         }
 
         //... (Omitted) ...
@@ -70,17 +81,10 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         {
             if (disposing)
             {
-                _streamBase.Dispose ();
-                //_streamBase = null;   // After dispose, make the internal stream null and remove the reference
+                _streamBase?.Dispose ();
+                _streamBase = null;   // After dispose, make the internal stream null and remove the reference
             }
             base.Dispose(disposing);
-        }
-        private  void ThrowIfDisposed ()
-        {
-            if (_streamBase == null )
-            {
-                throw  new ObjectDisposedException (GetType (). Name);
-            }
         }
     }
 }
