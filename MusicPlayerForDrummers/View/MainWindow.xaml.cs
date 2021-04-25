@@ -91,7 +91,7 @@ namespace MusicPlayerForDrummers.View
                 switch (e.Key) //add keyboard keys here (A, 1, !... that could be used in textbox)
                 {
                     case Key.M:
-                        PressButton(PlayerControl.MuteButton, down); // MainVm.PlayerVM.ChangeMuteCommand.Execute(null);
+                        PressButton(PlayerControl.MuteButton, down);
                         return true; //return if found, break otherwise to try second switch statement
                     default: break;
                 }
@@ -99,8 +99,17 @@ namespace MusicPlayerForDrummers.View
             switch (e.Key) // insert special keys here (Play, F1... doesnt react in textbox)
             {
                 case Key.Play:
+                    PressButton(PlayerControl.PlayButton, down);
+                    return true;
+                case Key.Pause:
                 case Key.MediaPlayPause:
-                    PressButton(PlayerControl.PauseButton, down);  // MainVm.PlayerVM.PauseCommand.Execute(null);
+                    PressButton(PlayerControl.PauseButton, down);
+                    return true;
+                case Key.MediaPreviousTrack:
+                    PressButton(PlayerControl.PreviousButton, down);
+                    return true;
+                case Key.MediaNextTrack:
+                    PressButton(PlayerControl.NextButton, down);
                     return true;
                 default:
                     return false;
@@ -115,7 +124,6 @@ namespace MusicPlayerForDrummers.View
             } else
             {
                 ((IInvokeProvider)new ButtonAutomationPeer(button).GetPattern(PatternInterface.Invoke)).Invoke();
-                // button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 typeof(Button).GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(button, new object[] { false });
             }
         }
