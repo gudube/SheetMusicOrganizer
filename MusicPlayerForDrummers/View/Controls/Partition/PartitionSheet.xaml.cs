@@ -10,6 +10,7 @@ using Windows.Data.Pdf;
 using Windows.Storage;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using System.Threading;
 
 namespace MusicPlayerForDrummers.View.Controls.Partition
 {
@@ -85,11 +86,23 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 //making sure it's an absolute path
                 var path = Path.GetFullPath(partitionDir);
 
+                if (!File.Exists(path))
+                {
+                    GlobalEvents.raiseErrorEvent(new FileNotFoundException("Trying to open a partition file that doesn't exist.", path));
+                    return;
+                }
+
                 StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
-                    //Then load pdf document on background thread
-                    .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
-                    //Finally display on UI Thread
-                    .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
+                //Then load pdf document on background thread
+                .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
+                //Finally display on UI Thread
+                .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext())
+                .ContinueWith(t3 =>
+                    t3.Exception?.Handle(ex =>
+                    {
+                        GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
+                        return false;
+                    }), new CancellationToken(), TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 

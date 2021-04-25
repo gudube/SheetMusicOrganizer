@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media.Effects;
+using System.Windows.Threading;
 using MusicPlayerForDrummers.View.Windows;
 
 namespace MusicPlayerForDrummers.View.Tools
@@ -27,21 +28,26 @@ namespace MusicPlayerForDrummers.View.Tools
 
         private static void OpenOptionWindow(Window window)
         {
-            _openedErrorWindow?.Close();
-            _openedOptionWindow?.Close();
-            _openedOptionWindow = new AddNewSongWindow();
-            _openedOptionWindow.Closed += OpenedWindow_Closed;
-            DarkenBackground(true);
-            _openedOptionWindow.ShowDialog();
+            Dispatcher.CurrentDispatcher.BeginInvoke(() =>
+            {
+                _openedErrorWindow?.Close();
+                _openedOptionWindow?.Close();
+                _openedOptionWindow = window;
+                _openedOptionWindow.Closed += OpenedWindow_Closed;
+                DarkenBackground(true);
+                _openedOptionWindow.ShowDialog();
+            });
         }
 
         public static void OpenErrorWindow(Exception exception, string? customMessage = null, Window? parent = null)
         {
-            _openedErrorWindow?.Close();
-            _openedErrorWindow = new ErrorWindow(parent ?? Application.Current.MainWindow, exception, customMessage);
-            _openedErrorWindow.Closed += OpenedWindow_Closed;
-            DarkenBackground(true);
-            _openedErrorWindow.ShowDialog();
+            Dispatcher.CurrentDispatcher.BeginInvoke(() => {
+                _openedErrorWindow?.Close();
+                _openedErrorWindow = new ErrorWindow(parent ?? Application.Current.MainWindow, exception, customMessage);
+                _openedErrorWindow.Closed += OpenedWindow_Closed;
+                DarkenBackground(true);
+                _openedErrorWindow.ShowDialog();
+            });
         }
 
         private static void DarkenBackground(bool darken)
