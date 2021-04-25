@@ -10,6 +10,11 @@ namespace MusicPlayerForDrummers.View.Tools
         private static Window? _openedOptionWindow;
         private static Window? _openedErrorWindow;
 
+        public static bool IsWindowOpen()
+        {
+            return _openedOptionWindow != null || _openedErrorWindow != null;
+        }
+
         public static void OpenAddNewSongWindow()
         {
             OpenOptionWindow(new AddNewSongWindow());

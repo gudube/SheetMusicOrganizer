@@ -1,7 +1,11 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Win32;
 using MusicPlayerForDrummers.Model;
@@ -72,12 +76,47 @@ namespace MusicPlayerForDrummers.View
             }
         }
 
-        private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        private void MainWindow_OnKeyDownUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.M)
+            if (WindowManager.IsWindowOpen())
+                return;
+
+            e.Handled = HandleKey(e, e.IsDown);
+        }
+
+        private bool HandleKey(KeyEventArgs e, bool down)
+        {
+            if (!(e.OriginalSource is TextBoxBase))
             {
-                MainVm.PlayerVM.ChangeMuteCommand.Execute(null);
-                e.Handled = true;
+                switch (e.Key) //add keyboard keys here (A, 1, !... that could be used in textbox)
+                {
+                    case Key.M:
+                        PressButton(PlayerControl.MuteButton, down); // MainVm.PlayerVM.ChangeMuteCommand.Execute(null);
+                        return true; //return if found, break otherwise to try second switch statement
+                    default: break;
+                }
+            }
+            switch (e.Key) // insert special keys here (Play, F1... doesnt react in textbox)
+            {
+                case Key.Play:
+                case Key.MediaPlayPause:
+                    PressButton(PlayerControl.PauseButton, down);  // MainVm.PlayerVM.PauseCommand.Execute(null);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void PressButton(Button button, bool down)
+        {
+            if(down)
+            {
+                typeof(Button).GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(button, new object[] { true });
+            } else
+            {
+                ((IInvokeProvider)new ButtonAutomationPeer(button).GetPattern(PatternInterface.Invoke)).Invoke();
+                // button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                typeof(Button).GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(button, new object[] { false });
             }
         }
 
@@ -95,6 +134,11 @@ namespace MusicPlayerForDrummers.View
 
             if (DataContext is MainVM mainVM)
                 await mainVM.LoadData().ConfigureAwait(false);
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+
         }
     }
 }

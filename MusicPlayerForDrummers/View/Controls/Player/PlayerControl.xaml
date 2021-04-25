@@ -42,7 +42,7 @@
                     <Button Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}">
                         <Image Source="/View/Resources/play_song_40.png"/>
                     </Button>
-                    <Button Grid.Column="2" Style="{StaticResource SimpleButton}" Command="{Binding PauseCommand}">
+                    <Button x:Name="PauseButton" Grid.Column="2" Style="{StaticResource SimpleButton}" Command="{Binding PauseCommand}">
                         <Image Source="/View/Resources/pause_song_40.png"/>
                     </Button>
                     <Button Grid.Column="3" Style="{StaticResource SimpleButton}" Command="{Binding NextCommand}">
@@ -79,7 +79,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                    <Button Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}">
+                    <Button x:Name="MuteButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}">
                         <Image>
                             <Image.Style>
                                 <Style TargetType="{x:Type Image}">

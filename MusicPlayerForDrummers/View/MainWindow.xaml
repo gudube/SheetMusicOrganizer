@@ -10,7 +10,8 @@
         mc:Ignorable="d"
         Title="Music Sheet Organizer" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized"
-        PreviewKeyDown="MainWindow_OnPreviewKeyDown">
+        KeyDown="MainWindow_OnKeyDownUp"
+        KeyUp="MainWindow_OnKeyDownUp">
     <Window.DataContext>
         <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>
@@ -34,7 +35,7 @@
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <player:PlayerControl Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
+        <player:PlayerControl x:Name="PlayerControl" Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:LibraryVM}">
