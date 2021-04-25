@@ -4,111 +4,109 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using MusicPlayerForDrummers.Model.Tools;
+using MusicPlayerForDrummers.ViewModel.Tools;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
-    public class StatusContext: BaseNotifyPropertyChanged
+    public enum LoadingStatus
     {
-        #region Loading Status bools
-        private bool _settingSongMastery;
-        public bool SettingSongMastery { set => SetLoadingStatus(ref _settingSongMastery, value, "Setting song(s) mastery"); }
+        SettingSongMastery,
+        SelectingPlaylist,
+        SortingSongs,
+    }
 
-        private bool _sortingSongs;
-        public bool SortingSongs { set => SetLoadingStatus(ref _sortingSongs, value, "Sorting songs"); }
+    public enum SavingStatus
+    {
+        SongMastery,
+        SongPlaylist,
+        SongsOrder,
+    }
 
-        private bool _selectingPlaylist;
-        public bool SelectingPlaylist { set => SetLoadingStatus(ref _selectingPlaylist, value, "Selecting playlist"); }
-        #endregion
+    public static class StatusContext
+    {
 
-        #region Saving Status bools
-        private bool _savingSongMastery;
-        public bool SavingSongMastery { set => SetSavingStatus(ref _savingSongMastery, value, "Song(s) mastery"); }
+        #region Loading Status
+        private static readonly List<string> _loadingMessages = new List<string>(4);
 
-        private bool _savingSongPlaylist;
-        public bool SavingSongPlaylist { set => SetSavingStatus(ref _savingSongPlaylist, value, "Song(s) playlist(s)"); }
-
-        private bool _savingSongOrder;
-        public bool SavingSongOrder { set => SetSavingStatus(ref _savingSongOrder, value, "Songs order"); }
-        #endregion
-
-        #region Saving Message
-        private string _savingMsg = "";
-        public string SavingMsg
+        public static void addLoadingStatus(LoadingStatus status)
         {
-            get => _savingMsg;
-            private set => SetField(ref _savingMsg, value);
+            _loadingMessages.Add(getMessage(status));
+            CreateLoadingMessage();
         }
 
-        private readonly List<string> _savingMessages = new List<string>(2);
-
-        private void CreateSavingMessage()
+        public static void removeLoadingStatus(LoadingStatus status)
         {
-            if (_savingMessages.Count == 0)
-                SavingMsg = "";
-
-            if (_savingMessages.Count == 1)
-                SavingMsg = "Saving: " + _savingMessages[0];
-
-            SavingMsg = "Saving...";
+            Application.Current.Dispatcher.InvokeAsync(() => {
+                _loadingMessages.Remove(getMessage(status));
+                CreateLoadingMessage();
+            }, DispatcherPriority.ContextIdle);
         }
 
-        private void SetSavingStatus(ref bool field, bool value, string message)
+        private static string getMessage(LoadingStatus status)
         {
-            if (field != value)
+            switch(status)
             {
-                field = value;
-                if (field)
-                    _savingMessages.Add(message);
-                else
-                    _savingMessages.Remove(message);
+                case LoadingStatus.SettingSongMastery: return "Setting song(s) mastery";
+                case LoadingStatus.SelectingPlaylist: return "Selecting playlist";
+                case LoadingStatus.SortingSongs: return "Sorting songs";
+                default: return "";
+            }
+        }
+
+        public static event EventHandler<string>? LoadingMessage;
+
+        private static void CreateLoadingMessage()
+        {
+            string newMessage = "";
+            if (_loadingMessages.Count == 1)
+                newMessage = "Loading: " + _loadingMessages[0];
+            else if(_loadingMessages.Count > 1)
+                newMessage = "Loading...";
+            LoadingMessage?.Invoke(null, newMessage);
+        }
+
+        #endregion
+
+        #region Saving status
+        private static readonly List<string> _savingMessages = new List<string>(2);
+
+        public static void addSavingStatus(SavingStatus status)
+        {
+            _savingMessages.Add(getMessage(status));
+            CreateSavingMessage();
+        }
+
+        public static void removeSavingStatus(SavingStatus status)
+        {
+            Application.Current.Dispatcher.InvokeAsync(() => {
+                _savingMessages.Remove(getMessage(status));
                 CreateSavingMessage();
-            }
-        }
-        #endregion
-
-        #region Loading Message
-        private string _loadingMsg = "";
-        public string LoadingMsg
-        {
-            get => _loadingMsg;
-            private set => SetField(ref _loadingMsg, value);
+            }, DispatcherPriority.ContextIdle);
         }
 
-        private readonly List<string> _loadingMessages = new List<string>(2);
-
-        private void CreateLoadingMessage()
+        private static string getMessage(SavingStatus status)
         {
-            if (_loadingMessages.Count == 0)
-                LoadingMsg = "";
-            else if (_loadingMessages.Count == 1)
-                LoadingMsg = "Loading: " + _loadingMessages[0];
-            else 
-                LoadingMsg = "Loading...";
-        }
-
-        private void SetLoadingStatus(ref bool field, bool value, string message)
-        {
-            if (field != value)
+            switch (status)
             {
-                field = value;
-                if (value)
-                {
-                    if(!_loadingMessages.Contains(message))
-                        _loadingMessages.Add(message);
-                    CreateLoadingMessage();
-                    Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
-                }
-                else
-                {
-                    Application.Current.Dispatcher.InvokeAsync(() => {
-                        _loadingMessages.Remove(message);
-                        CreateLoadingMessage();
-                    }, DispatcherPriority.ContextIdle);
-                }
-
+                case SavingStatus.SongMastery: return "Song(s) mastery";
+                case SavingStatus.SongPlaylist: return "Song(s) playlist(s)";
+                case SavingStatus.SongsOrder: return "Songs order";
+                default: return "";
             }
         }
-        #endregion
 
+        public static event EventHandler<string>? SavingMessage;
+
+        private static void CreateSavingMessage()
+        {
+            string newMessage = "";
+            if (_savingMessages.Count == 1)
+                newMessage = "Saving: " + _savingMessages[0];
+            else if (_savingMessages.Count > 1)
+                newMessage = "Saving...";
+            SavingMessage?.Invoke(null, newMessage);
+        }
+
+        #endregion
     }
 }

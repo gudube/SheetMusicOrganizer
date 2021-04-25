@@ -97,9 +97,9 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private async void SelectedPlaylistChanged()
         {
-            Session.Status.SelectingPlaylist = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SelectingPlaylist);
             await UpdateSongsFromDb();
-            Session.Status.SelectingPlaylist = false;
+            StatusContext.removeLoadingStatus(LoadingStatus.SelectingPlaylist);
         }
 
         private void DeleteSelectedPlaylist()
@@ -208,16 +208,16 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Song in playlist
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
@@ -287,20 +287,23 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
             DbHandler.SetSongMastery(song, mastery);
-            Session.Status.SavingSongMastery = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
+
             //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
             //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
             DbHandler.SetSongsMastery(songItems, mastery);
-            Session.Status.SavingSongMastery = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songItems)
@@ -362,14 +365,13 @@ namespace MusicPlayerForDrummers.ViewModel
                 Log.Warning("Trying to sort songs when there are no selected PlaylistItem");
                 return;
             }
-
-            Session.Status.SavingSongOrder = true;
-            Session.Status.SortingSongs = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SortingSongs);
+            StatusContext.addSavingStatus(SavingStatus.SongsOrder);
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
-            Session.Status.SavingSongOrder = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongsOrder);
             ShownSongs.Reset(sortedSongs);
-            Session.Status.SortingSongs = false;
+            StatusContext.removeLoadingStatus(LoadingStatus.SortingSongs);
         }
 
         //Resets the songs in the database for current playlist from the songIDs in the same order

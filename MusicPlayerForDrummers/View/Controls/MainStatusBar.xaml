@@ -17,7 +17,7 @@
             <StatusBarItem Content="Playing Song: "/>
             <StatusBarItem Content="{Binding Path=Session.PlayingSong}"/>
         </StackPanel>
-        <StatusBarItem DockPanel.Dock="Right" HorizontalAlignment="Right" Content="{Binding Path=Session.Status.SavingMsg, Mode=OneWay}"/>
-        <StatusBarItem HorizontalAlignment="Center" Content="{Binding Path=Session.Status.LoadingMsg, Mode=OneWay}"/>
+        <StatusBarItem x:Name="SavingMessage" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+        <StatusBarItem x:Name="LoadingMessage" HorizontalAlignment="Center"/>
     </StatusBar>
 </UserControl>

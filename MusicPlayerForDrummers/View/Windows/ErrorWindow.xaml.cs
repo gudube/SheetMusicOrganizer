@@ -20,7 +20,7 @@ namespace MusicPlayerForDrummers.View.Windows
             this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             createMessageFromException(exception);
-            Title.Text = title;
+            ErrorTitle.Text = title;
             CustomMessage.Text = customMessage ?? description;
             ErrorMessage.Text = exception.Message;
             ErrorContainer.Visibility = string.IsNullOrWhiteSpace(ErrorMessage.Text) ? Visibility.Collapsed : Visibility.Visible;

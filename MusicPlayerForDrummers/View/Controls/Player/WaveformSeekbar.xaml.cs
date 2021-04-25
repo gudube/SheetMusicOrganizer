@@ -146,7 +146,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
                         bitmapImage.Freeze();
                         return bitmapImage;
                     }
-                }catch(OperationCanceledException ex)
+                }catch(OperationCanceledException)
                 {
                     //normal behaviour, nothing to do here
                     return null;
