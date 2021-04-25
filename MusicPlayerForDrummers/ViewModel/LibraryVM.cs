@@ -369,6 +369,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
             Session.Status.SavingSongOrder = false;
             ShownSongs.Reset(sortedSongs);
+            Session.Status.SortingSongs = false;
         }
 
         //Resets the songs in the database for current playlist from the songIDs in the same order

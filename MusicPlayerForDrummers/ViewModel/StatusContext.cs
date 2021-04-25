@@ -91,16 +91,19 @@ namespace MusicPlayerForDrummers.ViewModel
             if (field != value)
             {
                 field = value;
-                if (field)
+                if (value)
                 {
-                    _loadingMessages.Add(message);
+                    if(!_loadingMessages.Contains(message))
+                        _loadingMessages.Add(message);
                     CreateLoadingMessage();
                     Application.Current.Dispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
                 }
                 else
                 {
-                    Application.Current.Dispatcher.Invoke(() => { _loadingMessages.Remove(message); }, DispatcherPriority.ContextIdle);
-                    CreateLoadingMessage();
+                    Application.Current.Dispatcher.InvokeAsync(() => {
+                        _loadingMessages.Remove(message);
+                        CreateLoadingMessage();
+                    }, DispatcherPriority.ContextIdle);
                 }
 
             }
