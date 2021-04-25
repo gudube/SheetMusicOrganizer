@@ -101,18 +101,22 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
 
-            if (_createImageTask != null && !_createImageTask.IsCompleted)
+            if (_createImageTask != null)
             {
-                //the task is running, cancel it and wait for it to be done before continuing
-                _cancelImageCreation.Cancel();
-                try
-                {
-                    await _createImageTask;
+                if (!_createImageTask.IsCompleted) {
+                    try
+                    {
+                        //the task is running, cancel it and wait for it to be done before continuing
+                        _cancelImageCreation.Cancel();
+                        await _createImageTask;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        //nothing to do here
+                    }
                 }
-                catch(OperationCanceledException)
-                {
-                    _cancelImageCreation.Dispose();
-                }
+                _createImageTask.Dispose();
+                _cancelImageCreation.Dispose();
                 _cancelImageCreation = new CancellationTokenSource();
             }
             
@@ -157,17 +161,23 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             {
                 BitmapImage? imageSource = await _createImageTask;
                 WaveFormImage.Source = imageSource;
+                if(imageSource != null)
+                {
+                    WaveFormImage.Visibility = Visibility.Visible;
+                    LoadingWaveFormText.Visibility = Visibility.Hidden;
+                }
             }
             catch (OperationCanceledException)
             {
-                //nothing to do
-            }catch(Exception ex)
+                WaveFormImage.Source = null;
+            }
+            catch (Exception ex)
             {
+                WaveFormImage.Source = null;
+                WaveFormImage.Visibility = Visibility.Hidden;
+                LoadingWaveFormText.Visibility = Visibility.Hidden;
                 WindowManager.OpenErrorWindow(ex);
             }
-
-            WaveFormImage.Visibility = Visibility.Visible;
-            LoadingWaveFormText.Visibility = Visibility.Hidden;
         }
         #endregion
 

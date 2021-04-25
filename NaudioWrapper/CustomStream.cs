@@ -85,12 +85,12 @@ namespace NAudioWrapper
             }
             catch(Exception ex)
             {
-                if(ex is NullReferenceException || ex is ObjectDisposedException)
-                {
+                // if(ex is NullReferenceException || ex is ObjectDisposedException)
+                // {
                     //nothing to do, will be disposed
                     return 0;
-                }
-                throw;
+                // }
+                // throw;
             }
         }
 

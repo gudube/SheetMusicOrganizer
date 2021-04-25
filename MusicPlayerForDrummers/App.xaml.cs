@@ -24,7 +24,7 @@ namespace MusicPlayerForDrummers
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
                 Exception? ex = (e.ExceptionObject as Exception);
-                Log.Warning("Exception Thrown: {message}\n{trace}", ex?.Message, ex?.StackTrace);
+                Log.Warning("Unhandled Exception Thrown!!!: {message}\n{trace}", ex?.Message, ex?.StackTrace);
             };
 
             SplashScreen splash = new SplashScreen("/View/Resources/splash.png");
