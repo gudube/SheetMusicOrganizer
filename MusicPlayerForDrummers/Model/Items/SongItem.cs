@@ -11,11 +11,14 @@ namespace MusicPlayerForDrummers.Model.Items
         private string _partitionDirectory;
         public string PartitionDirectory { get => _partitionDirectory; set => SetField(ref _partitionDirectory, value); }
 
-        private string _audioDirectory;
-        public string AudioDirectory { get => _audioDirectory; set => SetField(ref _audioDirectory, value); }
+        private string _audioDirectory1;
+        public string AudioDirectory1 { get => _audioDirectory1; set => SetField(ref _audioDirectory1, value); }
 
-        private uint? _number;
-        public uint? Number { get => _number; set => SetField(ref _number, value); }
+        private string _audioDirectory2;
+        public string AudioDirectory2 { get => _audioDirectory2; set => SetField(ref _audioDirectory2, value); }
+
+        private uint _number = 0;
+        public uint Number { get => _number; set => SetField(ref _number, value); }
 
         private string _title = "";
         public string Title { get => _title; set => SetField(ref _title, value); }
@@ -41,7 +44,7 @@ namespace MusicPlayerForDrummers.Model.Items
         private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
-        private int _masteryId;
+        private int _masteryId = 0;
         public int MasteryId { get => _masteryId; 
             set
             {
@@ -68,20 +71,18 @@ namespace MusicPlayerForDrummers.Model.Items
         public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
         #endregion
 
-        public SongItem(string partitionDir = "", string audioDirectory = "", int masteryId = 0, bool useAudioMD = true) : base()
+        public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 0, bool useAudioMD = true) : base()
         {
             _partitionDirectory = partitionDir;
-            _audioDirectory = audioDirectory;
+            _audioDirectory1 = audioDirectory1;
+            _audioDirectory2 = audioDirectory2;
             _masteryId = masteryId;
 
-            if (useAudioMD && !string.IsNullOrWhiteSpace(audioDirectory))
-            {
+            if (useAudioMD)
                 ReadAudioMetadata();
-            }
-            else
-            {
+
+            if(string.IsNullOrWhiteSpace(_title))
                 _title = Path.GetFileNameWithoutExtension(partitionDir);
-            }
 
             _scrollStartTime = Settings.Default.DefaultScrollStartTime;
             _scrollEndTime = Settings.Default.DefaultScrollEndTime;
@@ -91,12 +92,13 @@ namespace MusicPlayerForDrummers.Model.Items
         {
             SongTable songTable = new SongTable();
             int? id = GetSafeInt(dataReader, songTable.Id.Name);
-            if (!id.HasValue) //todo: should throw an error in most cases where we have a log.error or log.warning and handle it
+            if (!id.HasValue)
                 Log.Error("Could not find the id when reading a SongItem from the SqliteDataReader.");
             _id = id.GetValueOrDefault(-1);
 
             _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
-            _audioDirectory = GetSafeString(dataReader, songTable.AudioDirectory.Name);
+            _audioDirectory1 = GetSafeString(dataReader, songTable.AudioDirectory1.Name);
+            _audioDirectory2 = GetSafeString(dataReader, songTable.AudioDirectory2.Name);
             _number = GetSafeUInt(dataReader, songTable.Number.Name).GetValueOrDefault(0);
             _title = GetSafeString(dataReader, songTable.Title.Name);
             _artist = GetSafeString(dataReader, songTable.Artist.Name);
@@ -115,81 +117,70 @@ namespace MusicPlayerForDrummers.Model.Items
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
         }
 
-        //TODO: Block files that are more than 99:99 minutes? what about really short sounds? test it
-        //TODO: Better to add a ReadMetadataSilently that writes private fields instead
-        //(for performance and not calling tons of events)
-        //Verify ATL .NET vs TagLibSharp (performance, etc.)
-        //ATL Rating tag easier to find, but Codec harder to find
         public void ReadAudioMetadata()
         {
-            TagLib.File tFile = TagLib.File.Create(AudioDirectory);//, TagLib.ReadStyle.PictureLazy);
-            _number = tFile.Tag.Track;
-            _title = tFile.Tag.Title;
-            if (tFile.Tag.Performers.Length > 0) //use song artist if exists (or album)
-                _artist = tFile.Tag.JoinedPerformers;
-            else
-                _artist = tFile.Tag.JoinedAlbumArtists;
-            _album = tFile.Tag.Album;
-            _genre = tFile.Tag.JoinedGenres;
-            //TODO: Make empty if Properties is null
-            _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
-            string[] mimeSplits = tFile.MimeType.Split('/');
-            _codecMD = mimeSplits[mimeSplits.Length - 1];
-            _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
-            //TODO: Crashes when opening something else than mp3, make the field empty if null
-            TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);
-            if (tagData != null)
-            {
-                TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
-                byte byteRating = tagInfo.Rating;
-                if (byteRating == 0)
-                    _rating = 0;
-                else if (byteRating == 1)
-                    _rating = 1;
-                else if (byteRating <= 64)
-                    _rating = 2;
-                else if (byteRating <= 128)
-                    _rating = 3;
-                else if (byteRating <= 196)
-                    _rating = 4;
-                else
-                    _rating = 5;
-            }
-
-            /*Track song = new Track(Directory);
-            NumberMD = song.TrackNumber;
-            TitleMD = song.Title;
-            
-            if (!string.IsNullOrWhiteSpace(song.Artist))
-                ArtistMD = song.Artist;
-            else if (!string.IsNullOrWhiteSpace(song.AlbumArtist))
-                ArtistMD = song.AlbumArtist;
-            else
-                ArtistMD = song.OriginalArtist;
-
-            if (!string.IsNullOrWhiteSpace(song.Album))
-                AlbumMD = song.Album;
-            else
-                AlbumMD = song.OriginalAlbum;
-
-            GenreMD = song.Genre;
-            TimeSpan time = TimeSpan.FromSeconds(song.Duration);
-            LengthMD = time.ToString(@"mm\:ss");*/
+            if(!string.IsNullOrWhiteSpace(AudioDirectory1))
+                ReadAudioMetadata(AudioDirectory1, true);
+            if(!string.IsNullOrWhiteSpace(AudioDirectory2))
+                ReadAudioMetadata(AudioDirectory2, false);
         }
 
-        //TODO: Better way to do it?
-        public override object[] GetCustomValues()
+        private void ReadAudioMetadata(string audioDir, bool updateExisting)
         {
-            if (Number == null)
-                return new object[]
-                {
-                    PartitionDirectory, AudioDirectory, Title, Artist, Album, Genre,
-                    LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
-                };
-            
-            return new object[]
+            TagLib.File tFile = TagLib.File.Create(audioDir);//, TagLib.ReadStyle.PictureLazy);
+            if(_number == 0 || updateExisting)
+                _number = tFile.Tag.Track;
+            if(_title == "" || updateExisting)
+                _title = tFile.Tag.Title;
+            if (_artist == "" || updateExisting)
             {
-                PartitionDirectory, AudioDirectory, Number, Title, Artist, Album, Genre,
+                if (tFile.Tag.Performers.Length > 0) //use song artist if exists (or album)
+                    _artist = tFile.Tag.JoinedPerformers;
+                else
+                    _artist = tFile.Tag.JoinedAlbumArtists;
+            }
+            if(_album == "" || updateExisting)
+                _album = tFile.Tag.Album;
+            if(_genre == "" || updateExisting)
+                _genre = tFile.Tag.JoinedGenres;
+            if(_lengthMD == "00:00")
+                _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
+            if (_codecMD == "" || updateExisting)
+            {
+                string[] mimeSplits = tFile.MimeType.Split('/');
+                if (mimeSplits.Length >= 1)
+                    _codecMD = mimeSplits[^1];
+            }
+            if(_bitrateMD == "" || updateExisting)
+                _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
+            if (_rating == 0 || updateExisting)
+            {
+                TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);
+                if (tagData != null)
+                {
+                    TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get(tagData, "Windows Media Player 9 Series", true);
+                    byte byteRating = tagInfo.Rating;
+                    if (byteRating == 0)
+                        _rating = 0;
+                    else if (byteRating == 1)
+                        _rating = 1;
+                    else if (byteRating <= 64)
+                        _rating = 2;
+                    else if (byteRating <= 128)
+                        _rating = 3;
+                    else if (byteRating <= 196)
+                        _rating = 4;
+                    else
+                        _rating = 5;
+                }
+            }
+        }
+
+        public override object?[] GetCustomValues()
+        {
+            return new object?[]
+            {
+                PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
                 LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
             };
         }

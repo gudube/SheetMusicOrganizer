@@ -22,23 +22,30 @@
                 <ColumnDefinition Width="6"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="15"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="15"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.PartitionDirectory}"/>
-            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButton}" FontSize="12" Click="SelectMusicSheetButton_Click"
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButtonSmall}"
+                    Click="SelectMusicSheetButton_Click"
                     Content="Select Music Sheet"/>
             <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource ErrorTextBlock}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory}"/>
-            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButton}" FontSize="12" Click="SelectAudioFileButton_Click"
-                    Content="Select Audio File"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory1}"/>
+            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButtonSmall}"
+                    Click="SelectAudioFile1Button_Click"
+                    Content="Select Main Audio"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory2}"/>
+            <Button Grid.Row="4" Grid.Column="2" Click="SelectAudioFile2Button_Click"
+                    Content="Select 2nd Audio" Style="{StaticResource 3DButtonSmall}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
             <TextBlock Text="Use Audio Metadata" Style="{StaticResource LabelTextBlock}"/>
             <!-- TODO: Change style to look more like the textboxes above when disabled -->
             <CheckBox x:Name="UseAudioMDCheckBox" IsChecked="True" Margin="10,0,0,0" VerticalAlignment="Center"
-                      IsEnabled="{Binding Song.AudioDirectory, Converter={StaticResource StringNotEmptyConverter}}"
+                      IsEnabled="{Binding Song.AudioDirectory1, Converter={StaticResource StringNotEmptyConverter}}"
                       Checked="UseAudioMD_Checked" Unchecked="UseAudioMD_Unchecked"/>
         </StackPanel>
         <Separator Style="{StaticResource HorizontalSeparator}" Margin="0, 18"/>
@@ -72,10 +79,10 @@
             <TextBox Grid.Row="5" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding RatingText}"/> <!-- TODO: Replace with clickable stars-->
         </Grid>
         <Grid Margin="0, 18, 0, 0">
-            <Button Style="{StaticResource 3DButton}" FontSize="12" IsCancel="True" HorizontalAlignment="Left">
+            <Button Style="{StaticResource 3DButtonSmall}" IsCancel="True" HorizontalAlignment="Left">
                 Cancel
             </Button>
-            <Button FontSize="12" HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource SelectedButton}">
+            <Button HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource SelectedButton}">
                 <Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource StringsNotEmptyConverter}">
                         <Binding Path="Song.PartitionDirectory"/>

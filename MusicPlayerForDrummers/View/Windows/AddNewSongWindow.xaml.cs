@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Win32;
 using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
 
@@ -12,13 +13,12 @@ namespace MusicPlayerForDrummers.View.Windows
     /// </summary>
     public partial class AddNewSongWindow : Window
     {
-        //TODO: Rajouter bouton pour enlever le champ audio file
-        //TODO: Changer couleur texte text-box
-        //TODO: Ouvrir fenêtre si chanson existe déjà
         public AddNewSongWindow()
         {
             this.Owner = Application.Current.MainWindow;
             Song = new SongItem();
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             ResetSongInformations();
         }
@@ -41,7 +41,17 @@ namespace MusicPlayerForDrummers.View.Windows
             }
         }
 
-        private void SelectAudioFileButton_Click(object sender, RoutedEventArgs e)
+        private void SelectAudioFile1Button_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAudioFile(true);
+        }
+
+        private void SelectAudioFile2Button_Click(object sender, RoutedEventArgs e)
+        {
+            SelectAudioFile(false);
+        }
+
+        private void SelectAudioFile(bool mainAudio)
         {
             OpenFileDialog openDialog = new OpenFileDialog
             {
@@ -51,7 +61,10 @@ namespace MusicPlayerForDrummers.View.Windows
             };
             if (openDialog.ShowDialog() == true)
             {
-                Song.AudioDirectory = openDialog.FileName;
+                if (mainAudio)
+                    Song.AudioDirectory1 = openDialog.FileName;
+                else
+                    Song.AudioDirectory2 = openDialog.FileName;
                 Song.ReadAudioMetadata();
                 if(UseAudioMDCheckBox.IsChecked == true)
                     SetSongInformations();
@@ -60,7 +73,7 @@ namespace MusicPlayerForDrummers.View.Windows
 
         private void UseAudioMD_Checked(object sender, RoutedEventArgs e)
         {
-            if(!string.IsNullOrWhiteSpace(Song.AudioDirectory))
+            if(!string.IsNullOrWhiteSpace(Song.AudioDirectory1))
                 SetSongInformations();
         }
         private void UseAudioMD_Unchecked(object sender, RoutedEventArgs e)
@@ -70,8 +83,8 @@ namespace MusicPlayerForDrummers.View.Windows
         #endregion
 
         #region Song information
-        public static readonly DependencyProperty NumberTextProperty = DependencyProperty.Register("NumberText", typeof(uint?), typeof(AddNewSongWindow));
-        public uint? NumberText { get => (uint?)GetValue(NumberTextProperty); set => SetValue(NumberTextProperty, value); }
+        public static readonly DependencyProperty NumberTextProperty = DependencyProperty.Register("NumberText", typeof(uint), typeof(AddNewSongWindow));
+        public uint NumberText { get => (uint)GetValue(NumberTextProperty); set => SetValue(NumberTextProperty, value); }
 
         public static readonly DependencyProperty TitleTextProperty = DependencyProperty.Register("TitleText", typeof(string), typeof(AddNewSongWindow));
         public string TitleText { get => (string)GetValue(TitleTextProperty); set => SetValue(TitleTextProperty, value); }
@@ -88,7 +101,7 @@ namespace MusicPlayerForDrummers.View.Windows
         public static readonly DependencyProperty RatingTextProperty = DependencyProperty.Register("RatingText", typeof(uint), typeof(AddNewSongWindow));
         public uint RatingText { get => (uint)GetValue(RatingTextProperty); set => SetValue(RatingTextProperty, value); }
 
-        private uint? _numberBackup = 0;
+        private uint _numberBackup = 0;
         private string _titleBackup = "";
         private string _artistBackup = "";
         private string _albumBackup = "";
@@ -130,7 +143,7 @@ namespace MusicPlayerForDrummers.View.Windows
 
             if (!string.IsNullOrWhiteSpace(Song.PartitionDirectory) && !string.IsNullOrWhiteSpace(TitleText))
             {
-                UpdateSongFromInformations();
+                UpdateSongFromInformation();
 
                 if (mainVM.AddSong(Song))
                 {
@@ -149,16 +162,16 @@ namespace MusicPlayerForDrummers.View.Windows
                         }
                         catch (Exception ex)
                         {
-                            string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
-                            Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
-                            ErrorWindow unused = new ErrorWindow(this, error);
+                            string exMessage = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
+                            Log.Error("Error: {error} Exception message: {message}", exMessage, ex.Message);
+                            WindowManager.OpenErrorWindow(ex, exMessage);
                         }
                     }
                 }
             }
         }
 
-        private void UpdateSongFromInformations()
+        private void UpdateSongFromInformation()
         {
             Song.Number = NumberText;
             Song.Title = TitleText;
@@ -166,6 +179,11 @@ namespace MusicPlayerForDrummers.View.Windows
             Song.Album = AlbumText;
             Song.Genre = GenreText;
             Song.Rating = RatingText;
+            if (string.IsNullOrWhiteSpace(Song.AudioDirectory1) && !string.IsNullOrWhiteSpace(Song.AudioDirectory2))
+            {
+                Song.AudioDirectory1 = Song.AudioDirectory2;
+                Song.AudioDirectory2 = "";
+            }
         }
     }
 }

@@ -5,24 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="clr-namespace:MusicPlayerForDrummers.View.Windows"
         mc:Ignorable="d"
+        x:Name="window"
         Style="{StaticResource ControlBackgroundLv1}"
         Title="ErrorWindow" SizeToContent="WidthAndHeight"
-        d:DataContext="{d:DesignInstance windows:ErrorWindow, IsDesignTimeCreatable=True}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,18"
-                       Text="Oops! You found a bug, we are sorry for the inconvenience."
-                       FontWeight="Bold" HorizontalAlignment="Center"
-                       Style="{StaticResource ErrorTextBlock}"/>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Image Source="/View/Resources/error_emoji.png" Stretch="Uniform" Margin="18, 0" VerticalAlignment="Center"
-                       Height="{Binding ElementName=ErrorMessage, Path=ActualHeight}" MaxHeight="200"/>
-                <TextBlock x:Name="ErrorMessage" Width="400" TextWrapping="Wrap" Margin="0,9" Style="{StaticResource LabelTextBlock}"/>
-            </StackPanel>
-            <Button Grid.Row="2" Margin="10" HorizontalAlignment="Left" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButton}"/>
-        </Grid>
+        d:DataContext="{d:DesignInstance windows:ErrorWindow, IsDesignTimeCreatable=True}"
+        MinWidth="350" MaxWidth="700">
+    <StackPanel Orientation="Vertical" Margin="20">
+        <DockPanel HorizontalAlignment="Center" LastChildFill="True">
+            <Image Source="/View/Resources/error_emoji.png" Stretch="Uniform" VerticalAlignment="Center"
+                   Height="25" Margin="3, 0"/>
+            <TextBlock x:Name="ErrorTitle" TextWrapping="Wrap" Style="{StaticResource ErrorTextBlock}" FontSize="22" IsHyphenationEnabled="True" TextAlignment="Left" Text="Oops, you found a bug."/>
+        </DockPanel>
+        <TextBox x:Name="CustomMessage" Style="{StaticResource SelectableTextBlock}" TextAlignment="Justify" Margin="0, 10" Text="You found an error in C:/Documents/Test/long_fichierTest/long_fichierTest/long_fichier.mp3. The file doesnt seem to exist."/>
+        <Expander x:Name="ErrorContainer" Header="Error details" Margin="0,10">
+            <TextBox x:Name="ErrorMessage" Style="{StaticResource SelectableTextBlock}" Text="No custom error message." Margin="30, 5, 0, 5"/>
+        </Expander>
+        <Button Margin="10, 0" HorizontalAlignment="Left" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
+    </StackPanel>
 </Window>

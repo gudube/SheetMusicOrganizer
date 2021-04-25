@@ -22,7 +22,7 @@ namespace MusicPlayerForDrummers.ViewModel
             SetupEvents();
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
         }
 
@@ -32,7 +32,16 @@ namespace MusicPlayerForDrummers.ViewModel
         public PlayerVM PlayerVM { get; }
 
         private BaseViewModel? _currentViewModel;
-        public BaseViewModel? CurrentViewModel { get => _currentViewModel; set => SetField(ref _currentViewModel, value); }
+
+        public BaseViewModel? CurrentViewModel
+        {
+            get => _currentViewModel;
+            set
+            {
+                if (SetField(ref _currentViewModel, value))
+                    PlayerVM.ShowAdvancedOptions = value == PartitionVM;
+            }
+        }
 
         public DelegateCommand SwitchLibraryViewCommand { get; }
         public DelegateCommand SwitchPartitionViewCommand { get; }

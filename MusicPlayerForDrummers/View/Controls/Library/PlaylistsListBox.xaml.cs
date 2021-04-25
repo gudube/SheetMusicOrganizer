@@ -20,7 +20,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             InitializeComponent();
         }
 
-        //TODO: Add adorner text/status message to explain why can't drop
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             if (!(dropInfo.TargetItem is PlaylistItem playlist))

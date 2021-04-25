@@ -10,8 +10,6 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         public SyncSettingsScrolling()
         {
             InitializeComponent();
-
-            //todo: Add Start at and stop at properties (calculations made from length between start/stop)
         }
     }
 }

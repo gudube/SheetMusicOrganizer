@@ -14,7 +14,7 @@ namespace MusicPlayerForDrummers.ViewModel
             Session.PropertyChanged += Session_PropertyChanged;
         }
 
-        protected abstract void Session_PropertyChanged(object sender, PropertyChangedEventArgs e);
+        protected abstract void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e);
 
         public SessionContext Session { get; }
 

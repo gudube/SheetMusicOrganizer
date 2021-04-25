@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using MusicPlayerForDrummers.Model.Items;
+using MusicPlayerForDrummers.ViewModel.Sync;
 using Serilog;
 
 namespace MusicPlayerForDrummers.ViewModel
@@ -13,9 +12,17 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public PartitionVM(SessionContext session) : base(session)
         {
+            _noSyncVM = new NoSyncVM(session);
+            _scrollSyncVM = new ScrollSyncVM(session);
+            _pageSyncVM = new PageSyncVM(session);
+            SyncViewModels = new ObservableCollection<BaseViewModel>()
+            {
+                _noSyncVM, _scrollSyncVM, _pageSyncVM
+            };
+            _selectedSyncVM = _scrollSyncVM;
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Session.PlayingSong))
             {
@@ -28,11 +35,14 @@ namespace MusicPlayerForDrummers.ViewModel
         public SongItem? ShownSong
         {
             get => _shownSong;
-            set => SetField(ref _shownSong, value);
+            set
+            {
+                if (SetField(ref _shownSong, value))
+                    _scrollSyncVM.SyncingSong = value;
+            }
         }
 
         #region Visual properties
-        //todo: can keep these properties in the settings and let the user modify them?
         private readonly double minZoom = 0.01;
         private double _zoom = 1.0;
         public double Zoom
@@ -62,20 +72,17 @@ namespace MusicPlayerForDrummers.ViewModel
         #endregion
 
         #region Sync Method
-        public IEnumerable<SyncMethod> SyncMethods => Enum.GetValues(typeof(SyncMethod)).Cast<SyncMethod>();
+        private readonly NoSyncVM _noSyncVM;
+        private readonly ScrollSyncVM _scrollSyncVM;
+        private readonly PageSyncVM _pageSyncVM;
+        public ObservableCollection<BaseViewModel> SyncViewModels { get; }
 
-        private SyncMethod _selectedSync = SyncMethod.None;
-        public SyncMethod SelectedSync { get => _selectedSync; set => SetField(ref _selectedSync, value); }
+        private BaseViewModel _selectedSyncVM;
+        public BaseViewModel SelectedSyncVM
+        {
+            get => _selectedSyncVM;
+            set => SetField(ref _selectedSyncVM, value);
+        }
         #endregion
-
     }
-
-    public enum SyncMethod
-    {
-        None,
-        Scrolling,
-        Page,
-        Staff
-    }
-    
 }

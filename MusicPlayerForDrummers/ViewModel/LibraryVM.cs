@@ -14,7 +14,6 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public override string ViewModelName => "LIBRARY";
 
-        //TODO: Separer le LibraryVM est plusieurs VM?
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
@@ -42,7 +41,7 @@ namespace MusicPlayerForDrummers.ViewModel
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
 
-        protected override void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(Session.PlayingSong))
                 RefreshSongShowedAsPlaying();
@@ -61,13 +60,13 @@ namespace MusicPlayerForDrummers.ViewModel
             Playlists.Reset(playlists);
         }
 
-        private void Playlists_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             foreach (BasePlaylistItem item in Playlists) 
                 item.PropertyChanged += Playlist_PropertyChanged;
         }
 
-        private void Playlist_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Playlist_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(PlaylistItem.IsPlaying))
                 RefreshSongShowedAsPlaying();
@@ -98,12 +97,11 @@ namespace MusicPlayerForDrummers.ViewModel
 
         private async void SelectedPlaylistChanged()
         {
-            Session.Status.SelectingPlaylist = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SelectingPlaylist);
             await UpdateSongsFromDb();
-            Session.Status.SelectingPlaylist = false;
+            StatusContext.removeLoadingStatus(LoadingStatus.SelectingPlaylist);
         }
 
-        //todo: add confirmation window when trying to delete a playlist e.g. Are you sure to... it will delete the playlist but the songs are still available in All Songs
         private void DeleteSelectedPlaylist()
         {
             if (SelectedPlaylistIndex < 0 || SelectedPlaylistIndex >= Playlists.Count - 1 
@@ -210,16 +208,16 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Song in playlist
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
@@ -275,8 +273,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         #endregion
 
-        //TODO: Add icon to represent mastery (poker face, crooked smile, smile, fire?)
-        //TODO: Multiple mastery levels are selectable using CTRL only, button to activate/deactivate mastery filter besides the expander
         #region Mastery Levels
         private void UpdateMasteryLevelsFromDb()
         {
@@ -291,20 +287,23 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
             DbHandler.SetSongMastery(song, mastery);
-            Session.Status.SavingSongMastery = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
+
             //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
             //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
             DbHandler.SetSongsMastery(songItems, mastery);
-            Session.Status.SavingSongMastery = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songItems)
@@ -326,7 +325,7 @@ namespace MusicPlayerForDrummers.ViewModel
             SongItem? songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null)
             {
-                SelectedPlaylistIndex = 0; //todo: will that work? or manually change playlist and call update of shownsongs
+                SelectedPlaylistIndex = 0;
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
@@ -348,7 +347,6 @@ namespace MusicPlayerForDrummers.ViewModel
                 ShownSongs.Clear();
             else
             {
-                //todo: Make the dbhandler methods async and return task? try if that would work
                 List<SongItem> songs = await DbHandler.GetSongs(selectedPlaylist.Id);
                 if (Session.PlayingSong != null) //sets if any of the new songs is playing
                 {
@@ -367,13 +365,13 @@ namespace MusicPlayerForDrummers.ViewModel
                 Log.Warning("Trying to sort songs when there are no selected PlaylistItem");
                 return;
             }
-
-            Session.Status.SavingSongOrder = true;
-            Session.Status.SortingSongs = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SortingSongs);
+            StatusContext.addSavingStatus(SavingStatus.SongsOrder);
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
-            Session.Status.SavingSongOrder = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongsOrder);
             ShownSongs.Reset(sortedSongs);
+            StatusContext.removeLoadingStatus(LoadingStatus.SortingSongs);
         }
 
         //Resets the songs in the database for current playlist from the songIDs in the same order
@@ -391,15 +389,10 @@ namespace MusicPlayerForDrummers.ViewModel
         public bool AddSong(SongItem song)
         {
             if (DbHandler.IsSongExisting(song.PartitionDirectory))
-            {
                 return false;
-                //song = DbHandler.GetSong(song.PartitionDirectory);
-            }
+            
             MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
-            if (selectedMasteryItems.Length == 0)
-                song.MasteryId = Session.MasteryLevels[0].Id;
-            else
-                song.MasteryId = selectedMasteryItems[0].Id;
+            song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
 
             DbHandler.AddSong(song);
 
@@ -416,10 +409,107 @@ namespace MusicPlayerForDrummers.ViewModel
             return true;
         }
 
-        //TODO: Add advanced options (like import music sheet only, audio only or both)
-        //TODO: Add update existing songs (music sheet or audio) vs skip existing songs
-        //TODO: Append songs added to a list to be able to push them to the database in transaction
-        public void AddFolder(string dir, bool recursive, bool useAudioMD)
+        public void AddDirByFolder(string dir, bool recursive, bool useAudioMD)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    AddDirByFolder(subDir, true, useAudioMD);
+
+            List<string> pdfFiles = new List<string>();
+            List<string> audioFiles = new List<string>();
+            foreach (string fileDir in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(fileDir);
+                if (ext == ".pdf")
+                    pdfFiles.Add(fileDir);
+                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
+                    audioFiles.Add(fileDir);
+            }
+
+            string audio1 = "";
+            string audio2 = "";
+            if (audioFiles.Count >= 1)
+            {
+                audio1 = audioFiles[0];
+                if (audioFiles.Count >= 2)
+                {
+                    if (Path.GetFileNameWithoutExtension(audio1).Length >
+                        Path.GetFileNameWithoutExtension(audioFiles[1]).Length)
+                    {
+                        audio2 = audio1;
+                        audio1 = audioFiles[1];
+                    }
+                    else
+                    {
+                        audio2 = audioFiles[1];
+                    }
+                }
+            }
+
+            foreach (string pdfFile in pdfFiles)
+            {
+                AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+            }
+        }
+
+        public void AddDirByFilename(string dir, bool recursive, bool useAudioMD)
+        {
+            List<string> pdfFiles = new List<string>();
+            List<string> audioFiles = new List<string>();
+            GetAllFilenames(dir, recursive, pdfFiles, audioFiles);
+            foreach (string pdfFile in pdfFiles)
+            {
+                string pdfName = Path.GetFileNameWithoutExtension(pdfFile);
+                List<string> audios = audioFiles.FindAll(x => Path.GetFileNameWithoutExtension(x).StartsWith(pdfName));
+                string audio1 = "";
+                string audio2 = "";
+                if (audios.Count >= 1)
+                {
+                    audio1 = audios[0];
+                    audioFiles.Remove(audio1);
+                    if (audios.Count >= 2)
+                    {
+                        audio2 = audios[1];
+                        audioFiles.Remove(audio2);
+                    }
+                }
+                if(Path.GetFileNameWithoutExtension(audio1).Length <= Path.GetFileNameWithoutExtension(audio2).Length)
+                    AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+                else
+                    AddSong(new SongItem(pdfFile, audio2, audio1, 0, useAudioMD));
+            }
+
+        }
+
+        public void GetAllFilenames(string dir, bool recursive, List<string> pdfFiles, List<string> audioFiles)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    GetAllFilenames(subDir, true, pdfFiles, audioFiles);
+
+            string[] allFiles = Directory.GetFiles(dir);
+            pdfFiles.AddRange(allFiles.Where(x => Path.GetExtension(x) == ".pdf"));
+            audioFiles.AddRange(allFiles.Where(x => {
+                string ext = Path.GetExtension(x);
+                return ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a";
+            }));
+        }
+
+        public void AddDirWithoutAudio(string dir, bool recursive)
+        {
+            if (recursive)
+                foreach (string subDir in Directory.GetDirectories(dir))
+                    AddDirWithoutAudio(subDir, true);
+
+            foreach (string fileDir in Directory.GetFiles(dir))
+            {
+                string ext = Path.GetExtension(fileDir);
+                if (ext == ".pdf")
+                    AddSong(new SongItem(fileDir, "", "", 0, false));
+            }
+        }
+        
+        /*public void AddFolder(string dir, bool recursive, bool useAudioMD)
         {
             if (recursive)
             {
@@ -446,7 +536,7 @@ namespace MusicPlayerForDrummers.ViewModel
             }
             else
             {
-                foreach(string partition in partitionFiles) //TODO: More performance way to do it?
+                foreach(string partition in partitionFiles)
                 {
                     //bool audioFound = false;
                     foreach(string audio in audioFiles)
@@ -459,10 +549,10 @@ namespace MusicPlayerForDrummers.ViewModel
                         }
                     }
                     //if(!audioFound)
-                    //    AddSong(new SongItem(partition)); //todo: Make this work eventually
+                    //    AddSong(new SongItem(partition));
                 }
             }
-        }
+        }*/
 
 
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
@@ -514,7 +604,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public bool SetSelectedSongPlaying(bool startPlaying)
         {
-            //todo: should also consider if there is a song playing before. what if no song playing nor shown?
             SongItem? song = ShownSongs.FirstOrDefault(x => x.IsSelected) ?? ShownSongs.FirstOrDefault();
             if (song == null)
             {
@@ -553,8 +642,11 @@ namespace MusicPlayerForDrummers.ViewModel
         //Sets the playing song with the same playing playlist and mastery level
         public void SetPlayingSong(SongItem song, bool startPlaying)
         {
-            Session.PlayingSong = song;
-            Session.Player.SetSong(song.AudioDirectory, startPlaying);
+            if (Session.PlayingSong != song)
+            {
+                Session.PlayingSong = song;
+                Session.Player.SetSong(song.AudioDirectory1, startPlaying, false);
+            }
         }
 
         public void StopPlayingSong()
@@ -572,7 +664,6 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public void SetNextPlayingSong(bool next)
         {
-            //TODO: add a symbol next to the playing playlist and mastery levels to make it less confusing
             if (Session.PlayingSong == null)
             {
                 SetSelectedSongPlaying(true);

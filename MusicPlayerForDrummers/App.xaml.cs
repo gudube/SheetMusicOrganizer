@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using MusicPlayerForDrummers.View;
+using Serilog;
 
 namespace MusicPlayerForDrummers
 {
@@ -11,6 +12,21 @@ namespace MusicPlayerForDrummers
     {
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.Debug()
+                .WriteTo.File("log.txt",
+                    rollingInterval: RollingInterval.Day,
+                    fileSizeLimitBytes: 20000000,
+                    retainedFileCountLimit: 15)
+                .CreateLogger();
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                Exception? ex = (e.ExceptionObject as Exception);
+                Log.Warning("Unhandled Exception Thrown!!!: {message}\n{trace}", ex?.Message, ex?.StackTrace);
+            };
+
             SplashScreen splash = new SplashScreen("/View/Resources/splash.png");
             splash.Show(false);
 

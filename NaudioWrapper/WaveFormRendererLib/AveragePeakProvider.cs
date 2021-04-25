@@ -15,7 +15,7 @@ namespace NAudioWrapper.WaveFormRendererLib
         public override PeakInfo GetNextPeak()
         {
             if (Provider == null || ReadBuffer == null)
-                return new PeakInfo(0,0); //todo: made those nullable. look into how this works and manage better (remove nullable?)
+                return new PeakInfo(0,0);
 
             var samplesRead = Provider.Read(ReadBuffer, 0, ReadBuffer.Length);
             var sum = (samplesRead == 0) ? 0 : ReadBuffer.Take(samplesRead).Select(Math.Abs).Sum();

@@ -71,8 +71,8 @@ namespace MusicPlayerForDrummers.View.Tools
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            foreach (string text in values)
-                if (string.IsNullOrWhiteSpace(text))
+            foreach (object value in values)
+                if (value is string text && string.IsNullOrWhiteSpace(text))
                     return false;
             return true;
         }
@@ -100,20 +100,61 @@ namespace MusicPlayerForDrummers.View.Tools
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is float num)
+            if (value is float num)
                 return num * 100;
-            
+
             Log.Warning("Could not convert value {value} as float to transform to /100 percentage", value);
             return 0.0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is double num)
+            if (value is double num)
                 return num / 100;
-            
+
             Log.Warning("Could not convert value {value} as double to transform to /1.0 percentage", value);
             return 0.0;
+        }
+    }
+
+    public class CrossMultiplicationConverter : IMultiValueConverter
+    {
+        //input values: a,b,d so that (a/b)*(?/d)
+        //ex: posSong, lengthSong, lengthPixels
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b) && Math.Abs(b) > 0.0000001 &&
+                Double.TryParse(System.Convert.ToString(values[2]), out var d) && Double.IsFinite(d))
+                return d * a / b;
+            
+            return 0.0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class SubstractionConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            double value = 0.0;
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b))
+                value = a - b;
+
+            if (value < 0)
+                return 0.0;
+           
+            return value;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

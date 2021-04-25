@@ -26,7 +26,7 @@ namespace MusicPlayerForDrummers.View.Controls.Items
                 libraryVM.PropertyChanged += LibraryVM_PropertyChanged;
         }
 
-        private void LibraryVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void LibraryVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex))
                 OnSelectedPlaylistChanged();

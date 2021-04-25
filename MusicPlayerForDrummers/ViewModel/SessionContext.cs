@@ -12,15 +12,13 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public SessionContext()
         {
-            Status = new StatusContext();
-
             Player = new AudioPlayer();
 
             DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render)
             {
                 Interval = TimeSpan.FromMilliseconds(50)
             };
-            timer.Tick += (sender, e) => PlayerTimerUpdate.Invoke();
+            timer.Tick += (sender, e) => PlayerTimerUpdate?.Invoke();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
             
             if (Settings.Default.Volume >= 0 && Settings.Default.Volume <= 1)
@@ -51,7 +49,5 @@ namespace MusicPlayerForDrummers.ViewModel
 
         public event Action PlayerTimerUpdate;
         #endregion
-
-        public StatusContext Status { get; }
     }
 }

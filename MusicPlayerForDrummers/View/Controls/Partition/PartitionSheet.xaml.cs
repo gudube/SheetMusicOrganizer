@@ -8,9 +8,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Data.Pdf;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using System.Threading;
 
 namespace MusicPlayerForDrummers.View.Controls.Partition
 {
@@ -19,7 +19,6 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
     /// </summary>
     public partial class PartitionSheet : UserControl
     {
-        //todo: hide scrollbar and disable scrolling when the song is playing
         public PartitionSheet()
         {
             InitializeComponent();
@@ -49,7 +48,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
             }
         }
 
-        private void PartitionVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Zoom))
                 UpdateZoom();
@@ -57,7 +56,7 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 OpenShownSongPartition();
         }
 
-        private void Player_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Player_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Session.Player.Position))
                 UpdateScrollPos();
@@ -87,11 +86,23 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
                 //making sure it's an absolute path
                 var path = Path.GetFullPath(partitionDir);
 
+                if (!File.Exists(path))
+                {
+                    GlobalEvents.raiseErrorEvent(new FileNotFoundException("Trying to open a partition file that doesn't exist.", path));
+                    return;
+                }
+
                 StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
-                    //Then load pdf document on background thread
-                    .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
-                    //Finally display on UI Thread
-                    .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext());
+                //Then load pdf document on background thread
+                .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
+                //Finally display on UI Thread
+                .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext())
+                .ContinueWith(t3 =>
+                    t3.Exception?.Handle(ex =>
+                    {
+                        GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
+                        return false;
+                    }), new CancellationToken(), TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
@@ -128,15 +139,16 @@ namespace MusicPlayerForDrummers.View.Controls.Partition
         {
             BitmapImage image = new BitmapImage();
 
-            using (var stream = new InMemoryRandomAccessStream())
+            using (var stream = new WrappingStream(new MemoryStream()))
             {
-                await page.RenderToStreamAsync(stream);
+                await page.RenderToStreamAsync(stream.AsRandomAccessStream());
 
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = stream.AsStream();
-                image.DecodePixelWidth = 1400; //todo: Add this option in settings to change that
+                image.StreamSource = stream;
+                image.DecodePixelWidth = 1400;
                 image.EndInit();
+                image.Freeze();
             }
 
             return image;

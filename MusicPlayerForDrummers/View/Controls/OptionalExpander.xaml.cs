@@ -19,7 +19,7 @@ namespace MusicPlayerForDrummers.View.Controls
         {
             public ToggleButton Toggle;
             public bool? DefaultValue;
-            public List<UIElement> Elements;
+            public List<UIElement>? Elements;
         }
 
         public OptionalExpander()
@@ -48,8 +48,8 @@ namespace MusicPlayerForDrummers.View.Controls
                     {
                         _rows[rowIndex].Toggle = toggle;
                         _rows[rowIndex].DefaultValue = toggle.IsChecked;
-                        toggle.Checked += Toggle_Changed; //TODO: need to unsubscribe?
-                        toggle.Unchecked += Toggle_Changed; //TODO: need to unsubscribe?
+                        toggle.Checked += Toggle_Changed;
+                        toggle.Unchecked += Toggle_Changed;
                     }
                     else
                     {
@@ -59,7 +59,6 @@ namespace MusicPlayerForDrummers.View.Controls
             }
         }
 
-        //TODO: Add (default) or (modified) to header to make it more clear
         private void Toggle_Changed(object sender, RoutedEventArgs e)
         {
             if(_rows == null)
@@ -69,15 +68,17 @@ namespace MusicPlayerForDrummers.View.Controls
             if(changed.Toggle.IsChecked != changed.DefaultValue) //togle became nondefault
             {
                 changed.Toggle.Opacity = _changedOpacity;
-                foreach (UIElement elem in changed.Elements)
-                    elem.Opacity = _changedOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
+                        elem.Opacity = _changedOpacity;
                 HeaderOpacity = _changedOpacity;
             }
             else //toggle became default, need to check other toggles
             {
                 changed.Toggle.Opacity = _defaultOpacity;
-                foreach (UIElement elem in changed.Elements)
-                    elem.Opacity = _defaultOpacity;
+                if(changed.Elements != null)
+                    foreach (UIElement elem in changed.Elements)
+                        elem.Opacity = _defaultOpacity;
 
                 foreach (GridRow row in _rows)
                 {

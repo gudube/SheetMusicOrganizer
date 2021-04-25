@@ -13,9 +13,6 @@ using Serilog;
 
 namespace MusicPlayerForDrummers.Model
 {
-    //TODO: Pass connection when you do an insert/update/delete that doesnt return anything only and create transactions
-    //TODO: Use parameters everywhere
-    //TODO: Use con at the last moment instead of at the start
     public static class DbHandler
     {
         //private static List<MasteryItem> _masteryItems;
@@ -23,13 +20,10 @@ namespace MusicPlayerForDrummers.Model
 
 
         #region Init
-        //TODO: put it in settings?
         public static readonly string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
 
         public static void InitializeDatabase(bool force = false)
         {
-            //TODO: Add verification of database schema (tables have the good format)
-            //TODO: Add a button to reset the database with warning that it will reset the software's content
             if(Settings.Default.RecentDBs.Count == 0)
             {
                 Log.Information("Opening the default database");
@@ -37,8 +31,6 @@ namespace MusicPlayerForDrummers.Model
             }
             else if (!File.Exists(Settings.Default.RecentDBs[0]))
             {
-                //todo: Open warning window that the database couldn't open. Can create a new one or open one
-                //for now:
                 Log.Error("Could not open the database file. Now opening the default one.");
                 OpenDefaultDatabase();
             }
@@ -62,7 +54,6 @@ namespace MusicPlayerForDrummers.Model
         {
             if (!File.Exists(databasePath))
             {
-                //todo: Open warning window that the database couldn't open. Can create a new one or open one
                 Log.Error("Could not open the database file. Now opening the default one.");
                 OpenDefaultDatabase();
             }
@@ -70,11 +61,8 @@ namespace MusicPlayerForDrummers.Model
             SaveOpenedDbSettings(databasePath);
             
             Log.Information("Reopening the application with new database path {path}", databasePath);
-            //todo: Remove all reference in project to the win forms assembly (unless its there for a reason?)
-            //Application.Restart();
             Process.Start(Application.ResourceAssembly.Location);
-            // p.WaitForInputIdle();
-            Application.Current.MainWindow?.Close();
+            Application.Current.Shutdown();
         }
 
         private static void SaveOpenedDbSettings(string dBOpenedPath)
@@ -135,7 +123,7 @@ namespace MusicPlayerForDrummers.Model
         private static SqliteParameter CreateParameter(string name, SqliteType type, object? value)
         {
             SqliteParameter param = new SqliteParameter(name, type);
-            if (value == null || (value is string strValue && string.IsNullOrWhiteSpace(strValue)))
+            if (value == null)
                 param.Value = DBNull.Value;
             else
                 param.Value = value;
@@ -220,14 +208,12 @@ namespace MusicPlayerForDrummers.Model
             return cmd.ExecuteReader();
         }
 
-        //TODO: Manage errors
-        //TODO: Block sql injections, https://stackoverflow.com/questions/33955636/using-executereader-to-return-a-primary-key
         private static void InsertRow(SqliteConnection con, BaseTable table, BaseModelItem row, bool ignoreConflict = false)
         {
             SqliteCommand cmd = con.CreateCommand();
             SqlColumn[] columns = table.GetCustomColumns();
             string[] paramNames = new string[columns.Length];
-            object[] formattedValues = row.GetCustomValues();
+            object?[] formattedValues = row.GetCustomValues();
             for (int i = 0; i < formattedValues.Length; i++)
             {
                 paramNames[i] = "@" + columns[i];
@@ -243,7 +229,6 @@ namespace MusicPlayerForDrummers.Model
             row.Id = Convert.ToInt32(cmd.ExecuteScalar());
         }
 
-        //TODO: Use to same SqliteCommand instead of recreating?
         private static void InsertRows(SqliteConnection con, BaseTable table, BaseModelItem[] rows, bool ignoreConflict = false)
         {
             if (rows.Length < 1)
@@ -265,7 +250,7 @@ namespace MusicPlayerForDrummers.Model
         {
             SqliteCommand cmd = con.CreateCommand();
             SqlColumn[] columns = table.GetCustomColumns();
-            object[] colValues = row.GetCustomValues();
+            object?[] colValues = row.GetCustomValues();
             string[] preparedUpdate = new string[columns.Length];
             for (int i = 0; i < columns.Length; i++)
             {
@@ -314,7 +299,6 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Playlist
-        //TODO: Stop the user from entering special chars such as '
         private static void CreatePlaylistTable(SqliteConnection con, bool force = false)
         {
             PlaylistTable playlistTable = new PlaylistTable();
@@ -325,7 +309,6 @@ namespace MusicPlayerForDrummers.Model
             }
         }
 
-        //TODO: Make sure dataReader passed by value doesn't impact perf. pass by ref?
         public static List<PlaylistItem> GetAllPlaylists()
         {
             List<PlaylistItem> playlists = new List<PlaylistItem>();
@@ -374,7 +357,6 @@ namespace MusicPlayerForDrummers.Model
         {
             SongTable songTable = new SongTable();
             CreateTable(con, songTable, force);
-            //TODO: Is this index needed? could find a better one?
             CreateIndex(con, songTable, true, force, songTable.PartitionDirectory.Name); 
         }
 
@@ -419,7 +401,6 @@ namespace MusicPlayerForDrummers.Model
             throw new SqliteException("Could not find the song corresponding to : " + partitionDir, 1);
         }
 
-        //TODO: Make it better join performance (view?)
         /*
          * SELECT Song.ID, Song.Name, ... FROM Song INNER JOIN
          *  (SELECT PlaylistSong.SongID FROM PlaylistSong WHERE PlaylistSong.PlaylistID = [playlistID] ON PlaylistSong.SongID = Song.SongID) ps
@@ -519,7 +500,6 @@ namespace MusicPlayerForDrummers.Model
 
         //we suppose the song doesn't already exist!
         //Adds the song and then adds at the end of the playlists
-        //TODO: Block after a certain number of songs (limit to like 100 000 songs? need to do a stress test)
         public static void AddSong(SongItem song)
         {
             SongTable songTable = new SongTable();
@@ -528,10 +508,9 @@ namespace MusicPlayerForDrummers.Model
                 con.Open();
                 InsertRow(con, songTable, song);
             }
-            AddPlaylistSongLink(0, song.Id);
+            AddPlaylistSongLink(1, song.Id);
         }
 
-        //TODO: Would be better to update only the fields necessary?
         public static void UpdateSong(SongItem song)
         {
             using (SqliteConnection con = CreateConnection())
@@ -554,7 +533,7 @@ namespace MusicPlayerForDrummers.Model
         #endregion
 
         #region Mastery
-        private const int DefaultMasteryId = 0;
+        private const int DefaultMasteryId = 1;
         private static void CreateMasteryTable(SqliteConnection con, bool force = false)
         {
             MasteryTable masteryTable = new MasteryTable();
@@ -647,7 +626,6 @@ namespace MusicPlayerForDrummers.Model
             return Convert.ToInt32(answer);
         }*/
 
-        //TODO: Replace that with the number of songs in playlist (count shown in the playlist name)
         //Returns the first free available position in the playlist
         private static int GetLastPositionInPlaylist(SqliteConnection con, int playlistId)
         {
@@ -741,7 +719,7 @@ namespace MusicPlayerForDrummers.Model
                 DeleteRows(con, psTable, safeCondition);
                 InsertRows(con, psTable, items.ToArray());
                 if (transaction)
-                    _transaction?.Commit(); //todo: assync
+                    _transaction?.Commit();
             }
         }
 

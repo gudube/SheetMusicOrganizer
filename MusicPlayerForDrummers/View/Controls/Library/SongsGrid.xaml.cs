@@ -65,14 +65,14 @@ namespace MusicPlayerForDrummers.View.Controls.Library
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
             }
         }
-        private void MasteryLevels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(DataContext is LibraryVM libraryVM)
                 foreach(MasteryItem newItem in libraryVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
         }
 
-        private void MasteryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void MasteryItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(MasteryItem.IsSelected))
             {
@@ -87,11 +87,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
 
         #region Action Event
 
-        //TODO: Accept drag-and-drop
-        //TODO: Hide button after a song is added
-        //TODO: Add this option in File->Add Song
-        //TODO: Directory import (batch import, see performance with taglib)
-        //TODO: Test more formats
         private void AddNewSongButton_Click(object sender, RoutedEventArgs e)
         {
             WindowManager.OpenAddNewSongWindow();
@@ -102,9 +97,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
             WindowManager.OpenOpenFolderWindow();
         }
 
-        //TODO: Be able to copy paste songs between playlists
-        //TODO: Be able to drag-and-drop songs to mastery levels
-        //TODO: Add warning when deleting song from All Music
         private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if(!(DataContext is LibraryVM libraryVM))
@@ -135,7 +127,6 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             if (!(DataContext is LibraryVM libraryVM))
             {
-                //TODO: Popup message in small at the bottom when there's a Log.Error, followed by 'Open Console' link to see all info
                 Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext?.GetType());
                 return;
             }

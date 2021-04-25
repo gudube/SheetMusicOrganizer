@@ -15,7 +15,7 @@ namespace MusicPlayerForDrummers.Model.Items
         protected int _id;
         public int Id { get => _id; set => SetField(ref _id, value); }
 
-        public abstract object[] GetCustomValues();
+        public abstract object?[] GetCustomValues();
 
         protected string GetSafeString(SqliteDataReader dR, string colName)
         {

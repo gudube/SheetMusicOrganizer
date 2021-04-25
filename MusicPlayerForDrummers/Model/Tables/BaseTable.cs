@@ -9,7 +9,6 @@ namespace MusicPlayerForDrummers.Model.Tables
 
         public readonly SqlColumn Id;
 
-        //TODO: Or keep an array of all the fields as a field and just return it
         public abstract SqlColumn[] GetCustomColumns();
 
         public SqlColumn[] GetAllColumns()

@@ -13,7 +13,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Back" IsCancel="True" Style="{StaticResource 3DButton}"/>
+            <Button Grid.Column="0" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
             <Button x:Name="ContinueButton" Grid.Column="2" Click="ContinueButton_Click"
                     HorizontalAlignment="Right" Style="{StaticResource SelectedButton}"/>
         </Grid>
