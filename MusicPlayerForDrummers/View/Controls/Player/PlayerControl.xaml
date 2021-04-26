@@ -78,7 +78,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                    <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0" ItemsSource="{Binding PlayOrderDict}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding PlayOrder}"/>
                     <Button x:Name="MuteButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}">
                         <Image>
                             <Image.Style>

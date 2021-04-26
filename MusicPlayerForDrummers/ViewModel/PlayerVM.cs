@@ -2,6 +2,7 @@
 using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
 using MusicPlayerForDrummers.Model.Items;
+using System.Collections.Generic;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -168,6 +169,30 @@ namespace MusicPlayerForDrummers.ViewModel
                 Session.Player.SetSong(audioDir, Session.Player.IsPlaying, true);
             }
         }
+        #endregion
+
+        #region Playing Order
+        public enum PlayOrderType
+        {
+            Default,
+            Repeat,
+            Random
+        }
+
+        public Dictionary<PlayOrderType, string> PlayOrderDict { get; } =
+            new Dictionary<PlayOrderType, string>() {
+                {PlayOrderType.Default, "Default"},
+                {PlayOrderType.Repeat, "Repeat Song"},
+                {PlayOrderType.Random, "Random Song"},
+            };
+
+        private PlayOrderType _playOrder;
+        public PlayOrderType PlayOrder
+        {
+            get { return _playOrder; }
+            set { SetField(ref _playOrder, value); }
+        }
+
         #endregion
 
         private bool _showAdvancedOptions;

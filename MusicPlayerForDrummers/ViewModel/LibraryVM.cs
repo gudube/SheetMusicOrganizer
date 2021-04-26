@@ -682,7 +682,7 @@ namespace MusicPlayerForDrummers.ViewModel
 
             if(next)
                 newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, 
-                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
+                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray()); // refactor to keep songs locally instead of DB
             else
                 newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, 
                     Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
