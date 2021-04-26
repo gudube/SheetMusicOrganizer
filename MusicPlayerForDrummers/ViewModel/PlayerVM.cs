@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
+using System.Collections.Generic;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -168,6 +169,30 @@ namespace SheetMusicOrganizer.ViewModel
                 Session.Player.SetSong(audioDir, Session.Player.IsPlaying, true);
             }
         }
+        #endregion
+
+        #region Playing Order
+        public enum PlayOrderType
+        {
+            Default,
+            Repeat,
+            Random
+        }
+
+        public Dictionary<PlayOrderType, string> PlayOrderDict { get; } =
+            new Dictionary<PlayOrderType, string>() {
+                {PlayOrderType.Default, "Default"},
+                {PlayOrderType.Repeat, "Repeat Song"},
+                {PlayOrderType.Random, "Random Song"},
+            };
+
+        private PlayOrderType _playOrder;
+        public PlayOrderType PlayOrder
+        {
+            get { return _playOrder; }
+            set { SetField(ref _playOrder, value); }
+        }
+
         #endregion
 
         private bool _showAdvancedOptions;
