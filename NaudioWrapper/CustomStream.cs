@@ -83,7 +83,7 @@ namespace NAudioWrapper
                 }
                 return read;
             }
-            catch(Exception ex)
+            catch (Exception)
             {
                 // if(ex is NullReferenceException || ex is ObjectDisposedException)
                 // {
