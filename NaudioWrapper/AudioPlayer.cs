@@ -198,6 +198,7 @@ namespace NAudioWrapper
             {
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Pause();
+                // _stream?.Flush();
             }
             else if (!force && _output.PlaybackState == PlaybackState.Paused)
                 Play();
@@ -208,7 +209,7 @@ namespace NAudioWrapper
         public bool Stop(bool disposeOutput = true, bool notifyChanges = true)
         {
             bool wasPlaying = IsPlaying;
-            if (wasPlaying)
+            if (_output.PlaybackState != PlaybackState.Stopped)
             {
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _stopMeansEnded = false;
