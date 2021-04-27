@@ -2,9 +2,13 @@
 using SoundTouch;
 using SoundTouch.Net.NAudioSupport;
 using System;
+using System.IO;
 
 namespace NAudioWrapper
 {
+    /*
+     * SoundTouchWaveStream with loop support
+     */
     class CustomStream : SoundTouchWaveStream
     {
         private WaveStream? _sourceStream;
@@ -17,11 +21,6 @@ namespace NAudioWrapper
             _loopStart = 0;
             _loopEnd = sourceStream.Length;
         }
-
-        /*public CustomStream(SoundTouchWaveStream source)
-        {
-            sourceStream = source;
-        }*/
 
         public bool EnableLooping = false;
         private long _loopStart;
@@ -41,67 +40,22 @@ namespace NAudioWrapper
                 _loopEnd = (long)(_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
             }
         }
-        public override WaveFormat WaveFormat => _sourceStream?.WaveFormat ?? new WaveFormat();
 
-        public override long Length => EnableLooping ? long.MaxValue / 32 : (_sourceStream?.Length ?? 0);
-
-        public override long Position
-        {
-            get => _sourceStream?.Position ?? 0L;
-            set {
-                if (_sourceStream != null)
-                    _sourceStream.Position = value;
-            }
-        }
+        public override long Length => EnableLooping ? long.MaxValue / 32 : base.Length;
 
         public override bool HasData(int count)
         {
             // infinite data when looping
-            return EnableLooping || (_sourceStream?.HasData(count) ?? false);
+            return EnableLooping || base.HasData(count);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            try
+            if (EnableLooping && (_sourceStream?.Position < _loopStart || _sourceStream?.Position >= _loopEnd))
             {
-                int read = 0;
-                while (read < count && _sourceStream != null)
-                {
-                    int required = count - read;
-                    int readThisTime = _sourceStream.Read(buffer, offset + read, required);
-
-                    if (EnableLooping)
-                    {
-                        if (readThisTime < required || _sourceStream.Position >= _loopEnd ||
-                            _sourceStream.Position < _loopStart)
-                        {
-                            _sourceStream.Position = _loopStart;
-                        }
-                    }
-
-                    read += readThisTime;
-                }
-                return read;
+                _sourceStream.Position = _loopStart;
             }
-            catch (Exception)
-            {
-                // if(ex is NullReferenceException || ex is ObjectDisposedException)
-                // {
-                    //nothing to do, will be disposed
-                    return 0;
-                // }
-                // throw;
-            }
+            return base.Read(buffer, offset, count);
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            _sourceStream?.Flush();
-            _sourceStream?.Dispose();
-            _sourceStream = null;
-            base.Dispose(disposing);
-        }
-
-        
     }
 }
