@@ -103,8 +103,10 @@ namespace MusicPlayerForDrummers.ViewModel
         private void SetupEvents()
         {
             PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
-            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(true);
-            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(false);
+            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Next);
+            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Previous);
+            PlayerVM.PlaySameSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Same);
+            PlayerVM.PlayRandomSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Random);
             PlayerVM.StopPlayingSong += (o, e) => LibraryVM.StopPlayingSong();
         }
 

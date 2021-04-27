@@ -21,10 +21,26 @@ namespace MusicPlayerForDrummers.ViewModel
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
             ChangeAudioCommand = new DelegateCommand(ChangeAudio);
-            Session.Player.PlaybackFinished += PlayNextSong;
+            Session.Player.PlaybackFinished += Player_PlaybackFinished;
             Session.Player.PropertyChanged += Player_PropertyChanged;
             if(UpdateScrollPercentage() && Session.PlayingSong != null) {
                 Session.PlayingSong.PropertyChanged += PlayingSong_PropertyChanged;
+            }
+        }
+
+        private void Player_PlaybackFinished(object? sender, EventArgs e)
+        {
+            switch(PlayOrder)
+            {
+                case PlayOrderType.Default:
+                    PlayNextSong?.Invoke(this, EventArgs.Empty);
+                    break;
+                case PlayOrderType.Random:
+                    PlayRandomSong?.Invoke(this, EventArgs.Empty);
+                    break;
+                case PlayOrderType.Repeat:
+                    PlaySameSong?.Invoke(this, EventArgs.Empty);
+                    break;
             }
         }
 
@@ -67,6 +83,8 @@ namespace MusicPlayerForDrummers.ViewModel
         public event EventHandler? StopPlayingSong;
         public event EventHandler? PlayNextSong;
         public event EventHandler? PlayPreviousSong;
+        public event EventHandler? PlayRandomSong;
+        public event EventHandler? PlaySameSong;
         #endregion
 
         #region Properties
@@ -130,13 +148,27 @@ namespace MusicPlayerForDrummers.ViewModel
         public DelegateCommand PreviousCommand { get; }
         private void Previous(object? obj)
         {
-            PlayPreviousSong?.Invoke(this, EventArgs.Empty);
+            if(PlayOrder == PlayOrderType.Random)
+            {
+                PlayRandomSong?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                PlayPreviousSong?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public DelegateCommand NextCommand { get; }
         private void Next(object? obj)
         {
-            PlayNextSong?.Invoke(this, EventArgs.Empty);
+            if (PlayOrder == PlayOrderType.Random)
+            {
+                PlayRandomSong?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                PlayNextSong?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private bool _resumePlaying = false;

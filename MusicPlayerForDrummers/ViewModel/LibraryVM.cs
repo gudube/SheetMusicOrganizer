@@ -662,36 +662,56 @@ namespace MusicPlayerForDrummers.ViewModel
                 mastery.IsPlaying = false;
         }
 
-        public void SetNextPlayingSong(bool next)
+        public enum SongToFind
+        {
+            Next,
+            Previous,
+            Same,
+            Random
+        }
+
+        public void SetNextPlayingSong(SongToFind type)
         {
             if (Session.PlayingSong == null)
             {
                 SetSelectedSongPlaying(true);
                 return;
             }
-            
-            SongItem? newSong;
 
-            PlaylistItem? playingPlaylist = Playlists.FirstOrDefault(x => x is PlaylistItem pl && pl.IsPlaying) as PlaylistItem;
-
-            if (playingPlaylist == null)
+            if (type == SongToFind.Same)
             {
-                Log.Warning("Playing playlist is null when trying to go to play {next} song", (next ? "next" : "previous"));
+                Session.Player.Position = 0;
+                Session.Player.Play();
                 return;
             }
-
-            if(next)
-                newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, 
-                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray()); // refactor to keep songs locally instead of DB
-            else
-                newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, 
-                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
             
+            SongItem? newSong = null;
+
+            PlaylistItem? playingPlaylist = (Playlists.FirstOrDefault(x => x is PlaylistItem pl && pl.IsPlaying) ?? Playlists[SelectedPlaylistIndex]) as PlaylistItem;
+            if (playingPlaylist == null)
+                return;
+
+            int[] masteryIds = Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray();
+
+            switch (type)
+            {
+                case SongToFind.Next:
+                    newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
+                    break;
+                case SongToFind.Previous:
+                    newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
+                    break;
+                case SongToFind.Random:
+                    newSong = DbHandler.FindRandomSong(playingPlaylist.Id, masteryIds);
+                    break;
+            }
             if (newSong == null)
                 StopPlayingSong();
             else
                 SetPlayingSong(newSong, true);
         }
+
+
         #endregion
 
         #region Validation

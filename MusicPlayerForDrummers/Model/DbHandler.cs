@@ -432,7 +432,56 @@ namespace MusicPlayerForDrummers.Model
                 return songs;
             });
         }
-        
+
+        public static SongItem? FindRandomSong(int playlistId, params int[] masteryIDs)
+        {
+            SongTable songTable = new SongTable();
+            PlaylistSongTable psTable = new PlaylistSongTable();
+            SongItem? songFound = null;
+
+            string[] formattedCols = songTable.GetAllColumns().Select(x => "st." + x).ToArray();
+            string query = $"SELECT {string.Join(", ", formattedCols)}" +
+                           $" FROM {psTable.TableName} ps1 INNER JOIN {songTable.TableName} st" +
+                           $" ON ps1.{psTable.SongId} = st.{songTable.Id}" +
+                           $" WHERE ps1.{psTable.PlaylistId} = @playlistId";
+            if (masteryIDs.Any())
+            {
+                string[] masteryParams = new string[masteryIDs.Length];
+                for (int i = 0; i < masteryIDs.Length; i++)
+                    masteryParams[i] = "@masteryId" + i;
+                query += $" AND st.{songTable.MasteryId} IN (" + string.Join(", ", masteryParams) + ")";
+            }
+            query += $" ORDER BY random() LIMIT 1";
+
+            using (var con = CreateConnection())
+            {
+                SqliteCommand cmd = con.CreateCommand();
+
+                cmd.CommandText = query;
+                cmd.Parameters.AddWithValue("playlistId", playlistId);
+                for (int i = 0; i < masteryIDs.Length; i++)
+                    cmd.Parameters.AddWithValue("masteryId" + i, masteryIDs[i]);
+
+                con.Open();
+                SqliteDataReader dataReader = cmd.ExecuteReader();
+                if (dataReader.Read() && !dataReader.IsDBNull(0))
+                {
+                    songFound = new SongItem(dataReader);
+                }
+                else
+                {
+                    string info = "No random song found for playlistId {playlistId} and masteryIDs {masteryIDs}";
+                    Log.Information(info, playlistId, masteryIDs);
+                }
+                if (dataReader.Read())
+                {
+                    string info = "More than one random song found for playlistId {playlistId} and masteryIDs {masteryIDs}";
+                    Log.Error(info, playlistId, masteryIDs);
+                }
+            }
+            return songFound;
+        }
+
         private static SongItem? FindPlayingSong(bool next, int currentSongId, int playlistId, params int[] masteryIDs)
         {
             SongTable songTable = new SongTable();

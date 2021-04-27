@@ -10,7 +10,7 @@ namespace NAudioWrapper
         //private SoundTouchProcessor ? _processor;
         //private SoundTouchWaveProvider? _provider;
         private AudioFileReader? _audioFileReader;
-        private WaveOutEvent? _output;
+        private WaveOutEvent _output;
         private bool _stopMeansEnded = true;
 
         public event EventHandler? PlaybackFinished;
@@ -19,6 +19,8 @@ namespace NAudioWrapper
 
         public AudioPlayer()
         {
+            _output = new WaveOutEvent();
+            _output.PlaybackStopped += _output_PlaybackStopped;
         }
 
         public void SetSong(string filepath, bool startPlaying, bool keepPosition)
@@ -28,9 +30,6 @@ namespace NAudioWrapper
                 newPosition = _audioFileReader.Position; // when changing track version
 
             Stop(true, false); // stop if playing
-            
-            _output = new WaveOutEvent();
-            _output.PlaybackStopped += _output_PlaybackStopped;
 
             if (!File.Exists(filepath))
             {
@@ -209,11 +208,12 @@ namespace NAudioWrapper
         public bool Stop(bool disposeOutput = true, bool notifyChanges = true)
         {
             bool wasPlaying = IsPlaying;
-            if (_output != null && wasPlaying)
+            if (wasPlaying)
             {
-                _stopMeansEnded = false;
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                _stopMeansEnded = false;
                 _output.Stop();
+                _stream?.Flush();
             }
 
             if (disposeOutput)
@@ -227,7 +227,7 @@ namespace NAudioWrapper
         #region Events
         private void _output_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            if (_stopMeansEnded)
+            if(_stopMeansEnded)
             {
                 _stopMeansEnded = false;
                 PlaybackFinished?.Invoke(this, EventArgs.Empty);
@@ -267,16 +267,11 @@ namespace NAudioWrapper
 
         private void DisposeOutput(bool notifyChanges = true)
         {
-            if (_output != null)
+            if (IsPlaying)
             {
-                if (IsPlaying)
-                {
-                    _stopMeansEnded = false;
-                    PlaybackStopping?.Invoke(this, EventArgs.Empty);
-                    _output.Stop();
-                }
-                _output.Dispose();
-                _output = null;
+                _stopMeansEnded = false;
+                PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                _output.Stop();
             }
 
             if (_stream != null)
