@@ -2,6 +2,8 @@
 using System.Windows;
 using Serilog;
 using SheetMusicOrganizer.View;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace SheetMusicOrganizer
 {

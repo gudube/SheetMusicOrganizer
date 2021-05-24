@@ -12,6 +12,8 @@ using Serilog;
 using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace SheetMusicOrganizer.View
 {

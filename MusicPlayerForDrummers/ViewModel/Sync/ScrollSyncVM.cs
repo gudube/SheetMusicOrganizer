@@ -33,8 +33,8 @@ namespace SheetMusicOrganizer.ViewModel.Sync
             {
                 double timeFromStart = Session.Player.Position;
                 double endFromStart = Session.Player.Length - SyncingSong.ScrollEndTime;
-                if (timeFromStart > endFromStart - 10)
-                    return;
+                if (timeFromStart > endFromStart - 3)
+                    timeFromStart = endFromStart - 3;
                 SyncingSong.ScrollStartTime = (int) Math.Ceiling(timeFromStart);
             }
         }
@@ -45,8 +45,8 @@ namespace SheetMusicOrganizer.ViewModel.Sync
             if (SyncingSong != null)
             {
                 double timeFromStart = Session.Player.Position;
-                if (timeFromStart < SyncingSong.ScrollStartTime + 10)
-                    return;
+                if (timeFromStart < SyncingSong.ScrollStartTime + 3)
+                    timeFromStart = SyncingSong.ScrollStartTime + 3;
                 SyncingSong.ScrollEndTime = (int) Math.Floor(Session.Player.Length - timeFromStart);
             }
         }
