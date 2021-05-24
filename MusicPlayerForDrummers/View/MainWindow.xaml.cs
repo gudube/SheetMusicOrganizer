@@ -12,6 +12,8 @@ using MusicPlayerForDrummers.Model;
 using MusicPlayerForDrummers.View.Tools;
 using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace MusicPlayerForDrummers.View
 {

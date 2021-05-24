@@ -44,6 +44,7 @@
         </local:SeekBarSlider>
         <Canvas x:Name="FlagsCanvas">
             <Canvas.Resources>
+                <local:FlagTimeConverter x:Key="FlagTimeConverter"/>
                 <tools:CrossMultiplicationConverter x:Key="CrossMultiplicationConverter"/>
                 <tools:SubstractionConverter x:Key="SubstractionConverter"/>
             </Canvas.Resources>
@@ -77,11 +78,7 @@
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.PlayingSong.ScrollStartTime"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
-                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
-                                </MultiBinding>
+                                <Binding Converter="{StaticResource FlagTimeConverter}" ConverterParameter="StartScrollFlag" Path="Session.PlayingSong.ScrollStartTime" Mode="TwoWay" UpdateSourceTrigger="Explicit"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -101,11 +98,7 @@
                     <Style BasedOn="{StaticResource BottomWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Right">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.PlayingSong.ScrollEndTime"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
-                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
-                                </MultiBinding>
+                                <Binding Converter="{StaticResource FlagTimeConverter}" ConverterParameter="EndScrollFlag" Path="Session.PlayingSong.ScrollEndTime" Mode="TwoWay" UpdateSourceTrigger="Explicit"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -125,11 +118,7 @@
                     <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.Player.LoopStart"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
-                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
-                                </MultiBinding>
+                                <Binding Converter="{StaticResource FlagTimeConverter}" ConverterParameter="StartLoopFlag" Path="Session.Player.LoopStart" Mode="TwoWay" UpdateSourceTrigger="Explicit"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Visibility" Value="Hidden"></Setter>
@@ -149,11 +138,7 @@
                     <Style BasedOn="{StaticResource TopWaveFormFlag}" TargetType="{x:Type Grid}">
                         <Setter Property="Canvas.Left">
                             <Setter.Value>
-                                <MultiBinding Converter="{StaticResource CrossMultiplicationConverter}" Mode="OneWay">
-                                    <Binding Path="Session.Player.LoopEnd"></Binding>
-                                    <Binding Path="Session.Player.Length"></Binding>
-                                    <Binding Path="ActualWidth" ElementName="SeekBar"></Binding>
-                                </MultiBinding>
+                                <Binding Converter="{StaticResource FlagTimeConverter}" ConverterParameter="EndLoopFlag" Path="Session.Player.LoopEnd" Mode="TwoWay" UpdateSourceTrigger="Explicit"/>
                             </Setter.Value>
                         </Setter>
                         <Setter Property="Visibility" Value="Hidden"></Setter>

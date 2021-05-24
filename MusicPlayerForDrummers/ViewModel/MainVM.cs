@@ -39,7 +39,16 @@ namespace MusicPlayerForDrummers.ViewModel
             set
             {
                 if (SetField(ref _currentViewModel, value))
-                    PlayerVM.ShowAdvancedOptions = value == PartitionVM;
+                {
+                    if(value == PartitionVM)
+                    {
+                        PlayerVM.ShowAdvancedOptions = true;
+                    } else
+                    {
+                        PlayerVM.ShowAdvancedOptions = false;
+                        Session.Player.IsLooping = false;
+                    }
+                }
             }
         }
 

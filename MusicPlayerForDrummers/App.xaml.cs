@@ -2,6 +2,8 @@
 using System.Windows;
 using MusicPlayerForDrummers.View;
 using Serilog;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 
 namespace MusicPlayerForDrummers
 {
