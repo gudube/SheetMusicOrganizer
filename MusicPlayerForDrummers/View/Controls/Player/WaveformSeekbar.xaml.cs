@@ -281,8 +281,8 @@ namespace SheetMusicOrganizer.View.Controls.Player
         {
             StartLoopFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
             StartScrollFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
-            EndLoopFlag.GetBindingExpression(Canvas.RightProperty)?.UpdateTarget();
-            EndScrollFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
+            EndLoopFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
+            EndScrollFlag.GetBindingExpression(Canvas.RightProperty)?.UpdateTarget();
         }
 
         #endregion
