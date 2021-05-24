@@ -41,6 +41,9 @@ namespace MusicPlayerForDrummers.ViewModel
                 case PlayOrderType.Repeat:
                     PlaySameSong?.Invoke(this, EventArgs.Empty);
                     break;
+                case PlayOrderType.Stop:
+                    Session.Player.Position = 0;
+                    break;
             }
         }
 
@@ -208,7 +211,8 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             Default,
             Repeat,
-            Random
+            Random,
+            Stop
         }
 
         public Dictionary<PlayOrderType, string> PlayOrderDict { get; } =
@@ -216,6 +220,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 {PlayOrderType.Default, "Default"},
                 {PlayOrderType.Repeat, "Repeat Song"},
                 {PlayOrderType.Random, "Random Song"},
+                {PlayOrderType.Stop, "Stop"},
             };
 
         private PlayOrderType _playOrder;
