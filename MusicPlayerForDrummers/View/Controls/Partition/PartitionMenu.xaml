@@ -39,9 +39,9 @@
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
                                 <TextBlock Text="Between" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopStart}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopStart, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopEnd}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopEnd, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -87,10 +87,8 @@
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                  Background="{StaticResource ClickableSolidColor}" MaxLength="1000" TextWrapping="Wrap"
-                                 VerticalScrollBarVisibility="Auto"></TextBox>
+                                 VerticalScrollBarVisibility="Auto" Text="{Binding Session.PlayingSong.Notes, UpdateSourceTrigger=PropertyChanged, Delay=1000}"></TextBox>
                         <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="{StaticResource BackgroundLv3SolidColor}"></GridSplitter>
-                        <Button Grid.Row="2" Style="{StaticResource 3DButtonSmall}" Margin="5"
-                                Command="{Binding SetEndNowCommand}">Save</Button>
                     </Grid>
                 </Border>
             </Border>

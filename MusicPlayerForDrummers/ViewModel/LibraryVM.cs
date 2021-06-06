@@ -198,7 +198,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 if (!selectedPlaylist.Name.Equals(EditPlaylistName))
                 {
                     selectedPlaylist.Name = EditPlaylistName;
-                    DbHandler.UpdatePlaylist(selectedPlaylist);
+                    DbHandler.UpdatePlaylist(selectedPlaylist, DbHandler.playlistTable.Name, EditPlaylistName);
                 }
                 selectedPlaylist.IsEditing = false;
             }
@@ -289,7 +289,7 @@ namespace MusicPlayerForDrummers.ViewModel
         {
             StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
             StatusContext.addSavingStatus(SavingStatus.SongMastery);
-            DbHandler.SetSongMastery(song, mastery);
+            DbHandler.SetSongMastery(song, mastery, mastery.Id);
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
 
@@ -301,7 +301,7 @@ namespace MusicPlayerForDrummers.ViewModel
             StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
             StatusContext.addSavingStatus(SavingStatus.SongMastery);
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
-            DbHandler.SetSongsMastery(songItems, mastery);
+            DbHandler.SetSongsMastery(songItems, mastery, mastery.Id);
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))

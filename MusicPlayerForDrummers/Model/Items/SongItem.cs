@@ -45,6 +45,13 @@ namespace MusicPlayerForDrummers.Model.Items
         private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
+        private string _notes = "";
+        public string Notes { get => _notes; set {
+                if(SetField(ref _notes, value))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.Notes, _notes);
+            }
+        }
+
         private int _masteryId = 0;
         public int MasteryId { get => _masteryId; 
             set
@@ -57,14 +64,14 @@ namespace MusicPlayerForDrummers.Model.Items
         private int _scrollStartTime;
         public int ScrollStartTime { get => _scrollStartTime; set {
                 if (SetField(ref _scrollStartTime, Math.Max(Math.Min((LengthSecs - ScrollEndTime) - 2, value), 0)))
-                    DbHandler.UpdateSong(this);
+                    DbHandler.UpdateSong(this, DbHandler.songTable.ScrollStartTime, _scrollStartTime);
             }
         }
 
         private int _scrollEndTime;
         public int ScrollEndTime { get => _scrollEndTime; set {
                 if (SetField(ref _scrollEndTime, Math.Max(Math.Min((LengthSecs - ScrollStartTime) - 2, value), 0)))
-                    DbHandler.UpdateSong(this);
+                    DbHandler.UpdateSong(this, DbHandler.songTable.ScrollEndTime, _scrollEndTime);
             }
         }
         #endregion
@@ -124,6 +131,7 @@ namespace MusicPlayerForDrummers.Model.Items
             if (rating == null || rating > 255)
                 Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
             _rating = rating.GetValueOrDefault(0);
+            _notes = GetSafeString(dataReader, songTable.Notes.Name);
             _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(0);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
@@ -196,7 +204,7 @@ namespace MusicPlayerForDrummers.Model.Items
             return new object?[]
             {
                 PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-                LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
+                LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime
             };
         }
 
