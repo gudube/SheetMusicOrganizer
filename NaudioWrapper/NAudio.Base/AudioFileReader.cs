@@ -31,7 +31,7 @@ namespace NAudio.Wave
             lockObject = new object();
             FileName = fileName;
             CreateReaderStream(fileName);
-            sourceBytesPerSample = (readerStream.WaveFormat.BitsPerSample / 8) * readerStream.WaveFormat.Channels;
+            sourceBytesPerSample = (readerStream!.WaveFormat.BitsPerSample / 8) * readerStream.WaveFormat.Channels;
             sampleChannel = new SampleChannel(readerStream, false);
             destBytesPerSample = 4*sampleChannel.WaveFormat.Channels;
             length = SourceToDest(readerStream.Length);

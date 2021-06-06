@@ -147,9 +147,11 @@ namespace NAudioWrapper
             get => _loopStart ;
             set
             {
-                if (value < LoopEnd && SetField(ref _loopStart, value))
+                double newValue = Math.Round(value, 1, MidpointRounding.ToZero);
+                newValue = Math.Max(Math.Min(LoopEnd - 2, newValue), 0);
+                if (SetField(ref _loopStart, newValue))
                 {
-                    _stream?.SetLoopStart(value);
+                    _stream?.SetLoopStart(_loopStart);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)
                         Position = LoopStart;
                 }
@@ -162,9 +164,12 @@ namespace NAudioWrapper
             get => _loopEnd;
             set
             {
-                if (value > LoopStart && SetField(ref _loopEnd, value))
+                double newValue = Math.Round(value, 1, MidpointRounding.ToPositiveInfinity);
+                double maxValue = Math.Round(Length, 1, MidpointRounding.ToZero);
+                newValue = Math.Min(Math.Max(LoopStart + 2, newValue), maxValue);
+                if (SetField(ref _loopEnd, newValue))
                 {
-                    _stream?.SetLoopEnd(value);
+                    _stream?.SetLoopEnd(_loopEnd);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)
                         Position = LoopStart;
                 }

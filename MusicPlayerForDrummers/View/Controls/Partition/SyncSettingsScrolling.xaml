@@ -13,7 +13,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" MaxWidth="150"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -21,15 +21,15 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{StaticResource LabelTextBlock}"/>
         <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0" HorizontalAlignment="Stretch"
-                 Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged}"/>
+                 Text="{Binding SyncingSong.ScrollStartTime}" PreviewKeyDown="TextBox_KeyDown"/>
         <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
-        <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="1"
+        <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="5,1"
                 Command="{Binding Path=SetStartNowCommand}">Set to now</Button>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Stop before " Style="{StaticResource LabelTextBlock}"/>
         <TextBox Grid.Row="1" Grid.Column="1" Width="30" Margin="5,0" HorizontalAlignment="Stretch"
-                 Text="{Binding SyncingSong.ScrollEndTime, UpdateSourceTrigger=PropertyChanged}"/>
+                 Text="{Binding SyncingSong.ScrollEndTime}" PreviewKeyDown="TextBox_KeyDown"/>
         <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="1"
+        <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="5,1"
                 Command="{Binding SetEndNowCommand}">Set to now</Button>
     </Grid>
 </UserControl>

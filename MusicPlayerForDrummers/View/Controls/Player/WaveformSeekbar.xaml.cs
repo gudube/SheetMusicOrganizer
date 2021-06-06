@@ -220,7 +220,7 @@ namespace MusicPlayerForDrummers.View.Controls.Player
             {
                 grid.CaptureMouse();
 
-                // minimum 1 second gap between flags
+                // minimum 2 seconds gap between flags
                 double minDistancePixels = FlagsCanvas.ActualWidth * 2 / playerVM.Session.Player.Length;
 
                 if (grid == StartScrollFlag)
@@ -308,12 +308,11 @@ namespace MusicPlayerForDrummers.View.Controls.Player
 
             if (parameter is "StartScrollFlag" or "EndScrollFlag")
                 return (int)Math.Floor(Player.Length * leftOrRight / FlagCanvas.ActualWidth);
-            else if (parameter is "StartLoopFlag")
-                return Math.Round(Player.Length * leftOrRight / FlagCanvas.ActualWidth, 1, MidpointRounding.ToZero);
-            else if (parameter is "EndLoopFlag")
-                return Math.Round(Player.Length * leftOrRight / FlagCanvas.ActualWidth, 1, MidpointRounding.ToPositiveInfinity);
+            else if (parameter is "StartLoopFlag" or "EndLoopFlag")
+                return Player.Length * leftOrRight / FlagCanvas.ActualWidth;
 
-            return 0; //shouldnt happen
+            Log.Error("Tried setting a flag value on an inexisting flag: {flagName}", parameter);
+            return 0;
         }
     }
 }
