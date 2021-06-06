@@ -28,7 +28,7 @@
                             <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
                             <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                                <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
                             </StackPanel>
                             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">

@@ -116,7 +116,11 @@ namespace NAudioWrapper
         public double CustomSpeed
         {
             get => _customSpeed;
-            set { if (SetField(ref _customSpeed, value)) UpdateStreamSpeed(); }
+            set {
+                double newValue = Math.Round(value, 2, MidpointRounding.ToEven);
+                newValue = Math.Max(Math.Min(newValue, 2), 0.5);
+                if (SetField(ref _customSpeed, newValue)) UpdateStreamSpeed();
+            }
         }
 
         private bool _keepPitch = false;
