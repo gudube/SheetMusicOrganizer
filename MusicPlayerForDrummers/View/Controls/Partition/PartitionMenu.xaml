@@ -28,7 +28,7 @@
                             <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
                             <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                                <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
                             </StackPanel>
                             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
@@ -39,9 +39,9 @@
                             <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
                             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
                                 <TextBlock Text="Between" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding Session.Player.LoopStart}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopStart}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                                 <TextBlock Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="40" Text="{Binding Session.Player.LoopEnd}" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopEnd}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -49,7 +49,7 @@
             </Border>
         </Expander>
         <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
-        <Expander Header="Sync" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
+        <Expander Header="Sync" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
                     <StackPanel Orientation="Vertical" Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
@@ -75,19 +75,22 @@
             </Border>
         </Expander>
         <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
-        <Expander Header="Notes" IsExpanded="True" Margin="5,  0" Padding="0,0,0,5">
+        <Expander Header="Notes" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
             <Border Style="{StaticResource InsideLightBorder}">
                 <Border Style="{StaticResource BaseBlackBorder}">
-                    <Grid>
+                    <Grid Background="{StaticResource BackgroundLv3SolidColor}">
                         <Grid.RowDefinitions>
                             <RowDefinition MinHeight="25" Height="100" MaxHeight="500"></RowDefinition>
                             <RowDefinition Height="5"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                  Background="{StaticResource ClickableSolidColor}" MaxLength="1000" TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto"></TextBox>
-                        <GridSplitter Grid.Row="1" ResizeDirection="Rows"></GridSplitter>
+                        <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="{StaticResource BackgroundLv3SolidColor}"></GridSplitter>
+                        <Button Grid.Row="2" Style="{StaticResource 3DButtonSmall}" Margin="5"
+                                Command="{Binding SetEndNowCommand}">Save</Button>
                     </Grid>
                 </Border>
             </Border>
