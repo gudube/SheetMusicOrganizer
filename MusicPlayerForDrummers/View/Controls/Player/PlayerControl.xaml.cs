@@ -28,6 +28,31 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 Process.Start("explorer.exe", dir);
         }
 
+        private bool draggingVolume = false;
+
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(!draggingVolume)
+            {
+                Settings.Default.Volume = (float)e.NewValue;
+                Settings.Default.Save();
+            }
+        }
+
+        private void Slider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            this.draggingVolume = true;
+        }
+
+        private void Slider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            Slider? slider = sender as Slider;
+            Settings.Default.Volume = slider is null ? 0f : (float)slider.Value;
+            Settings.Default.Save();
+            this.draggingVolume = false;
+        }
+
         /*private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is PlayerVM playerVM))

@@ -95,8 +95,8 @@
                             </Image.Style>
                         </Image>
                     </Button>
-                    <Slider Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=TwoWay}"
-                            VerticalAlignment="Center" IsMoveToPointEnabled="True" TickFrequency="0.01" IsSnapToTickEnabled="True">
+                    <Slider Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            VerticalAlignment="Center" IsMoveToPointEnabled="True" TickFrequency="0.01" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Thumb.DragStarted="Slider_DragStarted" Thumb.DragCompleted="Slider_DragCompleted">
                         <Slider.Style>
                             <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
                                 <Style.Triggers>
