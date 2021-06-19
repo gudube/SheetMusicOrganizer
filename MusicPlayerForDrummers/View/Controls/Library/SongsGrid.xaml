@@ -23,6 +23,9 @@
             IsSynchronizedWithCurrentItem="False"
             VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
             EnableRowVirtualization="True" EnableColumnVirtualization="True">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Type ScrollBar}}"/>
+            </DataGrid.Resources>
             <DataGrid.InputBindings>
                 <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
             </DataGrid.InputBindings>
@@ -43,7 +46,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Music Sheet Name" Binding="{Binding PartitionDirectory, Converter={StaticResource DirFilenameConverter}}" MinWidth="50" Width="100">
+                <DataGridTextColumn Header="Music Sheet Name" Binding="{Binding PartitionDirectory, Converter={StaticResource DirFilenameConverter}}" MinWidth="50" Width="100*">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
                             <Setter Property="ToolTip" Value="{Binding PartitionDirectory}"/>
