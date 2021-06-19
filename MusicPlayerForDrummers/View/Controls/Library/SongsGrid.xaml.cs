@@ -28,17 +28,26 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         #region Changed Event
         private void Songs_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            DataGridColumn column = e.Column;
-
+            if (!(e.Column is DataGridBoundColumn column))
+            {
+                Log.Error("Trying to sort on a column type that is not a DataGridBoundColumn");
+                return;
+            }
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column, DataContext?.GetType());
+                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column.Header, DataContext?.GetType());
+                return;
+            }
+            string? binding = (column.Binding as Binding)?.Path?.PathParameters.FirstOrDefault()?.ToString();
+            if(binding is null)
+            {
+                Log.Error("Could not find the property to sort on when trying to sort the column: {columnName}", column.Header);
                 return;
             }
             column.SortDirection = column.SortDirection == ListSortDirection.Ascending
                 ? ListSortDirection.Descending
                 : ListSortDirection.Ascending;
-            libraryVM.SortSongs((string)column.Header, column.SortDirection == ListSortDirection.Ascending);
+            libraryVM.SortSongs(binding, column.SortDirection == ListSortDirection.Ascending);
             e.Handled = true;
         }
 
