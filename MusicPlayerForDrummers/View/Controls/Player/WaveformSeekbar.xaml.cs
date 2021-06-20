@@ -110,7 +110,7 @@ namespace SheetMusicOrganizer.View.Controls.Player
         {
             if (_darkRendererSettings == null)
             {
-                Log.Error("RendererSettings null when trying to create the waveform.");
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"RendererSettings null when trying to create the waveform."));
                 return;
             }
 
@@ -198,7 +198,7 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 WaveFormImage.Source = null;
                 WaveFormImage.Visibility = Visibility.Hidden;
                 LoadingWaveFormText.Visibility = Visibility.Hidden;
-                WindowManager.OpenErrorWindow(ex);
+                GlobalEvents.raiseErrorEvent(ex, $"There was an error when trying to create the waveform image for the song: {audioDirectory}");
             }
         }
         #endregion
@@ -213,7 +213,7 @@ namespace SheetMusicOrganizer.View.Controls.Player
         {
             if (!(DataContext is PlayerVM playerVM))
             {
-                Log.Error("Can't evaluate the song length when DataContext is not PlayerVM.");
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to evaluate the song length when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 

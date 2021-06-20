@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -70,7 +71,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("Trying to drop on PlaylistsListBox when DataContext is not LibraryVM , but is {type}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to drop on PlaylistsListBox when DataContext is not LibraryVM, but is {DataContext?.GetType()}"));
                 return;
             }
 

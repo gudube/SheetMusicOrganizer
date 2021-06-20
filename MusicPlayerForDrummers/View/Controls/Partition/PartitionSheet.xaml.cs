@@ -69,13 +69,13 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to open partition when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to open partition when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 
             if (partitionVM.ShownSong == null)
             {
-                Log.Error("Trying to open partition when shown song is null");
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to open partition when the playing song (partitionVM.ShownSong) is null"));
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to use PdfToImages when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 
@@ -160,7 +160,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to UpdateScrollPos when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 
@@ -172,7 +172,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to UpdateScrollPos when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to UpdateZoom when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 
@@ -190,14 +190,13 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
         private void PartitionSheet_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!(DataContext is PartitionVM partitionVM))
-            {
-                Log.Error("Trying to zoom/unzoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
-                return;
-            }
-
             if (e.Key == Key.Add || e.Key == Key.Subtract)
             {
+                if (!(DataContext is PartitionVM partitionVM))
+                {
+                    GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to zoom/unzoom using keys when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
+                    return;
+                }
                 partitionVM.Zoom += (e.Key == Key.Add ? 0.1 : -0.1);
             }
         }
@@ -206,7 +205,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to zoom when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 
@@ -217,7 +216,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
-                Log.Error("Trying to zoom when DataContext is not a PartitionVM but is a {dataContext}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to unzoom when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
 

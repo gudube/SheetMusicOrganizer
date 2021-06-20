@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -14,8 +10,10 @@ namespace MusicPlayerForDrummers.ViewModel
     {
         public static event ErrorEventHandler? ErrorMessage;
 
-        public static void raiseErrorEvent(Exception exception)
+        public static void raiseErrorEvent(Exception exception, string? userFriendlyMessage = null)
         {
+            if(userFriendlyMessage is not null)
+                exception.Data.Add("userFriendlyMessage", userFriendlyMessage);
             ErrorMessage?.Invoke(null, new ErrorEventArgs(exception));
         }
     }
