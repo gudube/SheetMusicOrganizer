@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using MusicPlayerForDrummers.Model.Items;
 using Serilog;
+using System;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -329,7 +330,7 @@ namespace MusicPlayerForDrummers.ViewModel
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
-                    Log.Error("Could not find the song to select when trying to go to song with id {id}", song.Id);
+                    GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
                     return;
                 }
             }

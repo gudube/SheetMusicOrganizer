@@ -162,9 +162,7 @@ namespace MusicPlayerForDrummers.View.Windows
                         }
                         catch (Exception ex)
                         {
-                            string exMessage = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
-                            Log.Error("Error: {error} Exception message: {message}", exMessage, ex.Message);
-                            WindowManager.OpenErrorWindow(ex, exMessage);
+                            GlobalEvents.raiseErrorEvent(ex, $"Could not find the music sheet {Song.PartitionDirectory} in the library.");
                         }
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -24,6 +25,11 @@ namespace MusicPlayerForDrummers.View.Windows
             CustomMessage.Text = customMessage ?? description;
             ErrorMessage.Text = exception.Message;
             ErrorContainer.Visibility = string.IsNullOrWhiteSpace(ErrorMessage.Text) ? Visibility.Collapsed : Visibility.Visible;
+            Log.Error("Error catched and displayed as error window.\n" +
+                $"  Type: {exception.GetType()}\n" +
+                $"  Title: {ErrorTitle.Text}\n" +
+                $"  Custom Message: {CustomMessage.Text}\n" + 
+                $"  Exception Message: {ErrorMessage.Text}\n");
         }
 
         private void createMessageFromException(Exception exception)
@@ -34,12 +40,16 @@ namespace MusicPlayerForDrummers.View.Windows
                 case FileFormatException specific:
                     title = "Error reading file";
                     description = $"There was an error when trying to read the file: '{cleanInput(specific.SourceUri?.LocalPath)}'.\n" +
-                        $"The file might have the wrong format or be corrupt.";
+                        "The file might have the wrong format or be corrupt.";
                     break;
                 case FileNotFoundException specific:
                     title = "File not found";
                     description = $"Could not find the file: '{cleanInput(specific.FileName)}'.";
                     //todo: add option to relocate file or erase song from library if that's the case
+                    break;
+                case InvalidOperationException:
+                    title = "An error was encountered during this operation";
+                    description = "This operation doesn't seem to work at the moment. The state of the application seems unstable. Restarting the application should fix the error.";
                     break;
                 default:
                     break;

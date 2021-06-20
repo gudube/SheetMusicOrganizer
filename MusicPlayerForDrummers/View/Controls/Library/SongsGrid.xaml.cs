@@ -136,13 +136,13 @@ namespace MusicPlayerForDrummers.View.Controls.Library
         {
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {DataContext?.GetType()}"));
                 return;
             }
 
             if (!(Songs.ItemsSource is ListCollectionView view))
             {
-                Log.Error("ItemSource of the SongsGrid is not a ListCollectionView, but is a {itemsSource}", Songs.ItemsSource?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"ItemSource of the SongsGrid is not a ListCollectionView, but is {Songs.ItemsSource?.GetType()}"));
                 return;
             }
 

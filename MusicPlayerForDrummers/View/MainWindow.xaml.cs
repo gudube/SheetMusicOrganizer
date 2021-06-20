@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,7 +37,9 @@ namespace MusicPlayerForDrummers.View
 
         private void Status_ErrorMessage(object sender, ErrorEventArgs e)
         {
-            WindowManager.OpenErrorWindow(e.GetException());
+            Exception ex = e.GetException();
+            string? message = ex.Data.Contains("userFriendlyMessage") ? (string?) ex.Data["userFriendlyMessage"] : null;
+            WindowManager.OpenErrorWindow(ex, message);
         }
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
