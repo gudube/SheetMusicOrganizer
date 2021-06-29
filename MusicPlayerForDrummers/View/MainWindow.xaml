@@ -7,8 +7,9 @@
         xmlns:player="clr-namespace:SheetMusicOrganizer.View.Controls.Player"
         xmlns:pages="clr-namespace:SheetMusicOrganizer.View.Pages"
         xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
+        xmlns:p="clr-namespace:SheetMusicOrganizer"
         mc:Ignorable="d"
-        Title="Sheet Music Organizer" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{StaticResource ControlBackgroundLv1}"
+        Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{StaticResource ControlBackgroundLv1}"
         WindowState="Maximized"
         KeyDown="MainWindow_OnKeyDownUp"
         KeyUp="MainWindow_OnKeyDownUp">
