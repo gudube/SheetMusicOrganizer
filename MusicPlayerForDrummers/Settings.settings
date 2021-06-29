@@ -18,5 +18,8 @@
     <Setting Name="Volume" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.75</Value>
     </Setting>
+    <Setting Name="UserDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -25,8 +25,6 @@ namespace MusicPlayerForDrummers.Model
 
 
         #region Init
-        public static readonly string DefaultDbDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
-
         public static void InitializeDatabase(bool force = false)
         {
             if(Settings.Default.RecentDBs.Count == 0)
@@ -46,8 +44,8 @@ namespace MusicPlayerForDrummers.Model
 
         private static void OpenDefaultDatabase()
         {
-            Directory.CreateDirectory(DefaultDbDir);
-            string defaultDbPath = Path.Combine(DefaultDbDir, "Default.sqlite");
+            Directory.CreateDirectory(Settings.Default.UserDir);
+            string defaultDbPath = Path.Combine(Settings.Default.UserDir, "Default.sqlite");
             SaveOpenedDbSettings(defaultDbPath);
             if (!File.Exists(defaultDbPath))
             {
