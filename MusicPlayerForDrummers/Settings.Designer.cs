@@ -74,5 +74,17 @@ namespace SheetMusicOrganizer {
                 this["Volume"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserDir {
+            get {
+                return ((string)(this["UserDir"]));
+            }
+            set {
+                this["UserDir"] = value;
+            }
+        }
     }
 }

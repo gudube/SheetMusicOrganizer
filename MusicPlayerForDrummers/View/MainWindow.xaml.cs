@@ -58,7 +58,7 @@ namespace SheetMusicOrganizer.View
             {
                 Filter = "Library File (*.sqlite)|*.sqlite",
                 Multiselect = false,
-                InitialDirectory = DbHandler.DefaultDbDir,
+                InitialDirectory = Settings.Default.UserDir,
                 FilterIndex = 1
             };
             if (openDialog.ShowDialog() == true)
@@ -72,7 +72,7 @@ namespace SheetMusicOrganizer.View
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "Library File (*.sqlite)|*.sqlite",
-                InitialDirectory = DbHandler.DefaultDbDir
+                InitialDirectory = Settings.Default.UserDir
             };
             if (saveFileDialog.ShowDialog() == true)
             {
