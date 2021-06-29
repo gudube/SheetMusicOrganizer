@@ -7,7 +7,7 @@
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Value>
     </Setting>
     <Setting Name="ApplicationName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MusicPlayerForDrummers</Value>
+      <Value Profile="(Default)">Sheet Music Organizer</Value>
     </Setting>
     <Setting Name="DefaultScrollStartTime" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">10</Value>
