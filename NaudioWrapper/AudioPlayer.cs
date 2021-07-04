@@ -17,6 +17,8 @@ namespace NAudioWrapper
         public event EventHandler? PlaybackStarting;
         public event EventHandler? PlaybackStopping;
 
+        private object creationLock = new object();
+
         public AudioPlayer()
         {
             _output = new WaveOutEvent();
@@ -25,37 +27,41 @@ namespace NAudioWrapper
 
         public void SetSong(string filepath, bool startPlaying, bool keepPosition)
         {
-            long newPosition = 0;
-            if (_audioFileReader != null && keepPosition)
-                newPosition = _audioFileReader.Position; // when changing track version
-
-            Stop(true, false); // stop if playing
-
-            if (!File.Exists(filepath))
+            lock(creationLock)
             {
-                throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);
+                long newPosition = 0;
+                if (_audioFileReader != null && keepPosition)
+                    newPosition = _audioFileReader.Position; // when changing track version
+
+                Stop(true, false); // stop if playing
+
+                if (!File.Exists(filepath))
+                {
+                    throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);
+                }
+                try
+                {
+                    _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
+                }
+                catch (Exception ex)
+                {
+                    throw new FileFormatException(new Uri(filepath), ex.Message);
+                }
+                if (newPosition < _audioFileReader.Length)
+                    _audioFileReader.Position = newPosition; //set the new position if is valid
+                LoopStart = 0; // set the loop times to be the whole song by default
+                LoopEnd = _audioFileReader.TotalTime.TotalSeconds;
+
+                _stream = new CustomStream(_audioFileReader, IsLooping, LoopStart, LoopEnd);
+                UpdateStreamSpeed();
+                _output.Init(_stream);
+
+                OnPropertyChanged(nameof(Position));
+                OnPropertyChanged(nameof(Length));
+
+                if (startPlaying)
+                    Play();
             }
-            try
-            {
-                _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
-            } catch(Exception ex)
-            {
-                throw new FileFormatException(new Uri(filepath), ex.Message);
-            }
-            if (newPosition < _audioFileReader.Length)
-                _audioFileReader.Position = newPosition; //set the new position if is valid
-            LoopStart = 0; // set the loop times to be the whole song by default
-            LoopEnd = _audioFileReader.TotalTime.TotalSeconds;
-
-            _stream = new CustomStream(_audioFileReader, IsLooping, LoopStart, LoopEnd);
-            UpdateStreamSpeed();
-            _output.Init(_stream);
-
-            OnPropertyChanged(nameof(Position));
-            OnPropertyChanged(nameof(Length));
-
-            if (startPlaying)
-                Play();
         }
 
         #region Properties
@@ -218,12 +224,16 @@ namespace NAudioWrapper
         public bool Stop(bool disposeOutput = true, bool notifyChanges = true)
         {
             bool wasPlaying = IsPlaying;
-            if (_output.PlaybackState != PlaybackState.Stopped)
+
+            lock (creationLock)
             {
-                PlaybackStopping?.Invoke(this, EventArgs.Empty);
-                _stopMeansEnded = false;
-                _output.Stop();
-                _stream?.Flush();
+                if (_output.PlaybackState != PlaybackState.Stopped)
+                {
+                    PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                    _stopMeansEnded = false;
+                    _output.Stop();
+                    _stream?.Flush();
+                }
             }
 
             if (disposeOutput)
@@ -277,35 +287,38 @@ namespace NAudioWrapper
 
         private void DisposeOutput(bool notifyChanges = true)
         {
-            if (IsPlaying)
+            lock (creationLock)
             {
-                _stopMeansEnded = false;
-                PlaybackStopping?.Invoke(this, EventArgs.Empty);
-                _output.Stop();
-            }
+                if (IsPlaying)
+                {
+                    _stopMeansEnded = false;
+                    PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                    _output.Stop();
+                }
 
-            if (_stream != null)
-            {
-                _stream.Dispose();
-                _stream = null;
-            }
+                if (_stream != null)
+                {
+                    _stream.Dispose();
+                    _stream = null;
+                }
 
-            if (_audioFileReader != null)
-            {
-                _audioFileReader.Dispose();
-                _audioFileReader = null;
-            }
+                if (_audioFileReader != null)
+                {
+                    _audioFileReader.Dispose();
+                    _audioFileReader = null;
+                }
 
-            CustomSpeed = 1;
-            KeepPitch = false;
-            IsLooping = false;
-            LoopStart = 0;
-            LoopEnd = 1;
+                CustomSpeed = 1;
+                KeepPitch = false;
+                IsLooping = false;
+                LoopStart = 0;
+                LoopEnd = 1;
 
-            if (notifyChanges)
-            {
-                OnPropertyChanged(nameof(Length));
-                OnPropertyChanged(nameof(Position));
+                if (notifyChanges)
+                {
+                    OnPropertyChanged(nameof(Length));
+                    OnPropertyChanged(nameof(Position));
+                }
             }
         }
         #endregion
