@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
+using System;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -85,7 +86,13 @@ namespace SheetMusicOrganizer.ViewModel
         #region Menu
         public void LoadDatabase(string databasePath)
         {
-            DbHandler.OpenDatabase(databasePath);
+            try
+            {
+                DbHandler.OpenDatabase(databasePath);
+            } catch(Exception ex)
+            {
+                GlobalEvents.raiseErrorEvent(ex);
+            }
         }
 
         public void GoToSong(string partitionFilename)
