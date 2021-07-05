@@ -3,6 +3,7 @@ using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using MusicPlayerForDrummers.Model.Items;
+using System;
 
 namespace MusicPlayerForDrummers.ViewModel
 {
@@ -85,7 +86,13 @@ namespace MusicPlayerForDrummers.ViewModel
         #region Menu
         public void LoadDatabase(string databasePath)
         {
-            DbHandler.OpenDatabase(databasePath);
+            try
+            {
+                DbHandler.OpenDatabase(databasePath);
+            } catch(Exception ex)
+            {
+                GlobalEvents.raiseErrorEvent(ex);
+            }
         }
 
         public void GoToSong(string partitionFilename)

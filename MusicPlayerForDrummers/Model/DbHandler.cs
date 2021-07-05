@@ -57,15 +57,22 @@ namespace MusicPlayerForDrummers.Model
         {
             if (!File.Exists(databasePath))
             {
-                Log.Error("Could not open the database file. Now opening the default one.");
-                OpenDefaultDatabase();
+                throw new FileNotFoundException("", databasePath);
             }
 
             SaveOpenedDbSettings(databasePath);
             
             Log.Information("Reopening the application with new database path {path}", databasePath);
-            Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
+            var currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
+            if(currentExecutablePath == null || !currentExecutablePath.EndsWith(".exe"))
+            {
+                Log.Error("Trying to reopen the application, but the executable path found was invalid: {currentExecutablePath}", currentExecutablePath);
+                throw new InvalidOperationException("There was an error when trying to automatically reopen the application with the new library. Please reopen it manually.");
+            } else
+            {
+                Process.Start(currentExecutablePath);
+                Application.Current.Shutdown();
+            }
         }
 
         private static void SaveOpenedDbSettings(string dBOpenedPath)
