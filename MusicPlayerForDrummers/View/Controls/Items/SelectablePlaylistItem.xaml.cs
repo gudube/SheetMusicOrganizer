@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace MusicPlayerForDrummers.View.Controls.Items
+namespace SheetMusicOrganizer.View.Controls.Items
 {
     /// <summary>
     /// Interaction logic for SelectableNameItem.xaml

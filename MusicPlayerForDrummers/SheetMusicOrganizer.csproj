@@ -4,9 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyName>MusicPlayerForDrummers</AssemblyName>
-    <RootNamespace>MusicPlayerForDrummers</RootNamespace>
-    <StartupObject>MusicPlayerForDrummers.App</StartupObject>
+    <AssemblyName>SheetMusicOrganizer</AssemblyName>
+    <RootNamespace>SheetMusicOrganizer</RootNamespace>
+    <StartupObject>SheetMusicOrganizer.App</StartupObject>
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>

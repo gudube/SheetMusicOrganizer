@@ -8,12 +8,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Win32;
-using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.View.Tools;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.Model;
+using SheetMusicOrganizer.View.Tools;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View
+namespace SheetMusicOrganizer.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

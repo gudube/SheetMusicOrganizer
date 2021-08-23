@@ -1,9 +1,9 @@
 ﻿using System;
-using MusicPlayerForDrummers.ViewModel.Tools;
 using System.ComponentModel;
-using MusicPlayerForDrummers.Model.Items;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class PlayerVM : BaseViewModel
     {

@@ -1,10 +1,10 @@
-﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel.Tools;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
-using MusicPlayerForDrummers.Model.Items;
+using SheetMusicOrganizer.Model;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class MainVM : BaseViewModel
     {

@@ -1,12 +1,12 @@
-﻿using MusicPlayerForDrummers.ViewModel.Tools;
-using NAudioWrapper;
+﻿using NAudioWrapper;
 using System;
 using System.ComponentModel;
 using System.Windows.Threading;
-using MusicPlayerForDrummers.Model.Items;
 using Serilog;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class SessionContext : Model.Tools.BaseNotifyPropertyChanged
     {

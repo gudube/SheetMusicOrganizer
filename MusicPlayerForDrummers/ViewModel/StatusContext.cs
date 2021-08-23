@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
-using MusicPlayerForDrummers.Model.Tools;
-using MusicPlayerForDrummers.ViewModel.Tools;
+using SheetMusicOrganizer.Model.Tools;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public enum LoadingStatus
     {

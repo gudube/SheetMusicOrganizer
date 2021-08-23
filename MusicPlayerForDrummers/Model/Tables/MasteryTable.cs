@@ -1,4 +1,4 @@
-﻿namespace MusicPlayerForDrummers.Model.Tables
+﻿namespace SheetMusicOrganizer.Model.Tables
 {
     public class MasteryTable : BaseTable
     {

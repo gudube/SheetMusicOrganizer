@@ -3,11 +3,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using GongSolutions.Wpf.DragDrop;
-using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Controls.Library
+namespace SheetMusicOrganizer.View.Controls.Library
 {
     /// <summary>
     /// Interaction logic for MasteryListBox.xaml

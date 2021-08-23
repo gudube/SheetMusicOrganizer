@@ -25,3 +25,7 @@ Every status is associated to a boolean in StatusContext.cs (instance kept in Se
 Set the correct boolean true right before starting an operation.
 Set the boolean to false as soon as it is done (most of the time, not the same place as when set true)
 If need a new status, add a boolean with its message in the setter (see already existing ones)
+
+
+# Deployment
+dotnet publish -c Release -r win-x64 --output ./bin/SheetMusicOrganizer_v1

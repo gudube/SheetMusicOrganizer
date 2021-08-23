@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace MusicPlayerForDrummers.View.Controls
+namespace SheetMusicOrganizer.View.Controls
 {
     /// <summary>
     /// Interaction logic for SwitchPageBar.xaml

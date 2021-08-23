@@ -6,12 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-//using System.Windows.Forms;
-using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.Model.Tables;
 using Serilog;
+using SheetMusicOrganizer;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.Model.Tables;
 
-namespace MusicPlayerForDrummers.Model
+namespace SheetMusicOrganizer.Model
 {
     public static class DbHandler
     {

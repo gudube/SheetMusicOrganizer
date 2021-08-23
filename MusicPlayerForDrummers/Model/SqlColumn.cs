@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace MusicPlayerForDrummers.Model
+namespace SheetMusicOrganizer.Model
 {
     public class SqlColumn
     {

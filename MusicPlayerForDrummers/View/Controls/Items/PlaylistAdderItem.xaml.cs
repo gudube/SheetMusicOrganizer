@@ -2,10 +2,10 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Controls.Items
+namespace SheetMusicOrganizer.View.Controls.Items
 {
     /// <summary>
     /// Interaction logic for Adder.xaml

@@ -1,14 +1,14 @@
-﻿using MusicPlayerForDrummers.Model;
-using MusicPlayerForDrummers.ViewModel.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using MusicPlayerForDrummers.Model.Items;
 using Serilog;
+using SheetMusicOrganizer.Model;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class LibraryVM : BaseViewModel, IDataErrorInfo
     {

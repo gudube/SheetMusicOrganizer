@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace MusicPlayerForDrummers.ViewModel.Tools
+namespace SheetMusicOrganizer.ViewModel.Tools
 {
     public class SmartCollection<T> : ObservableCollection<T>
     {
