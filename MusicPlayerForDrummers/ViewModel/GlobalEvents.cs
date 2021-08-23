@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     /*
      * For events that can happen anywhere in code (ex: catching an exception) and does not need context.

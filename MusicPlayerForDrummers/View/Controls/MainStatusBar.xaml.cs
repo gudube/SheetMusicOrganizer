@@ -1,4 +1,4 @@
-﻿using MusicPlayerForDrummers.ViewModel;
+﻿using SheetMusicOrganizer.ViewModel;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
