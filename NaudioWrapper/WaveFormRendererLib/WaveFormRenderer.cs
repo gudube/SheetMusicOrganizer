@@ -15,7 +15,6 @@ namespace NAudioWrapper.WaveFormRendererLib
         public Image Render(string selectedFile, IPeakProvider peakProvider, WaveFormRendererSettings settings, CancellationToken? ct = null)
         {
             ct?.ThrowIfCancellationRequested();
-
             using (var reader = new AudioFileReader(selectedFile))
             {
                 int bytesPerSample = (reader.WaveFormat.BitsPerSample / 8);
@@ -61,9 +60,11 @@ namespace NAudioWrapper.WaveFormRendererLib
                         ct?.ThrowIfCancellationRequested();
 
                         var lineHeight = settings.TopHeight * currentPeak.Max;
-                        g.DrawLine(settings.TopPeakPen, x, midPoint, x, midPoint - lineHeight);
+                        if(settings.TopPeakPen != null)
+                            g.DrawLine(settings.TopPeakPen, x, midPoint, x, midPoint - lineHeight);
                         lineHeight = settings.BottomHeight * currentPeak.Min;
-                        g.DrawLine(settings.BottomPeakPen, x, midPoint, x, midPoint - lineHeight);
+                        if(settings.BottomPeakPen != null)
+                            g.DrawLine(settings.BottomPeakPen, x, midPoint, x, midPoint - lineHeight);
                         x++;
                     }
 
@@ -76,9 +77,11 @@ namespace NAudioWrapper.WaveFormRendererLib
                         var min = Math.Max(currentPeak.Min, nextPeak.Min);
 
                         var lineHeight = settings.TopHeight * max;
-                        g.DrawLine(settings.TopSpacerPen, x, midPoint, x, midPoint - lineHeight);
+                        if (settings.TopSpacerPen != null)
+                            g.DrawLine(settings.TopSpacerPen, x, midPoint, x, midPoint - lineHeight);
                         lineHeight = settings.BottomHeight * min;
-                        g.DrawLine(settings.BottomSpacerPen, x, midPoint, x, midPoint - lineHeight); 
+                        if (settings.BottomSpacerPen != null)
+                            g.DrawLine(settings.BottomSpacerPen, x, midPoint, x, midPoint - lineHeight); 
                         x++;
                     }
                     currentPeak = nextPeak;

@@ -11,7 +11,7 @@
         public override SqlColumn[] GetCustomColumns()
         {
             return new SqlColumn[] { PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-               LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime };
+               LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime };
         }
 
         #region Custom Columns
@@ -29,6 +29,7 @@
         public readonly SqlColumn CodecMD = new SqlColumn("CodecMD", EType.Text);
         public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.Text) { Nullable = true };
         public readonly SqlColumn Rating = new SqlColumn("Rating", EType.Int) { Nullable = true };
+        public readonly SqlColumn Notes = new SqlColumn("Notes", EType.Text, "");
         #endregion
 
         public readonly SqlColumn MasteryId;

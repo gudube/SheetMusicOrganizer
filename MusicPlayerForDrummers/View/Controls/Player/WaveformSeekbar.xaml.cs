@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using NAudioWrapper;
 using NAudioWrapper.WaveFormRendererLib;
 using Serilog;
+using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
 using Color = System.Drawing.Color;
 using Image = System.Drawing.Image;
@@ -19,16 +23,21 @@ namespace SheetMusicOrganizer.View.Controls.Player
     /// </summary>
     public partial class WaveFormSeekBar : UserControl
     {
+
         public WaveFormSeekBar()
         {
             InitializeComponent();
             Loaded += WaveFormSeekBar_Loaded;
             DataContextChanged += WaveFormSeekBar_DataContextChanged;
+            _flagConverter = (FlagTimeConverter)FlagsCanvas.FindResource("FlagTimeConverter");
+            _flagConverter.FlagCanvas = FlagsCanvas;
+            FlagsCanvas.SizeChanged += (_, _) => refreshFlags();
         }
-        
+
+        #region events
+
         private void WaveFormSeekBar_Loaded(object sender, RoutedEventArgs e)
         {
-
             //Color color = ((SolidColorBrush) Control.Background).Color;
             _darkRendererSettings = new SoundCloudOriginalSettings
             {
@@ -46,7 +55,10 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 oldPlayerVM.Session.PropertyChanged -= Session_PropertyChanged;
 
             if(e.NewValue is PlayerVM playerVM)
+            {
                 playerVM.Session.PropertyChanged += Session_PropertyChanged;
+                _flagConverter.Player = playerVM.Session.Player;
+            }
         }
 
         private void Session_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -58,6 +70,14 @@ namespace SheetMusicOrganizer.View.Controls.Player
             }
             if(e.PropertyName == nameof(playerVM.Session.PlayingSong))
                 UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
+            
+            playerVM.Session.Player.PropertyChanged += SessionPlayer_PropertyChanged;
+        }
+
+        private void SessionPlayer_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PlayerVM.Session.Player.Length))
+                refreshFlags();
         }
 
         private void WaveformSeekBar_DragStarted(object? sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -74,20 +94,22 @@ namespace SheetMusicOrganizer.View.Controls.Player
             playerVM.StoppedSeekCommand.Execute(SeekBar.Value);
         }
 
+        #endregion
+
         private readonly WaveFormRenderer _waveFormRenderer = new WaveFormRenderer();
 
         private WaveFormRendererSettings? _darkRendererSettings;
 
         #region Render WaveForm
 
-        private Task<BitmapImage>? _createImageTask;
+        private Task<BitmapImage?>? _createImageTask;
         private CancellationTokenSource _cancelImageCreation = new CancellationTokenSource();
 
         private async void UpdateWaveForm(string audioDirectory)
         {
             if (_darkRendererSettings == null)
             {
-                Log.Error("RendererSettings null when trying to create the waveform.");
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"RendererSettings null when trying to create the waveform."));
                 return;
             }
 
@@ -100,18 +122,22 @@ namespace SheetMusicOrganizer.View.Controls.Player
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
 
-            if (_createImageTask != null && !_createImageTask.IsCompleted)
+            if (_createImageTask != null)
             {
-                //the task is running, cancel it and wait for it to be done before continuing
-                _cancelImageCreation.Cancel();
-                try
-                {
-                    await _createImageTask;
+                if (!_createImageTask.IsCompleted) {
+                    try
+                    {
+                        //the task is running, cancel it and wait for it to be done before continuing
+                        _cancelImageCreation.Cancel();
+                        await _createImageTask;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        //nothing to do here
+                    }
                 }
-                catch(OperationCanceledException)
-                {
-                    _cancelImageCreation.Dispose();
-                }
+                _createImageTask.Dispose();
+                _cancelImageCreation.Dispose();
                 _cancelImageCreation = new CancellationTokenSource();
             }
             
@@ -119,37 +145,60 @@ namespace SheetMusicOrganizer.View.Controls.Player
 
             _createImageTask = Task.Run(() =>
             {
-                ct.ThrowIfCancellationRequested();
-
-                Image image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
-                ct.ThrowIfCancellationRequested();
-                using (MemoryStream memory = new MemoryStream())
+                try
                 {
-                    image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                     ct.ThrowIfCancellationRequested();
-                    memory.Position = 0;
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = memory;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                    return bitmapImage;
+                    Image image;
+                    try
+                    {
+                        image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                    }catch(InvalidOperationException ex)
+                    {
+                        _cancelImageCreation.Cancel();
+                        throw new FileFormatException(new Uri(audioDirectory), ex.Message);
+                    }
+                    ct.ThrowIfCancellationRequested();
+                    using (MemoryStream memory = new MemoryStream())
+                    {
+                        image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                        ct.ThrowIfCancellationRequested();
+                        memory.Position = 0;
+                        BitmapImage bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.StreamSource = memory;
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+                        return bitmapImage;
+                    }
+                }catch(OperationCanceledException)
+                {
+                    //normal behaviour, nothing to do here
+                    return null;
                 }
             }, ct);
 
             try
             {
-                BitmapImage imageSource = await _createImageTask;
+                BitmapImage? imageSource = await _createImageTask;
                 WaveFormImage.Source = imageSource;
+                if(imageSource != null)
+                {
+                    WaveFormImage.Visibility = Visibility.Visible;
+                    LoadingWaveFormText.Visibility = Visibility.Hidden;
+                }
             }
             catch (OperationCanceledException)
             {
-                //nothing to do
+                WaveFormImage.Source = null;
             }
-            
-            WaveFormImage.Visibility = Visibility.Visible;
-            LoadingWaveFormText.Visibility = Visibility.Hidden;
+            catch (Exception ex)
+            {
+                WaveFormImage.Source = null;
+                WaveFormImage.Visibility = Visibility.Hidden;
+                LoadingWaveFormText.Visibility = Visibility.Hidden;
+                GlobalEvents.raiseErrorEvent(ex, $"There was an error when trying to create the waveform image for the song: {audioDirectory}");
+            }
         }
         #endregion
 
@@ -158,18 +207,21 @@ namespace SheetMusicOrganizer.View.Controls.Player
         private double _minPos = 0;
         private double _maxPos = 1;
         private Grid? _flag;
+        private FlagTimeConverter _flagConverter;
         private void Flag_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (!(DataContext is PlayerVM playerVM))
+            {
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to evaluate the song length when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
+                return;
+            }
+
             if (sender is Grid grid)
             {
                 grid.CaptureMouse();
-                if (!(DataContext is PlayerVM playerVM))
-                {
-                    Log.Error("Can't evaluate the song length when DataContext is not PlayerVM.");
-                    return;
-                }
-                // minimum 1 second gap between flags
-                double minDistancePixels = FlagsCanvas.ActualWidth * 1 / playerVM.Session.Player.Length;
+
+                // minimum 2 seconds gap between flags
+                double minDistancePixels = FlagsCanvas.ActualWidth * 2 / playerVM.Session.Player.Length;
 
                 if (grid == StartScrollFlag)
                 {
@@ -215,32 +267,52 @@ namespace SheetMusicOrganizer.View.Controls.Player
 
         private void Flag_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_flag != null)
+            if(_flag != null)
             {
                 _flag.ReleaseMouseCapture();
-                if (!(DataContext is PlayerVM playerVM))
-                {
-                    Log.Error("Can't save the flag position because WaveFormSeekBar DataContext is not PlayerVM.");
-                    return;
-                }
-                if (playerVM.Session.PlayingSong == null)
-                {
-                    Log.Error("Can't save the flag position because PlayingSong is not PlayerVM.");
-                    return;
-                }
-                if (_flag == StartScrollFlag)
-                    playerVM.Session.PlayingSong.ScrollStartTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth);
-                else if (_flag == EndScrollFlag)
-                    playerVM.Session.PlayingSong.ScrollEndTime = (int) Math.Floor(playerVM.Session.Player.Length * Canvas.GetRight(_flag) / FlagsCanvas.ActualWidth);
-                else if (_flag == StartLoopFlag)
-                    playerVM.Session.Player.LoopStart = Math.Round(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth, 1, MidpointRounding.ToZero);
-                else if (_flag == EndLoopFlag)
-                    playerVM.Session.Player.LoopEnd = Math.Round(playerVM.Session.Player.Length * Canvas.GetLeft(_flag) / FlagsCanvas.ActualWidth, 1, MidpointRounding.ToPositiveInfinity);
-
+                _flag.GetBindingExpression(Canvas.LeftProperty)?.UpdateSource();
+                _flag.GetBindingExpression(Canvas.RightProperty)?.UpdateSource();
                 _flag = null;
             }
         }
 
+        private void refreshFlags()
+        {
+            StartLoopFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
+            StartScrollFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
+            EndLoopFlag.GetBindingExpression(Canvas.LeftProperty)?.UpdateTarget();
+            EndScrollFlag.GetBindingExpression(Canvas.RightProperty)?.UpdateTarget();
+        }
+
         #endregion
+    }
+
+
+    public class FlagTimeConverter : IValueConverter
+    {
+        public AudioPlayer? Player;
+        public FrameworkElement? FlagCanvas;
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(FlagCanvas != null && Player != null && Player.Length > 1 && Double.TryParse(System.Convert.ToString(value), out var scrollTime) && Double.IsFinite(scrollTime))
+                return scrollTime * FlagCanvas.ActualWidth / Player.Length;
+
+            return 0.0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Player == null || FlagCanvas == null || !Double.TryParse(System.Convert.ToString(value), out var leftOrRight) || !Double.IsFinite(leftOrRight))
+                return 0;
+
+            if (parameter is "StartScrollFlag" or "EndScrollFlag")
+                return (int)Math.Floor(Player.Length * leftOrRight / FlagCanvas.ActualWidth);
+            else if (parameter is "StartLoopFlag" or "EndLoopFlag")
+                return Player.Length * leftOrRight / FlagCanvas.ActualWidth;
+
+            Log.Error("Tried setting a flag value on an inexisting flag: {flagName}", parameter);
+            return 0;
+        }
     }
 }

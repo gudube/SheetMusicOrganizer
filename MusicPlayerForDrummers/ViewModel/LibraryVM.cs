@@ -7,6 +7,7 @@ using Serilog;
 using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
+using System;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -97,9 +98,9 @@ namespace SheetMusicOrganizer.ViewModel
 
         private async void SelectedPlaylistChanged()
         {
-            Session.Status.SelectingPlaylist = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SelectingPlaylist);
             await UpdateSongsFromDb();
-            Session.Status.SelectingPlaylist = false;
+            StatusContext.removeLoadingStatus(LoadingStatus.SelectingPlaylist);
         }
 
         private void DeleteSelectedPlaylist()
@@ -198,7 +199,7 @@ namespace SheetMusicOrganizer.ViewModel
                 if (!selectedPlaylist.Name.Equals(EditPlaylistName))
                 {
                     selectedPlaylist.Name = EditPlaylistName;
-                    DbHandler.UpdatePlaylist(selectedPlaylist);
+                    DbHandler.UpdatePlaylist(selectedPlaylist, DbHandler.playlistTable.Name, EditPlaylistName);
                 }
                 selectedPlaylist.IsEditing = false;
             }
@@ -208,16 +209,16 @@ namespace SheetMusicOrganizer.ViewModel
         #region Song in playlist
         public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
         {
-            Session.Status.SavingSongPlaylist = true;
+            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
             DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
-            Session.Status.SavingSongPlaylist = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
         }
 
         public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
@@ -287,20 +288,23 @@ namespace SheetMusicOrganizer.ViewModel
 
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
-            DbHandler.SetSongMastery(song, mastery);
-            Session.Status.SavingSongMastery = false;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
+            DbHandler.SetSongMastery(song, mastery, mastery.Id);
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
+
             //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
             //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
-            Session.Status.SettingSongMastery = true;
-            Session.Status.SavingSongMastery = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
+            StatusContext.addSavingStatus(SavingStatus.SongMastery);
             IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
-            DbHandler.SetSongsMastery(songItems, mastery);
-            Session.Status.SavingSongMastery = false;
+            DbHandler.SetSongsMastery(songItems, mastery, mastery.Id);
+            StatusContext.removeSavingStatus(SavingStatus.SongMastery);
+            StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))
             {
                 foreach (SongItem song in songItems)
@@ -326,7 +330,7 @@ namespace SheetMusicOrganizer.ViewModel
                 songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
-                    Log.Error("Could not find the song to select when trying to go to song with id {id}", song.Id);
+                    GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
                     return;
                 }
             }
@@ -362,13 +366,13 @@ namespace SheetMusicOrganizer.ViewModel
                 Log.Warning("Trying to sort songs when there are no selected PlaylistItem");
                 return;
             }
-
-            Session.Status.SavingSongOrder = true;
-            Session.Status.SortingSongs = true;
+            StatusContext.addLoadingStatus(LoadingStatus.SortingSongs);
+            StatusContext.addSavingStatus(SavingStatus.SongsOrder);
             List<SongItem> sortedSongs =
                 DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
-            Session.Status.SavingSongOrder = false;
+            StatusContext.removeSavingStatus(SavingStatus.SongsOrder);
             ShownSongs.Reset(sortedSongs);
+            StatusContext.removeLoadingStatus(LoadingStatus.SortingSongs);
         }
 
         //Resets the songs in the database for current playlist from the songIDs in the same order
@@ -659,36 +663,56 @@ namespace SheetMusicOrganizer.ViewModel
                 mastery.IsPlaying = false;
         }
 
-        public void SetNextPlayingSong(bool next)
+        public enum SongToFind
+        {
+            Next,
+            Previous,
+            Same,
+            Random
+        }
+
+        public void SetNextPlayingSong(SongToFind type)
         {
             if (Session.PlayingSong == null)
             {
                 SetSelectedSongPlaying(true);
                 return;
             }
-            
-            SongItem? newSong;
 
-            PlaylistItem? playingPlaylist = Playlists.FirstOrDefault(x => x is PlaylistItem pl && pl.IsPlaying) as PlaylistItem;
-
-            if (playingPlaylist == null)
+            if (type == SongToFind.Same)
             {
-                Log.Warning("Playing playlist is null when trying to go to play {next} song", (next ? "next" : "previous"));
+                Session.Player.Position = 0;
+                Session.Player.Play();
                 return;
             }
-
-            if(next)
-                newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, 
-                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
-            else
-                newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, 
-                    Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray());
             
+            SongItem? newSong = null;
+
+            PlaylistItem? playingPlaylist = (Playlists.FirstOrDefault(x => x is PlaylistItem pl && pl.IsPlaying) ?? Playlists[SelectedPlaylistIndex]) as PlaylistItem;
+            if (playingPlaylist == null)
+                return;
+
+            int[] masteryIds = Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray();
+
+            switch (type)
+            {
+                case SongToFind.Next:
+                    newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
+                    break;
+                case SongToFind.Previous:
+                    newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
+                    break;
+                case SongToFind.Random:
+                    newSong = DbHandler.FindRandomSong(playingPlaylist.Id, masteryIds);
+                    break;
+            }
             if (newSong == null)
                 StopPlayingSong();
             else
                 SetPlayingSong(newSong, true);
         }
+
+
         #endregion
 
         #region Validation

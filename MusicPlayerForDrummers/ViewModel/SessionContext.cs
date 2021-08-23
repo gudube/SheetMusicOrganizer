@@ -12,8 +12,6 @@ namespace SheetMusicOrganizer.ViewModel
     {
         public SessionContext()
         {
-            Status = new StatusContext();
-
             Player = new AudioPlayer();
 
             DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Render)
@@ -22,14 +20,14 @@ namespace SheetMusicOrganizer.ViewModel
             };
             timer.Tick += (sender, e) => PlayerTimerUpdate?.Invoke();
             PlayerTimerUpdate += () => Player.OnPropertyChanged(nameof(Player.Position));
-            
+
             if (Settings.Default.Volume >= 0 && Settings.Default.Volume <= 1)
             {
                 Player.Volume = Settings.Default.Volume;
             }
             else
             {
-                Log.Warning("Got invalid volume from settings {volume}", Settings.Default.Volume);
+                Log.Warning("Got invalid volume from settings: {volume}", Settings.Default.Volume);
                 Player.Volume = 0.75f;
             }
             Player.PlaybackStarting += (o, e) => timer.Start();
@@ -51,7 +49,5 @@ namespace SheetMusicOrganizer.ViewModel
 
         public event Action PlayerTimerUpdate;
         #endregion
-
-        public StatusContext Status { get; }
     }
 }

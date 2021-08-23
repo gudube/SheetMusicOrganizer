@@ -28,17 +28,26 @@ namespace SheetMusicOrganizer.View.Controls.Library
         #region Changed Event
         private void Songs_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            DataGridColumn column = e.Column;
-
+            if (!(e.Column is DataGridBoundColumn column))
+            {
+                Log.Error("Trying to sort on a column type that is not a DataGridBoundColumn");
+                return;
+            }
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column, DataContext?.GetType());
+                Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column.Header, DataContext?.GetType());
+                return;
+            }
+            string? binding = (column.Binding as Binding)?.Path?.PathParameters.FirstOrDefault()?.ToString();
+            if(binding is null)
+            {
+                Log.Error("Could not find the property to sort on when trying to sort the column: {columnName}", column.Header);
                 return;
             }
             column.SortDirection = column.SortDirection == ListSortDirection.Ascending
                 ? ListSortDirection.Descending
                 : ListSortDirection.Ascending;
-            libraryVM.SortSongs((string)column.Header, column.SortDirection == ListSortDirection.Ascending);
+            libraryVM.SortSongs(binding, column.SortDirection == ListSortDirection.Ascending);
             e.Handled = true;
         }
 
@@ -127,13 +136,13 @@ namespace SheetMusicOrganizer.View.Controls.Library
         {
             if (!(DataContext is LibraryVM libraryVM))
             {
-                Log.Error("DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {type}", DataContext?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {DataContext?.GetType()}"));
                 return;
             }
 
             if (!(Songs.ItemsSource is ListCollectionView view))
             {
-                Log.Error("ItemSource of the SongsGrid is not a ListCollectionView, but is a {itemsSource}", Songs.ItemsSource?.GetType());
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"ItemSource of the SongsGrid is not a ListCollectionView, but is {Songs.ItemsSource?.GetType()}"));
                 return;
             }
 

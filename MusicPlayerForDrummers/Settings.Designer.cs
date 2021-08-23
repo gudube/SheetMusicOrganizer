@@ -13,7 +13,7 @@ namespace SheetMusicOrganizer {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -38,7 +38,7 @@ namespace SheetMusicOrganizer {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SheetMusicOrganizer")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Sheet Music Organizer")]
         public string ApplicationName {
             get {
                 return ((string)(this["ApplicationName"]));
@@ -63,12 +63,27 @@ namespace SheetMusicOrganizer {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.75")]
         public float Volume {
             get {
                 return ((float)(this["Volume"]));
+            }
+            set {
+                this["Volume"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserDir {
+            get {
+                return ((string)(this["UserDir"]));
+            }
+            set {
+                this["UserDir"] = value;
             }
         }
     }

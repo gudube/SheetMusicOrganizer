@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
@@ -15,6 +16,8 @@ namespace SheetMusicOrganizer.View.Windows
         public OpenFolderWindow()
         {
             this.Owner = Application.Current.MainWindow;
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
 
         }
@@ -41,7 +44,7 @@ namespace SheetMusicOrganizer.View.Windows
         {
             if (!(Owner.DataContext is MainVM mainVM))
             {
-                Log.Error("Datacontext is not MainVM when trying to confirm open folder import");
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to confirm open folder import when DataContext is not a MainVM, but is {DataContext?.GetType()}"));
                 return;
             }
 

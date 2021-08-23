@@ -101,7 +101,18 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Margin" Value="3,0,0,0"/>
     </Style>
-    
+
+    <Style x:Key="SelectableTextBlock" TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
     <!-- LABEL -->
     <Style TargetType="{x:Type Label}">
         <Setter Property="FontSize" Value="11"/>
@@ -263,13 +274,13 @@
         <Style.Triggers>
             <Trigger Property="ResizeDirection" Value="Columns">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="Width" Value="5"/>
-                <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
             </Trigger>
             <Trigger Property="ResizeDirection" Value="Rows">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="Height" Value="5"/>
-                <Setter Property="BorderThickness" Value="0,3,0,0"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -397,6 +408,16 @@
     <Style BasedOn="{StaticResource ClickableText}" TargetType="{x:Type RadioButton}">
         <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"></Setter>
     </Style>
-    
+
+    <!-- Scrollbar -->
+    <Style TargetType="{x:Type ScrollBar}">
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="20" />
+                <Setter Property="MinWidth" Value="20" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>
    

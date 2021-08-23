@@ -17,7 +17,7 @@ namespace SheetMusicOrganizer.Model
         public string? DefaultValue { get; set; }
 
 
-        public SqlColumn(string name, EType type)
+        public SqlColumn(string name, EType type, string? defaultValue = null)
         {
             Name = name;
             CustomType = type;
@@ -28,6 +28,7 @@ namespace SheetMusicOrganizer.Model
             FkDeleteCascade = false;
             Nullable = false;
             Unique = false;
+            DefaultValue = defaultValue;
         }
 
         public SqlColumn(string name, EType type, string fKTableName, string fKColumnName, bool fkDeleteCascade)
@@ -58,7 +59,7 @@ namespace SheetMusicOrganizer.Model
             string fkCascade = FkDeleteCascade ? "ON DELETE CASCADE" : "";
             string notNull = !Nullable || PrimaryKey || ForeignKey ? "NOT NULL" : "";
             string unique = Unique && !PrimaryKey ? "UNIQUE" : "";
-            string defaultValue = DefaultValue != null ? "DEFAULT " + DefaultValue : "";
+            string defaultValue = DefaultValue != null ? "DEFAULT '" + DefaultValue + "'" : "";
             return string.Join(" ", Name, formattedType, formattedPk, formattedFk, fkCascade, notNull, unique, defaultValue);
         }
 

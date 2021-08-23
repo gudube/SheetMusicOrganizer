@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
+using System.Collections.Generic;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -20,10 +21,29 @@ namespace SheetMusicOrganizer.ViewModel
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
             ChangeAudioCommand = new DelegateCommand(ChangeAudio);
-            Session.Player.PlaybackFinished += PlayNextSong;
+            Session.Player.PlaybackFinished += Player_PlaybackFinished;
             Session.Player.PropertyChanged += Player_PropertyChanged;
             if(UpdateScrollPercentage() && Session.PlayingSong != null) {
                 Session.PlayingSong.PropertyChanged += PlayingSong_PropertyChanged;
+            }
+        }
+
+        private void Player_PlaybackFinished(object? sender, EventArgs e)
+        {
+            switch(PlayOrder)
+            {
+                case PlayOrderType.Default:
+                    PlayNextSong?.Invoke(this, EventArgs.Empty);
+                    break;
+                case PlayOrderType.Random:
+                    PlayRandomSong?.Invoke(this, EventArgs.Empty);
+                    break;
+                case PlayOrderType.Repeat:
+                    PlaySameSong?.Invoke(this, EventArgs.Empty);
+                    break;
+                case PlayOrderType.Stop:
+                    Session.Player.Position = 0;
+                    break;
             }
         }
 
@@ -66,6 +86,8 @@ namespace SheetMusicOrganizer.ViewModel
         public event EventHandler? StopPlayingSong;
         public event EventHandler? PlayNextSong;
         public event EventHandler? PlayPreviousSong;
+        public event EventHandler? PlayRandomSong;
+        public event EventHandler? PlaySameSong;
         #endregion
 
         #region Properties
@@ -129,13 +151,27 @@ namespace SheetMusicOrganizer.ViewModel
         public DelegateCommand PreviousCommand { get; }
         private void Previous(object? obj)
         {
-            PlayPreviousSong?.Invoke(this, EventArgs.Empty);
+            if(PlayOrder == PlayOrderType.Random)
+            {
+                PlayRandomSong?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                PlayPreviousSong?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public DelegateCommand NextCommand { get; }
         private void Next(object? obj)
         {
-            PlayNextSong?.Invoke(this, EventArgs.Empty);
+            if (PlayOrder == PlayOrderType.Random)
+            {
+                PlayRandomSong?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                PlayNextSong?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private bool _resumePlaying = false;
@@ -163,18 +199,37 @@ namespace SheetMusicOrganizer.ViewModel
         {
             if (Session.PlayingSong != null && !string.IsNullOrWhiteSpace(Session.PlayingSong.AudioDirectory2))
             {
-                if (PlayingSecondaryAudio)
-                {
-                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory1, Session.Player.IsPlaying, true);
-                    PlayingSecondaryAudio = false;
-                }
-                else
-                {
-                    Session.Player.SetSong(Session.PlayingSong.AudioDirectory2, Session.Player.IsPlaying, true);
-                    PlayingSecondaryAudio = true;
-                }
+                PlayingSecondaryAudio = !PlayingSecondaryAudio;
+                string audioDir = PlayingSecondaryAudio ? Session.PlayingSong.AudioDirectory2 : Session.PlayingSong.AudioDirectory1;
+                Session.Player.SetSong(audioDir, Session.Player.IsPlaying, true);
             }
         }
+        #endregion
+
+        #region Playing Order
+        public enum PlayOrderType
+        {
+            Default,
+            Repeat,
+            Random,
+            Stop
+        }
+
+        public Dictionary<PlayOrderType, string> PlayOrderDict { get; } =
+            new Dictionary<PlayOrderType, string>() {
+                {PlayOrderType.Default, "Default"},
+                {PlayOrderType.Repeat, "Repeat Song"},
+                {PlayOrderType.Random, "Random Song"},
+                {PlayOrderType.Stop, "Stop"},
+            };
+
+        private PlayOrderType _playOrder;
+        public PlayOrderType PlayOrder
+        {
+            get { return _playOrder; }
+            set { SetField(ref _playOrder, value); }
+        }
+
         #endregion
 
         private bool _showAdvancedOptions;

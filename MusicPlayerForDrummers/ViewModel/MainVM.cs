@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
+using System;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -39,7 +40,16 @@ namespace SheetMusicOrganizer.ViewModel
             set
             {
                 if (SetField(ref _currentViewModel, value))
-                    PlayerVM.ShowAdvancedOptions = value == PartitionVM;
+                {
+                    if(value == PartitionVM)
+                    {
+                        PlayerVM.ShowAdvancedOptions = true;
+                    } else
+                    {
+                        PlayerVM.ShowAdvancedOptions = false;
+                        Session.Player.IsLooping = false;
+                    }
+                }
             }
         }
 
@@ -76,7 +86,13 @@ namespace SheetMusicOrganizer.ViewModel
         #region Menu
         public void LoadDatabase(string databasePath)
         {
-            DbHandler.OpenDatabase(databasePath);
+            try
+            {
+                DbHandler.OpenDatabase(databasePath);
+            } catch(Exception ex)
+            {
+                GlobalEvents.raiseErrorEvent(ex);
+            }
         }
 
         public void GoToSong(string partitionFilename)
@@ -103,8 +119,10 @@ namespace SheetMusicOrganizer.ViewModel
         private void SetupEvents()
         {
             PlayerVM.SetSelectedSongPlaying += (o, e) => LibraryVM.SetSelectedSongPlaying(true);
-            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(true);
-            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(false);
+            PlayerVM.PlayNextSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Next);
+            PlayerVM.PlayPreviousSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Previous);
+            PlayerVM.PlaySameSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Same);
+            PlayerVM.PlayRandomSong += (o, e) => LibraryVM.SetNextPlayingSong(LibraryVM.SongToFind.Random);
             PlayerVM.StopPlayingSong += (o, e) => LibraryVM.StopPlayingSong();
         }
 

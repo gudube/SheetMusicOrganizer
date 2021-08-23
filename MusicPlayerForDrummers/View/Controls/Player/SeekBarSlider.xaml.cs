@@ -49,8 +49,8 @@ namespace SheetMusicOrganizer.View.Controls.Player
             Point currentPos = e.GetPosition(_previewTrack);
             PreviewValue = _previewTrack.ValueFromPoint(currentPos);
             PreviewTime = TimeSpan.FromSeconds(_previewTrack.Value).ToString(@"mm\:ss");
-            _previewPopup.HorizontalOffset = currentPos.X;
-            _previewPopup.VerticalOffset = currentPos.Y;
+            _previewPopup.HorizontalOffset = currentPos.X+1;
+            _previewPopup.VerticalOffset = currentPos.Y-20;
         }
 
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)

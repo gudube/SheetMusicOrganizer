@@ -1,12 +1,17 @@
 ﻿using NAudio.Wave;
 using SoundTouch;
 using SoundTouch.Net.NAudioSupport;
+using System;
+using System.IO;
 
 namespace NAudioWrapper
 {
+    /*
+     * SoundTouchWaveStream with loop support
+     */
     class CustomStream : SoundTouchWaveStream
     {
-        readonly WaveStream _sourceStream;
+        private WaveStream? _sourceStream;
 
         public CustomStream(WaveStream sourceStream, bool enableLooping, double loopStart, double loopEnd, SoundTouchProcessor? processor = null) : base(sourceStream, processor)
         {
@@ -17,67 +22,40 @@ namespace NAudioWrapper
             _loopEnd = sourceStream.Length;
         }
 
-        /*public CustomStream(SoundTouchWaveStream source)
-        {
-            sourceStream = source;
-        }*/
-
         public bool EnableLooping = false;
         private long _loopStart;
         private long _loopEnd;
 
         public void SetLoopStart(double time)
         {
-            _loopStart = (long) (_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            if(_sourceStream != null)
+            {
+                _loopStart = (long)(_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            }
         }
         public void SetLoopEnd(double time)
         {
-            _loopEnd = (long) (_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            if (_sourceStream != null)
+            {
+                _loopEnd = (long)(_sourceStream.Length * time / _sourceStream.TotalTime.TotalSeconds);
+            }
         }
 
-        public override WaveFormat WaveFormat => _sourceStream.WaveFormat;
-
-        public override long Length => long.MaxValue / 32;
-
-        public override long Position
-        {
-            get => _sourceStream.Position;
-            set => _sourceStream.Position = value;
-        }
+        public override long Length => EnableLooping ? long.MaxValue / 32 : base.Length;
 
         public override bool HasData(int count)
         {
-            return true; // infinite loop
+            // infinite data when looping
+            return EnableLooping || base.HasData(count);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int read = 0;
-            while (read < count)
+            if (EnableLooping && (_sourceStream?.Position < _loopStart || _sourceStream?.Position >= _loopEnd))
             {
-                int required = count - read;
-                int readThisTime = _sourceStream.Read(buffer, offset + read, required);
-
-                if (EnableLooping)
-                {
-                    if (readThisTime < required || _sourceStream.Position >= _loopEnd ||
-                        _sourceStream.Position < _loopStart)
-                    {
-                        _sourceStream.Position = _loopStart;
-                    }
-                }
-
-                read += readThisTime;
+                _sourceStream.Position = _loopStart;
             }
-            return read;
+            return base.Read(buffer, offset, count);
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            _sourceStream.Dispose();
-            base.Dispose(disposing);
-        }
-
-        
     }
 }

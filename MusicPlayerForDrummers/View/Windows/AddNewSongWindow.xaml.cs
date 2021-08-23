@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Serilog;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.View.Tools;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -16,6 +17,8 @@ namespace SheetMusicOrganizer.View.Windows
         {
             this.Owner = Application.Current.MainWindow;
             Song = new SongItem();
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             ResetSongInformations();
         }
@@ -159,9 +162,7 @@ namespace SheetMusicOrganizer.View.Windows
                         }
                         catch (Exception ex)
                         {
-                            string error = $"Could not find the music sheet {Song.PartitionDirectory} in the library.";
-                            Log.Error("Error: {error} Exception message: {message}", error, ex.Message);
-                            ErrorWindow unused = new ErrorWindow(this, error);
+                            GlobalEvents.raiseErrorEvent(ex, $"Could not find the music sheet {Song.PartitionDirectory} in the library.");
                         }
                     }
                 }

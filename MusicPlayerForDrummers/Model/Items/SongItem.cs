@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.Data.Sqlite;
 using Serilog;
 using SheetMusicOrganizer.Model.Tables;
@@ -44,6 +45,13 @@ namespace SheetMusicOrganizer.Model.Items
         private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
+        private string _notes = "";
+        public string Notes { get => _notes; set {
+                if(SetField(ref _notes, value))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.Notes, _notes);
+            }
+        }
+
         private int _masteryId = 0;
         public int MasteryId { get => _masteryId; 
             set
@@ -54,10 +62,18 @@ namespace SheetMusicOrganizer.Model.Items
         }
 
         private int _scrollStartTime;
-        public int ScrollStartTime { get => _scrollStartTime; set { if (SetField(ref _scrollStartTime, value)) DbHandler.UpdateSong(this); } }
+        public int ScrollStartTime { get => _scrollStartTime; set {
+                if (SetField(ref _scrollStartTime, Math.Max(Math.Min((LengthSecs - ScrollEndTime) - 2, value), 0)))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.ScrollStartTime, _scrollStartTime);
+            }
+        }
 
         private int _scrollEndTime;
-        public int ScrollEndTime { get => _scrollEndTime; set { if (SetField(ref _scrollEndTime, value)) DbHandler.UpdateSong(this); } }
+        public int ScrollEndTime { get => _scrollEndTime; set {
+                if (SetField(ref _scrollEndTime, Math.Max(Math.Min((LengthSecs - ScrollStartTime) - 2, value), 0)))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.ScrollEndTime, _scrollEndTime);
+            }
+        }
         #endregion
 
         #region Other Properties
@@ -69,6 +85,9 @@ namespace SheetMusicOrganizer.Model.Items
 
         private bool _isSelected = false;
         public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+
+        private int _lengthSecs = 0;
+        public int LengthSecs { get => _lengthSecs; set => SetField(ref _lengthSecs, value); }
         #endregion
 
         public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 0, bool useAudioMD = true) : base()
@@ -112,9 +131,12 @@ namespace SheetMusicOrganizer.Model.Items
             if (rating == null || rating > 255)
                 Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
             _rating = rating.GetValueOrDefault(0);
+            _notes = GetSafeString(dataReader, songTable.Notes.Name);
             _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(0);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
+            string[] lengthSeparated = LengthMD.Split(':');
+            _lengthSecs = Int32.Parse(lengthSeparated[0]) * 60 + Int32.Parse(lengthSeparated[1]);
         }
 
         public void ReadAudioMetadata()
@@ -145,6 +167,7 @@ namespace SheetMusicOrganizer.Model.Items
                 _genre = tFile.Tag.JoinedGenres;
             if(_lengthMD == "00:00")
                 _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
+            _lengthSecs = (int)Math.Floor(tFile.Properties.Duration.TotalSeconds);
             if (_codecMD == "" || updateExisting)
             {
                 string[] mimeSplits = tFile.MimeType.Split('/');
@@ -181,7 +204,7 @@ namespace SheetMusicOrganizer.Model.Items
             return new object?[]
             {
                 PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-                LengthMD, CodecMD, BitrateMD, Rating, MasteryId, ScrollStartTime, ScrollEndTime
+                LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime
             };
         }
 
