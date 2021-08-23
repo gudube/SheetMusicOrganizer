@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Serilog;
 
-namespace MusicPlayerForDrummers.View.Controls.Player
+namespace SheetMusicOrganizer.View.Controls.Player
 {
     /// <summary>
     /// Interaction logic for SeekBarSlider.xaml

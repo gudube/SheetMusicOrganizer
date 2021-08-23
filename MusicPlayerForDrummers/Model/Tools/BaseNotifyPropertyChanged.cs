@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MusicPlayerForDrummers.Model.Tools
+namespace SheetMusicOrganizer.Model.Tools
 {
     public abstract class BaseNotifyPropertyChanged : INotifyPropertyChanged
     {

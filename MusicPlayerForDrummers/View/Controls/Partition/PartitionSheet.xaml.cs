@@ -8,10 +8,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Data.Pdf;
 using Windows.Storage;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Controls.Partition
+namespace SheetMusicOrganizer.View.Controls.Partition
 {
     /// <summary>
     /// Interaction logic for PartitionSheet.xaml

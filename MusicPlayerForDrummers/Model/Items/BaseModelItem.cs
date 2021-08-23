@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
-using MusicPlayerForDrummers.Model.Tools;
 using Serilog;
+using SheetMusicOrganizer.Model.Tools;
 
-namespace MusicPlayerForDrummers.Model.Items
+namespace SheetMusicOrganizer.Model.Items
 {
     public abstract class BaseModelItem : BaseNotifyPropertyChanged
     {

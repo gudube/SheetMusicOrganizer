@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Win32;
-using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Windows
+namespace SheetMusicOrganizer.View.Windows
 {
     /// <summary>
     /// Interaction logic for AddNewSongWindow.xaml

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace MusicPlayerForDrummers.View.Pages
+namespace SheetMusicOrganizer.View.Pages
 {
     /// <summary>
     /// Interaction logic for LibraryPage.xaml

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace MusicPlayerForDrummers.ViewModel.Tools
+namespace SheetMusicOrganizer.ViewModel.Tools
 {
     public class DelegateCommand : ICommand
     {

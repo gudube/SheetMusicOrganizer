@@ -2,9 +2,9 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using MusicPlayerForDrummers.ViewModel;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Controls.Player
+namespace SheetMusicOrganizer.View.Controls.Player
 {
     /// <summary>
     /// Interaction logic for Player.xaml

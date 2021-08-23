@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
-using MusicPlayerForDrummers.Model.Tools;
+using SheetMusicOrganizer.Model.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class StatusContext: BaseNotifyPropertyChanged
     {

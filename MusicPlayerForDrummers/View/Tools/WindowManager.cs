@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
-using MusicPlayerForDrummers.View.Windows;
+using SheetMusicOrganizer.View.Windows;
 
-namespace MusicPlayerForDrummers.View.Tools
+namespace SheetMusicOrganizer.View.Tools
 {
     public static class WindowManager
     {

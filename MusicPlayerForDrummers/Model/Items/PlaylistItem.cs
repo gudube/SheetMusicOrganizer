@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
-using MusicPlayerForDrummers.Model.Tables;
 using Serilog;
+using SheetMusicOrganizer.Model.Tables;
 
-namespace MusicPlayerForDrummers.Model.Items
+namespace SheetMusicOrganizer.Model.Items
 {
     public class BasePlaylistItem : BaseModelItem
     {

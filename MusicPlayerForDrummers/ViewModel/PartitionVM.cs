@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.ViewModel.Sync;
 using Serilog;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Sync;
 
-namespace MusicPlayerForDrummers.ViewModel
+namespace SheetMusicOrganizer.ViewModel
 {
     public class PartitionVM : BaseViewModel
     {

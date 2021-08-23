@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MusicPlayerForDrummers.View.Windows
+namespace SheetMusicOrganizer.View.Windows
 {
     /// <summary>
     /// Interaction logic for ErrorWindow.xaml

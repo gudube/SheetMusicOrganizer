@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using MusicPlayerForDrummers.Model.Items;
-using MusicPlayerForDrummers.ViewModel.Tools;
+using SheetMusicOrganizer.Model.Items;
+using SheetMusicOrganizer.ViewModel.Tools;
 
-namespace MusicPlayerForDrummers.ViewModel.Sync
+namespace SheetMusicOrganizer.ViewModel.Sync
 {
     public class ScrollSyncVM : BaseViewModel
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Serilog;
 
-namespace MusicPlayerForDrummers.Model.Tables
+namespace SheetMusicOrganizer.Model.Tables
 {
     public abstract class BaseTable
     {

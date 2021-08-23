@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace MusicPlayerForDrummers.View.Controls
+namespace SheetMusicOrganizer.View.Controls
 {
     /// <summary>
     /// Interaction logic for MainStatusBar.xaml

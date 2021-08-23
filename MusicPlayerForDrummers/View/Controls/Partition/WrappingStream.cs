@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MusicPlayerForDrummers.View.Controls.Partition
+namespace SheetMusicOrganizer.View.Controls.Partition
 {
     public class WrappingStream: Stream
     {

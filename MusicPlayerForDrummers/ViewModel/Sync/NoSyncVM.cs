@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MusicPlayerForDrummers.ViewModel.Sync
+namespace SheetMusicOrganizer.ViewModel.Sync
 {
     public class NoSyncVM : BaseViewModel
     {

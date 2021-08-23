@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
-using MusicPlayerForDrummers.View;
+using SheetMusicOrganizer.View;
 
-namespace MusicPlayerForDrummers
+namespace SheetMusicOrganizer
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -6,13 +6,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MusicPlayerForDrummers.ViewModel;
 using NAudioWrapper.WaveFormRendererLib;
 using Serilog;
+using SheetMusicOrganizer.ViewModel;
 using Color = System.Drawing.Color;
 using Image = System.Drawing.Image;
 
-namespace MusicPlayerForDrummers.View.Controls.Player
+namespace SheetMusicOrganizer.View.Controls.Player
 {
     /// <summary>
     /// Interaction logic for WaveFormSeekBar.xaml

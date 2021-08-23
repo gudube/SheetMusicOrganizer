@@ -6,7 +6,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using Serilog;
 
-namespace MusicPlayerForDrummers.View.Tools
+namespace SheetMusicOrganizer.View.Tools
 {
     public class RatingConverter : IValueConverter
     {

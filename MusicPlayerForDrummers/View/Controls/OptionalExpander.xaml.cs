@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace MusicPlayerForDrummers.View.Controls
+namespace SheetMusicOrganizer.View.Controls
 {
     /// <summary>
     /// Interaction logic for OptionalExpander.xaml

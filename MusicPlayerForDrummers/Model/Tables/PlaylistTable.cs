@@ -1,4 +1,4 @@
-﻿namespace MusicPlayerForDrummers.Model.Tables
+﻿namespace SheetMusicOrganizer.Model.Tables
 {
     //The model contains the table name and its columns
     public class PlaylistTable : BaseTable

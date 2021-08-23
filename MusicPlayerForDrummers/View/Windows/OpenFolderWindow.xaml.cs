@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using MusicPlayerForDrummers.ViewModel;
 using Serilog;
+using SheetMusicOrganizer.ViewModel;
 
-namespace MusicPlayerForDrummers.View.Windows
+namespace SheetMusicOrganizer.View.Windows
 {
     /// <summary>
     /// Interaction logic for OpenFolderWindow.xaml
