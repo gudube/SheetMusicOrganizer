@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 using System;
@@ -9,13 +8,15 @@ using System.Threading;
 
 namespace TestProject
 {
+    [SetUpFixture]
     public class BaseTestSession
     {
         protected static WindowsDriver<WindowsElement> session;
 
-        private const string AppId = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\project\MusicPlayerForDrummers.exe";
+        private const string AppId = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\project\SheetMusicOrganizer.exe";
         private const string TempDataLocation = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\data\temp";
         private const string WinAppDriverLocation = @"C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe";
+        private static Process winAppDriverProcess;
 
         [OneTimeSetUp]
         public void Setup()
@@ -45,7 +46,7 @@ namespace TestProject
                         procInfo.CreateNoWindow = false;
                         procInfo.UseShellExecute = true;
                         procInfo.WindowStyle = ProcessWindowStyle.Minimized;
-                        Process procRun = Process.Start(procInfo);
+                        winAppDriverProcess = Process.Start(procInfo);
                         Thread.Sleep(2000); //wait for the WinAppDriver app to start
                         session = new WindowsDriver<WindowsElement>(new Uri("http://127.0.0.1:4723"), options);
                     }
@@ -67,7 +68,21 @@ namespace TestProject
         [OneTimeTearDown]
         public void Close()
         {
-            //session.CloseApp();
+            // session.Manage().Window.Minimize();
+            // Close the session
+            if (session != null)
+            {
+                session.Close();
+                session.Quit();
+            }
+            // Stop the WinAppDriverProcess
+            if (winAppDriverProcess != null)
+            {
+                foreach (var process in Process.GetProcessesByName("WinAppDriver"))
+                {
+                    process.Kill();
+                }
+            }
         }
     }
 }
