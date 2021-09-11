@@ -13,14 +13,10 @@ namespace SheetMusicOrganizer.Model.Items
         private int _songId;
         public int SongId { get => _songId; set => SetField(ref _songId, value); }
 
-        private int _posInPlaylist;
-        public int PosInPlaylist { get => _posInPlaylist; set => SetField(ref _posInPlaylist, value); }
-
-        public PlaylistSongItem(int playlistId, int songId, int posInPlaylist) : base()
+        public PlaylistSongItem(int playlistId, int songId) : base()
         {
             PlaylistId = playlistId;
             SongId = songId;
-            PosInPlaylist = posInPlaylist;
         }
 
         
@@ -40,15 +36,11 @@ namespace SheetMusicOrganizer.Model.Items
             if (!songId.HasValue)
                 Log.Error("Missing song id for PlaylistSongItem with Id {Id}", Id);
             SongId = songId.GetValueOrDefault(-1);
-            int? posInPlaylist = GetSafeInt(dataReader, playlistSongTable.PosInPlaylist.Name);
-            if (!posInPlaylist.HasValue)
-                Log.Error("Missing position in playlist for PlaylistSongItem with Id {Id}", Id);
-            PosInPlaylist = posInPlaylist.GetValueOrDefault(-1);
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { PlaylistId, SongId, PosInPlaylist };
+            return new object[] { PlaylistId, SongId };
         }
     }
 }

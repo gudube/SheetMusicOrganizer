@@ -16,7 +16,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
     /// <summary>
     /// Interaction logic for SongsGrid.xaml
     /// </summary>
-    public partial class SongsGrid : UserControl, IDropTarget
+    public partial class SongsGrid : UserControl
     {
         public SongsGrid()
         {
@@ -44,10 +44,13 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 Log.Error("Could not find the property to sort on when trying to sort the column: {columnName}", column.Header);
                 return;
             }
-            column.SortDirection = column.SortDirection == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
-            libraryVM.SortSongs(binding, column.SortDirection == ListSortDirection.Ascending);
+            if(libraryVM.Playlists[libraryVM.SelectedPlaylistIndex] is PlaylistItem playlist)
+            {
+                if(playlist.SortCol == binding)
+                    playlist.SortAsc = !playlist.SortAsc;
+                else
+                    playlist.SortCol = binding;
+            }
             e.Handled = true;
         }
 
@@ -60,20 +63,36 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
             if (e.NewValue is LibraryVM newVM)
             {
-                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = newVM.ShownSongs
-                    , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
-                ICollectionView itemList = itemSourceList.View;
-
-                var masteryFilter = new Predicate<object>(item => !newVM.Session.MasteryLevels.Any(x => x.IsSelected)
-                                                                  || ((SongItem)item).Mastery.IsSelected);
-                itemList.Filter = masteryFilter;
-                Songs.ItemsSource = itemList;
-
+                setSongsSource();
+                newVM.PropertyChanged += NewVM_PropertyChanged;
                 newVM.Session.MasteryLevels.CollectionChanged += MasteryLevels_CollectionChanged;
                 foreach(MasteryItem newItem in newVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
             }
         }
+
+        private void setSongsSource()
+        {
+            if(DataContext is LibraryVM libraryVM)
+            {
+                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = libraryVM.GetSongs()
+                    , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
+                ICollectionView itemList = itemSourceList.View;
+
+                itemList.Filter = (Predicate<object>?)new Predicate<object>(item => !libraryVM.Session.MasteryLevels.Any(x => x.IsSelected)
+                                                                  || ((SongItem)item).Mastery.IsSelected);
+                Songs.ItemsSource = itemList;
+            }
+        }
+
+        private void NewVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex) && DataContext is LibraryVM libraryVM)
+            {
+                setSongsSource();
+            }
+        }
+
         private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(DataContext is LibraryVM libraryVM)
@@ -126,30 +145,6 @@ namespace SheetMusicOrganizer.View.Controls.Library
             }
         }
 
-        void IDropTarget.DragOver(IDropInfo dropInfo)
-        {
-            DefaultDropHandler handler = new DefaultDropHandler();
-            handler.DragOver(dropInfo);
-        }
-
-        void IDropTarget.Drop(IDropInfo dropInfo)
-        {
-            if (!(DataContext is LibraryVM libraryVM))
-            {
-                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"DataContext of SongsGrid is not LibraryVM in Songs_OnDrop, but is {DataContext?.GetType()}"));
-                return;
-            }
-
-            if (!(Songs.ItemsSource is ListCollectionView view))
-            {
-                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"ItemSource of the SongsGrid is not a ListCollectionView, but is {Songs.ItemsSource?.GetType()}"));
-                return;
-            }
-
-            DefaultDropHandler handler = new DefaultDropHandler();
-            handler.Drop(dropInfo);
-            libraryVM.ResetSongsInCurrentPlaylist(view.SourceCollection.Cast<SongItem>().Select(x => x.Id));
-        }
         #endregion
     }
 }

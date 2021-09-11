@@ -36,7 +36,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
             if (dropInfo.Data is SongItem song)
             {
-                if(((LibraryVM)DataContext).IsSongInPlaylist(playlist, song))
+                if(playlist.HasSong(song))
                 {
                     //AdornerText = "Song already in playlist";
                 }
@@ -45,7 +45,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
             }
             else if(dropInfo.Data is IEnumerable<object> data)
             {
-                if(data.All(x => x is SongItem item && ((LibraryVM)DataContext).IsSongInPlaylist(playlist, item)))
+                if(data.All(x => x is SongItem item && playlist.HasSong(item)))
                 {
                     //AdornerText = "Song(s) already in playlist";
                 }
@@ -77,7 +77,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
             if (dropInfo.Data is SongItem song)
             {
-                libraryVM.CopySongToPlaylist(targetItem, song);
+                targetItem.AddSongs(song);
             }
             else
             {
@@ -85,7 +85,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 {
                     IEnumerable<object> songs = data as object[] ?? data.ToArray();
                     if (songs.All(x => x is SongItem))
-                        libraryVM.CopySongsToPlaylist(targetItem, songs.Cast<SongItem>());
+                         targetItem.AddSongs(songs.Cast<SongItem>().ToArray());
                 }
             } 
             

@@ -212,5 +212,15 @@ namespace SheetMusicOrganizer.Model.Items
         {
             return string.Join(" - ", Artist, Title);
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is SongItem song && this.Id == song.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
     }
 }

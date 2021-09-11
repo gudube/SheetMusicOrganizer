@@ -24,10 +24,10 @@ namespace SheetMusicOrganizer.ViewModel
         public async Task InitializeData()
         {
             Playlists.CollectionChanged += Playlists_CollectionChanged;
-            UpdatePlaylistsFromDb();
+            await UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
-            Task songs = UpdateSongsFromDb();
-            await songs.ConfigureAwait(false);
+            //Task songs = UpdateSongsFromDb();
+            //await songs.ConfigureAwait(false);
         }
 
         private void CreateDelegateCommands()
@@ -55,9 +55,9 @@ namespace SheetMusicOrganizer.ViewModel
 
         #region All Playlists
 
-        private void UpdatePlaylistsFromDb()
+        private async Task UpdatePlaylistsFromDb()
         {
-            List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(DbHandler.GetAllPlaylists()){ AddPlaylist };
+            List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(await DbHandler.GetAllPlaylists()){ AddPlaylist };
             Playlists.Reset(playlists);
         }
 
@@ -86,8 +86,6 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 if (Playlists.ElementAtOrDefault(_selectedPlaylistIndex) is PlaylistItem pl)
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
-                if (SetField(ref _selectedPlaylistIndex, value))
-                    SelectedPlaylistChanged();
             }
         }
 
@@ -95,13 +93,6 @@ namespace SheetMusicOrganizer.ViewModel
         public DelegateCommand? EditSelectedPlaylistCommand { get; private set; }
         public DelegateCommand? CancelEditPlaylistCommand { get; private set; }
         public DelegateCommand? RenameSelectedPlaylistCommand { get; private set; }
-
-        private async void SelectedPlaylistChanged()
-        {
-            StatusContext.addLoadingStatus(LoadingStatus.SelectingPlaylist);
-            await UpdateSongsFromDb();
-            StatusContext.removeLoadingStatus(LoadingStatus.SelectingPlaylist);
-        }
 
         private void DeleteSelectedPlaylist()
         {
@@ -206,27 +197,6 @@ namespace SheetMusicOrganizer.ViewModel
         }
         #endregion
         
-        #region Song in playlist
-        public void CopySongToPlaylist(PlaylistItem playlist, SongItem song)
-        {
-            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
-            DbHandler.AddPlaylistSongLink(playlist.Id, song.Id);
-            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
-        }
-
-        public void CopySongsToPlaylist(PlaylistItem playlist, IEnumerable<SongItem> songs)
-        {
-            StatusContext.addSavingStatus(SavingStatus.SongPlaylist);
-            DbHandler.AddSongsToPlaylist(playlist.Id, songs.Select(x => x.Id));
-            StatusContext.removeSavingStatus(SavingStatus.SongPlaylist);
-        }
-
-        public bool IsSongInPlaylist(PlaylistItem playlist, SongItem song)
-        {
-            return DbHandler.IsSongInPlaylist(playlist.Id, song.Id);
-        }
-        #endregion
-
         #region Adding playlist
         public AddPlaylistItem AddPlaylist { get; } = new AddPlaylistItem();
         
@@ -315,76 +285,36 @@ namespace SheetMusicOrganizer.ViewModel
         #endregion
 
         #region Songs
+        public IEnumerable<SongItem> GetSongs(int? playlistIndex = null)
+        {
+
+            return (Playlists[playlistIndex ?? SelectedPlaylistIndex] as PlaylistItem)?.GetSongs() ?? Array.Empty<SongItem>();
+        }
 
         //All the songs in the selected playlist, no matter the mastery levels selected
-        public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
+        //public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
 
         public void GoToSong(SongItem song)
         {
             if(!song.Mastery.IsSelected)
                 song.Mastery.IsSelected = true;
-            SongItem? songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
+            SongItem? songToSelect = GetSongs().First(x => x.Equals(song));
             if(songToSelect == null)
             {
                 SelectedPlaylistIndex = 0;
-                songToSelect = ShownSongs.FirstOrDefault(x => x.Id == song.Id);
+                songToSelect = GetSongs().First(x => x.Equals(song));
                 if (songToSelect == null)
                 {
                     GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
                     return;
                 }
             }
-            foreach (SongItem existingSong in ShownSongs)
+            foreach (SongItem existingSong in GetSongs())
             {
                 existingSong.IsSelected = false;
             }
 
             songToSelect.IsSelected = true;
-        }
-
-        private async Task UpdateSongsFromDb()
-        {
-            if (!(Playlists.ElementAtOrDefault(SelectedPlaylistIndex) is PlaylistItem selectedPlaylist))
-                ShownSongs.Clear();
-            else
-            {
-                List<SongItem> songs = await DbHandler.GetSongs(selectedPlaylist.Id);
-                if (Session.PlayingSong != null) //sets if any of the new songs is playing
-                {
-                    SongItem? playingSong = songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
-                    if (playingSong != null)
-                        playingSong.ShowedAsPlaying = selectedPlaylist.IsPlaying;
-                }
-                ShownSongs.Reset(songs);
-            }
-        }
-
-        public void SortSongs(string propertyName, bool ascending)
-        {
-            if (!(Playlists.ElementAtOrDefault(SelectedPlaylistIndex) is PlaylistItem selectedPlaylist))
-            {
-                Log.Warning("Trying to sort songs when there are no selected PlaylistItem");
-                return;
-            }
-            StatusContext.addLoadingStatus(LoadingStatus.SortingSongs);
-            StatusContext.addSavingStatus(SavingStatus.SongsOrder);
-            List<SongItem> sortedSongs =
-                DbHandler.SortSongs(selectedPlaylist.Id, propertyName, ascending);
-            StatusContext.removeSavingStatus(SavingStatus.SongsOrder);
-            ShownSongs.Reset(sortedSongs);
-            StatusContext.removeLoadingStatus(LoadingStatus.SortingSongs);
-        }
-
-        //Resets the songs in the database for current playlist from the songIDs in the same order
-        public void ResetSongsInCurrentPlaylist(IEnumerable<int> songIDs)
-        {
-            if (!(Playlists.ElementAtOrDefault(SelectedPlaylistIndex) is PlaylistItem selectedPlaylist))
-            {
-                Log.Warning("Trying to save songs in the database when there are no selected PlaylistItem");
-                return;
-            }
-            
-            DbHandler.ResetSongsInPlaylist(selectedPlaylist.Id, songIDs);
         }
 
         public bool AddSong(SongItem song)
@@ -403,8 +333,7 @@ namespace SheetMusicOrganizer.ViewModel
             }
             else
             {
-                ShownSongs.Add(song);
-                DbHandler.AddPlaylistSongLink(selectedPlaylist.Id, song.Id);
+                selectedPlaylist.AddSongs(song);
             }
 
             return true;
@@ -559,7 +488,7 @@ namespace SheetMusicOrganizer.ViewModel
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()
         {
-            SongItem[] selectedSongs = ShownSongs.Where(x => x.IsSelected).ToArray();
+            SongItem[] selectedSongs = GetSongs().Where(x => x.IsSelected).ToArray();
 
             if (selectedSongs.Length == 0)
             {
@@ -582,8 +511,7 @@ namespace SheetMusicOrganizer.ViewModel
             else
                 DbHandler.RemoveSongsFromPlaylist(selectedPlaylist.Id, selectedSongIDs);
             
-            foreach(SongItem song in selectedSongs)
-                ShownSongs.Remove(song);
+            (Playlists[SelectedPlaylistIndex] as PlaylistItem)?.RemoveSongs(selectedSongs);
         }
         #endregion
         
@@ -592,23 +520,29 @@ namespace SheetMusicOrganizer.ViewModel
 
         private void RefreshSongShowedAsPlaying()
         {
-            foreach(SongItem song in ShownSongs)
-                song.ShowedAsPlaying = false;
-
-            if (Session.PlayingSong != null && Playlists.ElementAtOrDefault(SelectedPlaylistIndex) is PlaylistItem playlist)
+            if(Playlists[SelectedPlaylistIndex] is PlaylistItem playlist)
             {
-                SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
-                if (songStartedPlaying != null)
-                    songStartedPlaying.ShowedAsPlaying = playlist.IsPlaying;
+                foreach(SongItem song in playlist.GetSongs())
+                    song.ShowedAsPlaying = false;
+
+                if (Session.PlayingSong != null)
+                {
+                    SongItem? songStartedPlaying = playlist.GetSongs().FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
+                    if (songStartedPlaying != null)
+                        songStartedPlaying.ShowedAsPlaying = playlist.IsPlaying;
+                }
             }
         }
 
         public bool SetSelectedSongPlaying(bool startPlaying)
         {
-            SongItem? song = ShownSongs.FirstOrDefault(x => x.IsSelected) ?? ShownSongs.FirstOrDefault();
+            if(!(Playlists[SelectedPlaylistIndex] is PlaylistItem playlist))
+                return false;
+
+            SongItem? song = playlist.GetSongs().FirstOrDefault(x => x.IsSelected) ?? playlist.GetSongs().FirstOrDefault();
             if (song == null)
             {
-                Log.Error("Tried to start playing a song without any songs visible");
+                Log.Warning("Tried to start playing a song without any songs visible");
                 return false;
             }
 
@@ -694,18 +628,28 @@ namespace SheetMusicOrganizer.ViewModel
 
             int[] masteryIds = Session.MasteryLevels.Where(x => x.IsPlaying).Select(x => x.Id).ToArray();
 
-            switch (type)
+            try
             {
-                case SongToFind.Next:
-                    newSong = DbHandler.FindNextSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
-                    break;
-                case SongToFind.Previous:
-                    newSong = DbHandler.FindPreviousSong(Session.PlayingSong.Id, playingPlaylist.Id, masteryIds);
-                    break;
-                case SongToFind.Random:
-                    newSong = DbHandler.FindRandomSong(playingPlaylist.Id, masteryIds);
-                    break;
+                switch (type)
+                {
+                    case SongToFind.Next:
+                        newSong = playingPlaylist.GetSongs().SkipWhile(x => x.Id != Session.PlayingSong.Id).Skip(1).FirstOrDefault(x => masteryIds.Contains(x.MasteryId));
+                        break;
+                    case SongToFind.Previous:
+                        newSong = playingPlaylist.GetSongs().TakeWhile(x => x.Id != Session.PlayingSong.Id).LastOrDefault(x => masteryIds.Contains(x.MasteryId));
+                        break;
+                    case SongToFind.Random:
+                        Random rand = new Random();
+                        var songs = playingPlaylist.GetSongs().Where(x => masteryIds.Contains(x.MasteryId));
+                        int toSkip = rand.Next(0, songs.Count());
+                        newSong = songs.Skip(toSkip).First();
+                        break;
+                }
+            }catch(Exception ex)
+            {
+                newSong = null;
             }
+            
             if (newSong == null)
                 StopPlayingSong();
             else
