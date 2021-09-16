@@ -14,7 +14,8 @@ namespace TestProject
         protected static WindowsDriver<WindowsElement> session;
 
         private const string AppId = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\project\SheetMusicOrganizer.exe";
-        private const string TempDataLocation = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\data\temp";
+        protected const string TestDataDir = @"D:\Documents\repos\SheetMusicOrganizer\TestProject\data";
+        private const string TempDataLocation = TestDataDir + @"\temp";
         private const string WinAppDriverLocation = @"C:\Program Files (x86)\Windows Application Driver\WinAppDriver.exe";
         private static Process winAppDriverProcess;
 

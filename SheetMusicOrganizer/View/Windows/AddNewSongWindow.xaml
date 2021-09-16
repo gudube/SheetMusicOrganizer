@@ -28,17 +28,17 @@
                 <RowDefinition Height="15"/>
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.PartitionDirectory}"/>
-            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButtonSmall}"
+            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.PartitionDirectory}" AutomationProperties.AutomationId="selectedSheetText"/>
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource 3DButtonSmall}" AutomationProperties.AutomationId="selectSheetButton"
                     Click="SelectMusicSheetButton_Click"
                     Content="Select Music Sheet"/>
             <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource ErrorTextBlock}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory1}"/>
-            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButtonSmall}"
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory1}" AutomationProperties.AutomationId="selectedAudio1Text"/>
+            <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource 3DButtonSmall}" AutomationProperties.AutomationId="selectAudio1Button"
                     Click="SelectAudioFile1Button_Click"
                     Content="Select Main Audio"/>
-            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory2}"/>
-            <Button Grid.Row="4" Grid.Column="2" Click="SelectAudioFile2Button_Click"
+            <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource InputTextBlock}" Text="{Binding Song.AudioDirectory2}" AutomationProperties.AutomationId="selectedAudio2Text"/>
+            <Button Grid.Row="4" Grid.Column="2" Click="SelectAudioFile2Button_Click" AutomationProperties.AutomationId="selectAudio2Button"
                     Content="Select 2nd Audio" Style="{StaticResource 3DButtonSmall}"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
