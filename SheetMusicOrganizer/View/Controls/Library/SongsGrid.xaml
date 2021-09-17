@@ -21,7 +21,7 @@
             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
             dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}"
             IsSynchronizedWithCurrentItem="False"
-            VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
+            VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" 
             EnableRowVirtualization="True" EnableColumnVirtualization="True">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Type ScrollBar}}"/>
