@@ -5,6 +5,8 @@ using SheetMusicOrganizer.View;
 using Serilog;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using SheetMusicOrganizer.View.Tools;
+using Microsoft.Data.Sqlite;
 
 namespace SheetMusicOrganizer
 {
@@ -53,15 +55,28 @@ namespace SheetMusicOrganizer
                 splash?.Show(false);
             }
 
-            MainWindow window = new MainWindow();
-            await window.Configure();
-            this.MainWindow = window;
-
-            if (showSplashScreen)
+            try
             {
-                splash?.Close(TimeSpan.FromSeconds(1));
+                MainWindow window = new MainWindow();
+
+                await window.Configure();
+
+                this.MainWindow = window;
+
+                if (showSplashScreen)
+                {
+                    splash?.Close(TimeSpan.FromSeconds(1));
+                }
+                window.Show();
             }
-            window.Show();
+            catch (SqliteException ex)
+            {
+                WindowManager.OpenErrorAsMainWindow(ex, $"There was an error when trying to create/open the database from : {Settings.Default.RecentDBs[0]}");
+                if (showSplashScreen)
+                {
+                    splash?.Close(TimeSpan.FromSeconds(1));
+                }
+            }
         }
     }
 }
