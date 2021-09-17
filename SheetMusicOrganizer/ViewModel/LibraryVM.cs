@@ -86,6 +86,7 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 if (Playlists.ElementAtOrDefault(_selectedPlaylistIndex) is PlaylistItem pl)
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
+                SetField(ref _selectedPlaylistIndex, value);
             }
         }
 
