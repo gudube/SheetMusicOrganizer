@@ -38,7 +38,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 Log.Error("Trying to sort by column {column} when the dataContext is not libraryVM but is {dataContext}", column.Header, DataContext?.GetType());
                 return;
             }
-            string? binding = (column.Binding as Binding)?.Path?.PathParameters.FirstOrDefault()?.ToString();
+            string? binding = (column.Binding as Binding)?.Path?.Path;
             if(binding is null)
             {
                 Log.Error("Could not find the property to sort on when trying to sort the column: {columnName}", column.Header);
@@ -75,7 +75,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
         {
             if(DataContext is LibraryVM libraryVM)
             {
-                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = libraryVM.GetSongs()
+                CollectionViewSource itemSourceList = new CollectionViewSource() {Source = libraryVM.ShownSongs
                     , IsLiveFilteringRequested = true, LiveFilteringProperties = { "MasteryId" }};
                 ICollectionView itemList = itemSourceList.View;
 
@@ -87,10 +87,10 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
         private void NewVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex) && DataContext is LibraryVM libraryVM)
-            {
-                setSongsSource();
-            }
+            //if(e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex) && DataContext is LibraryVM libraryVM)
+            //{
+            //    setSongsSource();
+            //}
         }
 
         private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

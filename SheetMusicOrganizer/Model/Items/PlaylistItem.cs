@@ -36,8 +36,9 @@ namespace SheetMusicOrganizer.Model.Items
         private string _sortCol;
         public string SortCol { get => _sortCol;
             set {
-                if(SetField(ref _sortCol, value))
+                if (SetField(ref _sortCol, value))
                 {
+                    _sortAsc = true;
                     SetSongs(_songs);
                     DbHandler.UpdatePlaylist(this, new PlaylistTable().SortCol, value);
                 }
@@ -111,11 +112,7 @@ namespace SheetMusicOrganizer.Model.Items
 
         #region songs
         private SortedSet<SongItem> _songs = new SortedSet<SongItem>();
-
-        public IEnumerable<SongItem> GetSongs()
-        {
-            return _songs;
-        }
+        public SortedSet<SongItem> Songs { get => _songs; private set => SetField(ref _songs, value); }
 
         public void SetSongs(IEnumerable<SongItem> newSongs)
         {
@@ -125,14 +122,21 @@ namespace SheetMusicOrganizer.Model.Items
                 Log.Error("Sort column not existing in SongItem: {col}", SortCol);
                 return;
             }
+            bool ascending = SortAsc;
             var comparer = Comparer<SongItem>.Create((s1, s2) => {
+                if (s1.Id == s2.Id) return 0;
                 IComparable? val1 = songCol.GetValue(s1) as IComparable;
                 IComparable? val2 = songCol.GetValue(s2) as IComparable;
-                if(val1 == null || val2 == null) return 0;
-                return SortAsc ? val1.CompareTo(val2) : val2.CompareTo(val1);
+                if(val1 == null || val2 == null) return ascending ? 1 : -1;
+                int newValue = ascending ? val1.CompareTo(val2) : val2.CompareTo(val1);
+                if (newValue == 0 && SortCol != nameof(SongItem.Title))
+                    newValue = ascending ? s1.Title.CompareTo(s2.Title) : s2.Title.CompareTo(s1.Title); //sort by title if same for other column
+                if (newValue == 0)
+                    newValue = ascending ? 1 : -1;
+                return newValue;
                 }
             );
-            _songs = new SortedSet<SongItem>(newSongs, comparer);
+            Songs = new SortedSet<SongItem>(newSongs, comparer);
         }
 
         public bool HasSong(SongItem song)
