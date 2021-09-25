@@ -15,6 +15,11 @@ namespace SheetMusicOrganizer
     /// </summary>
     public partial class App
     {
+        public App()
+        {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NTA1NDA1QDMxMzkyZTMyMmUzME43c0xPRGQvVG8zRHhnd3hsb0xjU205TW4relhXRldsVHFrRktZaGYrbXM9");
+        }
+
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
             if (string.IsNullOrEmpty(Settings.Default.UserDir))

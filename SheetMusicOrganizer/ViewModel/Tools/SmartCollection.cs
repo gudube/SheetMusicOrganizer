@@ -41,14 +41,13 @@ namespace SheetMusicOrganizer.ViewModel.Tools
             Remove(item);
     }*/
 
-        public void Reset(IEnumerable<T> range)
+        public void Reset(IEnumerable<T>? range = null)
         {
             this.Items.Clear();
 
-            foreach (var item in range)
-            {
-                this.Items.Add(item);
-            }
+            if(range != null)
+                foreach (var item in range)
+                    this.Items.Add(item);
 
             this.OnPropertyChanged(new PropertyChangedEventArgs("Count"));
             this.OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));

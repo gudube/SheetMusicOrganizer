@@ -38,7 +38,7 @@ namespace SheetMusicOrganizer.ViewModel
             CancelEditPlaylistCommand = new DelegateCommand(_ => CancelEditSelectedPlaylist());
             RenameSelectedPlaylistCommand = new DelegateCommand(_ => RenameSelectedPlaylist());
             DeleteSelectedPlaylistCommand = new DelegateCommand(_ => DeleteSelectedPlaylist());
-            PlaySelectedSongCommand = new DelegateCommand(_ => SetSelectedSongPlaying(true));
+            PlaySelectedSongCommand = new DelegateCommand(song => SetSelectedSongPlaying(true, song as SongItem));
             RemoveSelectedSongsCommand = new DelegateCommand(_ => RemoveSelectedSongs());
         }
 
@@ -71,8 +71,8 @@ namespace SheetMusicOrganizer.ViewModel
         {
             if (e.PropertyName == nameof(PlaylistItem.IsPlaying))
                 RefreshSongShowedAsPlaying();
-            else if (e.PropertyName == nameof(PlaylistItem.Songs))
-                ShownSongs.Reset((Playlists[SelectedPlaylistIndex] as PlaylistItem)?.Songs.AsEnumerable() ?? Array.Empty<SongItem>());
+            else if (e.PropertyName == nameof(PlaylistItem.Songs) && Playlists[SelectedPlaylistIndex] == sender)
+                ShownSongs.Reset((Playlists[SelectedPlaylistIndex] as PlaylistItem)?.Songs);
         }
 
         #endregion
@@ -89,7 +89,7 @@ namespace SheetMusicOrganizer.ViewModel
                 if (Playlists.ElementAtOrDefault(_selectedPlaylistIndex) is PlaylistItem pl)
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
                 SetField(ref _selectedPlaylistIndex, value);
-                ShownSongs.Reset((Playlists[value] as PlaylistItem)?.Songs.AsEnumerable() ?? Array.Empty<SongItem>());
+                ShownSongs.Reset((Playlists[value] as PlaylistItem)?.Songs);
             }
         }
 
@@ -290,8 +290,8 @@ namespace SheetMusicOrganizer.ViewModel
 
         #region Songs
 
-        public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
-        //public readonly SmartCollection<SongItem> ShownSongs { get => _shownSongs; private set => SetField(ref _shownSongs, value); }
+        private SmartCollection<SongItem> _shownSongs = new SmartCollection<SongItem>();
+        public SmartCollection<SongItem> ShownSongs { get => _shownSongs; private set => SetField(ref _shownSongs, value); }
 
         //All the songs in the selected playlist, no matter the mastery levels selected
         //public readonly SmartCollection<SongItem> ShownSongs = new SmartCollection<SongItem>();
@@ -522,26 +522,23 @@ namespace SheetMusicOrganizer.ViewModel
 
         private void RefreshSongShowedAsPlaying()
         {
-            if(Playlists[SelectedPlaylistIndex] is PlaylistItem playlist)
-            {
-                foreach(SongItem song in playlist.Songs)
-                    song.ShowedAsPlaying = false;
+            foreach (SongItem song in ShownSongs)
+                song.ShowedAsPlaying = false;
 
-                if (Session.PlayingSong != null)
-                {
-                    SongItem? songStartedPlaying = playlist.Songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
-                    if (songStartedPlaying != null)
-                        songStartedPlaying.ShowedAsPlaying = playlist.IsPlaying;
-                }
+            if (Session.PlayingSong != null && Playlists[SelectedPlaylistIndex] is PlaylistItem playlist && playlist.IsPlaying)
+            {
+                SongItem? songStartedPlaying = ShownSongs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
+                if (songStartedPlaying != null)
+                    songStartedPlaying.ShowedAsPlaying = true;
             }
         }
 
-        public bool SetSelectedSongPlaying(bool startPlaying)
+        public bool SetSelectedSongPlaying(bool startPlaying, SongItem? specificSong = null)
         {
             if(!(Playlists[SelectedPlaylistIndex] is PlaylistItem playlist))
                 return false;
 
-            SongItem? song = playlist.Songs.FirstOrDefault(x => x.IsSelected) ?? playlist.Songs.FirstOrDefault();
+            SongItem? song = specificSong ?? playlist.Songs.FirstOrDefault(x => x.IsSelected) ?? playlist.Songs.FirstOrDefault();
             if (song == null)
             {
                 Log.Warning("Tried to start playing a song without any songs visible");
@@ -647,7 +644,7 @@ namespace SheetMusicOrganizer.ViewModel
                         newSong = songs.Skip(toSkip).First();
                         break;
                 }
-            }catch(Exception ex)
+            }catch(Exception)
             {
                 newSong = null;
             }

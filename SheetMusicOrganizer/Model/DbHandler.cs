@@ -370,7 +370,8 @@ namespace SheetMusicOrganizer.Model
                 while (dataReader.Read())
                 {
                     PlaylistItem playlist = new PlaylistItem(dataReader); 
-                    playlist.SetSongs(await GetSongs(playlist.Id));
+                    playlist.Songs = await GetSongs(playlist.Id);
+                    playlist.SortSongs();
                     playlists.Add(playlist);
                 }
             }
