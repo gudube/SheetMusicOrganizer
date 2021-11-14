@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using GongSolutions.Wpf.DragDrop;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
@@ -22,6 +22,9 @@ namespace SheetMusicOrganizer.View.Controls.Library
         {
             InitializeComponent();
             DataContextChanged += SongsGrid_DataContextChanged;
+            Songs.PreviewDragOver += Songs_DragOver;
+            Songs.PreviewDragEnter += Songs_DragOver;
+            Songs.RowDragDropController.DragStart += RowDragDropController_DragStart;
         }
 
         #region Changed Event
@@ -41,7 +44,14 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 newVM.Session.MasteryLevels.CollectionChanged += MasteryLevels_CollectionChanged;
                 foreach(MasteryItem newItem in newVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
+                newVM.SongMasteryChanged += NewVM_SongMasteryChanged;
             }
+        }
+
+        private void NewVM_SongMasteryChanged(object? sender, SongItem[] e)
+        {
+            Songs.View.RefreshFilter(true);
+            Songs.ClearSelections(false);
         }
 
         private void NewVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -55,6 +65,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
                     ColumnName = selectedPlaylist.SortCol,
                     SortDirection = selectedPlaylist.SortAsc ? ListSortDirection.Ascending : ListSortDirection.Descending
                 });
+                Songs.ClearSelections(false);
             }
         }
 
@@ -79,7 +90,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
                             FilterBehavior = FilterBehavior.StronglyTyped,
                             FilterMode = ColumnFilter.Value,
                             PredicateType = PredicateType.Or,
-                            IsCaseSensitive = true
+                            IsCaseSensitive = true,
                         });
                     }
                 }
@@ -110,6 +121,11 @@ namespace SheetMusicOrganizer.View.Controls.Library
             foreach (GridRowInfo item in e.RemovedItems)
                 if (item.RowData is SongItem song)
                     song.IsSelected = false;
+        }
+
+        private void OnSongMasteryChanged(SongItem songs)
+        {
+
         }
 
         #endregion
@@ -151,6 +167,24 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 playlist.SortSongs();
             }
         }
+        
+        private void RowDragDropController_DragStart(object? sender, GridRowDragStartEventArgs e)
+        {
+            Songs.View.BeginInit();
+            Songs.SelectedItems.Clear();
+            foreach (object song in e.DraggingRecords)
+            {
+                Songs.SelectedItems.Add(song);
+            }
+            Songs.View.EndInit();
+        }
+
+        private void Songs_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
 
         #endregion
 

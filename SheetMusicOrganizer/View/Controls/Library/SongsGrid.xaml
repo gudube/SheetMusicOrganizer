@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              xmlns:modelItems="clr-namespace:SheetMusicOrganizer.Model.Items"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
@@ -19,8 +18,8 @@
     </UserControl.Resources>
     <Grid>
         <syncfusion:SfDataGrid x:Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.ShownSongs}"
-                               SelectionChanged="SfDataGrid_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True"
-                               AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging">
+                               SelectionChanged="SfDataGrid_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" AllowSelectionOnPointerPressed="False" SelectionMode="Extended"
+                               SelectionUnit="Row" AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
             <syncfusion:SfDataGrid.Style>
                 <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource {x:Type syncfusion:SfDataGrid}}">
                     <Setter Property="Visibility" Value="Visible"/>

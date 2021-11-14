@@ -260,11 +260,14 @@ namespace SheetMusicOrganizer.ViewModel
             // return DbHandler.IsSongInMastery(mastery.Id, song.Id);
         }
 
+        public event EventHandler<SongItem[]>? SongMasteryChanged;
+
         public void SetSongMastery(SongItem song, MasteryItem mastery)
         {
             StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
             StatusContext.addSavingStatus(SavingStatus.SongMastery);
             DbHandler.SetSongMastery(song, mastery, mastery.Id);
+            this.SongMasteryChanged?.Invoke(this, new SongItem[]{ song });
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
 
@@ -275,8 +278,9 @@ namespace SheetMusicOrganizer.ViewModel
         {
             StatusContext.addLoadingStatus(LoadingStatus.SettingSongMastery);
             StatusContext.addSavingStatus(SavingStatus.SongMastery);
-            IEnumerable<SongItem> songItems = songs as SongItem[] ?? songs.ToArray();
+            SongItem[] songItems = songs as SongItem[] ?? songs.ToArray();
             DbHandler.SetSongsMastery(songItems, mastery, mastery.Id);
+            this.SongMasteryChanged?.Invoke(this, songItems);
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
             /*if (!Session.SelectedMasteryLevels.Contains(mastery))
