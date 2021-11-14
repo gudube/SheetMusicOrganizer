@@ -26,8 +26,6 @@ namespace SheetMusicOrganizer.ViewModel
             Playlists.CollectionChanged += Playlists_CollectionChanged;
             await UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
-            //Task songs = UpdateSongsFromDb();
-            //await songs.ConfigureAwait(false);
         }
 
         private void CreateDelegateCommands()
@@ -59,6 +57,7 @@ namespace SheetMusicOrganizer.ViewModel
         {
             List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(await DbHandler.GetAllPlaylists()){ AddPlaylist };
             Playlists.Reset(playlists);
+            SelectedPlaylistIndex = 0;
         }
 
         private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
