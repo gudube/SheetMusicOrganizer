@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Data.Sqlite;
+using Serilog;
 using System;
 using System.IO;
 using System.Windows;
@@ -13,14 +14,17 @@ namespace SheetMusicOrganizer.View.Windows
         private string title = "Oops, you found a bug!";
         private string description = "";
 
-        public ErrorWindow(Window owner, Exception exception, string? customMessage)
+        public ErrorWindow(Window? owner, Exception exception, string? customMessage)
         {
             this.DataContext = this;
-            Owner = owner;
+            if(owner != null)
+                Owner = owner;
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             createMessageFromException(exception);
+            if(owner == null)
+                BackButton.Visibility = Visibility.Collapsed;
             ErrorTitle.Text = title;
             CustomMessage.Text = customMessage ?? description;
             ErrorMessage.Text = exception.Message;
@@ -50,6 +54,9 @@ namespace SheetMusicOrganizer.View.Windows
                 case InvalidOperationException:
                     title = "An error was encountered during this operation";
                     description = "This operation doesn't seem to work at the moment. The state of the application seems unstable. Restarting the application should fix the error.";
+                    break;
+                case SqliteException:
+                    title = "An error was encountered while accessing the database";
                     break;
                 default:
                     break;

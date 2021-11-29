@@ -50,6 +50,16 @@ namespace SheetMusicOrganizer.View.Tools
             });
         }
 
+        public static void OpenErrorAsMainWindow(Exception exception, string? customMessage = null)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke(() => {
+                _openedErrorWindow?.Close();
+                _openedErrorWindow = new ErrorWindow(null, exception, customMessage);
+                _openedErrorWindow.Closed += OpenedMainWindow_Closed;
+                _openedErrorWindow.Show();
+            });
+        }
+
         private static void DarkenBackground(bool darken)
         {
             Application.Current.MainWindow.Opacity = darken ? 0.5 : 1;
@@ -65,6 +75,15 @@ namespace SheetMusicOrganizer.View.Tools
 
             if(_openedErrorWindow == null && _openedOptionWindow == null)
                 DarkenBackground(false);
+        }
+        private static void OpenedMainWindow_Closed(object? sender, EventArgs e)
+        {
+            if (_openedOptionWindow == sender)
+                _openedOptionWindow = null;
+            else if (_openedErrorWindow == sender)
+                _openedErrorWindow = null;
+
+            Application.Current.Shutdown();
         }
     }
 }

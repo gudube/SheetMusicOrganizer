@@ -3,77 +3,92 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              xmlns:modelItems="clr-namespace:SheetMusicOrganizer.Model.Items"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              mc:Ignorable="d" 
              Name="MainControl"
-             d:DesignHeight="450">
+             d:DesignHeight="450"
+             d:DataContext="{d:DesignInstance viewModel:LibraryVM}" >
     <UserControl.Resources>
         <tools:RatingConverter x:Key="RatingConverter"/>
         <tools:HexColorConverter x:Key="HexColorConverter"/>
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
     <Grid>
-        <DataGrid Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}"
-            SelectionMode="Extended" IsReadOnly="True" PreviewKeyDown="DataGrid_PreviewKeyDown"
-            VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-            dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}"
-            IsSynchronizedWithCurrentItem="False"
-            VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
-            EnableRowVirtualization="True" EnableColumnVirtualization="True">
-            <DataGrid.Resources>
+        <syncfusion:SfDataGrid x:Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.ShownSongs}"
+                               SelectionChanged="SfDataGrid_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" AllowSelectionOnPointerPressed="False" SelectionMode="Extended"
+                               SelectionUnit="Row" AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
+            <syncfusion:SfDataGrid.Style>
+                <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource {x:Type syncfusion:SfDataGrid}}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=MainControl, Path=DataContext.ShownSongs.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </syncfusion:SfDataGrid.Style>
+            <!--dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}">-->
+            <syncfusion:SfDataGrid.Resources>
                 <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Type ScrollBar}}"/>
-            </DataGrid.Resources>
-            <DataGrid.InputBindings>
-                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.(viewModel:LibraryVM.PlaySelectedSongCommand)}"/>
-            </DataGrid.InputBindings>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="#" Binding="{Binding Number}" MinWidth="10" Width="25" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Title" Binding="{Binding Title}" MinWidth="40" Width="190" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Album" Binding="{Binding Album}" MinWidth="40" Width="170" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Genre" Binding="{Binding Genre}" MinWidth="40" Width="100" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Length" Binding="{Binding LengthMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Codec" Binding="{Binding CodecMD}" MinWidth="30" Width="50" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Bitrate" Binding="{Binding BitrateMD}" MinWidth="30" Width="65" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Rating" Binding="{Binding Rating, Converter={StaticResource RatingConverter}}" MinWidth="30" Width="60" ElementStyle="{StaticResource DataGridText}"/>
-                <DataGridTextColumn Header="Mastery" Binding="{Binding Mastery.Name}" MinWidth="30" Width="60">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
+            </syncfusion:SfDataGrid.Resources>
+            <syncfusion:SfDataGrid.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}" CommandParameter="{Binding ElementName=Songs, Path=SelectedItem}"/>
+            </syncfusion:SfDataGrid.InputBindings>
+            <syncfusion:SfDataGrid.Columns>
+                <syncfusion:GridTextColumn HeaderText="#" MappingName="Number" Width="25" AllowResizing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Title" MappingName="Title" Width="190"/>
+                <syncfusion:GridTextColumn HeaderText="Artist" MappingName="Artist" Width="170"/>
+                <syncfusion:GridTextColumn HeaderText="Album" MappingName="Album" Width="170"/>
+                <syncfusion:GridTextColumn HeaderText="Genre" MappingName="Genre" Width="100"/>
+                <syncfusion:GridTextColumn HeaderText="Length" MappingName="LengthMD" Width="52"/>
+                <syncfusion:GridTextColumn HeaderText="Codec" MappingName="CodecMD" Width="52"/>
+                <syncfusion:GridTextColumn HeaderText="Bitrate" MappingName="BitrateMD" Width="65"/>
+                <syncfusion:GridTextColumn HeaderText="Rating" MappingName="Rating" DisplayBinding="{Binding Path=Rating, Converter={StaticResource RatingConverter}}" Width="62"/>
+                <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" Width="60">
+                    <syncfusion:GridTextColumn.CellStyle>
+                        <Style TargetType="syncfusion:GridCell" BasedOn="{StaticResource DataGridText}">
                             <Setter Property="Foreground" Value="{Binding Mastery.Color, Converter={StaticResource HexColorConverter}}"/>
                         </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Music Sheet Name" Binding="{Binding PartitionDirectory, Converter={StaticResource DirFilenameConverter}}" MinWidth="50" Width="100*">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DataGridText}">
-                            <Setter Property="ToolTip" Value="{Binding PartitionDirectory}"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-            <DataGrid.RowStyle>
-                <Style TargetType="{x:Type DataGridRow}">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    </syncfusion:GridTextColumn.CellStyle>
+                </syncfusion:GridTextColumn>
+                <syncfusion:GridTextColumn HeaderText="Music Sheet Name" MappingName="PartitionDirectory" DisplayBinding="{Binding Path=PartitionDirectory, Converter={StaticResource DirFilenameConverter}}"
+                                           AllowResizing="False" ColumnSizer="AutoLastColumnFill">
+                    <syncfusion:GridTextColumn.ToolTipTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding PartitionDirectory}"></TextBlock>
+                        </DataTemplate>
+                    </syncfusion:GridTextColumn.ToolTipTemplate>
+                </syncfusion:GridTextColumn>
+            </syncfusion:SfDataGrid.Columns>
+            <syncfusion:SfDataGrid.RowStyle>
+                <Style TargetType="{x:Type syncfusion:VirtualizingCellsControl}" BasedOn="{StaticResource DataGridRow}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ShowedAsPlaying}" Value="true">
                             <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </DataGrid.RowStyle>
-        </DataGrid>
-        <!--<Separator Style="{StaticResource HorizontalSeparator}" BorderBrush="Black"/>-->
+            </syncfusion:SfDataGrid.RowStyle>
+            <syncfusion:SfDataGrid.AlternatingRowStyle>
+                <Style TargetType="{x:Type syncfusion:VirtualizingCellsControl}" BasedOn="{StaticResource DataGridAlternatingRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowedAsPlaying}" Value="true">
+                            <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </syncfusion:SfDataGrid.AlternatingRowStyle>
+        </syncfusion:SfDataGrid>
         <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=Songs, Path=HasItems}" Value="true">
-                            <DataTrigger.Setters>
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger.Setters>
+                        <DataTrigger Binding="{Binding ElementName=MainControl, Path=DataContext.ShownSongs.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

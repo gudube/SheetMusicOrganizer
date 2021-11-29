@@ -4,7 +4,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:modelItems="clr-namespace:SheetMusicOrganizer.Model.Items"
              xmlns:viewItems="clr-namespace:SheetMusicOrganizer.View.Controls.Items"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
@@ -14,7 +13,6 @@
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"
-             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=PlaylistsUC}"
              KeyDown="MainListBox_OnKeyDown"
              SelectedIndex="{Binding SelectedPlaylistIndex, Mode=TwoWay}">
         <ListBox.Resources>

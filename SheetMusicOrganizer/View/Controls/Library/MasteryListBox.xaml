@@ -13,12 +13,10 @@
              Style="{StaticResource InsideLightControl}"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <ListBox Name="MainListBox" SelectionMode="Multiple" ItemsSource="{Binding Path=Session.MasteryLevels, Mode=OneTime}"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MasteryUC}">
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.Resources>
             <DataTemplate DataType="{x:Type modelItems:MasteryItem}">
-                <viewItems:SelectableTextItem IsLocked="{Binding IsLocked, Mode=OneTime}" Text="{Binding Name, Mode=OneTime}"
-                                              IsCustomColor="True" TextColor="{Binding Color, Mode=OneTime}" IsPlaying="{Binding IsPlaying, Mode=OneWay}"/>
+                <viewItems:SelectableMasteryItem/>
             </DataTemplate>
         </ListBox.Resources>
         <ListBox.ItemContainerStyle>

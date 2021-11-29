@@ -20,6 +20,6 @@
         <Expander x:Name="ErrorContainer" Header="Error details" Margin="0,10">
             <TextBox x:Name="ErrorMessage" Style="{StaticResource SelectableTextBlock}" Text="No custom error message." Margin="30, 5, 0, 5"/>
         </Expander>
-        <Button Margin="10, 0" HorizontalAlignment="Left" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
+        <Button x:Name="BackButton" HorizontalAlignment="Left" Margin="10, 0" Width="70" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
     </StackPanel>
 </Window>
