@@ -1,0 +1,432 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf">
+
+    <Color x:Key="BackgroundLv1Color">#121212</Color>
+    <SolidColorBrush x:Key="BackgroundLv1SolidColor" Color="{StaticResource BackgroundLv1Color}"/>
+
+    <Color x:Key="BackgroundLv2Color">#252525</Color>
+    <SolidColorBrush x:Key="BackgroundLv2SolidColor" Color="{StaticResource BackgroundLv2Color}"/>
+    
+    <Color x:Key="BackgroundLv3Color">#333333</Color>
+    <SolidColorBrush x:Key="BackgroundLv3SolidColor" Color="{StaticResource BackgroundLv3Color}"/>
+    
+    <Color x:Key="BackgroundLv4Color">#717171</Color>
+    <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
+    
+    <Color x:Key="ClickableColor">#E1E1E1</Color>
+    <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
+
+    <Color x:Key="UnclickableColor">#A7A7A7</Color>
+    <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
+
+    <!--<Color x:Key="SelectedColor">#ededed</Color>
+    <SolidColorBrush x:Key="SelectedSolidColor" Color="{StaticResource SelectedColor}"/>-->
+    
+    <Color x:Key="SpecialColor">#0090A2</Color>
+    <SolidColorBrush x:Key="SpecialSolidColor" Color="{StaticResource SpecialColor}"/>
+
+    <Color x:Key="SimpleBlackColor">#000000</Color>
+    <SolidColorBrush x:Key="SimpleBlackSolidColor" Color="{StaticResource SimpleBlackColor}"/>
+
+    <Color x:Key="InfoLightBGColor">Beige</Color>
+    <SolidColorBrush x:Key="InfoLightBGSolidColor" Color="{StaticResource InfoLightBGColor}"/>
+    
+    <!-- BACKGROUNDS -->
+    <Style x:Key="PanelBackgroundLv1" TargetType="{x:Type Panel}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    </Style>
+    <Style x:Key="PanelBackgroundLv2" TargetType="{x:Type Panel}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+    </Style>
+    <Style x:Key="PanelBackgroundLv3" TargetType="{x:Type Panel}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+    </Style>
+    <Style x:Key="ControlBackgroundLv1" TargetType="{x:Type Control}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    </Style>
+    <Style x:Key="ControlBackgroundLv2" TargetType="{x:Type Control}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+    </Style>
+    <Style x:Key="ControlBackgroundLv3" TargetType="{x:Type Control}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+    </Style>
+
+    <!-- TEXT -->
+    <Style x:Key="MainTitle" TargetType="{x:Type Control}">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style x:Key="MainText" TargetType="{x:Type Control}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style x:Key="ClickableTitle" TargetType="{x:Type Control}" BasedOn="{StaticResource MainTitle}">
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+    </Style>
+    <Style x:Key="ClickableText" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+    </Style>
+    <!--<Style x:Key="UnclickableControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
+    </Style>
+    <Style x:Key="SelectedControl" TargetType="{x:Type Control}" BasedOn="{StaticResource MainText}">
+        <Setter Property="Background" Value="{StaticResource SelectedSolidColor}"/>
+    </Style>-->
+
+    <Style x:Key="InputTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Height" Value="16"/>
+    </Style>
+    
+    <Style x:Key="LabelTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    
+    <Style x:Key="PopupTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Background" Value="{StaticResource InfoLightBGSolidColor}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource SimpleBlackSolidColor}"/>
+    </Style>
+
+    <Style x:Key="ErrorTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Text" Value="*"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="3,0,0,0"/>
+    </Style>
+
+    <Style x:Key="SelectableTextBlock" TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <!-- LABEL -->
+    <Style TargetType="{x:Type Label}">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="UnclickableLabel" TargetType="{x:Type Label}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- BORDER -->
+    <Style x:Key="BaseBlackControl" TargetType="{x:Type Control}" BasedOn="{StaticResource ClickableTitle}">
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style x:Key="BaseBlackBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style x:Key="OutsideBlackControl" TargetType="{x:Type Control}" BasedOn="{StaticResource ClickableTitle}">
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1,1,2,2"/>
+    </Style>
+    <Style x:Key="InsideLightControl" TargetType="{x:Type Control}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    </Style>
+    <Style x:Key="InsideLightBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    </Style>
+    <Style x:Key="OutsideLightBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1,1,0,0"/>
+    </Style>
+    <Style x:Key="LightBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
+    
+    <!-- EXPANDER -->
+    <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource ClickableTitle}">
+        <Style.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- DataGrid -->
+    <Style x:Key="DataGridText" TargetType="{x:Type syncfusion:GridCell}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="4,2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <!--<Setter Property="TextTrimming" Value="CharacterEllipsis"/>-->
+        <!--<Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}"/>-->
+    </Style>
+
+    <Style x:Key="DataGridRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+    </Style>
+
+    <Style x:Key="DataGridAlternatingRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+    </Style>
+
+    <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource ControlBackgroundLv1}">
+        <Style.Resources>
+            <Style TargetType="ScrollBar">
+            </Style>
+        </Style.Resources>
+        <Style.Triggers>
+            <!--<Trigger Property="" Value="false">
+                <Trigger.Setters>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger.Setters>
+            </Trigger>-->
+        </Style.Triggers>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="AllowEditing" Value="False"/>
+        <Setter Property="AllowResizingColumns" Value="True"/>
+        <Setter Property="AllowDraggingColumns" Value="False"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="SelectionMode" Value="Extended"/>
+        <Setter Property="NavigationMode" Value="Row"/>
+        <Setter Property="SelectionUnit" Value="Row"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="CellStyle" Value="{StaticResource DataGridText}"/>
+        <Setter Property="RowSelectionBrush" Value="{x:Static SystemColors.HighlightBrush}"/>
+        <Setter Property="ShowToolTip" Value="True"/>
+    </Style>
+
+    <Style TargetType="{x:Type syncfusion:GridHeaderCellControl}" BasedOn="{StaticResource ControlBackgroundLv3}">
+        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+    </Style>
+
+    <!-- ListBox -->
+    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource BaseBlackControl}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+    </Style>
+
+    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ClickableText}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Height" Value="27"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <!-- Button -->
+    <!-- TODO: Simplify styles (especially borders) -->
+    <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource OutsideBlackControl}">
+        <Setter Property="Padding" Value="4,0"></Setter>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Height" Value="40"></Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+                <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="3DButtonSmall" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
+        <Setter Property="FontSize" Value="12"></Setter>
+        <Setter Property="Height" Value="30"></Setter>
+    </Style>
+
+    <Style x:Key="SimpleButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ClickableTitle}">
+        <Setter Property="Width" Value="27"/>
+        <Setter Property="Height" Value="27"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="SelectedButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonSmall}">
+        <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"/>
+        <Setter Property="IsDefault" Value="True"/>
+        <Style.Triggers>
+        <Trigger Property="IsEnabled" Value="True">
+            <Setter Property="BorderThickness" Value="2"/>
+        </Trigger>
+        </Style.Triggers>
+        <!--<Setter Property="IsDefault" Value="True"/>-->
+    </Style>
+
+    <!-- CHECKBOX -->
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    
+    <!-- GridSplitter -->
+    <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource BaseBlackControl}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Style.Triggers>
+            <Trigger Property="ResizeDirection" Value="Columns">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+            <Trigger Property="ResizeDirection" Value="Rows">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- StatusBar -->
+    <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource ControlBackgroundLv1}">
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+    </Style>
+
+    <!-- MENU -->
+    <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource ControlBackgroundLv3}">
+    </Style>
+    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource ControlBackgroundLv3}">
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- SEPARATOR -->
+    <Style x:Key="BaseSeparator" TargetType="{x:Type Separator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1,0,0,0"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Height="{TemplateBinding Height}"
+                            SnapsToDevicePixels="true"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="HorizontalSeparator"  TargetType="{x:Type Separator}" BasedOn="{StaticResource BaseSeparator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
+        <Setter Property="Height" Value="4"/>
+    </Style>
+
+    <Style x:Key="VerticalSeparator" TargetType="{x:Type Separator}" BasedOn="{StaticResource BaseSeparator}">
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="BorderThickness" Value="1, 1, 2, 2"/>
+        <Setter Property="Width" Value="4"/>
+    </Style>
+    
+    <!-- TEXTBOX -->
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type Slider}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Cursor" Value="No"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Custom buttons -->
+    <Style x:Key="RoundButton" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Ellipse}">
+                <Setter Property="Fill" Value="{StaticResource BackgroundLv4SolidColor}"/>
+                <Setter Property="Opacity" Value="0.4"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=IsMouseOver}" Value="True">
+                        <Setter Property="Opacity" Value="0.6" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="{x:Type Image}">
+                <Setter Property="Margin" Value="15"/>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Height" Value="40px"/>
+        <Setter Property="Width" Value="40px"/>
+        <Setter Property="Margin" Value="0,0,0,10"></Setter>
+    </Style>
+
+    <!-- WaveForm Triangles -->
+    <Style x:Key="BottomWaveFormFlag" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="LightGreen"></Setter>
+                <Setter Property="Fill" Value="LightGreen"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, -14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -3, 0, 0, -2"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <Style x:Key="TopWaveFormFlag" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="DarkRed"></Setter>
+                <Setter Property="Fill" Value="DarkRed"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, 14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -4, -4, 0, 0"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <Style x:Key="TopFlagCover" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="Red"></Setter>
+        <Setter Property="Opacity" Value="0.5"></Setter>
+    </Style>
+
+    <!-- Radio buttons -->
+    <Style BasedOn="{StaticResource ClickableText}" TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="{StaticResource ClickableSolidColor}"></Setter>
+    </Style>
+
+    <!-- Scrollbar -->
+    <Style TargetType="{x:Type ScrollBar}">
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="20" />
+                <Setter Property="MinWidth" Value="20" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
+   

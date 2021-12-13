@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="SheetMusicOrganizer.View.Controls.Partition.SyncSettingsScrolling"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance viewModel:ScrollSyncVM}"
+             Background="{StaticResource BackgroundLv3SolidColor}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*" MaxWidth="150"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{StaticResource LabelTextBlock}"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0" HorizontalAlignment="Stretch"
+                 Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
+        <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="5,1"
+                Command="{Binding Path=SetStartNowCommand}">Set to now</Button>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Stop before " Style="{StaticResource LabelTextBlock}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Margin="5,0" HorizontalAlignment="Stretch"
+                 Text="{Binding SyncingSong.ScrollEndTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{StaticResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
+        <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource 3DButtonSmall}" Margin="5,1"
+                Command="{Binding SetEndNowCommand}">Set to now</Button>
+    </Grid>
+</UserControl>

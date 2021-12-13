@@ -1,0 +1,3 @@
+﻿These files come directly from SoundTouch Github (https://github.com/owoudenberg/soundtouch.net/tree/master/src/SoundTouch.Net.NAudioSupport) v2.1.2
+They are part of the SoundTouch.Net.NAudioSupport dependency on Nuget, but this dependency uses the version 1.9.0 of NAudio, so it duplicated the versions of the dependency.
+Go back to using the nuget dependency once they add support for NAudio v2.0.0.

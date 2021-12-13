@@ -10,53 +10,58 @@ namespace NAudioWrapper
         //private SoundTouchProcessor ? _processor;
         //private SoundTouchWaveProvider? _provider;
         private AudioFileReader? _audioFileReader;
-        private WaveOutEvent? _output;
+        private WaveOutEvent _output;
         private bool _stopMeansEnded = true;
 
         public event EventHandler? PlaybackFinished;
         public event EventHandler? PlaybackStarting;
         public event EventHandler? PlaybackStopping;
 
+        private object creationLock = new object();
+
         public AudioPlayer()
         {
+            _output = new WaveOutEvent();
+            _output.PlaybackStopped += _output_PlaybackStopped;
         }
 
         public void SetSong(string filepath, bool startPlaying, bool keepPosition)
         {
-            long newPosition = 0;
-            if (_audioFileReader != null && keepPosition)
-                newPosition = _audioFileReader.Position; // when changing track version
-
-            Stop(true, false); // stop if playing
-            
-            _output = new WaveOutEvent();
-            _output.PlaybackStopped += _output_PlaybackStopped;
-
-            if (!File.Exists(filepath))
+            lock(creationLock)
             {
-                throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);
+                long newPosition = 0;
+                if (_audioFileReader != null && keepPosition)
+                    newPosition = _audioFileReader.Position; // when changing track version
+
+                Stop(true, false); // stop if playing
+
+                if (!File.Exists(filepath))
+                {
+                    throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);
+                }
+                try
+                {
+                    _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
+                }
+                catch (Exception ex)
+                {
+                    throw new FileFormatException(new Uri(filepath), ex.Message);
+                }
+                if (newPosition < _audioFileReader.Length)
+                    _audioFileReader.Position = newPosition; //set the new position if is valid
+                LoopStart = 0; // set the loop times to be the whole song by default
+                LoopEnd = _audioFileReader.TotalTime.TotalSeconds;
+
+                _stream = new CustomStream(_audioFileReader, IsLooping, LoopStart, LoopEnd);
+                UpdateStreamSpeed();
+                _output.Init(_stream);
+
+                OnPropertyChanged(nameof(Position));
+                OnPropertyChanged(nameof(Length));
+
+                if (startPlaying)
+                    Play();
             }
-            try
-            {
-                _audioFileReader = new AudioFileReader(filepath) { Volume = this.Volume };
-            } catch(Exception ex)
-            {
-                throw new FileFormatException(new Uri(filepath), ex.Message);
-            }
-            if (newPosition < _audioFileReader.Length)
-                _audioFileReader.Position = newPosition; //set the new position if is valid
-            LoopStart = 0; // set the loop times to be the whole song by default
-            LoopEnd = _audioFileReader.TotalTime.TotalSeconds;
-
-            _stream = new CustomStream(_audioFileReader, IsLooping, LoopStart, LoopEnd);
-            UpdateStreamSpeed();
-            _output.Init(_stream);
-
-            OnPropertyChanged(nameof(Position));
-            OnPropertyChanged(nameof(Length));
-
-            if (startPlaying)
-                Play();
         }
 
         #region Properties
@@ -117,7 +122,11 @@ namespace NAudioWrapper
         public double CustomSpeed
         {
             get => _customSpeed;
-            set { if (SetField(ref _customSpeed, value)) UpdateStreamSpeed(); }
+            set {
+                double newValue = Math.Round(value, 2, MidpointRounding.ToEven);
+                newValue = Math.Max(Math.Min(newValue, 2), 0.5);
+                if (SetField(ref _customSpeed, newValue)) UpdateStreamSpeed();
+            }
         }
 
         private bool _keepPitch = false;
@@ -148,9 +157,11 @@ namespace NAudioWrapper
             get => _loopStart ;
             set
             {
-                if (value < LoopEnd && SetField(ref _loopStart, value))
+                double newValue = Math.Round(value, 1, MidpointRounding.ToZero);
+                newValue = Math.Max(Math.Min(LoopEnd - 2, newValue), 0);
+                if (SetField(ref _loopStart, newValue))
                 {
-                    _stream?.SetLoopStart(value);
+                    _stream?.SetLoopStart(_loopStart);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)
                         Position = LoopStart;
                 }
@@ -163,9 +174,12 @@ namespace NAudioWrapper
             get => _loopEnd;
             set
             {
-                if (value > LoopStart && SetField(ref _loopEnd, value))
+                double newValue = Math.Round(value, 1, MidpointRounding.ToPositiveInfinity);
+                double maxValue = Math.Round(Length, 1, MidpointRounding.ToZero);
+                newValue = Math.Min(Math.Max(LoopStart + 2, newValue), maxValue);
+                if (SetField(ref _loopEnd, newValue))
                 {
-                    _stream?.SetLoopEnd(value);
+                    _stream?.SetLoopEnd(_loopEnd);
                     if (IsLooping && Position < LoopStart || Position > LoopEnd)
                         Position = LoopStart;
                 }
@@ -199,6 +213,7 @@ namespace NAudioWrapper
             {
                 PlaybackStopping?.Invoke(this, EventArgs.Empty);
                 _output.Pause();
+                // _stream?.Flush();
             }
             else if (!force && _output.PlaybackState == PlaybackState.Paused)
                 Play();
@@ -209,11 +224,16 @@ namespace NAudioWrapper
         public bool Stop(bool disposeOutput = true, bool notifyChanges = true)
         {
             bool wasPlaying = IsPlaying;
-            if (_output != null && wasPlaying)
+
+            lock (creationLock)
             {
-                _stopMeansEnded = false;
-                PlaybackStopping?.Invoke(this, EventArgs.Empty);
-                _output.Stop();
+                if (_output.PlaybackState != PlaybackState.Stopped)
+                {
+                    PlaybackStopping?.Invoke(this, EventArgs.Empty);
+                    _stopMeansEnded = false;
+                    _output.Stop();
+                    _stream?.Flush();
+                }
             }
 
             if (disposeOutput)
@@ -227,7 +247,7 @@ namespace NAudioWrapper
         #region Events
         private void _output_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            if (_stopMeansEnded)
+            if(_stopMeansEnded)
             {
                 _stopMeansEnded = false;
                 PlaybackFinished?.Invoke(this, EventArgs.Empty);
@@ -267,7 +287,7 @@ namespace NAudioWrapper
 
         private void DisposeOutput(bool notifyChanges = true)
         {
-            if (_output != null)
+            lock (creationLock)
             {
                 if (IsPlaying)
                 {
@@ -275,32 +295,30 @@ namespace NAudioWrapper
                     PlaybackStopping?.Invoke(this, EventArgs.Empty);
                     _output.Stop();
                 }
-                _output.Dispose();
-                _output = null;
-            }
 
-            if (_stream != null)
-            {
-                _stream.Dispose();
-                _stream = null;
-            }
+                if (_stream != null)
+                {
+                    _stream.Dispose();
+                    _stream = null;
+                }
 
-            if (_audioFileReader != null)
-            {
-                _audioFileReader.Dispose();
-                _audioFileReader = null;
-            }
+                if (_audioFileReader != null)
+                {
+                    _audioFileReader.Dispose();
+                    _audioFileReader = null;
+                }
 
-            CustomSpeed = 1;
-            KeepPitch = false;
-            IsLooping = false;
-            LoopStart = 0;
-            LoopEnd = 1;
+                CustomSpeed = 1;
+                KeepPitch = false;
+                IsLooping = false;
+                LoopStart = 0;
+                LoopEnd = 1;
 
-            if (notifyChanges)
-            {
-                OnPropertyChanged(nameof(Length));
-                OnPropertyChanged(nameof(Position));
+                if (notifyChanges)
+                {
+                    OnPropertyChanged(nameof(Length));
+                    OnPropertyChanged(nameof(Position));
+                }
             }
         }
         #endregion
