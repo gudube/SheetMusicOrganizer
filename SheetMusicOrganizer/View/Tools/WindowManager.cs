@@ -36,6 +36,8 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedOptionWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedOptionWindow.ShowDialog();
+                _openedOptionWindow.Activate();
+                _openedOptionWindow.Focus();
             });
         }
 
@@ -47,6 +49,8 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedErrorWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedErrorWindow.ShowDialog();
+                _openedErrorWindow.Activate();
+                _openedErrorWindow.Focus();
             });
         }
 
@@ -57,6 +61,8 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedErrorWindow = new ErrorWindow(null, exception, customMessage);
                 _openedErrorWindow.Closed += OpenedMainWindow_Closed;
                 _openedErrorWindow.Show();
+                _openedErrorWindow.Activate();
+                _openedErrorWindow.Focus();
             });
         }
 

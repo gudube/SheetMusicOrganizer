@@ -25,16 +25,7 @@
             <RowDefinition Height="1"/>
             <RowDefinition Height="Auto"/> <!-- Status here -->
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Height="20">
-            <MenuItem x:Name="FileMenuItem" Header="File">
-                <MenuItem Header="Import Song" Click="AddNewSongMenuItem_Click"/>
-                <MenuItem Header="Import Folder" Click="OpenFolderMenuItem_Click"/>
-                <MenuItem Header="New Library" Click="NewDatabase_OnClick"/>
-                <MenuItem Header="Open Library" Click="LoadDatabase_OnClick"/>
-                <Separator/>
-                <TextBlock Text="Recently Opened"/>
-            </MenuItem>
-        </Menu>
+        <controls:MenuBar/>
         <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
         <player:PlayerControl x:Name="PlayerControl" Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
         <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">

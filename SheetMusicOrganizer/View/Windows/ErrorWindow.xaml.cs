@@ -1,5 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.Win32;
 using Serilog;
+using SheetMusicOrganizer.Model;
+using SheetMusicOrganizer.ViewModel;
 using System;
 using System.IO;
 using System.Windows;
@@ -24,7 +27,10 @@ namespace SheetMusicOrganizer.View.Windows
             InitializeComponent();
             createMessageFromException(exception);
             if(owner == null)
-                BackButton.Visibility = Visibility.Collapsed;
+            {
+                BackButton.Content = "Close";
+                BackButton.Click += (_, _) => this.Close();
+            }
             ErrorTitle.Text = title;
             CustomMessage.Text = customMessage ?? description;
             ErrorMessage.Text = exception.Message;
@@ -57,6 +63,12 @@ namespace SheetMusicOrganizer.View.Windows
                     break;
                 case SqliteException:
                     title = "An error was encountered while accessing the database";
+                    ContinueActionButton.Content = "Open another library file";
+                    ContinueActionButton.Click += OpenLibrary_Click;
+                    ContinueActionButton.Visibility = Visibility.Visible;
+                    SecondActionButton.Content = "Create new library";
+                    SecondActionButton.Click += CreateLibrary_Click;
+                    SecondActionButton.Visibility = Visibility.Visible;
                     break;
                 default:
                     break;
@@ -73,6 +85,49 @@ namespace SheetMusicOrganizer.View.Windows
                 return text.Substring(0, 98) + "..." + text.Substring(text.Length - 99, 98);
             }
             return text;
+        }
+
+        private void OpenLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog
+            {
+                Filter = "Library File (*.sqlite)|*.sqlite",
+                Multiselect = false,
+                InitialDirectory = Settings.Default.UserDir,
+                FilterIndex = 1
+            };
+            if (openDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    DbHandler.OpenDatabase(openDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(ex);
+                }
+            }
+        }
+
+        private void CreateLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Library File (*.sqlite)|*.sqlite",
+                InitialDirectory = Settings.Default.UserDir
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.Create(saveFileDialog.FileName);
+                try
+                {
+                    DbHandler.OpenDatabase(saveFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(ex);
+                }
+            }
         }
     }
 }

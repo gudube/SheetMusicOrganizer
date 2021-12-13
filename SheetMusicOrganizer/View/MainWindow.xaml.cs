@@ -42,45 +42,6 @@ namespace SheetMusicOrganizer.View
             WindowManager.OpenErrorWindow(ex, message);
         }
 
-        private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            WindowManager.OpenAddNewSongWindow();
-        }
-
-        private void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            WindowManager.OpenOpenFolderWindow();
-        }
-
-        private void LoadDatabase_OnClick(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                Multiselect = false,
-                InitialDirectory = Settings.Default.UserDir,
-                FilterIndex = 1
-            };
-            if (openDialog.ShowDialog() == true)
-            {
-                MainVm.LoadDatabase(openDialog.FileName);
-            }
-        }
-
-        private void NewDatabase_OnClick(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                InitialDirectory = Settings.Default.UserDir
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                File.Create(saveFileDialog.FileName);
-                MainVm.LoadDatabase(saveFileDialog.FileName);
-            }
-        }
-
         private void MainWindow_OnKeyDownUp(object sender, KeyEventArgs e)
         {
             if (WindowManager.IsWindowOpen())
@@ -135,16 +96,6 @@ namespace SheetMusicOrganizer.View
 
         public async Task Configure()
         {
-            foreach (string? recentDB in Settings.Default.RecentDBs)
-            {
-                if (recentDB != null)
-                {
-                    MenuItem recentDBItem = new MenuItem { Header = recentDB };
-                    recentDBItem.Click += (s, e) => MainVm.LoadDatabase(recentDB);
-                    FileMenuItem.Items.Add(recentDBItem);
-                }
-            }
-
             if (DataContext is MainVM mainVM)
                 await mainVM.LoadData().ConfigureAwait(false);
         }
