@@ -8,8 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MusicPlayerForDrummers.View.Tools;
-using MusicPlayerForDrummers.ViewModel;
 using NAudioWrapper;
 using NAudioWrapper.WaveFormRendererLib;
 using Serilog;

@@ -541,7 +541,7 @@ namespace SheetMusicOrganizer.ViewModel
             if(!(Playlists[SelectedPlaylistIndex] is PlaylistItem playlist))
                 return false;
 
-            SongItem? song = specificSong ?? playlist.Songs.FirstOrDefault(x => x.IsSelected) ?? playlist.Songs.FirstOrDefault();
+            SongItem? song = specificSong ?? playlist.Songs.FirstOrDefault(x => x.IsSelected) ?? Session.PlayingSong ?? playlist.Songs.FirstOrDefault();
             if (song == null)
             {
                 Log.Warning("Tried to start playing a song without any songs visible");
