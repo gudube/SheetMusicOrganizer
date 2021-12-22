@@ -17,5 +17,6 @@
             <MenuItem Header="Open Library" Click="LoadDatabase_OnClick"/>
             <MenuItem x:Name="RecentMenuItem" Header="Recently Opened"/>
         </MenuItem>
+        <MenuItem Header="Reset" Click="Reset_Click"/>
     </Menu>
 </UserControl>

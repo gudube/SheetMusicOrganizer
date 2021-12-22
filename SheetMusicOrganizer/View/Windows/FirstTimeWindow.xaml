@@ -1,0 +1,42 @@
+﻿<Window x:Class="SheetMusicOrganizer.View.Windows.FirstTimeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Style="{StaticResource ControlBackgroundLv1}"
+        Title="GenericWindow" SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="50, 50">
+        <TextBlock HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" Foreground="{StaticResource UnclickableSolidColor}" Text="Welcome to Sheet Music Organizer!"/>
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0, 10, 0, 20" TextWrapping="Wrap" LineStackingStrategy="BlockLineHeight" LineHeight="20" Style="{StaticResource LabelTextBlock}">
+            Thank you for trying out Sheet Music Organizer.<LineBreak/>
+            This application is a side project I started to help me practice drums and track my progress.<LineBreak/>
+            It is still in beta and will be improved over time.<LineBreak/>
+            Feel free to check out future updates on <Hyperlink NavigateUri="http://www.guilhemdubois.com/project" RequestNavigate="Hyperlink_RequestNavigate">my personal website</Hyperlink>.
+        </TextBlock>
+        <Grid HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
+            <Grid.RowDefinitions>
+                <RowDefinition SharedSizeGroup="A"/>
+                <RowDefinition SharedSizeGroup="A"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Grid.Row="0" IsCancel="True" Width="50" Height="50" Margin="10" Style="{StaticResource 3DButtonSmall}" Click="CreateButton_Click">
+                <Image Source="/View/Resources/plus_40.png" Width="20" Height="20"></Image>
+            </Button>
+            <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource LabelTextBlock}">
+                Create a new library.
+            </TextBlock>
+            <Button Grid.Column="0" Grid.Row="1" IsCancel="True" Width="50" Height="50" Margin="10" Style="{StaticResource 3DButtonSmall}" Click="OpenButton_Click">
+                <Image Source="/View/Resources/open_folder_song_40.png" Width="20" Height="20"></Image>
+            </Button>
+            <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource LabelTextBlock}">
+                Open an existing library.
+            </TextBlock>
+        </Grid>
+
+        
+    </StackPanel>
+</Window>

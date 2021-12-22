@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Serilog;
 using SheetMusicOrganizer.Model;
+using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
 using System;
 using System.IO;
@@ -70,10 +71,10 @@ namespace SheetMusicOrganizer.View.Windows
                     description = $"There was an error when trying to create/read the library file : {cleanInput(Settings.Default.RecentDBs[0])}";
                 title = "An error was encountered while accessing the library";
                 ContinueActionButton.Content = "Open another library file";
-                ContinueActionButton.Click += OpenLibrary_Click;
+                ContinueActionButton.Click += (_, _) => WindowManager.OpenOpenLibraryWindow(true);
                 ContinueActionButton.Visibility = Visibility.Visible;
                 SecondActionButton.Content = "Create new library";
-                SecondActionButton.Click += CreateLibrary_Click;
+                SecondActionButton.Click += (_, _) => WindowManager.OpenCreateLibraryWindow(true);
                 SecondActionButton.Visibility = Visibility.Visible;
             }
         }
@@ -90,47 +91,6 @@ namespace SheetMusicOrganizer.View.Windows
             return text;
         }
 
-        private void OpenLibrary_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                Multiselect = false,
-                InitialDirectory = Settings.Default.UserDir,
-                FilterIndex = 1
-            };
-            if (openDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    DbHandler.OpenDatabase(openDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    GlobalEvents.raiseErrorEvent(ex);
-                }
-            }
-        }
-
-        private void CreateLibrary_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                InitialDirectory = Settings.Default.UserDir
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                File.Create(saveFileDialog.FileName);
-                try
-                {
-                    DbHandler.OpenDatabase(saveFileDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    GlobalEvents.raiseErrorEvent(ex);
-                }
-            }
-        }
+        
     }
 }

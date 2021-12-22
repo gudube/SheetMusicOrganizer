@@ -28,12 +28,15 @@ namespace SheetMusicOrganizer.View
         private FileStream? lockedFs;
         public MainWindow()
         {
+            //bool firstUse = Settings.Default.RecentDBs.Count == 0;
             InitializeComponent();
             Loaded += (s, a) => {
                 GlobalEvents.ErrorMessage += Status_ErrorMessage;
                 var openedDb = Settings.Default.RecentDBs[0];
                 if(openedDb != null)
                     lockedFs = File.Open(openedDb, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                //if(firstUse)
+                //    WindowManager.OpenFirstTimeWindow();
             };
             Unloaded += (s, a) => {
                 GlobalEvents.ErrorMessage -= Status_ErrorMessage;

@@ -109,6 +109,9 @@
     <Page Update="View\Controls\Items\SelectablePlaylistItem.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="View\Windows\FirstTimeWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
 </Project>

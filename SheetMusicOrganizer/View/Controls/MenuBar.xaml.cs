@@ -3,6 +3,7 @@ using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,6 @@ namespace SheetMusicOrganizer.View.Controls
         public MenuBar()
         {
             InitializeComponent();
-
             DataContextChanged += MenuBar_DataContextChanged;
         }
 
@@ -61,34 +61,26 @@ namespace SheetMusicOrganizer.View.Controls
 
         private void LoadDatabase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(DataContext is MainVM mainVM)) return;
-
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                Multiselect = false,
-                InitialDirectory = Settings.Default.UserDir,
-                FilterIndex = 1
-            };
-            if (openDialog.ShowDialog() == true)
-            {
-                mainVM.LoadDatabase(openDialog.FileName);
-            }
+            WindowManager.OpenOpenLibraryWindow(true);
         }
 
         private void NewDatabase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(DataContext is MainVM mainVM)) return;
+            WindowManager.OpenCreateLibraryWindow(true);
+        }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            var currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
+            if (currentExecutablePath == null || !currentExecutablePath.EndsWith(".exe"))
             {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                InitialDirectory = Settings.Default.UserDir
-            };
-            if (saveFileDialog.ShowDialog() == true)
+                throw new InvalidOperationException("There was an error when trying to automatically reopen the application with the new library. Please reopen it manually.");
+            }
+            else
             {
-                File.Create(saveFileDialog.FileName);
-                mainVM.LoadDatabase(saveFileDialog.FileName);
+                Settings.Default.Reset();
+                Process.Start(currentExecutablePath);
+                Application.Current.Shutdown();
             }
         }
     }

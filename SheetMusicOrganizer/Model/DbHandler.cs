@@ -74,7 +74,7 @@ namespace SheetMusicOrganizer.Model
             }
         }
 
-        private static void SaveOpenedDbSettings(string dBOpenedPath)
+        public static void SaveOpenedDbSettings(string dBOpenedPath)
         {
             Log.Information("Saving new opened database {path}", dBOpenedPath);
 
