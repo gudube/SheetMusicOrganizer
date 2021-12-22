@@ -45,33 +45,36 @@ namespace SheetMusicOrganizer.View.Windows
         private void createMessageFromException(Exception exception)
         {
             // add other exception types here
-            switch (exception)
+            if(exception is FileFormatException formatEx)
             {
-                case FileFormatException specific:
-                    title = "Error reading file";
-                    description = $"There was an error when trying to read the file: '{cleanInput(specific.SourceUri?.LocalPath)}'.\n" +
-                        "The file might have the wrong format or be corrupt.";
-                    break;
-                case FileNotFoundException specific:
-                    title = "File not found";
-                    description = $"Could not find the file: '{cleanInput(specific.FileName)}'.";
-                    //todo: add option to relocate file or erase song from library if that's the case
-                    break;
-                case InvalidOperationException:
-                    title = "An error was encountered during this operation";
-                    description = "This operation doesn't seem to work at the moment. The state of the application seems unstable. Restarting the application should fix the error.";
-                    break;
-                case SqliteException:
-                    title = "An error was encountered while accessing the database";
-                    ContinueActionButton.Content = "Open another library file";
-                    ContinueActionButton.Click += OpenLibrary_Click;
-                    ContinueActionButton.Visibility = Visibility.Visible;
-                    SecondActionButton.Content = "Create new library";
-                    SecondActionButton.Click += CreateLibrary_Click;
-                    SecondActionButton.Visibility = Visibility.Visible;
-                    break;
-                default:
-                    break;
+                title = "Error reading file";
+                description = $"There was an error when trying to read the file: '{cleanInput(formatEx.SourceUri?.LocalPath)}'.\n" +
+                    "The file might have the wrong format or be corrupt.";
+            }
+            if (exception is FileNotFoundException fileEx)
+            {
+                title = "File not found";
+                description = $"Could not find the file: '{cleanInput(fileEx.FileName)}'.";
+                //todo: add option to relocate file or erase song from library if that's the case
+            }
+            if (exception is InvalidOperationException)
+            {
+                title = "An error was encountered during this operation";
+                description = "This operation doesn't seem to work at the moment. The state of the application seems unstable. Restarting the application should fix the error.";
+            }
+            if (exception is InitLibraryException || exception is LibraryFileNotFoundException)
+            {
+                if(exception is LibraryFileNotFoundException)
+                    description = $"The library file cannot be found : {cleanInput(Settings.Default.RecentDBs[0])}\nMake sure it exists or choose a new directory.";
+                else
+                    description = $"There was an error when trying to create/read the library file : {cleanInput(Settings.Default.RecentDBs[0])}";
+                title = "An error was encountered while accessing the library";
+                ContinueActionButton.Content = "Open another library file";
+                ContinueActionButton.Click += OpenLibrary_Click;
+                ContinueActionButton.Visibility = Visibility.Visible;
+                SecondActionButton.Content = "Create new library";
+                SecondActionButton.Click += CreateLibrary_Click;
+                SecondActionButton.Visibility = Visibility.Visible;
             }
         }
 

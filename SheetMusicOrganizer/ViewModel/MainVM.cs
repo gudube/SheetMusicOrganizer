@@ -5,6 +5,7 @@ using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
 using System;
 using Microsoft.Data.Sqlite;
+using System.IO;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -59,19 +60,8 @@ namespace SheetMusicOrganizer.ViewModel
 
         public async Task LoadData()
         {
-            try
-            {
-                DbHandler.InitializeDatabase();
-
-                await LibraryVM.InitializeData();
-            }catch(Exception ex)
-            {
-                if (ex is SqliteException)
-                    throw;
-                else
-                    throw new SqliteException(ex.Message, 0);
-            }
-            
+            DbHandler.InitializeDatabase();
+            await LibraryVM.InitializeData();
             
             SetView(LibraryVM);
         }

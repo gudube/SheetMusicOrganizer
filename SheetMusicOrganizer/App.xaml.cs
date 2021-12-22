@@ -63,20 +63,16 @@ namespace SheetMusicOrganizer
             try
             {
                 MainWindow window = new MainWindow();
-
                 await window.Configure();
-
                 this.MainWindow = window;
-
-                if (showSplashScreen)
-                {
-                    splash?.Close(TimeSpan.FromSeconds(1));
-                }
                 window.Show();
             }
-            catch (SqliteException ex)
+            catch (Exception ex)
             {
-                WindowManager.OpenErrorAsMainWindow(ex, $"There was an error when trying to create/open the database from : {Settings.Default.RecentDBs[0]}");
+                WindowManager.OpenErrorAsMainWindow(ex);
+            }
+            finally
+            {
                 if (showSplashScreen)
                 {
                     splash?.Close(TimeSpan.FromSeconds(1));

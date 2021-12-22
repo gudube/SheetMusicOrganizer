@@ -34,8 +34,7 @@ namespace SheetMusicOrganizer.Model
             }
             else if (!File.Exists(Settings.Default.RecentDBs[0]))
             {
-                Log.Warning("Could not open the database file. Now opening the default one.");
-                OpenDefaultDatabase();
+                throw new LibraryFileNotFoundException(Settings.Default.RecentDBs[0]);
             }
 
             CreateTables(force);
