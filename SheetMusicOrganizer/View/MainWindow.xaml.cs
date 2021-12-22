@@ -24,14 +24,20 @@ namespace SheetMusicOrganizer.View
     // ReSharper disable once UnusedMember.Global
     public partial class MainWindow : Window
     {
+
+        private FileStream? lockedFs;
         public MainWindow()
         {
             InitializeComponent();
             Loaded += (s, a) => {
                 GlobalEvents.ErrorMessage += Status_ErrorMessage;
+                var openedDb = Settings.Default.RecentDBs[0];
+                if(openedDb != null)
+                    lockedFs = File.Open(openedDb, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             };
             Unloaded += (s, a) => {
                 GlobalEvents.ErrorMessage -= Status_ErrorMessage;
+                lockedFs?.Close();
             };
         }
 
