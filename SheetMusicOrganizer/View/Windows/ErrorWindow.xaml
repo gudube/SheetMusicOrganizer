@@ -19,9 +19,9 @@
                 <TextBox x:Name="ErrorMessage" Style="{StaticResource SelectableTextBlock}" Text="No custom error message." Margin="30, 5, 0, 5"/>
             </Expander>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="ContinueActionButton" Margin="0" Padding="20,0" Content="Continue" IsCancel="False" Visibility="Collapsed" Style="{StaticResource 3DButtonSmall}"/>
-                <Button x:Name="SecondActionButton" Margin="0" Padding="20,0" Content="" IsCancel="False" Visibility="Collapsed" Style="{StaticResource 3DButtonSmall}"/>
-                <Button x:Name="BackButton" Margin="0" Padding="20,0" Content="Back" IsCancel="True" Style="{StaticResource 3DButtonSmall}"/>
+                <Button x:Name="ContinueActionButton" Content="Continue" IsCancel="False" Visibility="Collapsed" Style="{StaticResource 3DButton}"/>
+                <Button x:Name="SecondActionButton" Content="" IsCancel="False" Visibility="Collapsed" Style="{StaticResource 3DButton}"/>
+                <Button x:Name="BackButton" Content="Back" IsCancel="True" Style="{StaticResource 3DButton}"/>
             </StackPanel>
         </StackPanel>
     </DockPanel>

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Style="{StaticResource ControlBackgroundLv1}"
-        Title="GenericWindow" SizeToContent="WidthAndHeight"
+        Title="First Time Setup" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize">
     <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="50, 50">
         <TextBlock HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" Foreground="{StaticResource UnclickableSolidColor}" Text="Welcome to Sheet Music Organizer!"/>
@@ -23,13 +23,13 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Grid.Row="0" IsCancel="True" Width="50" Height="50" Margin="10" Style="{StaticResource 3DButtonSmall}" Click="CreateButton_Click">
+            <Button Grid.Column="0" Grid.Row="0" IsCancel="True" Width="55" Height="55" Margin="10" Style="{StaticResource 3DButton}" Click="CreateButton_Click">
                 <Image Source="/View/Resources/plus_40.png" Width="20" Height="20"></Image>
             </Button>
             <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource LabelTextBlock}">
                 Create a new library.
             </TextBlock>
-            <Button Grid.Column="0" Grid.Row="1" IsCancel="True" Width="50" Height="50" Margin="10" Style="{StaticResource 3DButtonSmall}" Click="OpenButton_Click">
+            <Button Grid.Column="0" Grid.Row="1" IsCancel="True" Width="55" Height="55" Margin="10" Style="{StaticResource 3DButton}" Click="OpenButton_Click">
                 <Image Source="/View/Resources/open_folder_song_40.png" Width="20" Height="20"></Image>
             </Button>
             <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource LabelTextBlock}">

@@ -69,19 +69,9 @@ namespace SheetMusicOrganizer.View.Controls
             WindowManager.OpenCreateLibraryWindow(true);
         }
 
-        private void Reset_Click(object sender, RoutedEventArgs e)
+        private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            var currentExecutablePath = Process.GetCurrentProcess().MainModule?.FileName;
-            if (currentExecutablePath == null || !currentExecutablePath.EndsWith(".exe"))
-            {
-                throw new InvalidOperationException("There was an error when trying to automatically reopen the application with the new library. Please reopen it manually.");
-            }
-            else
-            {
-                Settings.Default.Reset();
-                Process.Start(currentExecutablePath);
-                Application.Current.Shutdown();
-            }
+            WindowManager.OpenSettingsWindow();
         }
     }
 }

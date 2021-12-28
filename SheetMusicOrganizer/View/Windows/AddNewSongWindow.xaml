@@ -13,13 +13,13 @@
         <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
         <tools:StringsNotEmptyConverter x:Key="StringsNotEmptyConverter"/>
     </Window.Resources>
-    <StackPanel Orientation="Vertical" Margin="18, 0, 14, 18">
-        <Grid Margin="0,18,0,0">
+    <StackPanel Orientation="Vertical" Margin="18">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="6"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
@@ -79,10 +79,10 @@
             <TextBox Grid.Row="5" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding RatingText}"/> <!-- TODO: Replace with clickable stars-->
         </Grid>
         <Grid Margin="0, 18, 0, 0">
-            <Button Style="{StaticResource 3DButtonSmall}" IsCancel="True" HorizontalAlignment="Left">
+            <Button Style="{StaticResource 3DButton}" IsCancel="True" HorizontalAlignment="Left" >
                 Cancel
             </Button>
-            <Button HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource SelectedButton}">
+            <Button HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{StaticResource DefaultButton}">
                 <Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource StringsNotEmptyConverter}">
                         <Binding Path="Song.PartitionDirectory"/>

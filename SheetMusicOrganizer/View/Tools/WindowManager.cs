@@ -35,6 +35,11 @@ namespace SheetMusicOrganizer.View.Tools
             OpenOptionWindow(new FirstTimeWindow());
         }
 
+        public static void OpenSettingsWindow()
+        {
+            OpenOptionWindow(new SettingsWindow());
+        }
+
         private static void OpenOptionWindow(Window window)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(() =>
@@ -45,8 +50,6 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedOptionWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedOptionWindow.ShowDialog();
-                _openedOptionWindow.Activate();
-                _openedOptionWindow.Focus();
             });
         }
 
@@ -58,8 +61,6 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedErrorWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedErrorWindow.ShowDialog();
-                _openedErrorWindow.Activate();
-                _openedErrorWindow.Focus();
             });
         }
 
