@@ -10,8 +10,8 @@
              d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
     <StackPanel Orientation="Vertical">
         <Expander Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
+            <Border Style="{StaticResource PopInBorder}">
+                <Border Style="{StaticResource BaseInsideBorder}">
                     <StackPanel Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
                         <Grid Margin="5,10,10,10">
                             <Grid.ColumnDefinitions>
@@ -50,34 +50,34 @@
         </Expander>
         <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
         <Expander Header="Sync" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
+            <Border Style="{StaticResource PopInBorder}">
+                <Border Style="{StaticResource BaseInsideBorder}">
                     <StackPanel Orientation="Vertical" Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
                         <ComboBox ItemsSource="{Binding SyncViewModels, Mode=OneTime}"
                                   DisplayMemberPath="ViewModelName" Margin="1"
                                   SelectedItem="{Binding SelectedSyncVM}"/>
-                        <ContentControl Content="{Binding SelectedSyncVM}"
-                                        Style="{StaticResource InsideLightControl}"
-                                        Margin="10, 0">
-                            <ContentControl.Resources>
-                                <DataTemplate DataType="{x:Type sync:NoSyncVM}">
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
-                                    <partition:SyncSettingsScrolling/>
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type sync:PageSyncVM}">
-                                    <TextBlock>Work In Progress !</TextBlock>
-                                </DataTemplate>
-                            </ContentControl.Resources>
-                        </ContentControl>
+                        <Border Style="{StaticResource PopInBorder}">
+                            <ContentControl Content="{Binding SelectedSyncVM}" Margin="10, 0">
+                                <ContentControl.Resources>
+                                    <DataTemplate DataType="{x:Type sync:NoSyncVM}">
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
+                                        <partition:SyncSettingsScrolling/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type sync:PageSyncVM}">
+                                        <TextBlock>Work In Progress !</TextBlock>
+                                    </DataTemplate>
+                                </ContentControl.Resources>
+                            </ContentControl>
+                        </Border>
                     </StackPanel>
                 </Border>
             </Border>
         </Expander>
         <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
         <Expander Header="Notes" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
+            <Border Style="{StaticResource PopInBorder}">
+                <Border Style="{StaticResource BaseInsideBorder}">
                     <Grid Background="{StaticResource BackgroundLv3SolidColor}">
                         <Grid.RowDefinitions>
                             <RowDefinition MinHeight="25" Height="100" MaxHeight="500"></RowDefinition>

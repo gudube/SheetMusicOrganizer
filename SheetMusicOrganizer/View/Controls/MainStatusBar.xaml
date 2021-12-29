@@ -6,7 +6,7 @@
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1500" d:DataContext="{d:DesignInstance viewModel:MainVM}">
-    <StatusBar Height="21" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
+    <StatusBar Height="21">
         <StatusBar.ItemsPanel>
             <ItemsPanelTemplate>
                 <Grid Margin="2, -2, 2, 0" VerticalAlignment="Top" HorizontalAlignment="Stretch">

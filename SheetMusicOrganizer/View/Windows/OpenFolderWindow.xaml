@@ -27,7 +27,7 @@
                     Style="{StaticResource 3DButtonSmall}"/>
             <TextBlock Grid.Column="3" Style="{StaticResource ErrorTextBlock}"/>
         </Grid>
-        <Label Style="{StaticResource UnclickableLabel}">Link music sheet and audio:</Label>
+        <TextBlock Style="{StaticResource LabelTextBlock}" Margin="0,10, 0, 2">Link music sheet and audio:</TextBlock>
         <RadioButton x:Name="ImportByFolder" IsChecked="True">By folder (pdf and audio files are in the same folder)</RadioButton>
         <RadioButton x:Name="ImportByFilename">By file names (pdf and audio files have the same name)</RadioButton>
         <RadioButton x:Name="ImportPdfOnly">Don't import audio - Only import pdf files</RadioButton>
@@ -39,10 +39,10 @@
                     <RowDefinition Height="Auto" SharedSizeGroup="A"/>
                 </Grid.RowDefinitions>
                 <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.UseMetadataAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
-                    <Label Content="Use audio metadata (if found)"/>
+                    Use audio metadata (if found)
                 </CheckBox>
                 <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.RecursiveAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
-                    <Label Content="Recursive scan (in subfolders)"/>
+                    Recursive scan (in subfolders)
                 </CheckBox>
             </Grid>
         </controls:OptionalExpander>

@@ -14,6 +14,6 @@
         </Grid.ColumnDefinitions>
         <library:LibraryMenu x:Name="Library" Grid.Column="0" HorizontalAlignment="Stretch" Style="{StaticResource ControlBackgroundLv2}"/>
         <GridSplitter Grid.Column="1" ResizeDirection="Columns"/>
-        <library:SongsGrid Grid.Column="2" Style="{StaticResource InsideLightControl}" BorderThickness="1,0,0,0"/>
+        <library:SongsGrid Grid.Column="2" BorderThickness="1,0,0,0"/>
     </Grid>
 </UserControl>

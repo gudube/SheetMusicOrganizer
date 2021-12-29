@@ -8,7 +8,7 @@
              Style="{StaticResource ControlBackgroundLv2}">
     <Button HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="0"
             DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}" Command="{Binding SwitchViewCommand}"
-            Style="{StaticResource 3DButton}" Width="Auto" Height="Auto">
+            Style="{StaticResource 3DButton}" Width="Auto" Height="Auto" Padding="10">
         <Grid>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" >
                 <StackPanel.LayoutTransform>

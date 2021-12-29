@@ -13,7 +13,7 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition MinWidth="200" Width="320" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
-        <partition:PartitionSheet x:Name="PartitionSheet" Grid.Column="0" Style="{StaticResource InsideLightControl}" BorderThickness="0,0,1,0"/>
+        <partition:PartitionSheet x:Name="PartitionSheet" Grid.Column="0" BorderThickness="0,0,1,0"/>
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" BorderThickness="1,0,0,0"/>
         <partition:PartitionMenu Grid.Column="2" HorizontalAlignment="Stretch" Style="{StaticResource ControlBackgroundLv2}"/>
     </Grid>

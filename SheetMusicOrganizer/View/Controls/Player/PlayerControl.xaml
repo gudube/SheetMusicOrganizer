@@ -7,110 +7,109 @@
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="1820"
-             Style="{StaticResource InsideLightControl}"
-             BorderThickness="0,0,0,1"
-             Background="{StaticResource BackgroundLv2SolidColor}"
              x:Name="Control"
              d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
-    <Border x:Name="PlayerBorder" Style="{StaticResource BaseBlackBorder}" BorderThickness="0,0,0,1">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="225"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" VerticalAlignment="Stretch">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Margin="2,2,0,0" VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="PreviousButton" Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}" ToolTipService.ToolTip="Previous song">
-                        <Image Source="/View/Resources/previous_song_40.png"/>
-                    </Button>
-                    <Button x:Name="PlayButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}" ToolTipService.ToolTip="Play / Restart">
-                        <Image Source="/View/Resources/play_song_40.png"/>
-                    </Button>
-                    <Button x:Name="PauseButton" Grid.Column="2" Style="{StaticResource SimpleButton}" Command="{Binding PauseCommand}" ToolTipService.ToolTip="Pause">
-                        <Image Source="/View/Resources/pause_song_40.png"/>
-                    </Button>
-                    <Button x:Name="NextButton" Grid.Column="3" Style="{StaticResource SimpleButton}" Command="{Binding NextCommand}" ToolTipService.ToolTip="Next song">
-                        <Image Source="/View/Resources/next_song_40.png"/>
-                    </Button>
-                    <Separator Margin="10,3" Grid.Column="4" Style="{StaticResource BaseSeparator}"/>
-                    <Button Grid.Column="5" Style="{StaticResource SimpleButton}" Command="{Binding StopCommand}" ToolTipService.ToolTip="Stop">
-                        <Image Source="/View/Resources/stop_song_40.png"/>
-                    </Button>
-                    <Button Grid.Column="6" Style="{StaticResource SimpleButton}" ToolTipService.ToolTip="Play a random song">
-                        <Image Source="/View/Resources/random_song_40.png"/>
-                    </Button>
-                    <Button Grid.Column="7" Style="{StaticResource SimpleButton}" Click="OpenFolderButton_Click" ToolTipService.ToolTip="Open the song's folder">
-                        <Image Source="/View/Resources/open_folder_song_40.png"/>
-                    </Button>
-                    <ToggleButton Grid.Column="8" Command="{Binding ChangeAudioCommand}" IsChecked="{Binding PlayingSecondaryAudio, Mode=OneWay}" ToolTipService.ToolTip="Switch between main/extra track">
-                        <ToggleButton.Style>
-                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource SimpleButton}">
-                                <Setter Property="Background" Value="Transparent"></Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsChecked" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToggleButton.Style>
-                        <Image Source="/View/Resources/replace_40.png"/>
-                    </ToggleButton>
-                </Grid>
-                <Grid Grid.Row="1" Margin="2,0,2,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0" ItemsSource="{Binding PlayOrderDict}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding PlayOrder}"  ToolTipService.ToolTip="Playback order"/>
-                    <Button x:Name="MuteButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}" ToolTipService.ToolTip="Mute / Unmute">
-                        <Image>
-                            <Image.Style>
-                                <Style TargetType="{x:Type Image}">
+    <Border Style="{StaticResource PopInBorder}">
+        <Border Style="{StaticResource BaseInsideBorder}">
+            <Grid Background="{StaticResource BackgroundLv2SolidColor}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="225"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="2,2,0,0" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="PreviousButton" Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}" ToolTipService.ToolTip="Previous song">
+                            <Image Source="/View/Resources/previous_song_40.png"/>
+                        </Button>
+                        <Button x:Name="PlayButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}" ToolTipService.ToolTip="Play / Restart">
+                            <Image Source="/View/Resources/play_song_40.png"/>
+                        </Button>
+                        <Button x:Name="PauseButton" Grid.Column="2" Style="{StaticResource SimpleButton}" Command="{Binding PauseCommand}" ToolTipService.ToolTip="Pause">
+                            <Image Source="/View/Resources/pause_song_40.png"/>
+                        </Button>
+                        <Button x:Name="NextButton" Grid.Column="3" Style="{StaticResource SimpleButton}" Command="{Binding NextCommand}" ToolTipService.ToolTip="Next song">
+                            <Image Source="/View/Resources/next_song_40.png"/>
+                        </Button>
+                        <Separator Margin="10,3" Grid.Column="4" Style="{StaticResource BaseSeparator}"/>
+                        <Button Grid.Column="5" Style="{StaticResource SimpleButton}" Command="{Binding StopCommand}" ToolTipService.ToolTip="Stop">
+                            <Image Source="/View/Resources/stop_song_40.png"/>
+                        </Button>
+                        <Button Grid.Column="6" Style="{StaticResource SimpleButton}" ToolTipService.ToolTip="Play a random song">
+                            <Image Source="/View/Resources/random_song_40.png"/>
+                        </Button>
+                        <Button Grid.Column="7" Style="{StaticResource SimpleButton}" Click="OpenFolderButton_Click" ToolTipService.ToolTip="Open the song's folder">
+                            <Image Source="/View/Resources/open_folder_song_40.png"/>
+                        </Button>
+                        <ToggleButton Grid.Column="8" Command="{Binding ChangeAudioCommand}" IsChecked="{Binding PlayingSecondaryAudio, Mode=OneWay}" ToolTipService.ToolTip="Switch between main/extra track">
+                            <ToggleButton.Style>
+                                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource SimpleButton}">
+                                    <Setter Property="Background" Value="Transparent"></Setter>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="False">
-                                            <Setter Property="Source" Value="/View/Resources/volume_high_40.png"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="True">
-                                            <Setter Property="Source" Value="/View/Resources/volume_mute_40.png"/>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                            <Image Source="/View/Resources/replace_40.png"/>
+                        </ToggleButton>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="2,0,2,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0" ItemsSource="{Binding PlayOrderDict}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding PlayOrder}"  ToolTipService.ToolTip="Playback order"/>
+                        <Button x:Name="MuteButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding ChangeMuteCommand}" ToolTipService.ToolTip="Mute / Unmute">
+                            <Image>
+                                <Image.Style>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="False">
+                                                <Setter Property="Source" Value="/View/Resources/volume_high_40.png"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="True">
+                                                <Setter Property="Source" Value="/View/Resources/volume_mute_40.png"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Button>
+                        <Slider Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            VerticalAlignment="Center" IsMoveToPointEnabled="True" TickFrequency="0.01" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Thumb.DragStarted="Slider_DragStarted" Thumb.DragCompleted="Slider_DragCompleted">
+                            <Slider.Style>
+                                <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="true">
+                                            <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </Image.Style>
-                        </Image>
-                    </Button>
-                    <Slider Grid.Column="2" Minimum="0" Maximum="1" Value="{Binding Session.Player.Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            VerticalAlignment="Center" IsMoveToPointEnabled="True" TickFrequency="0.01" IsSnapToTickEnabled="True" ValueChanged="Slider_ValueChanged" Thumb.DragStarted="Slider_DragStarted" Thumb.DragCompleted="Slider_DragCompleted">
-                        <Slider.Style>
-                            <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="true">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Slider.Style>
-                    </Slider>
+                            </Slider.Style>
+                        </Slider>
+                    </Grid>
                 </Grid>
+                <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
+                <player:WaveFormSeekBar Grid.Column="2"></player:WaveFormSeekBar>
             </Grid>
-            <Separator Grid.Column="1" Style="{StaticResource VerticalSeparator}" Margin="2,3,2,2"/>
-            <player:WaveFormSeekBar Grid.Column="2"></player:WaveFormSeekBar>
-        </Grid>
+        </Border>
     </Border>
 </UserControl>
