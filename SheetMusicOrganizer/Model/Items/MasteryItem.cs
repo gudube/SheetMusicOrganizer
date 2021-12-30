@@ -12,9 +12,6 @@ namespace SheetMusicOrganizer.Model.Items
 
         private bool _isLocked;
         public bool IsLocked { get => _isLocked; set => SetField(ref _isLocked, value); }
-
-        private string _color;
-        public string Color { get => _color; set => SetField(ref _color, value); }
         #endregion
 
         #region Other Properties
@@ -25,11 +22,10 @@ namespace SheetMusicOrganizer.Model.Items
         public bool IsPlaying { get => _isPlaying; set => SetField(ref _isPlaying, value); }
         #endregion
 
-        public MasteryItem(string name, bool locked, string color) : base()
+        public MasteryItem(string name, bool locked) : base()
         {
             _name = name;
             _isLocked = locked;
-            _color = color;
         }
 
         public MasteryItem(SqliteDataReader dataReader)
@@ -42,12 +38,11 @@ namespace SheetMusicOrganizer.Model.Items
 
             _name = GetSafeString(dataReader, masteryTable.Name.Name);
             _isLocked = GetSafeBool(dataReader, masteryTable.IsLocked.Name);
-            _color = GetSafeString(dataReader, masteryTable.Color.Name);
         }
 
         public override object[] GetCustomValues()
         {
-            return new object[] { Name, IsLocked, Color };
+            return new object[] { Name, IsLocked };
         }
     }
 }

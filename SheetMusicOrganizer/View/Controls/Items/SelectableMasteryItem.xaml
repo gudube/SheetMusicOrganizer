@@ -10,7 +10,7 @@
              d:DesignHeight="25" d:DesignWidth="200"
              d:DataContext="{d:DesignInstance items1:MasteryItem}">
     <UserControl.Resources>
-        <tools:HexColorConverter x:Key="HexColorConverter"/>
+        <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
         <Grid>
@@ -19,7 +19,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneTime}" Foreground="{Binding Color, Converter={StaticResource HexColorConverter}, Mode=OneTime}"/>
+        <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneTime}" Foreground="{Binding Name, Converter={StaticResource MasteryColorConverter}}"/>
         <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
                    Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
         <Image Grid.Column="2" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"

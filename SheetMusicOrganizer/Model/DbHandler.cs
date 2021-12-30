@@ -558,11 +558,11 @@ namespace SheetMusicOrganizer.Model
 
             if (IsEmpty(con, masteryTable))
             {
-                MasteryItem defaultUnset = new MasteryItem("Unset", true, "#F0FDFA") { Id = DefaultMasteryId };
-                MasteryItem defaultBeginner = new MasteryItem("Beginner", true, "#D8F4EF");
-                MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true, "#B7ECEA");
-                MasteryItem defaultAdvanced = new MasteryItem("Advanced", true, "#97DEE7");
-                MasteryItem defaultMastered = new MasteryItem("Mastered", true, "#78C5DC");
+                MasteryItem defaultUnset = new MasteryItem("Unset", true) { Id = DefaultMasteryId };
+                MasteryItem defaultBeginner = new MasteryItem("Beginner", true);
+                MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true);
+                MasteryItem defaultAdvanced = new MasteryItem("Advanced", true);
+                MasteryItem defaultMastered = new MasteryItem("Mastered", true);
 
                 InsertRows(con, masteryTable, new BaseModelItem[] { defaultUnset, defaultBeginner, defaultIntermediate, defaultAdvanced, defaultMastered });
             }

@@ -90,6 +90,13 @@ namespace SheetMusicOrganizer
 
             try
             {
+                if(Settings.Default.Theme == "Light")
+                {
+                    Application.Current.Resources.MergedDictionaries.Clear();
+                    ResourceDictionary dict = new ResourceDictionary();
+                    dict.Source = new Uri("/View/Styles/LightTheme.xaml", UriKind.Relative);
+                    Application.Current.Resources.MergedDictionaries.Add(dict);
+                }
                 MainWindow window = new MainWindow();
                 await window.Configure();
                 this.MainWindow = window;

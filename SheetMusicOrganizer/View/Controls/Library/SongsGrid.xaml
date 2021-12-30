@@ -13,7 +13,7 @@
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}" >
     <UserControl.Resources>
         <tools:RatingConverter x:Key="RatingConverter"/>
-        <tools:HexColorConverter x:Key="HexColorConverter"/>
+        <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
     <Border Style="{StaticResource PopInBorder}">
@@ -51,7 +51,7 @@
                     <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" Width="60">
                         <syncfusion:GridTextColumn.CellStyle>
                             <Style TargetType="syncfusion:GridCell" BasedOn="{StaticResource DataGridText}">
-                                <Setter Property="Foreground" Value="{Binding Mastery.Color, Converter={StaticResource HexColorConverter}}"/>
+                                <Setter Property="Foreground" Value="{Binding Mastery.Name, Converter={StaticResource MasteryColorConverter}}"/>
                             </Style>
                         </syncfusion:GridTextColumn.CellStyle>
                     </syncfusion:GridTextColumn>

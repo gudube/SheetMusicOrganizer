@@ -36,8 +36,10 @@ namespace SheetMusicOrganizer.View.Tools
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(new BrushConverter().ConvertFrom(value) is SolidColorBrush brush)
+            if (new BrushConverter().ConvertFrom(value) is Brush brush)
+            {
                 return brush;
+            }
             
             Log.Error("Could not convert HEX to color: ", value);
             return Brushes.Black;
@@ -46,11 +48,31 @@ namespace SheetMusicOrganizer.View.Tools
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
-            /*
-            if(value is SolidColorBrush color) 
-                return color.Color.ToString();
+        }
+    }
 
-            Log.Warning("Could not convert value {value} to SolidColorBrush");*/
+    public class MasteryColorConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value is string name)
+            {
+                try
+                {
+                    var resource = Application.Current.FindResource(name);
+                    if (resource != null)
+                        return resource;
+                } catch(Exception)
+                {
+                    return Brushes.Black;
+                }
+            }
+            return Brushes.Black;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 

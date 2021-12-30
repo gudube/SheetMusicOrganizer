@@ -4,23 +4,23 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Styles/BaseStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    
-    <Color x:Key="BackgroundLv1Color">#121212</Color>
+
+    <Color x:Key="BackgroundLv1Color">#6c757d</Color>
     <SolidColorBrush x:Key="BackgroundLv1SolidColor" Color="{StaticResource BackgroundLv1Color}"/>
 
-    <Color x:Key="BackgroundLv2Color">#252525</Color>
+    <Color x:Key="BackgroundLv2Color">#dee2e6</Color>
     <SolidColorBrush x:Key="BackgroundLv2SolidColor" Color="{StaticResource BackgroundLv2Color}"/>
-    
-    <Color x:Key="BackgroundLv3Color">#333333</Color>
+
+    <Color x:Key="BackgroundLv3Color">#f8f9fa</Color>
     <SolidColorBrush x:Key="BackgroundLv3SolidColor" Color="{StaticResource BackgroundLv3Color}"/>
-    
-    <Color x:Key="BackgroundLv4Color">#717171</Color>
+
+    <Color x:Key="BackgroundLv4Color">White</Color>
     <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
-    
-    <Color x:Key="ClickableColor">#E1E1E1</Color>
+
+    <Color x:Key="ClickableColor">Black</Color>
     <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
 
-    <Color x:Key="UnclickableColor">#A7A7A7</Color>
+    <Color x:Key="UnclickableColor">#444444</Color>
     <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
 
     <Color x:Key="SpecialColor">#0090A2</Color>
@@ -36,11 +36,11 @@
     <!--#endregion-->
 
     <!--#region Mastery Colors -->
-    <SolidColorBrush x:Key="Unset" Color="#F0FDFA"/>
-    <SolidColorBrush x:Key="Beginner" Color="#D8F4EF"/>
-    <SolidColorBrush x:Key="Intermediate" Color="#B7ECEA"/>
-    <SolidColorBrush x:Key="Advanced" Color="#97DEE7"/>
-    <SolidColorBrush x:Key="Mastered" Color="#78C5DC"/>
+    <SolidColorBrush x:Key="Unset" Color="#227087"/>
+    <SolidColorBrush x:Key="Beginner" Color="#238d9b"/>
+    <SolidColorBrush x:Key="Intermediate" Color="#2ba5a1"/>
+    <SolidColorBrush x:Key="Advanced" Color="#32b39c"/>
+    <SolidColorBrush x:Key="Mastered" Color="#1cd9ad"/>
     <!--#endregion-->
 
     <!--#region EXPANDER -->
@@ -48,7 +48,7 @@
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
     </Style>
     <!--#endregion-->
-    
+
     <!--#region TEXT -->
     <Style x:Key="InputTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource InputTextBlockBase}">
         <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
@@ -84,13 +84,13 @@
     <!--#region DataGrid -->
     <Style x:Key="DataGridText" TargetType="{x:Type syncfusion:GridCell}" BasedOn="{StaticResource DataGridTextBase}">
     </Style>
-    
+
     <Style x:Key="DataGridRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
     </Style>
 
     <Style x:Key="DataGridAlternatingRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
     </Style>
 
     <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource DataGridBase}">
@@ -142,9 +142,9 @@
     <Style x:Key="DefaultButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
         <Setter Property="IsDefault" Value="True"/>
         <Style.Triggers>
-        <Trigger Property="IsEnabled" Value="True">
-            <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"/>
-        </Trigger>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"/>
+            </Trigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="RoundButton" TargetType="{x:Type Grid}" BasedOn="{StaticResource RoundButtonBase}">
@@ -256,11 +256,9 @@
     <Style TargetType="{x:Type TabItem}">
         <!--<Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"></Setter>-->
         <!--<Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-            </Trigger>
-        </Style.Triggers>-->
+        <Trigger Property="IsSelected" Value="True">
+        </Trigger>
+    </Style.Triggers>-->
     </Style>
     <!--#endregion-->
-
 </ResourceDictionary>
-   
