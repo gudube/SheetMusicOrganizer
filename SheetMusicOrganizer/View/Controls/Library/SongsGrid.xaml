@@ -97,7 +97,7 @@
                 <Border Style="{StaticResource PopOutBorder}" Margin="5,0">
                     <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{StaticResource 3DButton}">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <Image Source="/View/Resources/music_file_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
+                            <Image Source="{StaticResource MusicFileImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
                             <TextBlock Text="Add New Song" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
@@ -105,7 +105,7 @@
                 <Border Style="{StaticResource PopOutBorder}" Margin="5,0">
                     <Button Name="AddFolderButton" Click="AddFolderButton_Click" Style="{StaticResource 3DButton}">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <Image Source="/View/Resources/music_dir_40.png" MaxHeight="20" Margin="0, 0, 10, 0"/>
+                            <Image Source="{StaticResource MusicDirImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
                             <TextBlock Text="Add Folder" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>

@@ -16,10 +16,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="View\Resources\dark\lock_64.png" />
+    <None Remove="View\Resources\dark\minus_64.png" />
+    <None Remove="View\Resources\dark\music_dir_40.png" />
+    <None Remove="View\Resources\dark\music_file_40.png" />
+    <None Remove="View\Resources\dark\next_song_40.png" />
+    <None Remove="View\Resources\dark\open_folder_song_40.png" />
+    <None Remove="View\Resources\dark\pause_song_40.png" />
+    <None Remove="View\Resources\dark\play_song_40.png" />
+    <None Remove="View\Resources\dark\plus_40.png" />
+    <None Remove="View\Resources\dark\plus_64.png" />
+    <None Remove="View\Resources\dark\previous_song_40.png" />
+    <None Remove="View\Resources\dark\random_song_40.png" />
+    <None Remove="View\Resources\dark\replace_40.png" />
+    <None Remove="View\Resources\dark\stop_song_40.png" />
+    <None Remove="View\Resources\dark\switch_view_40.png" />
+    <None Remove="View\Resources\dark\volume_high_40.png" />
+    <None Remove="View\Resources\dark\volume_mute_40.png" />
     <None Remove="View\Resources\error_emoji.png" />
+    <None Remove="View\Resources\light\lock_64.png" />
+    <None Remove="View\Resources\light\minus_64.png" />
+    <None Remove="View\Resources\light\music_dir_40.png" />
+    <None Remove="View\Resources\light\music_file_40.png" />
+    <None Remove="View\Resources\light\next_song_40.png" />
+    <None Remove="View\Resources\light\open_folder_song_40.png" />
+    <None Remove="View\Resources\light\pause_song_40.png" />
+    <None Remove="View\Resources\light\play_song_40.png" />
+    <None Remove="View\Resources\light\plus_40.png" />
+    <None Remove="View\Resources\light\plus_64.png" />
+    <None Remove="View\Resources\light\previous_song_40.png" />
+    <None Remove="View\Resources\light\random_song_40.png" />
+    <None Remove="View\Resources\light\replace_40.png" />
+    <None Remove="View\Resources\light\stop_song_40.png" />
+    <None Remove="View\Resources\light\switch_view_40.png" />
+    <None Remove="View\Resources\light\volume_high_40.png" />
+    <None Remove="View\Resources\light\volume_mute_40.png" />
     <None Remove="View\Resources\lock_64.png" />
     <None Remove="View\Resources\minus_64.png" />
-    <None Remove="View\Resources\music_40.png" />
     <None Remove="View\Resources\music_dir_40.png" />
     <None Remove="View\Resources\music_file_40.png" />
     <None Remove="View\Resources\next_song_40.png" />
@@ -43,26 +76,41 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="View\Resources\dark\lock_64.png" />
+    <Resource Include="View\Resources\dark\minus_64.png" />
+    <Resource Include="View\Resources\dark\music_dir_40.png" />
+    <Resource Include="View\Resources\dark\music_file_40.png" />
+    <Resource Include="View\Resources\dark\next_song_40.png" />
+    <Resource Include="View\Resources\dark\open_folder_song_40.png" />
+    <Resource Include="View\Resources\dark\pause_song_40.png" />
+    <Resource Include="View\Resources\dark\play_song_40.png" />
+    <Resource Include="View\Resources\dark\plus_40.png" />
+    <Resource Include="View\Resources\dark\plus_64.png" />
+    <Resource Include="View\Resources\dark\previous_song_40.png" />
+    <Resource Include="View\Resources\dark\random_song_40.png" />
+    <Resource Include="View\Resources\dark\replace_40.png" />
+    <Resource Include="View\Resources\dark\stop_song_40.png" />
+    <Resource Include="View\Resources\dark\switch_view_40.png" />
+    <Resource Include="View\Resources\dark\volume_high_40.png" />
+    <Resource Include="View\Resources\dark\volume_mute_40.png" />
     <Resource Include="View\Resources\error_emoji.png" />
-    <Resource Include="View\Resources\lock_64.png" />
-    <Resource Include="View\Resources\minus_64.png" />
-    <Resource Include="View\Resources\music_40.png" />
-    <Resource Include="View\Resources\music_dir_40.png" />
-    <Resource Include="View\Resources\music_file_40.png" />
-    <Resource Include="View\Resources\next_song_40.png" />
-    <Resource Include="View\Resources\open_folder_song_40.png" />
-    <Resource Include="View\Resources\pause_song_40.png" />
-    <Resource Include="View\Resources\play_song_40.png" />
-    <Resource Include="View\Resources\plus_40.png" />
-    <Resource Include="View\Resources\plus_64.png" />
-    <Resource Include="View\Resources\previous_song_40.png" />
-    <Resource Include="View\Resources\random_song_40.png" />
-    <Resource Include="View\Resources\replace_40.png" />
-    <Resource Include="View\Resources\stop_song_40.png" />
-    <Resource Include="View\Resources\switch_view_40.png" />
-    <Resource Include="View\Resources\volume_high_40.png" />
-    <Resource Include="View\Resources\volume_mute_40.png" />
-    <Resource Include="View\Resources\waveform.png" />
+    <Resource Include="View\Resources\light\lock_64.png" />
+    <Resource Include="View\Resources\light\minus_64.png" />
+    <Resource Include="View\Resources\light\music_dir_40.png" />
+    <Resource Include="View\Resources\light\music_file_40.png" />
+    <Resource Include="View\Resources\light\next_song_40.png" />
+    <Resource Include="View\Resources\light\open_folder_song_40.png" />
+    <Resource Include="View\Resources\light\pause_song_40.png" />
+    <Resource Include="View\Resources\light\play_song_40.png" />
+    <Resource Include="View\Resources\light\plus_40.png" />
+    <Resource Include="View\Resources\light\plus_64.png" />
+    <Resource Include="View\Resources\light\previous_song_40.png" />
+    <Resource Include="View\Resources\light\random_song_40.png" />
+    <Resource Include="View\Resources\light\replace_40.png" />
+    <Resource Include="View\Resources\light\stop_song_40.png" />
+    <Resource Include="View\Resources\light\switch_view_40.png" />
+    <Resource Include="View\Resources\light\volume_high_40.png" />
+    <Resource Include="View\Resources\light\volume_mute_40.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -86,7 +86,6 @@
                     <TickBar x:Name="BottomTick" Fill="{TemplateBinding Foreground}" Height="4" Margin="0,2,0,0" Placement="Bottom" Grid.Row="2" Visibility="Collapsed"/>
                     <Border x:Name="TrackBackground" BorderThickness="0" Margin="1.5, 0" BorderBrush="{StaticResource SliderThumb.Track.Border}" Grid.Row="1" VerticalAlignment="Stretch">
                         <Grid>
-                            <!--<Image x:Name="WaveformBackground" Source="/View/Resources/waveform.png" Stretch="Fill"/>-->
                             <Canvas Margin="-6,-1">
                                 <Rectangle x:Name="PART_SelectionRange" Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Visibility="Hidden"/>
                             </Canvas>

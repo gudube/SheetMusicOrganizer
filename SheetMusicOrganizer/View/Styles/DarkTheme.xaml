@@ -128,9 +128,12 @@
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
         <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1,1,2,2"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
             </Trigger>
         </Style.Triggers>
@@ -260,6 +263,26 @@
             </Trigger>
         </Style.Triggers>-->
     </Style>
+    <!--#endregion-->
+
+    <!--#region Images -->
+    <BitmapImage x:Key="LockImage" UriSource="/View/Resources/dark/lock_64.png"/>
+    <BitmapImage x:Key="VolumeMuteImage" UriSource="/View/Resources/dark/volume_mute_40.png"/>
+    <BitmapImage x:Key="VolumeHighImage" UriSource="/View/Resources/dark/volume_high_40.png"/>
+    <BitmapImage x:Key="MinusImage" UriSource="/View/Resources/dark/minus_64.png"/>
+    <BitmapImage x:Key="PlusImage" UriSource="/View/Resources/dark/plus_64.png"/>
+    <BitmapImage x:Key="MusicDirImage" UriSource="/View/Resources/dark/music_dir_40.png"/>
+    <BitmapImage x:Key="MusicFileImage" UriSource="/View/Resources/dark/music_file_40.png"/>
+    <BitmapImage x:Key="NextSongImage" UriSource="/View/Resources/dark/next_song_40.png"/>
+    <BitmapImage x:Key="OpenFolderImage" UriSource="/View/Resources/dark/open_folder_song_40.png"/>
+    <BitmapImage x:Key="PauseImage" UriSource="/View/Resources/dark/pause_song_40.png"/>
+    <BitmapImage x:Key="PlayImage" UriSource="/View/Resources/dark/play_song_40.png"/>
+    <BitmapImage x:Key="SmallPlusImage" UriSource="/View/Resources/dark/plus_40.png"/>
+    <BitmapImage x:Key="PreviousSongImage" UriSource="/View/Resources/dark/previous_song_40.png"/>
+    <BitmapImage x:Key="RandomSongImage" UriSource="/View/Resources/dark/random_song_40.png"/>
+    <BitmapImage x:Key="ReplaceImage" UriSource="/View/Resources/dark/replace_40.png"/>
+    <BitmapImage x:Key="StopImage" UriSource="/View/Resources/dark/stop_song_40.png"/>
+    <BitmapImage x:Key="SwitchViewImage" UriSource="/View/Resources/dark/switch_view_40.png"/>
     <!--#endregion-->
 
 </ResourceDictionary>

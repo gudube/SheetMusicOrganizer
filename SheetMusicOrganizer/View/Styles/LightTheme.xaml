@@ -5,18 +5,20 @@
         <ResourceDictionary Source="/View/Styles/BaseStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <Color x:Key="BackgroundLv1Color">#6c757d</Color>
+    <Color x:Key="BackgroundLv1Color">White</Color>
     <SolidColorBrush x:Key="BackgroundLv1SolidColor" Color="{StaticResource BackgroundLv1Color}"/>
 
-    <Color x:Key="BackgroundLv2Color">#dee2e6</Color>
+    <Color x:Key="BackgroundLv2Color">#f5f5f5</Color>
     <SolidColorBrush x:Key="BackgroundLv2SolidColor" Color="{StaticResource BackgroundLv2Color}"/>
 
-    <Color x:Key="BackgroundLv3Color">#f8f9fa</Color>
+    <Color x:Key="BackgroundLv3Color">#ececec</Color>
     <SolidColorBrush x:Key="BackgroundLv3SolidColor" Color="{StaticResource BackgroundLv3Color}"/>
 
-    <Color x:Key="BackgroundLv4Color">White</Color>
+    <Color x:Key="BackgroundLv4Color">#d8d8d8</Color>
     <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
 
+    <!--#c7c7c7-->
+    
     <Color x:Key="ClickableColor">Black</Color>
     <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
 
@@ -28,10 +30,10 @@
 
     <!--#region BACKGROUNDS -->
     <Style x:Key="ControlBackgroundLv1" TargetType="{x:Type Control}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
     </Style>
     <Style x:Key="ControlBackgroundLv2" TargetType="{x:Type Control}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
     </Style>
     <!--#endregion-->
 
@@ -51,7 +53,7 @@
 
     <!--#region TEXT -->
     <Style x:Key="InputTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource InputTextBlockBase}">
-        <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
     </Style>
     <Style x:Key="LabelTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource LabelTextBlockBase}">
         <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
@@ -64,19 +66,19 @@
 
     <!--#region BORDER -->
     <Style x:Key="BaseInsideBorderControl" TargetType="{x:Type Control}">
-        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style x:Key="BaseInsideBorder" TargetType="{x:Type Border}">
-        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style x:Key="PopInBorder" TargetType="{x:Type Border}">
-        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="BorderThickness" Value="0,0,1,1"/>
     </Style>
     <Style x:Key="PopOutBorder" TargetType="{x:Type Border}">
-        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="BorderThickness" Value="1,1,0,0"/>
     </Style>
     <!--#endregion-->
@@ -86,11 +88,11 @@
     </Style>
 
     <Style x:Key="DataGridRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
     </Style>
 
     <Style x:Key="DataGridAlternatingRow" TargetType="{x:Type syncfusion:VirtualizingCellsControl}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
     </Style>
 
     <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource DataGridBase}">
@@ -101,7 +103,8 @@
     </Style>
 
     <Style TargetType="{x:Type syncfusion:GridHeaderCellControl}" BasedOn="{StaticResource GridHeaderCellControlBase}">
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv4SolidColor}"/>
         <Setter Property="BorderThickness" Value="0,0,1,0"/>
     </Style>
@@ -109,14 +112,19 @@
 
     <!--#region ListBox -->
     <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource BaseInsideBorderControl}">
-        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <!--<Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>-->
     </Style>
 
     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemBase}">
-        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
-        <Setter Property="BorderThickness" Value="0"/>
+        <!--<Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>-->
+        <!--<Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>-->
+        <!--<Setter Property="BorderThickness" Value="0"/>-->
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Red"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!--#endregion-->
 
@@ -127,10 +135,10 @@
     </Style>
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
                 <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
             </Trigger>
         </Style.Triggers>
@@ -179,11 +187,9 @@
     <!--#region MENU -->
     <Style TargetType="{x:Type Menu}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
     </Style>
     <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}">
-        <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <!--#endregion-->
@@ -261,4 +267,25 @@
     </Style.Triggers>-->
     </Style>
     <!--#endregion-->
+
+    <!--#region Images -->
+    <BitmapImage x:Key="LockImage" UriSource="/View/Resources/light/lock_64.png"/>
+    <BitmapImage x:Key="VolumeMuteImage" UriSource="/View/Resources/light/volume_mute_40.png"/>
+    <BitmapImage x:Key="VolumeHighImage" UriSource="/View/Resources/light/volume_high_40.png"/>
+    <BitmapImage x:Key="MinusImage" UriSource="/View/Resources/light/minus_64.png"/>
+    <BitmapImage x:Key="PlusImage" UriSource="/View/Resources/light/plus_64.png"/>
+    <BitmapImage x:Key="MusicDirImage" UriSource="/View/Resources/light/music_dir_40.png"/>
+    <BitmapImage x:Key="MusicFileImage" UriSource="/View/Resources/light/music_file_40.png"/>
+    <BitmapImage x:Key="NextSongImage" UriSource="/View/Resources/light/next_song_40.png"/>
+    <BitmapImage x:Key="OpenFolderImage" UriSource="/View/Resources/light/open_folder_song_40.png"/>
+    <BitmapImage x:Key="PauseImage" UriSource="/View/Resources/light/pause_song_40.png"/>
+    <BitmapImage x:Key="PlayImage" UriSource="/View/Resources/light/play_song_40.png"/>
+    <BitmapImage x:Key="SmallPlusImage" UriSource="/View/Resources/light/plus_40.png"/>
+    <BitmapImage x:Key="PreviousSongImage" UriSource="/View/Resources/light/previous_song_40.png"/>
+    <BitmapImage x:Key="RandomSongImage" UriSource="/View/Resources/light/random_song_40.png"/>
+    <BitmapImage x:Key="ReplaceImage" UriSource="/View/Resources/light/replace_40.png"/>
+    <BitmapImage x:Key="StopImage" UriSource="/View/Resources/light/stop_song_40.png"/>
+    <BitmapImage x:Key="SwitchViewImage" UriSource="/View/Resources/light/switch_view_40.png"/>
+    <!--#endregion-->
+
 </ResourceDictionary>

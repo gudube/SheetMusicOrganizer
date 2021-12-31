@@ -19,11 +19,11 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" MouseDown="PlusButton_OnMouseDown" Style="{StaticResource RoundButton}">
                     <Ellipse/>
-                    <Image Source="/View/Resources/plus_64.png"/>
+                    <Image Source="{StaticResource PlusImage}"/>
                 </Grid>
                 <Grid Grid.Row="1" MouseDown="MinusButton_OnMouseDown" Style="{StaticResource RoundButton}">
                     <Ellipse/>
-                    <Image Source="/View/Resources/minus_64.png"/>
+                    <Image Source="{StaticResource MinusImage}"/>
                 </Grid>
             </Grid>
         </Grid>

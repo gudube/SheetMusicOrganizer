@@ -7,7 +7,8 @@
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              xmlns:sync="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
              mc:Ignorable="d" d:DesignHeight="1520" d:DesignWidth="400"
-             d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
+             d:DataContext="{d:DesignInstance viewModel:PartitionVM}"
+             Style="{StaticResource ControlBackgroundLv2}">
     <StackPanel Orientation="Vertical">
         <Expander Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
             <Border Style="{StaticResource PopInBorder}">
@@ -86,7 +87,7 @@
 
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                 Background="{StaticResource ClickableSolidColor}" MaxLength="1000" TextWrapping="Wrap"
+                                 MaxLength="1000" TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto" Text="{Binding Session.PlayingSong.Notes, UpdateSourceTrigger=PropertyChanged, Delay=1000}"></TextBox>
                         <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="{StaticResource BackgroundLv3SolidColor}"></GridSplitter>
                     </Grid>

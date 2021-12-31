@@ -11,7 +11,7 @@
              d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
     <Border Style="{StaticResource PopInBorder}">
         <Border Style="{StaticResource BaseInsideBorder}">
-            <Grid Background="{StaticResource BackgroundLv2SolidColor}">
+            <Grid Background="{StaticResource BackgroundLv3SolidColor}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="225"/>
                     <ColumnDefinition Width="Auto"/>
@@ -35,26 +35,26 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="PreviousButton" Grid.Column="0" Style="{StaticResource SimpleButton}" Command="{Binding PreviousCommand}" ToolTipService.ToolTip="Previous song">
-                            <Image Source="/View/Resources/previous_song_40.png"/>
+                            <Image Source="{StaticResource PreviousSongImage}"/>
                         </Button>
                         <Button x:Name="PlayButton" Grid.Column="1" Style="{StaticResource SimpleButton}" Command="{Binding PlayCommand}" ToolTipService.ToolTip="Play / Restart">
-                            <Image Source="/View/Resources/play_song_40.png"/>
+                            <Image Source="{StaticResource PlayImage}"/>
                         </Button>
                         <Button x:Name="PauseButton" Grid.Column="2" Style="{StaticResource SimpleButton}" Command="{Binding PauseCommand}" ToolTipService.ToolTip="Pause">
-                            <Image Source="/View/Resources/pause_song_40.png"/>
+                            <Image Source="{StaticResource PauseImage}"/>
                         </Button>
                         <Button x:Name="NextButton" Grid.Column="3" Style="{StaticResource SimpleButton}" Command="{Binding NextCommand}" ToolTipService.ToolTip="Next song">
-                            <Image Source="/View/Resources/next_song_40.png"/>
+                            <Image Source="{StaticResource NextSongImage}"/>
                         </Button>
                         <Separator Margin="10,3" Grid.Column="4" Style="{StaticResource BaseSeparator}"/>
                         <Button Grid.Column="5" Style="{StaticResource SimpleButton}" Command="{Binding StopCommand}" ToolTipService.ToolTip="Stop">
-                            <Image Source="/View/Resources/stop_song_40.png"/>
+                            <Image Source="{StaticResource StopImage}"/>
                         </Button>
                         <Button Grid.Column="6" Style="{StaticResource SimpleButton}" ToolTipService.ToolTip="Play a random song">
-                            <Image Source="/View/Resources/random_song_40.png"/>
+                            <Image Source="{StaticResource RandomSongImage}"/>
                         </Button>
                         <Button Grid.Column="7" Style="{StaticResource SimpleButton}" Click="OpenFolderButton_Click" ToolTipService.ToolTip="Open the song's folder">
-                            <Image Source="/View/Resources/open_folder_song_40.png"/>
+                            <Image Source="{StaticResource OpenFolderImage}"/>
                         </Button>
                         <ToggleButton Grid.Column="8" Command="{Binding ChangeAudioCommand}" IsChecked="{Binding PlayingSecondaryAudio, Mode=OneWay}" ToolTipService.ToolTip="Switch between main/extra track">
                             <ToggleButton.Style>
@@ -67,7 +67,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </ToggleButton.Style>
-                            <Image Source="/View/Resources/replace_40.png"/>
+                            <Image Source="{StaticResource ReplaceImage}"/>
                         </ToggleButton>
                     </Grid>
                     <Grid Grid.Row="1" Margin="2,0,2,5">
@@ -83,10 +83,10 @@
                                     <Style TargetType="{x:Type Image}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="False">
-                                                <Setter Property="Source" Value="/View/Resources/volume_high_40.png"/>
+                                                <Setter Property="Source" Value="{StaticResource VolumeHighImage}"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Session.Player.IsAudioMuted}" Value="True">
-                                                <Setter Property="Source" Value="/View/Resources/volume_mute_40.png"/>
+                                                <Setter Property="Source" Value="{StaticResource VolumeMuteImage}"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

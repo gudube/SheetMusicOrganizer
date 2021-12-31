@@ -22,7 +22,7 @@
         <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneTime}" Foreground="{Binding Name, Converter={StaticResource MasteryColorConverter}}"/>
         <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
                    Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
-        <Image Grid.Column="2" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
+        <Image Grid.Column="2" Source="{StaticResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
                    Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
     </Grid>
 </UserControl>

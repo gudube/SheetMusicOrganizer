@@ -14,9 +14,9 @@
                 <StackPanel.LayoutTransform>
                     <RotateTransform Angle="{Binding Angle}"/>
                 </StackPanel.LayoutTransform>
-                <Image Source="/View/Resources/switch_view_40.png" MaxWidth="20"/>
+                <Image Source="{StaticResource SwitchViewImage}" MaxWidth="20"/>
                 <TextBlock Text="{Binding Title}" Margin="15,0"/>
-                <Image Source="/View/Resources/switch_view_40.png" MaxWidth="20"/>
+                <Image Source="{StaticResource SwitchViewImage}" MaxWidth="20"/>
             </StackPanel>
         </Grid>
     </Button>
