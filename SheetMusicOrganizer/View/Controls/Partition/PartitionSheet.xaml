@@ -6,7 +6,7 @@
              mc:Ignorable="d" Focusable="True"
              Loaded="PartitionSheet_OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border Style="{StaticResource PopInBorder}">
+    <Border Style="{DynamicResource PopInBorder}">
         <Grid>
             <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
                       HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Auto">
@@ -17,13 +17,13 @@
                     <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" MouseDown="PlusButton_OnMouseDown" Style="{StaticResource RoundButton}">
+                <Grid Grid.Row="0" MouseDown="PlusButton_OnMouseDown" Style="{DynamicResource RoundButton}">
                     <Ellipse/>
-                    <Image Source="{StaticResource PlusImage}"/>
+                    <Image Source="{DynamicResource PlusImage}"/>
                 </Grid>
-                <Grid Grid.Row="1" MouseDown="MinusButton_OnMouseDown" Style="{StaticResource RoundButton}">
+                <Grid Grid.Row="1" MouseDown="MinusButton_OnMouseDown" Style="{DynamicResource RoundButton}">
                     <Ellipse/>
-                    <Image Source="{StaticResource MinusImage}"/>
+                    <Image Source="{DynamicResource MinusImage}"/>
                 </Grid>
             </Grid>
         </Grid>

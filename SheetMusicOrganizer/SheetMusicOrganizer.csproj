@@ -157,6 +157,18 @@
     <Page Update="View\Controls\Items\SelectablePlaylistItem.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="View\Styles\BaseStyle.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Update="View\Styles\DarkTheme.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Update="View\Styles\LightTheme.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Update="View\Styles\SpecificStyles.xaml">
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
     <Page Update="View\Windows\FirstTimeWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

@@ -23,7 +23,7 @@
         <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
             <Grid VerticalAlignment="Stretch" Width="4">
                 <Border BorderBrush="Black" BorderThickness="1" UseLayoutRounding="True">
-                    <Rectangle Fill="{StaticResource SpecialSolidColor}"/>
+                    <Rectangle Fill="{DynamicResource SpecialSolidColor}"/>
                 </Border>
                 <!--<Path x:Name="grip" Data="M 0,0 C0,0 11,0 11,0 11,0 11,18 11,18 11,18 0,18 0,18 0,18 0,0 0,0 z" Fill="{StaticResource SliderThumb.Static.Background}" SnapsToDevicePixels="True" StrokeThickness="1" Stretch="Fill" Stroke="{StaticResource SliderThumb.Static.Border}" UseLayoutRounding="True" VerticalAlignment="Center"/>-->
             </Grid>
@@ -43,7 +43,7 @@
             </ControlTemplate.Triggers>-->
         </ControlTemplate>
         <ControlTemplate x:Key="SliderThumbHorizontalPreview" TargetType="{x:Type Thumb}">
-            <Rectangle Fill="{StaticResource SpecialSolidColor}" VerticalAlignment="Stretch" Width="2" Opacity="0.5"/>
+            <Rectangle Fill="{DynamicResource SpecialSolidColor}" VerticalAlignment="Stretch" Width="2" Opacity="0.5"/>
         </ControlTemplate>
         <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -69,7 +69,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RepeatButton}">
-                        <Rectangle Fill="{StaticResource SpecialSolidColor}" Opacity="0.5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                        <Rectangle Fill="{DynamicResource SpecialSolidColor}" Opacity="0.5" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -97,7 +97,7 @@
                         </Track.Thumb>
                     </Track>
                     <Popup Grid.Row="1" Name="PreviewPopup" AllowsTransparency="True" Placement="Relative" PlacementTarget="{Binding ElementName=PreviewTrack}" IsOpen="False">
-                        <TextBlock Text="{Binding PreviewTime}" Style="{StaticResource PopupTextBlock}"/>
+                        <TextBlock Text="{Binding PreviewTime}" Style="{DynamicResource PopupTextBlock}"/>
                     </Popup>
                     <Track x:Name="PART_Track" Grid.Row="1">
                         <Track.DecreaseRepeatButton>

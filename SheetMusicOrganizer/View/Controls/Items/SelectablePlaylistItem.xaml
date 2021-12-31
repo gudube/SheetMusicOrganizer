@@ -19,7 +19,7 @@
                      Tag="{Binding Path=PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}, Mode=OneWay}">
             <ContextMenu.Style>
                 <!-- Hide the ContextMenu if playlist locked -->
-                <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}">
+                <Style TargetType="{x:Type ContextMenu}">
                     <Setter Property="Visibility" Value="Visible"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Path=(FrameworkElement.Tag).(items1:PlaylistItem.IsLocked), RelativeSource={RelativeSource Self}}"  Value="True">
@@ -40,9 +40,9 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneWay}"/>
-            <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
+            <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{DynamicResource SpecialSolidColor}"
                        Visibility="{Binding IsPlaying, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
-            <Image Grid.Column="2" Source="{StaticResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
+            <Image Grid.Column="2" Source="{DynamicResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
                    Visibility="{Binding IsLocked, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
         </Grid>
         <TextBox Grid.Column="0" x:Name="MainTextBox"

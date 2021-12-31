@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <StackPanel>
-            <TextBlock Style="{StaticResource LabelTextBlock}">Theme</TextBlock>
+            <TextBlock Style="{DynamicResource LabelTextBlock}">Theme</TextBlock>
             <ComboBox HorizontalAlignment="Left" SelectedIndex="{Binding ThemeIndex, Mode=OneWay}" Margin="0,5,0,0" Width="100">
                 <ComboBoxItem Selected="DarkTheme_Selected">Dark (default)</ComboBoxItem>
                 <ComboBoxItem Selected="LightTheme_Selected">Light</ComboBoxItem>

@@ -143,10 +143,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    <Style x:Key="3DButtonSmall" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
-        <Setter Property="FontSize" Value="12"></Setter>
-        <Setter Property="Height" Value="30"></Setter>
-    </Style>
     <Style x:Key="DefaultButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
         <Setter Property="IsDefault" Value="True"/>
         <Style.Triggers>

@@ -13,7 +13,7 @@
     <UserControl.Style>
         <Style TargetType="{x:Type UserControl}">
             <Setter Property="BorderThickness" Value="1"></Setter>
-            <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"></Setter>
+            <Setter Property="BorderBrush" Value="{DynamicResource SpecialSolidColor}"></Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Session.PlayingSong}" Value="{x:Null}">
                     <Setter Property="BorderBrush" Value="Black"></Setter>
@@ -22,7 +22,7 @@
         </Style>
     </UserControl.Style>
     <Grid>
-        <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{StaticResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
+        <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{DynamicResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
             LOADING ...
         </TextBlock>
         <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>

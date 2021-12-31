@@ -9,7 +9,7 @@
              Background="Transparent"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <Grid>
-        <Image Source="{StaticResource SmallPlusImage}" MaxHeight="20" HorizontalAlignment="Center">
+        <Image Source="{DynamicResource SmallPlusImage}" MaxHeight="20" HorizontalAlignment="Center">
             <Image.Style>
                 <Style TargetType="{x:Type Image}">
                     <Setter Property="Visibility" Value="Visible"></Setter>

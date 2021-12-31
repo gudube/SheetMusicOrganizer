@@ -92,10 +92,13 @@ namespace SheetMusicOrganizer
             {
                 if(Settings.Default.Theme == "Light")
                 {
+                    ResourceDictionary dictTheme = new ResourceDictionary();
+                    dictTheme.Source = new Uri("/View/Styles/LightTheme.xaml", UriKind.Relative);
+                    ResourceDictionary dictStyles = new ResourceDictionary();
+                    dictStyles.Source = new Uri("/View/Styles/SpecificStyles.xaml", UriKind.Relative);
                     Application.Current.Resources.MergedDictionaries.Clear();
-                    ResourceDictionary dict = new ResourceDictionary();
-                    dict.Source = new Uri("/View/Styles/LightTheme.xaml", UriKind.Relative);
-                    Application.Current.Resources.MergedDictionaries.Add(dict);
+                    Application.Current.Resources.MergedDictionaries.Add(dictTheme);
+                    Application.Current.Resources.MergedDictionaries.Add(dictStyles);
                 }
                 MainWindow window = new MainWindow();
                 await window.Configure();

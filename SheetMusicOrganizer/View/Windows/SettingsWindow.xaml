@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:settings="clr-namespace:SheetMusicOrganizer.View.Pages.Settings"
         mc:Ignorable="d"
         Title="Settings"
-        Style="{StaticResource ControlBackgroundLv1}"
+        Style="{DynamicResource ControlBackgroundLv1}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         SizeToContent="WidthAndHeight">
     <Grid Margin="10" Height="400" Width="600">
@@ -36,9 +36,9 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition SharedSizeGroup="A"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="OK" Style="{StaticResource DefaultButton}" Click="OKButton_Click"/>
-            <Button Grid.Column="2" Content="Cancel" Style="{StaticResource 3DButton}" Click="CancelButton_Click"/>
-            <Button Grid.Column="4" Content="Apply" Style="{StaticResource 3DButton}" Click="ApplyButton_Click" IsEnabled="{Binding UnsavedChange, FallbackValue=False}"/>
+            <Button Grid.Column="0" Content="OK" Style="{DynamicResource DefaultButton}" Click="OKButton_Click"/>
+            <Button Grid.Column="2" Content="Cancel" Style="{DynamicResource 3DButton}" Click="CancelButton_Click"/>
+            <Button Grid.Column="4" Content="Apply" Style="{DynamicResource 3DButton}" Click="ApplyButton_Click" IsEnabled="{Binding UnsavedChange, FallbackValue=False}"/>
         </Grid>
     </Grid>
 </Window>

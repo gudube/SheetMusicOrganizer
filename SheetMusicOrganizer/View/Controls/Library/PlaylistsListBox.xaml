@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
-    <Border Style="{StaticResource PopInBorder}">
+    <Border Style="{DynamicResource PopInBorder}">
         <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"
              KeyDown="MainListBox_OnKeyDown"

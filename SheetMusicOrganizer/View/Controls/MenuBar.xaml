@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance viewModel:MainVM}">
-    <Border BorderBrush="{StaticResource BackgroundLv4SolidColor}" BorderThickness="0,0,0,1">
+    <Border BorderBrush="{DynamicResource BackgroundLv4SolidColor}" BorderThickness="0,0,0,1">
         <Menu Grid.Row="0" Height="20">
             <MenuItem x:Name="FileMenuItem" Header="File">
                 <MenuItem Header="Import Song" Click="AddNewSongMenuItem_Click"/>

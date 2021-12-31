@@ -28,11 +28,28 @@ namespace SheetMusicOrganizer.View.Pages.Settings
             Loaded += (s, e) =>
             {
                 SheetMusicOrganizer.Settings.Default.PropertyChanged += Settings_PropertyChanged;
+                SheetMusicOrganizer.Settings.Default.SettingsSaving += Default_SettingsSaving; ;
             };
             Unloaded += (s, e) =>
             {
+                SheetMusicOrganizer.Settings.Default.SettingsSaving -= Default_SettingsSaving;
                 SheetMusicOrganizer.Settings.Default.PropertyChanged -= Settings_PropertyChanged;
             };
+        }
+
+        private void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (SheetMusicOrganizer.Settings.Default.Theme == "Light" && !Application.Current.Resources.MergedDictionaries[0].Source.OriginalString.EndsWith("LightTheme.xaml") ||
+                SheetMusicOrganizer.Settings.Default.Theme == "Dark" && !Application.Current.Resources.MergedDictionaries[0].Source.OriginalString.EndsWith("DarkTheme.xaml"))
+            {
+                ResourceDictionary dict = new ResourceDictionary();
+                dict.Source = new Uri($"/View/Styles/{(SheetMusicOrganizer.Settings.Default.Theme == "Light" ? "LightTheme" : "DarkTheme")}.xaml", UriKind.Relative);
+                ResourceDictionary dictStyles = new ResourceDictionary();
+                dictStyles.Source = new Uri("/View/Styles/SpecificStyles.xaml", UriKind.Relative);
+                Application.Current.Resources.MergedDictionaries.Clear();
+                Application.Current.Resources.MergedDictionaries.Add(dict);
+                Application.Current.Resources.MergedDictionaries.Add(dictStyles);
+            }
         }
 
         private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

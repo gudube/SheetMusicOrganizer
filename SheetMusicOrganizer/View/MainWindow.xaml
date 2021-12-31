@@ -9,7 +9,7 @@
         xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
         xmlns:p="clr-namespace:SheetMusicOrganizer"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{StaticResource ControlBackgroundLv1}"
+        Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{DynamicResource ControlBackgroundLv1}"
         WindowState="Maximized"
         KeyDown="MainWindow_OnKeyDownUp"
         KeyUp="MainWindow_OnKeyDownUp">
@@ -25,8 +25,8 @@
         </Grid.RowDefinitions>
         <controls:MenuBar Grid.Row="0"/>
         <player:PlayerControl x:Name="PlayerControl" Grid.Row="1" Height="60" DataContext="{Binding PlayerVM}"/>
-        <Border Grid.Row="2" Style="{StaticResource PopInBorder}" BorderThickness="0,0,0,1">
-            <Border Style="{StaticResource BaseInsideBorder}" BorderThickness="0,0,0,1">
+        <Border Grid.Row="2" Style="{DynamicResource PopInBorder}" BorderThickness="0,0,0,1">
+            <Border Style="{DynamicResource BaseInsideBorder}" BorderThickness="0,0,0,1">
                 <ContentControl x:Name="Control" Content="{Binding CurrentViewModel}">
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type vm:LibraryVM}">

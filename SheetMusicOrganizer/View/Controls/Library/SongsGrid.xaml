@@ -13,28 +13,15 @@
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}" >
     <UserControl.Resources>
         <tools:RatingConverter x:Key="RatingConverter"/>
-        <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
     </UserControl.Resources>
-    <Border Style="{StaticResource PopInBorder}">
+    <Border Style="{DynamicResource PopInBorder}">
         <Grid>
-            <syncfusion:SfDataGrid x:Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.ShownSongs}"
+            <syncfusion:SfDataGrid x:Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.ShownSongs}" AutoGenerateColumns="False"
+                                   Style="{DynamicResource SongsDataGrid}" RowStyle="{DynamicResource SongDataGridRow}" AlternatingRowStyle="{DynamicResource SongDataGridAlternatingRow}"
                                SelectionChanged="SfDataGrid_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" AllowSelectionOnPointerPressed="False" SelectionMode="Extended"
                                SelectionUnit="Row" AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
-                <syncfusion:SfDataGrid.Style>
-                    <Style TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource {x:Type syncfusion:SfDataGrid}}">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=MainControl, Path=DataContext.ShownSongs.Count}" Value="0">
-                                <Setter Property="Visibility" Value="Hidden"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </syncfusion:SfDataGrid.Style>
                 <!--dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}">-->
-                <syncfusion:SfDataGrid.Resources>
-                    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Type ScrollBar}}"/>
-                </syncfusion:SfDataGrid.Resources>
                 <syncfusion:SfDataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}" CommandParameter="{Binding ElementName=Songs, Path=SelectedItem}"/>
                 </syncfusion:SfDataGrid.InputBindings>
@@ -48,13 +35,7 @@
                     <syncfusion:GridTextColumn HeaderText="Codec" MappingName="CodecMD" Width="52"/>
                     <syncfusion:GridTextColumn HeaderText="Bitrate" MappingName="BitrateMD" Width="65"/>
                     <syncfusion:GridTextColumn HeaderText="Rating" MappingName="Rating" DisplayBinding="{Binding Path=Rating, Converter={StaticResource RatingConverter}}" Width="62"/>
-                    <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" Width="60">
-                        <syncfusion:GridTextColumn.CellStyle>
-                            <Style TargetType="syncfusion:GridCell" BasedOn="{StaticResource DataGridText}">
-                                <Setter Property="Foreground" Value="{Binding Mastery.Name, Converter={StaticResource MasteryColorConverter}}"/>
-                            </Style>
-                        </syncfusion:GridTextColumn.CellStyle>
-                    </syncfusion:GridTextColumn>
+                    <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" Width="60" CellStyle="{DynamicResource MasteryGridCell}"/>
                     <syncfusion:GridTextColumn HeaderText="Music Sheet Name" MappingName="PartitionDirectory" DisplayBinding="{Binding Path=PartitionDirectory, Converter={StaticResource DirFilenameConverter}}"
                                            AllowResizing="False" ColumnSizer="AutoLastColumnFill">
                         <syncfusion:GridTextColumn.ToolTipTemplate>
@@ -64,24 +45,6 @@
                         </syncfusion:GridTextColumn.ToolTipTemplate>
                     </syncfusion:GridTextColumn>
                 </syncfusion:SfDataGrid.Columns>
-                <syncfusion:SfDataGrid.RowStyle>
-                    <Style TargetType="{x:Type syncfusion:VirtualizingCellsControl}" BasedOn="{StaticResource DataGridRow}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowedAsPlaying}" Value="true">
-                                <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </syncfusion:SfDataGrid.RowStyle>
-                <syncfusion:SfDataGrid.AlternatingRowStyle>
-                    <Style TargetType="{x:Type syncfusion:VirtualizingCellsControl}" BasedOn="{StaticResource DataGridAlternatingRow}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowedAsPlaying}" Value="true">
-                                <Setter Property="Background" Value="{StaticResource SpecialSolidColor}"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </syncfusion:SfDataGrid.AlternatingRowStyle>
             </syncfusion:SfDataGrid>
             <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <StackPanel.Style>
@@ -94,18 +57,18 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
-                <Border Style="{StaticResource PopOutBorder}" Margin="5,0">
-                    <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{StaticResource 3DButton}">
+                <Border Style="{DynamicResource PopOutBorder}" Margin="5,0">
+                    <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{DynamicResource 3DButton}">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <Image Source="{StaticResource MusicFileImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
+                            <Image Source="{DynamicResource MusicFileImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
                             <TextBlock Text="Add New Song" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Border>
-                <Border Style="{StaticResource PopOutBorder}" Margin="5,0">
-                    <Button Name="AddFolderButton" Click="AddFolderButton_Click" Style="{StaticResource 3DButton}">
+                <Border Style="{DynamicResource PopOutBorder}" Margin="5,0">
+                    <Button Name="AddFolderButton" Click="AddFolderButton_Click" Style="{DynamicResource 3DButton}">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <Image Source="{StaticResource MusicDirImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
+                            <Image Source="{DynamicResource MusicDirImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
                             <TextBlock Text="Add Folder" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>

@@ -20,9 +20,9 @@
             <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneTime}" Foreground="{Binding Name, Converter={StaticResource MasteryColorConverter}}"/>
-        <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
+        <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{DynamicResource SpecialSolidColor}"
                    Visibility="{Binding IsPlaying, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
-        <Image Grid.Column="2" Source="{StaticResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
+        <Image Grid.Column="2" Source="{DynamicResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
                    Visibility="{Binding IsLocked, Converter={StaticResource BoolToVis}, Mode=OneWay}"/>
     </Grid>
 </UserControl>
