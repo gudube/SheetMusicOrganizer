@@ -14,6 +14,19 @@ namespace SheetMusicOrganizer.View.Windows
             this.ResizeMode = ResizeMode.NoResize;
             InitializeComponent();
             this.Closing += SettingsWindow_Closing;
+            Loaded += (s, e) =>
+            {
+                Settings.Default.PropertyChanged += Settings_PropertyChanged;
+            };
+            Unloaded += (s, e) =>
+            {
+                Settings.Default.PropertyChanged -= Settings_PropertyChanged;
+            };
+        }
+
+        private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            UnsavedChange = true;
         }
 
         private void SettingsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

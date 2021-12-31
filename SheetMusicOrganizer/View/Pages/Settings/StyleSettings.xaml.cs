@@ -22,7 +22,40 @@ namespace SheetMusicOrganizer.View.Pages.Settings
     {
         public StyleSettings()
         {
+            DataContext = this;
             InitializeComponent();
+            ThemeIndex = SheetMusicOrganizer.Settings.Default.Theme == "Light" ? 1 : 0;
+            Loaded += (s, e) =>
+            {
+                SheetMusicOrganizer.Settings.Default.PropertyChanged += Settings_PropertyChanged;
+            };
+            Unloaded += (s, e) =>
+            {
+                SheetMusicOrganizer.Settings.Default.PropertyChanged -= Settings_PropertyChanged;
+            };
+        }
+
+        private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(SheetMusicOrganizer.Settings.Default.Theme))
+            {
+                ThemeIndex = SheetMusicOrganizer.Settings.Default.Theme == "Light" ? 1 : 0;
+            }
+        }
+
+        public static readonly DependencyProperty ThemeIndexProperty = DependencyProperty.Register("ThemeIndex", typeof(int), typeof(StyleSettings), new PropertyMetadata(-1));
+        public int ThemeIndex { get => (int)GetValue(ThemeIndexProperty); set => SetValue(ThemeIndexProperty, value); }
+
+        private void DarkTheme_Selected(object sender, RoutedEventArgs e)
+        {
+            if(SheetMusicOrganizer.Settings.Default.Theme != "Dark")
+                SheetMusicOrganizer.Settings.Default.Theme = "Dark";
+        }
+
+        private void LightTheme_Selected(object sender, RoutedEventArgs e)
+        {
+            if (SheetMusicOrganizer.Settings.Default.Theme != "Light")
+                SheetMusicOrganizer.Settings.Default.Theme = "Light";
         }
     }
 }

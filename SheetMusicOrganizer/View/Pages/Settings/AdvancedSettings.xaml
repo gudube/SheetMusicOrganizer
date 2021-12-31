@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SheetMusicOrganizer.View.Pages.Settings"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Orientation="Vertical" Margin="10">
+    <StackPanel Orientation="Vertical">
         <Button Content="Reset" Click="ResetButton_Click" Style="{StaticResource 3DButton}" HorizontalAlignment="Left"/>
         <TextBlock Style="{StaticResource LabelTextBlock}" TextWrapping="Wrap">Warning: This will reset all settings (including recently opened librairies). The application will restart as it was first installed. The library files are not affected and can be reopened after.</TextBlock>
     </StackPanel>
