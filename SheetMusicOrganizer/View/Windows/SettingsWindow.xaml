@@ -36,7 +36,7 @@
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition SharedSizeGroup="A"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="OK" Style="{DynamicResource DefaultButton}" Click="OKButton_Click"/>
+            <Button Grid.Column="0" Content="OK" Style="{DynamicResource 3DButton}" Click="OKButton_Click" IsDefault="True"/>
             <Button Grid.Column="2" Content="Cancel" Style="{DynamicResource 3DButton}" Click="CancelButton_Click"/>
             <Button Grid.Column="4" Content="Apply" Style="{DynamicResource 3DButton}" Click="ApplyButton_Click" IsEnabled="{Binding UnsavedChange, FallbackValue=False}"/>
         </Grid>

@@ -82,7 +82,7 @@
             <Button Style="{DynamicResource 3DButton}" IsCancel="True" HorizontalAlignment="Left" >
                 Cancel
             </Button>
-            <Button HorizontalAlignment="Right" Click="ConfirmButton_Click" Style="{DynamicResource DefaultButton}">
+            <Button HorizontalAlignment="Right" Click="ConfirmButton_Click" IsDefault="True" Style="{DynamicResource 3DButton}">
                 <Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource StringsNotEmptyConverter}">
                         <Binding Path="Song.PartitionDirectory"/>

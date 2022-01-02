@@ -61,7 +61,7 @@
                     <Button Name="AddNewSongButton" Click="AddNewSongButton_Click" Style="{DynamicResource 3DButton}">
                         <StackPanel Orientation="Horizontal" Margin="0,5">
                             <Image Source="{DynamicResource MusicFileImage}" MaxHeight="20" Margin="0, 0, 10, 0"/>
-                            <TextBlock Text="Add New Song" VerticalAlignment="Center"/>
+                            <TextBlock Text="Add New Song" VerticalAlignment="Center" Foreground="{StaticResource ClickableSolidColor}"/>
                         </StackPanel>
                     </Button>
                 </Border>

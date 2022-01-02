@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="BackgroundLv1Color">#121212</Color>
+    <SolidColorBrush x:Key="BackgroundLv1SolidColor" Color="{StaticResource BackgroundLv1Color}"/>
+
+    <Color x:Key="BackgroundLv2Color">#252525</Color>
+    <SolidColorBrush x:Key="BackgroundLv2SolidColor" Color="{StaticResource BackgroundLv2Color}"/>
+
+    <Color x:Key="BackgroundLv3Color">#333333</Color>
+    <SolidColorBrush x:Key="BackgroundLv3SolidColor" Color="{StaticResource BackgroundLv3Color}"/>
+
+    <Color x:Key="BackgroundLv4Color">#717171</Color>
+    <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
+
+    <Color x:Key="ClickableColor">#E1E1E1</Color>
+    <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
+
+    <Color x:Key="UnclickableColor">#A7A7A7</Color>
+    <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
+
+    <Color x:Key="SpecialColor">#0090A2</Color>
+    <SolidColorBrush x:Key="SpecialSolidColor" Color="{StaticResource SpecialColor}"/>
+
+</ResourceDictionary>

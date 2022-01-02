@@ -15,7 +15,7 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Content="Back" IsCancel="True" Style="{DynamicResource 3DButton}"/>
             <Button x:Name="ContinueButton" Grid.Column="2" Click="ContinueButton_Click"
-                    HorizontalAlignment="Right" Style="{DynamicResource DefaultButton}"/>
+                    HorizontalAlignment="Right" IsDefault="True" Style="{DynamicResource 3DButton}"/>
         </Grid>
     </StackPanel>
 </Window>

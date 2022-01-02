@@ -3,29 +3,10 @@
                     xmlns:syncfusion="http://schemas.syncfusion.com/wpf">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Styles/BaseStyle.xaml"/>
+        <ResourceDictionary Source="/View/Styles/DarkColors.xaml"/>
+        <ResourceDictionary Source="/View/Styles/Templates/Dark3DButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
-    <Color x:Key="BackgroundLv1Color">#121212</Color>
-    <SolidColorBrush x:Key="BackgroundLv1SolidColor" Color="{StaticResource BackgroundLv1Color}"/>
-
-    <Color x:Key="BackgroundLv2Color">#252525</Color>
-    <SolidColorBrush x:Key="BackgroundLv2SolidColor" Color="{StaticResource BackgroundLv2Color}"/>
-    
-    <Color x:Key="BackgroundLv3Color">#333333</Color>
-    <SolidColorBrush x:Key="BackgroundLv3SolidColor" Color="{StaticResource BackgroundLv3Color}"/>
-    
-    <Color x:Key="BackgroundLv4Color">#717171</Color>
-    <SolidColorBrush x:Key="BackgroundLv4SolidColor" Color="{StaticResource BackgroundLv4Color}"/>
-    
-    <Color x:Key="ClickableColor">#E1E1E1</Color>
-    <SolidColorBrush x:Key="ClickableSolidColor" Color="{StaticResource ClickableColor}"/>
-
-    <Color x:Key="UnclickableColor">#A7A7A7</Color>
-    <SolidColorBrush x:Key="UnclickableSolidColor" Color="{StaticResource UnclickableColor}"/>
-
-    <Color x:Key="SpecialColor">#0090A2</Color>
-    <SolidColorBrush x:Key="SpecialSolidColor" Color="{StaticResource SpecialColor}"/>
-
     <!--#region BACKGROUNDS -->
     <Style x:Key="ControlBackgroundLv1" TargetType="{x:Type Control}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
@@ -58,6 +39,13 @@
     </Style>
     <Style x:Key="PopupTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource PopupTextBlockBase}">
     </Style>
+    <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
+    <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
+    <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+    <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
+    <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+    <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+    <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
     <Style x:Key="ErrorTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ErrorTextBlockBase}">
     </Style>
     <!--#endregion-->
@@ -127,24 +115,7 @@
     </Style>
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
-        <Setter Property="BorderBrush" Value="Black"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Background" Value="{StaticResource BackgroundLv3SolidColor}"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="{StaticResource UnclickableSolidColor}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-    <Style x:Key="DefaultButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButton}">
-        <Setter Property="IsDefault" Value="True"/>
-        <Style.Triggers>
-        <Trigger Property="IsEnabled" Value="True">
-            <Setter Property="BorderBrush" Value="{StaticResource SpecialSolidColor}"/>
-        </Trigger>
-        </Style.Triggers>
+        <Setter Property="Template" Value="{StaticResource DarkButton}"/>
     </Style>
     <Style x:Key="RoundButton" TargetType="{x:Type Grid}" BasedOn="{StaticResource RoundButtonBase}">
         <Style.Resources>
