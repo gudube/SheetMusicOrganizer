@@ -13,19 +13,19 @@
         </Setter>
     </Style>
     <SolidColorBrush x:Key="ScrollBar.Static.Background" Color="{StaticResource BackgroundLv1Color}"/>
-    <SolidColorBrush x:Key="ScrollBar.Static.Border" Color="{StaticResource BackgroundLv2Color}"/>
+    <SolidColorBrush x:Key="ScrollBar.Static.Border" Color="{StaticResource BackgroundLv1Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Static.Glyph" Color="{StaticResource BackgroundLv3Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Static.Thumb" Color="{StaticResource BackgroundLv2Color}"/>
     <SolidColorBrush x:Key="ScrollBar.MouseOver.Background" Color="{StaticResource BackgroundLv2Color}"/>
-    <SolidColorBrush x:Key="ScrollBar.MouseOver.Border" Color="{StaticResource BackgroundLv2Color}"/>
+    <SolidColorBrush x:Key="ScrollBar.MouseOver.Border" Color="{StaticResource BackgroundLv1Color}"/>
     <SolidColorBrush x:Key="ScrollBar.MouseOver.Glyph" Color="{StaticResource ClickableColor}"/>
     <SolidColorBrush x:Key="ScrollBar.MouseOver.Thumb" Color="{StaticResource BackgroundLv3Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Pressed.Background" Color="{StaticResource BackgroundLv3Color}"/>
-    <SolidColorBrush x:Key="ScrollBar.Pressed.Border" Color="{StaticResource BackgroundLv2Color}"/>
+    <SolidColorBrush x:Key="ScrollBar.Pressed.Border" Color="{StaticResource BackgroundLv1Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Pressed.Thumb" Color="{StaticResource BackgroundLv4Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Pressed.Glyph" Color="{StaticResource ClickableColor}"/>
     <SolidColorBrush x:Key="ScrollBar.Disabled.Background" Color="{StaticResource BackgroundLv1Color}"/>
-    <SolidColorBrush x:Key="ScrollBar.Disabled.Border" Color="{StaticResource BackgroundLv2Color}"/>
+    <SolidColorBrush x:Key="ScrollBar.Disabled.Border" Color="{StaticResource BackgroundLv1Color}"/>
     <SolidColorBrush x:Key="ScrollBar.Disabled.Glyph" Color="{StaticResource UnclickableColor}"/>
     <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
         <Setter Property="OverridesDefaultStyle" Value="true"/>

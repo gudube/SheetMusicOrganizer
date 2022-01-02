@@ -116,6 +116,7 @@
     </Style>
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template" Value="{StaticResource DarkButton}"/>
     </Style>
     <Style x:Key="RoundButton" TargetType="{x:Type Grid}" BasedOn="{StaticResource RoundButtonBase}">
@@ -218,6 +219,7 @@
     <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ScrollBarBase}">
         <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Template" Value="{StaticResource DarkScrollBar}"/>
     </Style>
     <!--#endregion-->

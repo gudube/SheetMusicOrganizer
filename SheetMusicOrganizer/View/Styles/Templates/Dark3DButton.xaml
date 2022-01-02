@@ -4,7 +4,7 @@
         <ResourceDictionary Source="/View/Styles/DarkColors.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <ControlTemplate x:Key="DarkButton" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="border" Background="{StaticResource BackgroundLv2SolidColor}" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="true">
+        <Border x:Name="border" Background="{StaticResource BackgroundLv2SolidColor}" BorderBrush="Black" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
             <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"
                               RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
         </Border>
