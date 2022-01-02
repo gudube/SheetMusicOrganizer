@@ -19,11 +19,21 @@ namespace SheetMusicOrganizer.View.Controls.Partition
     /// </summary>
     public partial class PartitionSheet : UserControl
     {
+        private uint resolution;
         public PartitionSheet()
         {
             InitializeComponent();
+            resolution = Settings.Default.PdfResolution;
             DataContextChanged += PartitionSheet_DataContextChanged;
             this.KeyDown += PartitionSheet_KeyDown;
+            Loaded += (s, e) =>
+            {
+                Settings.Default.SettingsSaving += Default_SettingsSaving;
+            };
+            Unloaded += (s, e) =>
+            {
+                Settings.Default.SettingsSaving -= Default_SettingsSaving;
+            };
         }
 
         private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
@@ -60,6 +70,15 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         {
             if (e.PropertyName == nameof(PartitionVM.Session.Player.Position))
                 UpdateScrollPos();
+        }
+
+        private void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Settings.Default.PdfResolution != resolution)
+            {
+                resolution = Settings.Default.PdfResolution;
+                OpenShownSongPartition();
+            }
         }
 
         #endregion
@@ -113,7 +132,6 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to use PdfToImages when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
-
             PagesContainer.Items.Clear();
 
             if (pdfDoc == null) return;
@@ -128,7 +146,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                         Source = bitmap,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         Margin = new Thickness(0, 4, 0, 4),
-                        Width = 1200 * partitionVM.Zoom
+                        Width = 1200 * partitionVM.Zoom,
                     };
                     PagesContainer.Items.Add(image);
                 }
@@ -141,12 +159,15 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
             using (var stream = new WrappingStream(new MemoryStream()))
             {
-                await page.RenderToStreamAsync(stream.AsRandomAccessStream());
+                await page.RenderToStreamAsync(stream.AsRandomAccessStream(), new PdfPageRenderOptions
+                {
+                    DestinationWidth = resolution
+                });
 
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream;
-                image.DecodePixelWidth = 1400;
+                image.DecodePixelWidth = (int) resolution;
                 image.EndInit();
                 image.Freeze();
             }

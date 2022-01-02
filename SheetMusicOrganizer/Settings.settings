@@ -24,5 +24,8 @@
     <Setting Name="Theme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Dark</Value>
     </Setting>
+    <Setting Name="PdfResolution" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">1200</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

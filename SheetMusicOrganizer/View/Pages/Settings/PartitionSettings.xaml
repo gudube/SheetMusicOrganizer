@@ -6,7 +6,12 @@
              xmlns:local="clr-namespace:SheetMusicOrganizer.View.Pages.Settings"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <StackPanel>
+        <TextBlock Style="{DynamicResource LabelTextBlock}">Partition sheet resolution</TextBlock>
+        <ComboBox HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" SelectedIndex="{Binding PdfResolutionIndex, Mode=TwoWay}">
+            <ComboBoxItem TabIndex="0">High (Requires more CPU)</ComboBoxItem>
+            <ComboBoxItem TabIndex="1">Medium (Default)</ComboBoxItem>
+            <ComboBoxItem TabIndex="2">Low (For low-end computers)</ComboBoxItem>
+        </ComboBox>
+    </StackPanel>
 </UserControl>

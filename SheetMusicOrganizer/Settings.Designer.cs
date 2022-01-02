@@ -98,5 +98,17 @@ namespace SheetMusicOrganizer {
                 this["Theme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
+        public uint PdfResolution {
+            get {
+                return ((uint)(this["PdfResolution"]));
+            }
+            set {
+                this["PdfResolution"] = value;
+            }
+        }
     }
 }
