@@ -5,6 +5,7 @@
         <ResourceDictionary Source="/View/Styles/BaseStyle.xaml"/>
         <ResourceDictionary Source="/View/Styles/DarkColors.xaml"/>
         <ResourceDictionary Source="/View/Styles/Templates/Dark3DButton.xaml"/>
+        <ResourceDictionary Source="/View/Styles/Templates/DarkScrollBar.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
     <!--#region BACKGROUNDS -->
@@ -215,6 +216,9 @@
 
     <!--#region Scrollbar -->
     <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ScrollBarBase}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Setter Property="Template" Value="{StaticResource DarkScrollBar}"/>
     </Style>
     <!--#endregion-->
 
