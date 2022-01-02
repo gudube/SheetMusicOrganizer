@@ -19,7 +19,7 @@
                      Tag="{Binding Path=PlacementTarget.(FrameworkElement.DataContext), RelativeSource={RelativeSource Self}, Mode=OneWay}">
             <ContextMenu.Style>
                 <!-- Hide the ContextMenu if playlist locked -->
-                <Style TargetType="{x:Type ContextMenu}">
+                <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}">
                     <Setter Property="Visibility" Value="Visible"></Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Path=(FrameworkElement.Tag).(items1:PlaylistItem.IsLocked), RelativeSource={RelativeSource Self}}"  Value="True">

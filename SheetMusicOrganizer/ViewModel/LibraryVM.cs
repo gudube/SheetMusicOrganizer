@@ -88,7 +88,10 @@ namespace SheetMusicOrganizer.ViewModel
                 if (Playlists.ElementAtOrDefault(_selectedPlaylistIndex) is PlaylistItem pl)
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
                 SetField(ref _selectedPlaylistIndex, value);
-                ShownSongs.Reset((Playlists[value] as PlaylistItem)?.Songs);
+                if (value >= 0)
+                    ShownSongs.Reset((Playlists[value] as PlaylistItem)?.Songs);
+                else
+                    ShownSongs.Clear();
             }
         }
 
@@ -116,7 +119,7 @@ namespace SheetMusicOrganizer.ViewModel
             if (newIndex < 0 || newIndex >= Playlists.Count - 2) {
                 newIndex = SelectedPlaylistIndex - 1;
             }
-            
+
             Playlists.RemoveAt(SelectedPlaylistIndex);
             SelectedPlaylistIndex = newIndex;
             DbHandler.DeletePlaylist(playlist);

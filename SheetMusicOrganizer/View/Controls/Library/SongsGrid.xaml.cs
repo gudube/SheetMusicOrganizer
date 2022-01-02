@@ -57,6 +57,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
         private void NewVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if(e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex) && DataContext is LibraryVM libraryVM
+                && libraryVM.SelectedPlaylistIndex < libraryVM.Playlists.Count && libraryVM.SelectedPlaylistIndex >=0
                 && libraryVM.Playlists[libraryVM.SelectedPlaylistIndex] is PlaylistItem selectedPlaylist)
             {
                 Songs.SortColumnDescriptions.Clear();
