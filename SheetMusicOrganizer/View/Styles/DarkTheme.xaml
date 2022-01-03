@@ -261,7 +261,14 @@
         <Setter Property="Background" Value="{StaticResource BackgroundLv1SolidColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BackgroundLv2SolidColor}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Template" Value="{StaticResource DarkScrollBar}"/>
+        <Setter Property="Template" Value="{StaticResource DarkScrollBarVertical}"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Trigger.Setters>
+                    <Setter Property="Template" Value="{StaticResource DarkScrollBarHorizontal}"/>
+                </Trigger.Setters>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!--#endregion-->
 

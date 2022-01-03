@@ -43,7 +43,8 @@ namespace SheetMusicOrganizer.ViewModel
         }
 
         #region Visual properties
-        private readonly double minZoom = 0.01;
+        private readonly double minZoom = 0.2;
+        private readonly double maxZoom = 5;
         private double _zoom = 1.0;
         public double Zoom
         {
@@ -51,6 +52,7 @@ namespace SheetMusicOrganizer.ViewModel
             set
             {
                 if (value < minZoom) value = minZoom;
+                if (value > maxZoom) value = maxZoom;
                 SetField(ref _zoom, value);
             }
         }
