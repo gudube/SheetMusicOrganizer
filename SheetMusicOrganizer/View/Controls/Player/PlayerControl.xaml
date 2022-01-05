@@ -5,10 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:player="clr-namespace:SheetMusicOrganizer.View.Controls.Player"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
+             xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="1820"
              x:Name="Control"
              d:DataContext="{d:DesignInstance viewModel:PlayerVM}">
+    <UserControl.Resources>
+        <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+    </UserControl.Resources>
     <Border Style="{DynamicResource PopInBorder}">
         <Border Style="{DynamicResource BaseInsideBorder}">
             <Grid Background="{DynamicResource BackgroundLv3SolidColor}">
@@ -57,7 +61,7 @@
                             <Image Source="{DynamicResource OpenFolderImage}"/>
                         </Button>
                         <ToggleButton Grid.Column="8" Command="{Binding ChangeAudioCommand}" IsChecked="{Binding PlayingSecondaryAudio, Mode=OneWay}" ToolTipService.ToolTip="Switch between main/extra track"
-                                      Style="{DynamicResource SecondaryAudioToggleButton}">
+                                      Style="{DynamicResource SecondaryAudioToggleButton}" IsEnabled="{Binding Session.PlayingSong.AudioDirectory2, Mode=OneWay, FallbackValue=False, Converter={StaticResource StringNotEmptyConverter}}">
                             <Image Source="{DynamicResource ReplaceImage}"/>
                         </ToggleButton>
                     </Grid>

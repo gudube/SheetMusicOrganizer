@@ -8,6 +8,7 @@
         <ResourceDictionary Source="/View/Styles/Templates/DarkScrollBar.xaml"/>
         <ResourceDictionary Source="/View/Styles/Templates/DarkMenuItem.xaml"/>
         <ResourceDictionary Source="/View/Styles/Templates/DarkContextMenu.xaml"/>
+        <ResourceDictionary Source="/View/Styles/Templates/DarkToggleButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     
     <!--#region BACKGROUNDS -->
@@ -115,6 +116,7 @@
     <Style x:Key="SimpleButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource SimpleButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template" Value="{StaticResource DarkToggleButton}"/>
     </Style>
     <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
@@ -124,7 +126,12 @@
     <Style x:Key="RoundButton" TargetType="{x:Type Grid}" BasedOn="{StaticResource RoundButtonBase}">
         <Style.Resources>
             <Style TargetType="{x:Type Ellipse}">
-                <Setter Property="Fill" Value="{StaticResource BackgroundLv4SolidColor}"/>
+                <Setter Property="Fill" Value="{StaticResource BackgroundLv3SolidColor}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Setter Property="Fill" Value="{StaticResource BackgroundLv4SolidColor}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </Style.Resources>
     </Style>
