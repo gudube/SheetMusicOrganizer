@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29905.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SheetMusicOrganizer", "SheetMusicOrganizer.csproj", "{682C80A2-AC22-4DC6-A371-07EC87012AA6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudioWrapper", "..\NaudioWrapper\NAudioWrapper.csproj", "{CA753289-4217-43B2-B69D-2F784CF4BCCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "..\TestProject\TestProject.csproj", "{01C234E4-DA3B-4846-9286-3C1D64728700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "..\TestProject\TestProject.csproj", "{01C234E4-DA3B-4846-9286-3C1D64728700}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MainInstaller", "..\MainInstaller\MainInstaller.vdproj", "{D95432CB-1C81-4588-A30B-8604CA18B777}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,9 +26,9 @@ Global
 		{CA753289-4217-43B2-B69D-2F784CF4BCCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA753289-4217-43B2-B69D-2F784CF4BCCE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01C234E4-DA3B-4846-9286-3C1D64728700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01C234E4-DA3B-4846-9286-3C1D64728700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01C234E4-DA3B-4846-9286-3C1D64728700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01C234E4-DA3B-4846-9286-3C1D64728700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95432CB-1C81-4588-A30B-8604CA18B777}.Debug|Any CPU.ActiveCfg = Debug
+		{D95432CB-1C81-4588-A30B-8604CA18B777}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
