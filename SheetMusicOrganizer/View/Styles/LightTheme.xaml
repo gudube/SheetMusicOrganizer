@@ -186,7 +186,6 @@
         <Setter Property="Background" Value="{StaticResource BackgroundLv4SolidColor}"/>
     </Style>
     <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemBase}">
-        <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <!--#endregion-->
 

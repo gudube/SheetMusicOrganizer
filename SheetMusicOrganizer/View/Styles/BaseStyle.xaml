@@ -104,7 +104,6 @@
 
     <!--#region Menu -->
     <Style x:Key="MenuItemBase" TargetType="{x:Type MenuItem}">
-        <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <!--#endregion-->
 

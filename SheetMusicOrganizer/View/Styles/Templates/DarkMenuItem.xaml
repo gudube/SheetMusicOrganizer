@@ -255,7 +255,7 @@
                 <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter Property="Background" TargetName="templateRoot" Value="#3D26A0DA"/>
+                <Setter Property="Background" TargetName="templateRoot" Value="Transparent"/>
                 <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource SpecialSolidColor}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
