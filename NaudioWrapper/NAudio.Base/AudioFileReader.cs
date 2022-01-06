@@ -15,7 +15,7 @@ namespace NAudio.Wave
     /// </summary>
     public class AudioFileReader : WaveStream, ISampleProvider
     {
-        private WaveStream readerStream; // the waveStream which we will use for all positioning
+        private WaveStream? readerStream; // the waveStream which we will use for all positioning
         private readonly SampleChannel sampleChannel; // sample provider that gives us most stuff we need
         private readonly int destBytesPerSample;
         private readonly int sourceBytesPerSample;
@@ -87,8 +87,8 @@ namespace NAudio.Wave
         /// </summary>
         public override long Position
         {
-            get { return SourceToDest(readerStream.Position); }
-            set { lock (lockObject) { readerStream.Position = DestToSource(value); }  }
+            get { return SourceToDest(readerStream?.Position ?? 0); }
+            set { lock (lockObject) { if(readerStream != null) readerStream.Position = DestToSource(value); }  }
         }
 
         /// <summary>

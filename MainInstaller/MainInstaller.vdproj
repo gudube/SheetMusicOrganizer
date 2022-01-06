@@ -57,6 +57,11 @@
                     "Name" = "8:.NET Desktop Runtime 6.0.1 (x64)"
                     "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.6.0.x64"
                     }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.6.0.x86"
+                    {
+                    "Name" = "8:.NET Desktop Runtime 6.0.1 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.6.0.x86"
+                    }
                 }
             }
         }
@@ -88,6 +93,11 @@
                     {
                     "Name" = "8:.NET Desktop Runtime 6.0.1 (x64)"
                     "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.6.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.6.0.x86"
+                    {
+                    "Name" = "8:.NET Desktop Runtime 6.0.1 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.6.0.x86"
                     }
                 }
             }
@@ -198,15 +208,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Sheet Music Organizer"
-        "ProductCode" = "8:{14D72C54-C21E-4485-A072-E23E4442DBA5}"
-        "PackageCode" = "8:{8B871662-B9B8-4FCE-96D3-D766966F9ED3}"
+        "ProductCode" = "8:{9521FA90-F510-48D9-9123-DF18A1C333F9}"
+        "PackageCode" = "8:{45A49F84-7DA9-40D5-9E39-BCF8C32807B6}"
         "UpgradeCode" = "8:{8CE88874-EF51-41FA-A57B-A28536545B42}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.1"
+        "ProductVersion" = "8:0.1"
         "Manufacturer" = "8:Guilhem Dubois"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -770,6 +780,7 @@
             "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{682C80A2-AC22-4DC6-A371-07EC87012AA6}"
             "ShowKeyOutput" = "11:TRUE"
+            "PublishProfilePath" = "8:Properties\\PublishProfiles\\FolderProfile.pubxml"
                 "ExcludeFilters"
                 {
                 }
