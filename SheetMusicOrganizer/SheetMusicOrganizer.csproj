@@ -1,20 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>SheetMusicOrganizer</AssemblyName>
     <RootNamespace>SheetMusicOrganizer</RootNamespace>
     <StartupObject>SheetMusicOrganizer.App</StartupObject>
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="View\Resources\dark\lock_64.png" />
     <None Remove="View\Resources\dark\minus_64.png" />
@@ -74,7 +72,6 @@
     <None Remove="View\Resources\volume_mute_40.png" />
     <None Remove="View\Resources\waveform.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="View\Resources\dark\lock_64.png" />
     <Resource Include="View\Resources\dark\minus_64.png" />
@@ -112,29 +109,25 @@
     <Resource Include="View\Resources\light\volume_high_40.png" />
     <Resource Include="View\Resources\light\volume_mute_40.png" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.1" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Syncfusion.Licensing" Version="19.4.0.41" />
     <PackageReference Include="Syncfusion.SfGrid.WPF" Version="19.4.0.41" />
-    <PackageReference Include="Syncfusion.Shared.WPF" Version="19.4.0.41" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
     <PackageReference Include="z440.atl.core" Version="4.1.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NaudioWrapper\NAudioWrapper.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="View\Resources\splash.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -145,14 +138,12 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <Page Update="View\Controls\Items\SelectablePlaylistItem.xaml">
       <SubType>Designer</SubType>
@@ -176,5 +167,4 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
-
 </Project>

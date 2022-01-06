@@ -8,13 +8,8 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using Microsoft.Win32;
-using Serilog;
-using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 
 namespace SheetMusicOrganizer.View
 {

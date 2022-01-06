@@ -3,10 +3,7 @@ using System.IO;
 using System.Windows;
 using Serilog;
 using SheetMusicOrganizer.View;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 using SheetMusicOrganizer.View.Tools;
-using Microsoft.Data.Sqlite;
 using SheetMusicOrganizer.View.Windows;
 using System.Threading.Tasks;
 
@@ -18,7 +15,7 @@ namespace SheetMusicOrganizer
     public partial class App
     {
         private bool showSplashScreen = true;
-        private FirstTimeWindow firstTimeWindow;
+        private FirstTimeWindow? firstTimeWindow;
 
         public App()
         {
