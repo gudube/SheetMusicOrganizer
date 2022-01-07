@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using SheetMusicOrganizer.View.Tools;
+using SheetMusicOrganizer.View.Windows;
 using SheetMusicOrganizer.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -51,12 +52,12 @@ namespace SheetMusicOrganizer.View.Controls
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow();
+            WindowManager.OpenOptionWindow(new AddNewSongWindow());
         }
 
         private void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenOpenFolderWindow();
+            WindowManager.OpenOptionWindow(new OpenFolderWindow());
         }
 
         private void LoadDatabase_OnClick(object sender, RoutedEventArgs e)
@@ -71,7 +72,7 @@ namespace SheetMusicOrganizer.View.Controls
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenSettingsWindow();
+            WindowManager.OpenOptionWindow(new SettingsWindow());
         }
     }
 }

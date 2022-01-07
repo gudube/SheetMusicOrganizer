@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SheetMusicOrganizer.ViewModel.Library;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -19,9 +8,19 @@ namespace SheetMusicOrganizer.View.Windows
     /// </summary>
     public partial class ImportResultWindow : Window
     {
-        public ImportResultWindow()
+        public ImportResultWindow(ImportLibraryVM importVM, Task importTask)
         {
+            this.DataContext = importVM;
             InitializeComponent();
+            Loaded += ImportResultWindow_Loaded;
+            this.importTask = importTask;
+        }
+
+        private Task importTask;
+
+        private async void ImportResultWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await importTask;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.View.Tools;
+using SheetMusicOrganizer.View.Windows;
 using SheetMusicOrganizer.ViewModel;
 using Syncfusion.Data;
 using Syncfusion.UI.Xaml.Grid;
@@ -135,12 +136,12 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
         private void AddNewSongButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow();
+            WindowManager.OpenOptionWindow(new AddNewSongWindow());
         }
 
         private void AddFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenOpenFolderWindow();
+            WindowManager.OpenOptionWindow(new OpenFolderWindow());
         }
 
         private void Songs_SortColumnsChanging(object sender, GridSortColumnsChangingEventArgs e)

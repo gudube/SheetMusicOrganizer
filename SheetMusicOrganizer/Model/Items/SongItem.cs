@@ -210,6 +210,12 @@ namespace SheetMusicOrganizer.Model.Items
 
         public override string ToString()
         {
+            string artist = Artist;
+            string title = Title;
+            if (String.IsNullOrWhiteSpace(Artist))
+                artist = "Unknown Artist";
+            if (String.IsNullOrWhiteSpace(Title))
+                title = "Unknown Title";
             return string.Join(" - ", Artist, Title);
         }
 

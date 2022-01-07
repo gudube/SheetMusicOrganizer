@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
+using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Library;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -51,11 +53,14 @@ namespace SheetMusicOrganizer.View.Windows
                 return;
             }
 
-            mainVM.LibraryVM.ImportLibraryVM.AddDir(
-                ImportByFolder.IsChecked.HasValue && ImportByFolder.IsChecked.Value,
-                ImportByFilename.IsChecked.HasValue && ImportByFilename.IsChecked.Value,
-                Folder, RecursiveAO, UseMetadataAO, OverwriteAO);
-            this.Close();
+            var allPlaylist = mainVM.LibraryVM.Playlists[0];
+            var selectedPlaylist = mainVM.LibraryVM.Playlists.ElementAtOrDefault(mainVM.LibraryVM.SelectedPlaylistIndex);
+            var importLibraryVM = new ImportLibraryVM(mainVM.Session, allPlaylist, selectedPlaylist);
+            Task importAction = importLibraryVM.AddDir(
+                    ImportByFolder.IsChecked.HasValue && ImportByFolder.IsChecked.Value,
+                    ImportByFilename.IsChecked.HasValue && ImportByFilename.IsChecked.Value,
+                    Folder, RecursiveAO, UseMetadataAO, OverwriteAO);
+            WindowManager.OpenOptionWindow(new ImportResultWindow(importLibraryVM, importAction));
         }
     }
 }

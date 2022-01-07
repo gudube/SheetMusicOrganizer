@@ -20,27 +20,7 @@ namespace SheetMusicOrganizer.View.Tools
             return _openedOptionWindow != null || _openedErrorWindow != null;
         }
 
-        public static void OpenAddNewSongWindow()
-        {
-            OpenOptionWindow(new AddNewSongWindow());
-        }
-
-        public static void OpenOpenFolderWindow()
-        {
-            OpenOptionWindow(new OpenFolderWindow());
-        }
-
-        public static void OpenFirstTimeWindow()
-        {
-            OpenOptionWindow(new FirstTimeWindow());
-        }
-
-        public static void OpenSettingsWindow()
-        {
-            OpenOptionWindow(new SettingsWindow());
-        }
-
-        private static void OpenOptionWindow(Window window)
+        public static void OpenOptionWindow(Window window)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(() =>
             {

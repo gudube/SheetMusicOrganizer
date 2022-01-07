@@ -103,17 +103,6 @@ namespace SheetMusicOrganizer.ViewModel
             LibraryVM.GoToSong(song);
         }
 
-        public bool AddSong(SongItem song, bool overwrite = false)
-        {
-            if (LibraryVM.ImportLibraryVM.AddSong(song, overwrite))
-            {
-                SetView(LibraryVM);
-                LibraryVM.GoToSong(song);
-                return true;
-            }
-
-            return false;
-        }
         #endregion
 
         #region Common Tasks

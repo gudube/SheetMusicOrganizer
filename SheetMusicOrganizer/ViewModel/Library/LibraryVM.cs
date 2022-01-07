@@ -19,10 +19,7 @@ namespace SheetMusicOrganizer.ViewModel
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
-            ImportLibraryVM = new ImportLibraryVM(session);
         }
-
-        public ImportLibraryVM ImportLibraryVM { get; }
 
         #region Initialization
         public async Task InitializeData()
@@ -62,7 +59,6 @@ namespace SheetMusicOrganizer.ViewModel
             List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(await DbHandler.GetAllPlaylists()){ AddPlaylist };
             Playlists.Reset(playlists);
             SelectedPlaylistIndex = 0;
-            ImportLibraryVM.AllSongsPlaylist = playlists[0] as PlaylistItem;
         }
 
         private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -94,13 +90,9 @@ namespace SheetMusicOrganizer.ViewModel
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
                 SetField(ref _selectedPlaylistIndex, value);
                 if (Playlists.ElementAtOrDefault(value) is PlaylistItem newPl)
-                {
                     ShownSongs.Reset(newPl.Songs);
-                    ImportLibraryVM.SelectedPlaylist = newPl;
-                } else
-                {
+                else
                     ShownSongs.Clear();
-                }
             }
         }
 

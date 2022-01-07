@@ -10,16 +10,29 @@ namespace SheetMusicOrganizer.ViewModel.Library
     {
         public override string ViewModelName => "LIBRARY";
 
-        public ImportLibraryVM(SessionContext session) : base(session)
+        public ImportLibraryVM(SessionContext session, BasePlaylistItem allSongsPlaylist, BasePlaylistItem? selectedPlaylist) : base(session)
         {
+            this.allSongsPlaylist = allSongsPlaylist as PlaylistItem;
+            if(selectedPlaylist != allSongsPlaylist)
+                this.selectedPlaylist = selectedPlaylist as PlaylistItem;
         }
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
         }
 
-        public PlaylistItem? AllSongsPlaylist;
-        public PlaylistItem? SelectedPlaylist;
+        private bool _isImporting = true;
+        public bool IsImporting { get => _isImporting; set => SetField(ref _isImporting, value); }
+
+        private string _status = "";
+        public string Status { get => _status; set => SetField(ref _status, value); }
+        private void AddStatus(string newLine)
+        {
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => Status += ("\r\n" + newLine)));
+        }
+
+        private readonly PlaylistItem? allSongsPlaylist;
+        private readonly PlaylistItem? selectedPlaylist;
         private bool recursive;
         private bool useAudioMD;
         private bool overwrite;
@@ -32,45 +45,61 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
         private bool AddSong(SongItem song)
         {
+            bool overwritten = false;
             if (DbHandler.IsSongExisting(song.PartitionDirectory))
             {
                 if(overwrite)
+                {
+                    AddStatus($"Overwriting song... ({song})");
+                    overwritten = true;
                     DbHandler.DeleteSong(song.PartitionDirectory);
+                }
                 else
+                {
+                    AddStatus($"Existing song, skipping. ({song})");
                     return false;
+                }
+
             }
+            
+            if(!overwritten)
+                AddStatus($"Adding new song... ({song})");
 
             MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
             song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
 
             DbHandler.AddSong(song);
 
-            AllSongsPlaylist?.AddSongs(overwrite, song);
+            allSongsPlaylist?.AddSongs(overwrite, song);
+            selectedPlaylist?.AddSongs(overwrite, song);
 
-            if (SelectedPlaylist != null)
-            {
-                if(SelectedPlaylist.Id != AllSongsPlaylist?.Id)
-                    SelectedPlaylist.AddSongs(overwrite, song);
-            }
+            if (overwritten)
+                AddStatus($"Song overwritten. ({song})");
             else
-            {
-                Log.Warning("Trying to add a new song in the database when there are no selected PlaylistItem");
-            }
-
+                AddStatus($"New song added. ({song})");
             return true;
         }
 
-        public void AddDir(bool byFolder, bool byFilename, string dir, bool recursive, bool useAudioMD, bool overwrite)
+        public async Task AddDir(bool byFolder, bool byFilename, string dir, bool recursive, bool useAudioMD, bool overwrite)
         {
-            this.recursive = recursive;
-            this.useAudioMD = useAudioMD;
-            this.overwrite = overwrite;
-            if (byFolder)
-                AddDirByFolder(dir);
-            else if (byFilename)
-                AddDirByFilename(dir);
-            else
-                AddDirWithoutAudio(dir);
+            IsImporting = true;
+            _status = "";
+            await Task.Run(() =>
+            {
+                AddStatus("Starting import...");
+                this.recursive = recursive;
+                this.useAudioMD = useAudioMD;
+                this.overwrite = overwrite;
+                if (byFolder)
+                    AddDirByFolder(dir);
+                else if (byFilename)
+                    AddDirByFilename(dir);
+                else
+                    AddDirWithoutAudio(dir);
+                IsImporting = false;
+                AddStatus("Import finished.");
+            });
+
         }
 
         private void AddDirByFolder(string dir)

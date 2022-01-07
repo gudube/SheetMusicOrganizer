@@ -29,6 +29,38 @@ namespace SheetMusicOrganizer.View.Tools
         }
     }
 
+    public class BooleanToVisibilityTrue : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue && boolValue)
+                return Visibility.Visible;
+            else
+                return Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is Visibility vis && vis == Visibility.Visible;
+        }
+    }
+
+    public class BooleanToVisibilityFalse : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue && !boolValue)
+                return Visibility.Visible;
+            else
+                return Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is Visibility vis && vis == Visibility.Hidden;
+        }
+    }
+
     public class RatingConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
@@ -200,4 +232,20 @@ namespace SheetMusicOrganizer.View.Tools
             throw new NotImplementedException();
         }
     }
+
+    public class ListToStringConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is IEnumerable<string> list)
+                return String.Join("\r\n", list);
+            else return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

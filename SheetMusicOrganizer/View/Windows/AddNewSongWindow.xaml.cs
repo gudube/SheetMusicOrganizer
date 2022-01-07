@@ -5,6 +5,7 @@ using SheetMusicOrganizer.View.Tools;
 using Serilog;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Library;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -145,8 +146,13 @@ namespace SheetMusicOrganizer.View.Windows
             {
                 UpdateSongFromInformation();
 
-                if (mainVM.AddSong(Song))
+                var allPlaylist = mainVM.LibraryVM.Playlists[0];
+                var selectedPlaylist = mainVM.LibraryVM.Playlists.ElementAtOrDefault(mainVM.LibraryVM.SelectedPlaylistIndex);
+                var importVM = new ImportLibraryVM(mainVM.Session, allPlaylist, selectedPlaylist);
+
+                if (importVM.AddSong(Song, false))
                 {
+                    mainVM.GoToSong(Song.PartitionDirectory);
                     this.Close();
                 }
                 else
@@ -157,7 +163,8 @@ namespace SheetMusicOrganizer.View.Windows
                     {
                         try
                         {
-                            mainVM.AddSong(Song, true);
+                            importVM.AddSong(Song, true);
+                            mainVM.GoToSong(Song.PartitionDirectory);
                             this.Close();
                         }
                         catch (Exception ex)
