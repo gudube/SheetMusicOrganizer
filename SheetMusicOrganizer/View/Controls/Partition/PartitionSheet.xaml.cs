@@ -84,7 +84,10 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         #endregion
 
         #region PDFViewer
-        private void OpenShownSongPartition()
+        private Task? _createImageTask;
+        private CancellationTokenSource _cancelImageCreation = new CancellationTokenSource();
+
+        private async Task OpenShownSongPartition()
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
@@ -111,22 +114,49 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                     return;
                 }
 
-                StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
-                //Then load pdf document on background thread
-                .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
-                //Finally display on UI Thread
-                .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext())
-                .ContinueWith(t3 =>
-                    t3.Exception?.Handle(ex =>
+                if (_createImageTask != null)
+                {
+                    if (!_createImageTask.IsCompleted)
                     {
-                        GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
-                        return false;
-                    }), new CancellationToken(), TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+                        try
+                        {
+                            //the task is running, cancel it and wait for it to be done before continuing
+                            _cancelImageCreation.Cancel();
+                            await _createImageTask;
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            //nothing to do here
+                        }
+                    }
+                    _createImageTask.Dispose();
+                    _cancelImageCreation.Dispose();
+                    _cancelImageCreation = new CancellationTokenSource();
+                }
+
+                CancellationToken ct = _cancelImageCreation.Token;
+
+                var getFileTask = StorageFile.GetFileFromPathAsync(path).AsTask(ct);
+                var loadFileTask = getFileTask.ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask(ct), TaskContinuationOptions.NotOnCanceled).Unwrap();
+                _createImageTask = loadFileTask.ContinueWith(t2 => PdfToImages(t2.Result, ct), ct, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap();
+
+                try
+                {
+                    await _createImageTask;
+                } catch(OperationCanceledException)
+                {
+                    PagesContainer.Items.Clear();
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
+                }
             }
         }
 
-        private async Task PdfToImages(PdfDocument? pdfDoc)
+        private async Task PdfToImages(PdfDocument? pdfDoc, CancellationToken? ct)
         {
+            ct?.ThrowIfCancellationRequested();
             if (!(DataContext is PartitionVM partitionVM))
             {
                 GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to use PdfToImages when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
@@ -140,6 +170,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             {
                 using (var page = pdfDoc.GetPage(i)) //get each page and convert
                 {
+                    ct?.ThrowIfCancellationRequested();
                     var bitmap = await PageToBitmapAsync(page);
                     var image = new Image
                     {
