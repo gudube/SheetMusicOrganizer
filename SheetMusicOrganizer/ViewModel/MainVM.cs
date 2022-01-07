@@ -27,6 +27,10 @@ namespace SheetMusicOrganizer.ViewModel
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if(e.PropertyName == nameof(Session.PlayingSong))
+            {
+                PlayerVM.ShowAdvancedOptions = CurrentViewModel == PartitionVM && !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1);
+            }
         }
 
         #region Child VMs
@@ -45,7 +49,7 @@ namespace SheetMusicOrganizer.ViewModel
                 {
                     if(value == PartitionVM)
                     {
-                        PlayerVM.ShowAdvancedOptions = true;
+                        PlayerVM.ShowAdvancedOptions = !String.IsNullOrWhiteSpace(Session.PlayingSong.AudioDirectory1);
                     } else
                     {
                         PlayerVM.ShowAdvancedOptions = false;

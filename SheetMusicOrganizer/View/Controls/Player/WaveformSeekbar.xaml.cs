@@ -112,12 +112,6 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 return;
             }
 
-            if (string.IsNullOrEmpty(audioDirectory))
-            {
-                WaveFormImage.Visibility = Visibility.Hidden;
-                return;
-            }
-
             LoadingWaveFormText.Visibility = Visibility.Visible;
             WaveFormImage.Visibility = Visibility.Hidden;
 
@@ -139,7 +133,15 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 _cancelImageCreation.Dispose();
                 _cancelImageCreation = new CancellationTokenSource();
             }
-            
+
+            if (string.IsNullOrEmpty(audioDirectory))
+            {
+                WaveFormImage.Source = null;
+                WaveFormImage.Visibility = Visibility.Hidden;
+                LoadingWaveFormText.Visibility = Visibility.Hidden;
+                return;
+            }
+
             CancellationToken ct = _cancelImageCreation.Token;
 
             _createImageTask = Task.Run(() =>

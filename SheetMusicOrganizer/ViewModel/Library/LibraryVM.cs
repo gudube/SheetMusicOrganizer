@@ -418,7 +418,10 @@ namespace SheetMusicOrganizer.ViewModel
             if (Session.PlayingSong != song)
             {
                 Session.PlayingSong = song;
-                Session.Player.SetSong(song.AudioDirectory1, startPlaying, false);
+                if(String.IsNullOrWhiteSpace(song.AudioDirectory1))
+                    Session.Player.Stop();
+                else
+                    Session.Player.SetSong(song.AudioDirectory1, startPlaying, false);
             }
         }
 

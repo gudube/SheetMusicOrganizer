@@ -51,7 +51,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
         private void NewVM_SongMasteryChanged(object? sender, SongItem[] e)
         {
-            Songs.View.RefreshFilter(true);
+            Songs.View?.RefreshFilter(true);
             Songs.ClearSelections(false);
         }
 

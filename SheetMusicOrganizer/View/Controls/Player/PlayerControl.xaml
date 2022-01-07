@@ -54,7 +54,7 @@
                         <Button Grid.Column="5" Style="{DynamicResource SimpleButton}" Command="{Binding StopCommand}" ToolTipService.ToolTip="Stop">
                             <Image Source="{DynamicResource StopImage}"/>
                         </Button>
-                        <Button Grid.Column="6" Style="{DynamicResource SimpleButton}" ToolTipService.ToolTip="Play a random song">
+                        <Button Grid.Column="6" Style="{DynamicResource SimpleButton}" Command="{Binding PlayRandomCommand}" ToolTipService.ToolTip="Play a random song">
                             <Image Source="{DynamicResource RandomSongImage}"/>
                         </Button>
                         <Button Grid.Column="7" Style="{DynamicResource SimpleButton}" Click="OpenFolderButton_Click" ToolTipService.ToolTip="Open the song's folder">

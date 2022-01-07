@@ -21,9 +21,15 @@
             </Style.Triggers>
         </Style>
     </UserControl.Style>
+    <UserControl.Resources>
+        <tools:StringEmptyToVisibleConverter x:Key="StringEmptyToVisibleConverter"/>
+    </UserControl.Resources>
     <Grid>
         <TextBlock x:Name="LoadingWaveFormText" HorizontalAlignment="Center" Style="{DynamicResource LabelTextBlock}" FontSize="18px" Visibility="Hidden">
             LOADING ...
+        </TextBlock>
+        <TextBlock HorizontalAlignment="Center" Style="{DynamicResource LabelTextBlock}" FontSize="18px" Visibility="{Binding Session.PlayingSong.AudioDirectory1, Converter={StaticResource StringEmptyToVisibleConverter}, FallbackValue=Hidden}">
+            NO AUDIO
         </TextBlock>
         <Image x:Name="WaveFormImage" Stretch="Fill" Visibility="Hidden"></Image>
         <local:SeekBarSlider x:Name="SeekBar" Minimum="0"

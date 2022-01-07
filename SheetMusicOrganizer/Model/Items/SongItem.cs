@@ -216,7 +216,7 @@ namespace SheetMusicOrganizer.Model.Items
                 artist = "Unknown Artist";
             if (String.IsNullOrWhiteSpace(Title))
                 title = "Unknown Title";
-            return string.Join(" - ", Artist, Title);
+            return string.Join(" - ", artist, title);
         }
 
         public override bool Equals(object? obj)
