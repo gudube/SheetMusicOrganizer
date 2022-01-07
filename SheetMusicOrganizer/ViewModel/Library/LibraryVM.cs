@@ -8,6 +8,7 @@ using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
 using System;
+using SheetMusicOrganizer.ViewModel.Library;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -18,7 +19,10 @@ namespace SheetMusicOrganizer.ViewModel
         public LibraryVM(SessionContext session) : base(session)
         {
             CreateDelegateCommands();
+            ImportLibraryVM = new ImportLibraryVM(session);
         }
+
+        public ImportLibraryVM ImportLibraryVM { get; }
 
         #region Initialization
         public async Task InitializeData()
@@ -48,8 +52,8 @@ namespace SheetMusicOrganizer.ViewModel
         #endregion
 
         #region Playlists
-        private SmartCollection<BasePlaylistItem> _playlists = new SmartCollection<BasePlaylistItem>();
-        public SmartCollection<BasePlaylistItem> Playlists { get => _playlists; set => SetField(ref _playlists, value); }
+        private readonly SmartCollection<BasePlaylistItem> _playlists = new SmartCollection<BasePlaylistItem>();
+        public SmartCollection<BasePlaylistItem> Playlists { get => _playlists; }
 
         #region All Playlists
 
@@ -58,6 +62,7 @@ namespace SheetMusicOrganizer.ViewModel
             List<BasePlaylistItem> playlists = new List<BasePlaylistItem>(await DbHandler.GetAllPlaylists()){ AddPlaylist };
             Playlists.Reset(playlists);
             SelectedPlaylistIndex = 0;
+            ImportLibraryVM.AllSongsPlaylist = playlists[0] as PlaylistItem;
         }
 
         private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -88,10 +93,14 @@ namespace SheetMusicOrganizer.ViewModel
                 if (Playlists.ElementAtOrDefault(_selectedPlaylistIndex) is PlaylistItem pl)
                     pl.IsEditing = false; //sets IsEditing false to unselected playlist
                 SetField(ref _selectedPlaylistIndex, value);
-                if (value >= 0)
-                    ShownSongs.Reset((Playlists[value] as PlaylistItem)?.Songs);
-                else
+                if (Playlists.ElementAtOrDefault(value) is PlaylistItem newPl)
+                {
+                    ShownSongs.Reset(newPl.Songs);
+                    ImportLibraryVM.SelectedPlaylist = newPl;
+                } else
+                {
                     ShownSongs.Clear();
+                }
             }
         }
 
@@ -324,175 +333,7 @@ namespace SheetMusicOrganizer.ViewModel
 
             songToSelect.IsSelected = true;
         }
-
-        public bool AddSong(SongItem song)
-        {
-            if (DbHandler.IsSongExisting(song.PartitionDirectory))
-                return false;
-            
-            MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
-            song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
-
-            DbHandler.AddSong(song);
-
-            if (!(Playlists.ElementAtOrDefault(SelectedPlaylistIndex) is PlaylistItem selectedPlaylist))
-            {
-                Log.Warning("Trying to add a new song in the database when there are no selected PlaylistItem");
-            }
-            else
-            {
-                selectedPlaylist.AddSongs(song);
-            }
-
-            return true;
-        }
-
-        public void AddDirByFolder(string dir, bool recursive, bool useAudioMD)
-        {
-            if (recursive)
-                foreach (string subDir in Directory.GetDirectories(dir))
-                    AddDirByFolder(subDir, true, useAudioMD);
-
-            List<string> pdfFiles = new List<string>();
-            List<string> audioFiles = new List<string>();
-            foreach (string fileDir in Directory.GetFiles(dir))
-            {
-                string ext = Path.GetExtension(fileDir);
-                if (ext == ".pdf")
-                    pdfFiles.Add(fileDir);
-                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
-                    audioFiles.Add(fileDir);
-            }
-
-            string audio1 = "";
-            string audio2 = "";
-            if (audioFiles.Count >= 1)
-            {
-                audio1 = audioFiles[0];
-                if (audioFiles.Count >= 2)
-                {
-                    if (Path.GetFileNameWithoutExtension(audio1).Length >
-                        Path.GetFileNameWithoutExtension(audioFiles[1]).Length)
-                    {
-                        audio2 = audio1;
-                        audio1 = audioFiles[1];
-                    }
-                    else
-                    {
-                        audio2 = audioFiles[1];
-                    }
-                }
-            }
-
-            foreach (string pdfFile in pdfFiles)
-            {
-                AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
-            }
-        }
-
-        public void AddDirByFilename(string dir, bool recursive, bool useAudioMD)
-        {
-            List<string> pdfFiles = new List<string>();
-            List<string> audioFiles = new List<string>();
-            GetAllFilenames(dir, recursive, pdfFiles, audioFiles);
-            foreach (string pdfFile in pdfFiles)
-            {
-                string pdfName = Path.GetFileNameWithoutExtension(pdfFile);
-                List<string> audios = audioFiles.FindAll(x => Path.GetFileNameWithoutExtension(x).StartsWith(pdfName));
-                string audio1 = "";
-                string audio2 = "";
-                if (audios.Count >= 1)
-                {
-                    audio1 = audios[0];
-                    audioFiles.Remove(audio1);
-                    if (audios.Count >= 2)
-                    {
-                        audio2 = audios[1];
-                        audioFiles.Remove(audio2);
-                    }
-                }
-                if(Path.GetFileNameWithoutExtension(audio1).Length <= Path.GetFileNameWithoutExtension(audio2).Length)
-                    AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
-                else
-                    AddSong(new SongItem(pdfFile, audio2, audio1, 0, useAudioMD));
-            }
-
-        }
-
-        public void GetAllFilenames(string dir, bool recursive, List<string> pdfFiles, List<string> audioFiles)
-        {
-            if (recursive)
-                foreach (string subDir in Directory.GetDirectories(dir))
-                    GetAllFilenames(subDir, true, pdfFiles, audioFiles);
-
-            string[] allFiles = Directory.GetFiles(dir);
-            pdfFiles.AddRange(allFiles.Where(x => Path.GetExtension(x) == ".pdf"));
-            audioFiles.AddRange(allFiles.Where(x => {
-                string ext = Path.GetExtension(x);
-                return ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a";
-            }));
-        }
-
-        public void AddDirWithoutAudio(string dir, bool recursive)
-        {
-            if (recursive)
-                foreach (string subDir in Directory.GetDirectories(dir))
-                    AddDirWithoutAudio(subDir, true);
-
-            foreach (string fileDir in Directory.GetFiles(dir))
-            {
-                string ext = Path.GetExtension(fileDir);
-                if (ext == ".pdf")
-                    AddSong(new SongItem(fileDir, "", "", 0, false));
-            }
-        }
         
-        /*public void AddFolder(string dir, bool recursive, bool useAudioMD)
-        {
-            if (recursive)
-            {
-                foreach (string subDir in Directory.GetDirectories(dir))
-                {
-                    AddFolder(subDir, true, useAudioMD);
-                }
-            }
-
-            List<string> partitionFiles = new List<string>();
-            List<string> audioFiles = new List<string>();
-            foreach (string fileDir in Directory.GetFiles(dir))
-            {
-                string ext = Path.GetExtension(fileDir);
-                if (ext == ".pdf")
-                    partitionFiles.Add(fileDir);
-                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
-                    audioFiles.Add(fileDir);
-            }
-
-            if(partitionFiles.Count == 1 && audioFiles.Count == 1)
-            {
-                AddSong(new SongItem(partitionFiles[0] ?? "", audioFiles[0] ?? "", 0, useAudioMD));
-            }
-            else
-            {
-                foreach(string partition in partitionFiles)
-                {
-                    //bool audioFound = false;
-                    foreach(string audio in audioFiles)
-                    {
-                        if (Path.GetFileNameWithoutExtension(partition) == Path.GetFileNameWithoutExtension(audio))
-                        {
-                            AddSong(new SongItem(partition, audio, 0, useAudioMD));
-                            //audioFound = true;
-                            break;
-                        }
-                    }
-                    //if(!audioFound)
-                    //    AddSong(new SongItem(partition));
-                }
-            }
-        }*/
-
-
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }
         private void RemoveSelectedSongs()
         {

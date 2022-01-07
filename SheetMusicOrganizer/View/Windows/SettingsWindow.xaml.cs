@@ -29,7 +29,7 @@ namespace SheetMusicOrganizer.View.Windows
             UnsavedChange = true;
         }
 
-        private void SettingsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void SettingsWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             Settings.Default.Reload();
         }

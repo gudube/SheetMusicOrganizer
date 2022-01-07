@@ -103,9 +103,9 @@ namespace SheetMusicOrganizer.ViewModel
             LibraryVM.GoToSong(song);
         }
 
-        public bool AddSong(SongItem song)
+        public bool AddSong(SongItem song, bool overwrite = false)
         {
-            if (LibraryVM.AddSong(song))
+            if (LibraryVM.ImportLibraryVM.AddSong(song, overwrite))
             {
                 SetView(LibraryVM);
                 LibraryVM.GoToSong(song);

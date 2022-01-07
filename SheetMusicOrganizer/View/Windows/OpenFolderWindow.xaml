@@ -37,12 +37,16 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" SharedSizeGroup="A"/>
                     <RowDefinition Height="Auto" SharedSizeGroup="A"/>
+                    <RowDefinition Height="Auto" SharedSizeGroup="A"/>
                 </Grid.RowDefinitions>
                 <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.UseMetadataAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
                     Use audio metadata (if found)
                 </CheckBox>
                 <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.RecursiveAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
                     Recursive scan (in subfolders)
+                </CheckBox>
+                <CheckBox Grid.Row="2" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.OverwriteAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=false}">
+                    Overwrite existing songs (resets sync configuration)
                 </CheckBox>
             </Grid>
         </controls:OptionalExpander>

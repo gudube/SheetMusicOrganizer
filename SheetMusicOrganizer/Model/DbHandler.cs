@@ -329,7 +329,7 @@ namespace SheetMusicOrganizer.Model
             string paramName = "@" + column;
 
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {table.Id} = {paramName}";
+            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {column} = {paramName}";
             cmd.Parameters.Add(CreateParameter(paramName, column.SqlType, value));
             cmd.ExecuteNonQuery();
         }
@@ -539,7 +539,16 @@ namespace SheetMusicOrganizer.Model
             }
         }
 
-        public static void DeleteSongs(int[] songIDs)
+        public static void DeleteSong(string songPartition)
+        {
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+                DeleteRow(con, songTable, songTable.PartitionDirectory, songPartition);
+            }
+        }
+
+        public static void DeleteSongs(params int[] songIDs)
         {
             string safeCondition = $"WHERE {songTable.Id.Name} IN ( {string.Join(", ", songIDs)})";
             using (SqliteConnection con = CreateConnection())

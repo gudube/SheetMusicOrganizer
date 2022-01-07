@@ -109,7 +109,7 @@
 
     <!--#region Radio buttons -->
     <Style x:Key="RadioButtonBase" TargetType="{x:Type RadioButton}">
-        <Setter Property="FontSize" Value="11"></Setter>
+        <Setter Property="FontSize" Value="13"></Setter>
         <Setter Property="Margin" Value="0,1"></Setter>
     </Style>
     <!--#endregion-->

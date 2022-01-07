@@ -151,13 +151,13 @@ namespace SheetMusicOrganizer.View.Windows
                 }
                 else
                 {
-                    string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
-                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Go To Song");
+                    string message = "This music sheet already exists in the library.\nWould you like to overwrite the song? (warning: resets sync configuration)";
+                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Overwrite");
                     if (songExistingWindow.DialogResult.HasValue && songExistingWindow.DialogResult.Value)
                     {
                         try
                         {
-                            mainVM.GoToSong(Song.PartitionDirectory);
+                            mainVM.AddSong(Song, true);
                             this.Close();
                         }
                         catch (Exception ex)

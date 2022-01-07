@@ -8,6 +8,27 @@ using Serilog;
 
 namespace SheetMusicOrganizer.View.Tools
 {
+    public class InvertBoolConverter: IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            else return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            else return false;
+        }
+    }
+
     public class RatingConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
@@ -36,7 +57,7 @@ namespace SheetMusicOrganizer.View.Tools
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (new BrushConverter().ConvertFrom(value) is Brush brush)
+            if (value != null && new BrushConverter().ConvertFrom(value) is Brush brush)
             {
                 return brush;
             }
