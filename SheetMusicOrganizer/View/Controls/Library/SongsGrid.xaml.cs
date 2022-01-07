@@ -117,11 +117,11 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
         private void SfDataGrid_SelectionChanged(object sender, GridSelectionChangedEventArgs e)
         {
-            foreach (GridRowInfo item in e.AddedItems)
-                if (item.RowData is SongItem song)
+            foreach (var item in e.AddedItems)
+                if (item is GridRowInfo row && row.RowData is SongItem song)
                     song.IsSelected = true;
-            foreach (GridRowInfo item in e.RemovedItems)
-                if (item.RowData is SongItem song)
+            foreach (var item in e.RemovedItems)
+                if (item is GridRowInfo row && row.RowData is SongItem song)
                     song.IsSelected = false;
         }
 
