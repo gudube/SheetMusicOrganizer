@@ -9,6 +9,6 @@
              Panel.ZIndex="10">
     <Grid x:Name="MainGrid" d:DataContext="{d:DesignInstance local:DisabledOverlay}">
         <Grid Background="{DynamicResource BackgroundLv3SolidColor}" Opacity="0.9"></Grid>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource LabelTextBlock}" Text="{Binding Title}" d:Text="TITLE HERE"></TextBlock>
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource LabelTextBlock}" FontSize="{Binding RelativeSource={RelativeSource AncestorType=UserControl},Path=FontSize}" Text="{Binding Title}" d:Text="TITLE HERE"></TextBlock>
     </Grid>
 </UserControl>

@@ -43,7 +43,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         }
 
         #region Changed events
-        private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue is PartitionVM oldVM)
             {
@@ -52,18 +52,18 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             }
 
             if (e.NewValue is PartitionVM newVM) {
-                OpenShownSongPartition();
+                await OpenShownSongPartition();
                 newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
                 newVM.PropertyChanged += PartitionVM_PropertyChanged;
             }
         }
 
-        private void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Zoom))
                 UpdateZoom();
             else if (e.PropertyName == nameof(PartitionVM.ShownSong))
-                OpenShownSongPartition();
+                await OpenShownSongPartition();
         }
 
         private void Player_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -72,12 +72,12 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 UpdateScrollPos();
         }
 
-        private void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Settings.Default.PdfResolution != resolution)
             {
                 resolution = Settings.Default.PdfResolution;
-                OpenShownSongPartition();
+                await OpenShownSongPartition();
             }
         }
 
@@ -142,6 +142,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
                 try
                 {
+                    LoadingOverlay.Title = "LOADING...";
                     await _createImageTask;
                 } catch(OperationCanceledException)
                 {
@@ -150,7 +151,11 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 catch (Exception ex)
                 {
                     GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
+                } finally
+                {
+                    LoadingOverlay.Title = "";
                 }
+
             }
         }
 
@@ -168,6 +173,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
             for (uint i = 0; i < pdfDoc.PageCount; i++)
             {
+                LoadingOverlay.Title = $"LOADING...\r\n{i}/{pdfDoc.PageCount} pages";
                 using (var page = pdfDoc.GetPage(i)) //get each page and convert
                 {
                     ct?.ThrowIfCancellationRequested();
