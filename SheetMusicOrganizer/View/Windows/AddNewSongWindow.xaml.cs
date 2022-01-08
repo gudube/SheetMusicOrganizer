@@ -148,7 +148,7 @@ namespace SheetMusicOrganizer.View.Windows
 
                 var allPlaylist = mainVM.LibraryVM.Playlists[0];
                 var selectedPlaylist = mainVM.LibraryVM.Playlists.ElementAtOrDefault(mainVM.LibraryVM.SelectedPlaylistIndex);
-                var importVM = new ImportLibraryVM(mainVM.Session, allPlaylist, selectedPlaylist);
+                var importVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
 
                 if (importVM.AddSong(Song, false))
                 {

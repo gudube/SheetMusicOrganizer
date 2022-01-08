@@ -29,7 +29,10 @@ namespace SheetMusicOrganizer.ViewModel
         {
             if(e.PropertyName == nameof(Session.PlayingSong))
             {
-                PlayerVM.ShowAdvancedOptions = CurrentViewModel == PartitionVM && !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1);
+                if(Session.PlayingSong == null && CurrentViewModel == PartitionVM)
+                    SetView(LibraryVM);
+                
+                PlayerVM.ShowAdvancedOptions = CurrentViewModel == PartitionVM && !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1); 
             }
         }
 
@@ -102,9 +105,9 @@ namespace SheetMusicOrganizer.ViewModel
 
         public void GoToSong(string partitionFilename)
         {
-            SongItem song = DbHandler.GetSong(partitionFilename);
+            SongItem? song = DbHandler.GetSong(partitionFilename);
             SetView(LibraryVM);
-            LibraryVM.GoToSong(song);
+            if(song != null) LibraryVM.GoToSong(song);
         }
 
         #endregion

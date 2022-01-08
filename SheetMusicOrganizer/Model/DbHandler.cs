@@ -435,7 +435,7 @@ namespace SheetMusicOrganizer.Model
             throw new SqliteException("Could not find the song corresponding to the id: " + songId, 1);
         }
         */
-        public static SongItem GetSong(string partitionDir)
+        public static SongItem? GetSong(string partitionDir)
         {
             SqliteParameter param = CreateParameter("@" + songTable.PartitionDirectory, songTable.PartitionDirectory.SqlType, partitionDir);
             string condition = $"WHERE {songTable.TableName}.{songTable.PartitionDirectory} = {param.ParameterName}";
@@ -446,7 +446,7 @@ namespace SheetMusicOrganizer.Model
                 if (dataReader.Read())
                     return new SongItem(dataReader);
             }
-            throw new SqliteException("Could not find the song corresponding to : " + partitionDir, 1);
+            return null;
         }
 
         public static async Task<List<SongItem>> GetSongs(int playlistId)
@@ -536,6 +536,19 @@ namespace SheetMusicOrganizer.Model
             {
                 con.Open();
                 UpdateRow(con, songTable, song, field, value);
+            }
+        }
+
+        public static void UpdateSong(SongItem song)
+        {
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+
+                SongItem? existingSong = GetSong(song.PartitionDirectory);
+                if (existingSong == null) return;
+                song.Id = existingSong.Id;
+                UpdateRow(con, songTable, song);
             }
         }
 

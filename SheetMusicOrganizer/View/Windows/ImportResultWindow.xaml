@@ -10,6 +10,7 @@
         Title="ImportResultWindow" Height="450" Width="800"
         Style="{DynamicResource ControlBackgroundLv1}"
         WindowStyle="None"
+        ResizeMode="NoResize"
         d:DataContext="{d:DesignInstance library:ImportLibraryVM}">
     <Window.Resources>
         <tools:BooleanToVisibilityTrue x:Key="BooleanToVisibilityTrue"/>

@@ -10,11 +10,9 @@ namespace SheetMusicOrganizer.ViewModel.Library
     {
         public override string ViewModelName => "LIBRARY";
 
-        public ImportLibraryVM(SessionContext session, BasePlaylistItem allSongsPlaylist, BasePlaylistItem? selectedPlaylist) : base(session)
+        public ImportLibraryVM(SessionContext session, LibraryVM libraryVM) : base(session)
         {
-            this.allSongsPlaylist = allSongsPlaylist as PlaylistItem;
-            if(selectedPlaylist != allSongsPlaylist)
-                this.selectedPlaylist = selectedPlaylist as PlaylistItem;
+            this.libraryVM = libraryVM;
         }
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -31,8 +29,12 @@ namespace SheetMusicOrganizer.ViewModel.Library
             System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => Status += ("\r\n" + newLine)));
         }
 
-        private readonly PlaylistItem? allSongsPlaylist;
-        private readonly PlaylistItem? selectedPlaylist;
+        private void ActionOnUI(Action action)
+        {
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(action);
+        }
+
+        private LibraryVM libraryVM;
         private bool recursive;
         private bool useAudioMD;
         private bool overwrite;
@@ -45,14 +47,22 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
         private bool AddSong(SongItem song)
         {
-            bool overwritten = false;
             if (DbHandler.IsSongExisting(song.PartitionDirectory))
             {
                 if(overwrite)
                 {
                     AddStatus($"Overwriting song... ({song})");
-                    overwritten = true;
-                    DbHandler.DeleteSong(song.PartitionDirectory);
+                    DbHandler.UpdateSong(song);
+                    if (Session.PlayingSong != null && Session.PlayingSong.Equals(song))
+                        ActionOnUI(() => libraryVM.StopPlayingSong());
+                    
+                    foreach (var playlist in libraryVM.Playlists)
+                    {
+                        if (playlist is PlaylistItem plItem)
+                            ActionOnUI(() => plItem.UpdateSong(song));
+                    }
+                    AddStatus($"Song overwritten. ({song})");
+                    return true;
                 }
                 else
                 {
@@ -62,21 +72,17 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
             }
             
-            if(!overwritten)
-                AddStatus($"Adding new song... ({song})");
+            AddStatus($"Adding new song... ({song})");
 
             MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
             song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
 
             DbHandler.AddSong(song);
+            PlaylistItem? pl = (libraryVM.Playlists.ElementAtOrDefault(libraryVM.SelectedPlaylistIndex) as PlaylistItem);
+            if(pl != null)
+                ActionOnUI(() => pl.AddSongs(song));
 
-            allSongsPlaylist?.AddSongs(overwrite, song);
-            selectedPlaylist?.AddSongs(overwrite, song);
-
-            if (overwritten)
-                AddStatus($"Song overwritten. ({song})");
-            else
-                AddStatus($"New song added. ({song})");
+            AddStatus($"New song added. ({song})");
             return true;
         }
 
@@ -141,7 +147,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
             foreach (string pdfFile in pdfFiles)
             {
-                AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+                AddSong(new SongItem(pdfFile, audio1, audio2, 1, useAudioMD));
             }
         }
 
@@ -167,9 +173,9 @@ namespace SheetMusicOrganizer.ViewModel.Library
                     }
                 }
                 if (Path.GetFileNameWithoutExtension(audio1).Length <= Path.GetFileNameWithoutExtension(audio2).Length)
-                    AddSong(new SongItem(pdfFile, audio1, audio2, 0, useAudioMD));
+                    AddSong(new SongItem(pdfFile, audio1, audio2, 1, useAudioMD));
                 else
-                    AddSong(new SongItem(pdfFile, audio2, audio1, 0, useAudioMD));
+                    AddSong(new SongItem(pdfFile, audio2, audio1, 1, useAudioMD));
             }
 
         }
@@ -198,7 +204,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
             {
                 string ext = Path.GetExtension(fileDir);
                 if (ext == ".pdf")
-                    AddSong(new SongItem(fileDir, "", "", 0, false));
+                    AddSong(new SongItem(fileDir));
             }
         }
     }

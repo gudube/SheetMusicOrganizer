@@ -52,7 +52,7 @@ namespace SheetMusicOrganizer.Model.Items
             }
         }
 
-        private int _masteryId = 0;
+        private int _masteryId = 1;
         public int MasteryId { get => _masteryId; 
             set
             {
@@ -90,7 +90,7 @@ namespace SheetMusicOrganizer.Model.Items
         public int LengthSecs { get => _lengthSecs; set => SetField(ref _lengthSecs, value); }
         #endregion
 
-        public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 0, bool useAudioMD = true) : base()
+        public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 1, bool useAudioMD = true) : base()
         {
             _partitionDirectory = partitionDir;
             _audioDirectory1 = audioDirectory1;
@@ -132,7 +132,7 @@ namespace SheetMusicOrganizer.Model.Items
                 Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
             _rating = rating.GetValueOrDefault(0);
             _notes = GetSafeString(dataReader, songTable.Notes.Name);
-            _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(0);
+            _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(1);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
             string[] lengthSeparated = LengthMD.Split(':');

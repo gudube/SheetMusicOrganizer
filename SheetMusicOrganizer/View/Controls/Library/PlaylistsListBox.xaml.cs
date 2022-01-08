@@ -45,7 +45,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
             if (e.Data.GetDataPresent("Records") && e.Data.GetData("Records") is ObservableCollection<object> songs)
             {
-                targetItem.AddSongs(false, songs.Cast<SongItem>().ToArray());
+                targetItem.AddSongs(songs.Cast<SongItem>().ToArray());
             }
         }
 

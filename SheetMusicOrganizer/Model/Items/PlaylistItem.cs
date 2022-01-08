@@ -128,30 +128,29 @@ namespace SheetMusicOrganizer.Model.Items
             return _songs.Contains(song);
         }
 
-        public bool AddSongs(bool overwrite, params SongItem[] newSongs)
+        public bool AddSongs(params SongItem[] newSongs)
         {
             List<int> addedSongs = new List<int>();
-            List<int> overwritenSongs = new List<int>();
             foreach (SongItem song in newSongs)
             {
                 if(HasSong(song))
-                {
-                    if(overwrite)
-                    {
-                        _songs.Remove(song);
-                        overwritenSongs.Add(song.Id);
-                    } else
-                    {
-                        continue;
-                    }
-                }
+                    continue;
                 _songs.Add(song);
                 addedSongs.Add(song.Id);
             }
             OnPropertyChanged(nameof(Songs));
-            DbHandler.RemoveSongsFromPlaylist(Id, overwritenSongs);
             DbHandler.AddSongsToPlaylist(Id, addedSongs.ToArray());
             return newSongs.Length == addedSongs.Count;
+        }
+
+        public void UpdateSong(SongItem updatedSong)
+        {
+            SongItem? song = _songs.Find(x => x.Id == updatedSong.Id);
+            if (song != null)
+            {
+               song = updatedSong;
+               OnPropertyChanged(nameof(Songs));
+            }
         }
 
         public void RemoveSongs(params SongItem[] songsToRemove)
