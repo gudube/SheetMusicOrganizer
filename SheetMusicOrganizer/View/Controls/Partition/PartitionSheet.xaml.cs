@@ -22,9 +22,8 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         private uint resolution;
         public PartitionSheet()
         {
-            InitializeComponent();
-            resolution = Settings.Default.PdfResolution;
             DataContextChanged += PartitionSheet_DataContextChanged;
+            resolution = Settings.Default.PdfResolution;
             this.KeyDown += PartitionSheet_KeyDown;
             Loaded += (s, e) =>
             {
@@ -34,6 +33,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             {
                 Settings.Default.SettingsSaving -= Default_SettingsSaving;
             };
+            InitializeComponent();
         }
 
         private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
@@ -52,9 +52,9 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             }
 
             if (e.NewValue is PartitionVM newVM) {
-                await OpenShownSongPartition();
                 newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
                 newVM.PropertyChanged += PartitionVM_PropertyChanged;
+                await OpenShownSongPartition();
             }
         }
 

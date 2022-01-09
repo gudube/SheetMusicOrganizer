@@ -368,8 +368,9 @@ namespace SheetMusicOrganizer.Model
                 SqliteDataReader dataReader = GetAllItems(con, playlistTable.TableName);
                 while (dataReader.Read())
                 {
-                    PlaylistItem playlist = new PlaylistItem(dataReader); 
-                    playlist.Songs = await GetSongs(playlist.Id);
+                    PlaylistItem playlist = new PlaylistItem(dataReader);
+                    var songs = await GetSongs(playlist.Id);
+                    songs.ForEach(playlist.Songs.Add);
                     playlist.SortSongs();
                     playlists.Add(playlist);
                 }

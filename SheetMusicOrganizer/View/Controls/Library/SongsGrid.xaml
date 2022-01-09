@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
-             xmlns:modelItems="clr-namespace:SheetMusicOrganizer.Model.Items"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              mc:Ignorable="d" 
@@ -17,11 +16,12 @@
     </UserControl.Resources>
     <Border Style="{DynamicResource PopInBorder}">
         <Grid>
-            <syncfusion:SfDataGrid x:Name="Songs" d:DataContext="{d:DesignInstance modelItems:SongItem}" ItemsSource="{Binding ElementName=MainControl, Path=DataContext.ShownSongs}" AutoGenerateColumns="False"
+            <syncfusion:SfDataGrid x:Name="Songs" DataContext="{Binding SelectedPlaylist}" ItemsSource="{Binding Songs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
                                    Style="{DynamicResource SongsDataGrid}" RowStyle="{DynamicResource SongDataGridRow}" AlternatingRowStyle="{DynamicResource SongDataGridAlternatingRow}"
-                               SelectionChanged="SfDataGrid_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" AllowSelectionOnPointerPressed="False" SelectionMode="Extended"
-                               SelectionUnit="Row" AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
-                <!--dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding ElementName=MainControl}">-->
+                                   ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" EnableDataVirtualization="True"
+                                   SelectionMode="Extended" SelectionUnit="Row" SelectedItems="{Binding SelectedSongs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" DataContextChanged="Songs_DataContextChanged"
+                                   AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
                 <syncfusion:SfDataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}" CommandParameter="{Binding ElementName=Songs, Path=SelectedItem}"/>
                 </syncfusion:SfDataGrid.InputBindings>
@@ -46,12 +46,12 @@
                     </syncfusion:GridTextColumn>
                 </syncfusion:SfDataGrid.Columns>
             </syncfusion:SfDataGrid>
-            <StackPanel Orientation="Horizontal" Margin="0,15" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <StackPanel Orientation="Horizontal" Margin="0,25" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <StackPanel.Style>
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=MainControl, Path=DataContext.ShownSongs.Count}" Value="0">
+                            <DataTrigger Binding="{Binding ElementName=Songs, Path=DataContext.Songs.Count}" Value="0">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>

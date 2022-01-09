@@ -64,20 +64,20 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="# :" Style="{DynamicResource LabelTextBlock}"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding NumberText}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding NumberText}"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Title :" Style="{DynamicResource LabelTextBlock}"/>
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                <TextBox Width="200" Margin="0,2,0,2" Text="{Binding TitleText, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+                <TextBox Width="200" Margin="0,2,0,2" Text="{Binding TitleText, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Style="{DynamicResource ErrorTextBlock}"/>
             </StackPanel>
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Artist :" Style="{DynamicResource LabelTextBlock}"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="0,2,0,2" Text="{Binding ArtistText}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Width="200" Margin="0,2,0,2" Text="{Binding ArtistText}"/>
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Album :" Style="{DynamicResource LabelTextBlock}"/>
-            <TextBox Grid.Row="3" Grid.Column="1" Width="200" Margin="0,2,0,2" Text="{Binding AlbumText}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Width="200" Margin="0,2,0,2" Text="{Binding AlbumText}"/>
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Genre :" Style="{DynamicResource LabelTextBlock}"/>
-            <TextBox Grid.Row="4" Grid.Column="1" Width="100" Margin="0,2,0,2" Text="{Binding GenreText}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Width="100" Margin="0,2,0,2" Text="{Binding GenreText}"/>
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Rating :" Style="{DynamicResource LabelTextBlock}"/>
-            <TextBox Grid.Row="5" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding RatingText}" IsEnabled="{Binding ElementName=UseAudioMDCheckBox, Path=IsChecked, Converter={StaticResource InvertBoolConverter}}"/> <!-- TODO: Replace with clickable stars-->
+            <TextBox Grid.Row="5" Grid.Column="1" Width="20" Margin="0,2,0,2" Text="{Binding RatingText}" /> <!-- TODO: Replace with clickable stars-->
         </Grid>
         <Grid Margin="0, 18, 0, 0">
             <Button Style="{DynamicResource 3DButton}" IsCancel="True" HorizontalAlignment="Left" >

@@ -6,7 +6,7 @@ using SheetMusicOrganizer.Model.Tables;
 
 namespace SheetMusicOrganizer.Model.Items
 {
-    public class SongItem : BaseModelItem
+    public class SongItem : BaseModelItem, ICloneable
     {
         #region Properties
         private string _partitionDirectory;
@@ -82,9 +82,6 @@ namespace SheetMusicOrganizer.Model.Items
 
         private bool _showedAsPlaying = false;
         public bool ShowedAsPlaying { get => _showedAsPlaying; set => SetField(ref _showedAsPlaying, value); }
-
-        private bool _isSelected = false;
-        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
 
         private int _lengthSecs = 0;
         public int LengthSecs { get => _lengthSecs; set => SetField(ref _lengthSecs, value); }
@@ -227,6 +224,13 @@ namespace SheetMusicOrganizer.Model.Items
         public override int GetHashCode()
         {
             return Id;
+        }
+
+        public object Clone()
+        {
+            var newSong = (SongItem)MemberwiseClone();
+            newSong.ShowedAsPlaying = false;
+            return newSong;
         }
     }
 }

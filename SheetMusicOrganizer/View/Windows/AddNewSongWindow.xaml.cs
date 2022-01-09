@@ -146,10 +146,7 @@ namespace SheetMusicOrganizer.View.Windows
             {
                 UpdateSongFromInformation();
 
-                var allPlaylist = mainVM.LibraryVM.Playlists[0];
-                var selectedPlaylist = mainVM.LibraryVM.Playlists.ElementAtOrDefault(mainVM.LibraryVM.SelectedPlaylistIndex);
                 var importVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
-
                 if (importVM.AddSong(Song, false))
                 {
                     mainVM.GoToSong(Song.PartitionDirectory);

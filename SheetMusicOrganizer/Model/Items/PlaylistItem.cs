@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Data.Sqlite;
@@ -8,18 +9,7 @@ using SheetMusicOrganizer.Model.Tables;
 
 namespace SheetMusicOrganizer.Model.Items
 {
-    public class BasePlaylistItem : BaseModelItem
-    {
-        // ReSharper disable once InconsistentNaming
-        //protected bool _isSelected = false;
-        //public virtual bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
-        public override object[] GetCustomValues()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class PlaylistItem : BasePlaylistItem
+    public class PlaylistItem : BaseModelItem
     {
         #region Properties
         private string _name;
@@ -108,9 +98,14 @@ namespace SheetMusicOrganizer.Model.Items
             return Id.GetHashCode();
         }
 
+
         #region songs
-        private List<SongItem> _songs = new List<SongItem>();
-        public List<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
+        private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
+        public ObservableCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
+        
+        private ObservableCollection<object> _selectedSongs = new ObservableCollection<object>();
+        public ObservableCollection<object> SelectedSongs { get => _selectedSongs; set => SetField(ref _selectedSongs, value); }
+        private List<object>? _tempSelected;
 
         public void SortSongs()
         {
@@ -118,64 +113,75 @@ namespace SheetMusicOrganizer.Model.Items
             if (propInfo == null)
                 return;
             if (SortAsc)
-                Songs = Songs.OrderBy(source => propInfo.GetValue(source)).ToList();
+                Songs = new ObservableCollection<SongItem>(Songs.OrderBy(source => propInfo.GetValue(source)));
             else
-                Songs = Songs.OrderByDescending(source => propInfo.GetValue(source)).ToList();
+                Songs = new ObservableCollection<SongItem>(Songs.OrderByDescending(source => propInfo.GetValue(source)));
         }
 
         public bool HasSong(SongItem song)
         {
-            return _songs.Contains(song);
+            return _songs.Any(x => x.Equals(song));
         }
 
-        public bool AddSongs(params SongItem[] newSongs)
+        public bool AddSongs(IEnumerable<SongItem> newSongs)
         {
             List<int> addedSongs = new List<int>();
             foreach (SongItem song in newSongs)
             {
                 if(HasSong(song))
                     continue;
-                _songs.Add(song);
+                Songs.Add((SongItem)song.Clone());
                 addedSongs.Add(song.Id);
             }
-            OnPropertyChanged(nameof(Songs));
             DbHandler.AddSongsToPlaylist(Id, addedSongs.ToArray());
-            return newSongs.Length == addedSongs.Count;
+            SortSongs();
+            return newSongs.Count() == addedSongs.Count;
         }
 
         public void UpdateSong(SongItem updatedSong)
         {
-            SongItem? song = _songs.Find(x => x.Id == updatedSong.Id);
-            if (song != null)
+            for(var i = 0; i < Songs.Count; i++)
             {
-               song = updatedSong;
-               OnPropertyChanged(nameof(Songs));
+                if (Songs[i].Id == updatedSong.Id)
+                {
+                    Songs[i] = updatedSong;
+                    OnPropertyChanged(nameof(Songs));
+                    return;
+                }
             }
         }
 
-        public void RemoveSongs(params SongItem[] songsToRemove)
+        public void RemoveSongs(IEnumerable<SongItem> songsToRemove)
         {
             List<int> removedSongs = new List<int>();
-            foreach(SongItem song in songsToRemove)
+            foreach(SongItem song in songsToRemove.ToArray())
             {
                 if (HasSong(song))
                 {
-                    _songs.Remove(song);
+                    Songs.Remove(song);
+                    SelectedSongs.Remove(song);
                     removedSongs.Add(song.Id);
                 }
             }
-            OnPropertyChanged(nameof(Songs));
             DbHandler.RemoveSongsFromPlaylist(Id, removedSongs);
+        }
+
+        public void PrepareChange()
+        {
+            IsEditing = false;
+            _tempSelected = SelectedSongs.ToList();
+        }
+
+        public void ApplyChange()
+        {
+            if (_tempSelected != null && SelectedSongs.Count == 0)
+            {
+                foreach (var item in _tempSelected)
+                    SelectedSongs.Add(item);
+            }
+            _tempSelected = null;
         }
 
         #endregion
     }
-
-    public class AddPlaylistItem : BasePlaylistItem
-    {
-        public override object[] GetCustomValues()
-        {
-            throw new NotImplementedException();
-        }
-    };
 }

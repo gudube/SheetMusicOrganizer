@@ -53,8 +53,6 @@ namespace SheetMusicOrganizer.View.Windows
                 return;
             }
 
-            var allPlaylist = mainVM.LibraryVM.Playlists[0];
-            var selectedPlaylist = mainVM.LibraryVM.Playlists.ElementAtOrDefault(mainVM.LibraryVM.SelectedPlaylistIndex);
             var importLibraryVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
             Task importAction = importLibraryVM.AddDir(
                     ImportByFolder.IsChecked.HasValue && ImportByFolder.IsChecked.Value,

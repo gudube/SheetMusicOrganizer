@@ -58,8 +58,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
                     
                     foreach (var playlist in libraryVM.Playlists)
                     {
-                        if (playlist is PlaylistItem plItem)
-                            ActionOnUI(() => plItem.UpdateSong(song));
+                        ActionOnUI(() => playlist.UpdateSong(song));
                     }
                     AddStatus($"Song overwritten. ({song})");
                     return true;
@@ -78,9 +77,8 @@ namespace SheetMusicOrganizer.ViewModel.Library
             song.MasteryId = selectedMasteryItems.Length > 0 ? selectedMasteryItems[0].Id : Session.MasteryLevels[0].Id;
 
             DbHandler.AddSong(song);
-            PlaylistItem? pl = (libraryVM.Playlists.ElementAtOrDefault(libraryVM.SelectedPlaylistIndex) as PlaylistItem);
-            if(pl != null)
-                ActionOnUI(() => pl.AddSongs(song));
+            if(libraryVM.SelectedPlaylist != null)
+                ActionOnUI(() => libraryVM.SelectedPlaylist.AddSongs(new[] { song }));
 
             AddStatus($"New song added. ({song})");
             return true;

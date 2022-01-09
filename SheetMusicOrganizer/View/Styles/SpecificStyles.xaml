@@ -13,13 +13,13 @@
     <Style x:Key="SongsDataGrid" TargetType="{x:Type syncfusion:SfDataGrid}" BasedOn="{StaticResource {x:Type syncfusion:SfDataGrid}}">
         <Setter Property="Visibility" Value="Visible"/>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding ElementName=MainControl, Path=DataContext.ShownSongs.Count}" Value="0">
+            <DataTrigger Binding="{Binding Path=Songs.Count}" Value="0">
                 <Setter Property="Visibility" Value="Hidden"/>
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="MasteryGridCell" TargetType="syncfusion:GridCell" BasedOn="{StaticResource DataGridText}">
+    <Style x:Key="MasteryGridCell" TargetType="{x:Type syncfusion:GridCell}" BasedOn="{StaticResource DataGridText}">
         <Setter Property="Foreground" Value="{Binding Mastery.Name, Converter={StaticResource MasteryColorConverter}}"/>
     </Style>
 

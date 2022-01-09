@@ -52,7 +52,7 @@ namespace SheetMusicOrganizer.ViewModel
                 {
                     if(value == PartitionVM)
                     {
-                        PlayerVM.ShowAdvancedOptions = !String.IsNullOrWhiteSpace(Session.PlayingSong.AudioDirectory1);
+                        PlayerVM.ShowAdvancedOptions = !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1);
                     } else
                     {
                         PlayerVM.ShowAdvancedOptions = false;
