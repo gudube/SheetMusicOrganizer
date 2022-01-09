@@ -46,7 +46,7 @@ namespace SheetMusicOrganizer.ViewModel
         public BaseViewModel? CurrentViewModel
         {
             get => _currentViewModel;
-            set
+            private set
             {
                 if (SetField(ref _currentViewModel, value))
                 {
@@ -82,7 +82,9 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 bool foundSongToPlay = LibraryVM.SetSelectedSongPlaying(false);
                 if (foundSongToPlay)
+                {
                     CurrentViewModel = view;
+                }
             }
             else
             {

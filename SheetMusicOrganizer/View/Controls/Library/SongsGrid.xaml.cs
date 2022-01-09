@@ -32,6 +32,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
             if (e.OldValue is LibraryVM oldVM)
             {
                 oldVM.Session.MasteryLevels.CollectionChanged -= MasteryLevels_CollectionChanged;
+                oldVM.SelectedPlaylist?.PrepareChange();
             }
 
             if (e.NewValue is LibraryVM newVM)
@@ -206,6 +207,5 @@ namespace SheetMusicOrganizer.View.Controls.Library
             }
         }
         #endregion
-
     }
 }

@@ -69,7 +69,6 @@ namespace SheetMusicOrganizer.ViewModel
                 PlaylistItem? oldValue = _selectedPlaylist;
                 oldValue?.PrepareChange();
                 SetField(ref _selectedPlaylist, value);
-                oldValue?.ApplyChange();
             }
         }
 

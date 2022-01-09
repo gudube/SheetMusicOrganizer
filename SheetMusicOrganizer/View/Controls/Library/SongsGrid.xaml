@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              Name="MainControl"
              d:DesignHeight="450"
-             d:DataContext="{d:DesignInstance viewModel:LibraryVM}" >
+             d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <UserControl.Resources>
         <tools:RatingConverter x:Key="RatingConverter"/>
         <tools:DirFilenameConverter x:Key="DirFilenameConverter"/>
@@ -18,9 +18,9 @@
         <Grid>
             <syncfusion:SfDataGrid x:Name="Songs" DataContext="{Binding SelectedPlaylist}" ItemsSource="{Binding Songs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
                                    Style="{DynamicResource SongsDataGrid}" RowStyle="{DynamicResource SongDataGridRow}" AlternatingRowStyle="{DynamicResource SongDataGridAlternatingRow}"
-                                   ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" EnableDataVirtualization="True"
+                                   ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" EnableDataVirtualization="True" DataContextChanged="Songs_DataContextChanged"
                                    SelectionMode="Extended" SelectionUnit="Row" SelectedItems="{Binding SelectedSongs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                   AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging" DataContextChanged="Songs_DataContextChanged"
+                                   AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging"
                                    AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
                 <syncfusion:SfDataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}" CommandParameter="{Binding ElementName=Songs, Path=SelectedItem}"/>

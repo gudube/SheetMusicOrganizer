@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Data.Sqlite;
 using Serilog;
 using SheetMusicOrganizer.Model.Tables;
@@ -62,6 +64,14 @@ namespace SheetMusicOrganizer.Model.Items
             _smartDir = "";
             _sortCol = new SongTable().Title.Name;
             _sortAsc = true;
+            SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
+        }
+
+        private void SelectedSongs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Application.Current.Dispatcher.InvokeAsync(() => {
+                ApplyChange();
+            }, DispatcherPriority.DataBind);
         }
 
         public PlaylistItem(SqliteDataReader dataReader)
@@ -78,6 +88,7 @@ namespace SheetMusicOrganizer.Model.Items
             _smartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
             _sortCol = GetSafeString(dataReader, playlistTable.SortCol.Name);
             _sortAsc = GetSafeBool(dataReader, playlistTable.SortAsc.Name);
+            SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
         }
 
         public override object[] GetCustomValues()
@@ -172,7 +183,7 @@ namespace SheetMusicOrganizer.Model.Items
             _tempSelected = SelectedSongs.ToList();
         }
 
-        public void ApplyChange()
+        private void ApplyChange()
         {
             if (_tempSelected != null && SelectedSongs.Count == 0)
             {
