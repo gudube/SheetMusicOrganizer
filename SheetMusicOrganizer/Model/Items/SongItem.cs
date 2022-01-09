@@ -216,11 +216,6 @@ namespace SheetMusicOrganizer.Model.Items
             return string.Join(" - ", artist, title);
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is SongItem song && this.Id == song.Id;
-        }
-
         public override int GetHashCode()
         {
             return Id;

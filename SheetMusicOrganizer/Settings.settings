@@ -27,5 +27,8 @@
     <Setting Name="PdfResolution" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">1200</Value>
     </Setting>
+    <Setting Name="PartitionSelectionMode" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

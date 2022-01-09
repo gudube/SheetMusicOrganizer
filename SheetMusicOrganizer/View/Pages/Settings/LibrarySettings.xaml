@@ -6,7 +6,11 @@
              xmlns:local="clr-namespace:SheetMusicOrganizer.View.Pages.Settings"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <StackPanel>
+        <TextBlock Style="{DynamicResource LabelTextBlock}">When going into Partition mode, open the partition of the :</TextBlock>
+        <ComboBox HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" SelectedIndex="{Binding PartitionSelectionMode, Mode=TwoWay}">
+            <ComboBoxItem TabIndex="0">Selected Song (Default)</ComboBoxItem>
+            <ComboBoxItem TabIndex="1">Playing Song</ComboBoxItem>
+        </ComboBox>
+    </StackPanel>
 </UserControl>

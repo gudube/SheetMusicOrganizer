@@ -20,7 +20,6 @@ namespace SheetMusicOrganizer.ViewModel
         #region Initialization
         public async Task InitializeData()
         {
-            Playlists.CollectionChanged += Playlists_CollectionChanged;
             await UpdatePlaylistsFromDb();
             UpdateMasteryLevelsFromDb();
         }
@@ -39,8 +38,8 @@ namespace SheetMusicOrganizer.ViewModel
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(Session.PlayingSong))
-                RefreshSongShowedAsPlaying();
+            //if(e.PropertyName == nameof(Session.PlayingSong))
+            //    RefreshSongShowedAsPlaying();
         }
         #endregion
 
@@ -54,18 +53,6 @@ namespace SheetMusicOrganizer.ViewModel
         {
             Playlists.Reset(await DbHandler.GetAllPlaylists());
             SelectedPlaylist = Playlists.ElementAtOrDefault(0);
-        }
-
-        private void Playlists_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            foreach (PlaylistItem item in Playlists) 
-                item.PropertyChanged += Playlist_PropertyChanged;
-        }
-
-        private void Playlist_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(PlaylistItem.IsPlaying))
-                RefreshSongShowedAsPlaying();
         }
 
         #endregion
@@ -255,9 +242,6 @@ namespace SheetMusicOrganizer.ViewModel
             this.SongMasteryChanged?.Invoke(this, new SongItem[]{ song });
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
-
-            //if (Session.SelectedMasteryLevels.Count > 0 && !Session.SelectedMasteryLevels.Contains(mastery) && Session.Songs.Contains(song))
-            //    Session.Songs.Remove(song);
         }
         public void SetSongsMastery(IEnumerable<SongItem> songs, MasteryItem mastery)
         {
@@ -268,12 +252,6 @@ namespace SheetMusicOrganizer.ViewModel
             this.SongMasteryChanged?.Invoke(this, songItems);
             StatusContext.removeSavingStatus(SavingStatus.SongMastery);
             StatusContext.removeLoadingStatus(LoadingStatus.SettingSongMastery);
-            /*if (!Session.SelectedMasteryLevels.Contains(mastery))
-            {
-                foreach (SongItem song in songItems)
-                    if (Session.Songs.Contains(song))
-                        Session.Songs.Remove(song);
-            }*/
         }
         #endregion
 
@@ -285,11 +263,11 @@ namespace SheetMusicOrganizer.ViewModel
             if(Session.MasteryLevels.Any(mastery => mastery.IsSelected) && !song.Mastery.IsSelected)
                 song.Mastery.IsSelected = true;
 
-            SongItem? songToSelect = SelectedPlaylist?.Songs.FirstOrDefault(x => x.Equals(song));
+            SongItem? songToSelect = SelectedPlaylist?.Songs.FirstOrDefault(x => x.Id == song.Id);
             if(songToSelect == null) // song is not visible in this playlist
             {
                 SelectedPlaylist = Playlists.ElementAtOrDefault(0);
-                songToSelect = SelectedPlaylist?.Songs.First(x => x.Equals(song));
+                songToSelect = SelectedPlaylist?.Songs.First(x => x.Id == song.Id);
                 if (songToSelect == null)
                 {
                     GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
@@ -336,35 +314,35 @@ namespace SheetMusicOrganizer.ViewModel
         #region PlayingSong
         public DelegateCommand? PlaySelectedSongCommand { get; private set; }
 
-        private void RefreshSongShowedAsPlaying()
-        {
-            if (SelectedPlaylist == null)
-                return;
+        //private void RefreshSongShowedAsPlaying()
+        //{
+        //    foreach (var playlist in Playlists)
+        //        foreach (SongItem song in playlist.Songs)
+        //            song.ShowedAsPlaying = false;
 
-            foreach (var playlist in Playlists)
-                foreach (SongItem song in playlist.Songs)
-                    song.ShowedAsPlaying = false;
-
-            if (Session.PlayingSong != null && SelectedPlaylist.IsPlaying == true)
-            {
-                SongItem? songStartedPlaying = SelectedPlaylist.Songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
-                if (songStartedPlaying != null)
-                    songStartedPlaying.ShowedAsPlaying = true;
-            }
-        }
+        //    if (Session.PlayingSong != null && SelectedPlaylist.IsPlaying == true)
+        //    {
+        //        SongItem? songStartedPlaying = SelectedPlaylist.Songs.FirstOrDefault(x => x.Id == Session.PlayingSong.Id);
+        //        if (songStartedPlaying != null)
+        //            songStartedPlaying.ShowedAsPlaying = true;
+        //    }
+        //}
 
         public bool SetSelectedSongPlaying(bool startPlaying, SongItem? specificSong = null)
         {
-            SongItem? song = specificSong ?? SelectedPlaylist?.SelectedSongs.FirstOrDefault() as SongItem ?? Session.PlayingSong ?? SelectedPlaylist?.Songs.FirstOrDefault();
+            SongItem? song = specificSong;
+            if (song == null)
+            {
+                if (Settings.Default.PartitionSelectionMode == 0)
+                    song = SelectedPlaylist?.SelectedSongs.FirstOrDefault() as SongItem ?? Session.PlayingSong ?? SelectedPlaylist?.Songs.FirstOrDefault();
+                else
+                    song = Session.PlayingSong ?? SelectedPlaylist?.SelectedSongs.FirstOrDefault() as SongItem ?? SelectedPlaylist?.Songs.FirstOrDefault();
+            }
+
             if (song == null)
             {
                 Log.Warning("Tried to start playing a song without any songs visible");
                 return false;
-            }
-
-            foreach(var playlist in Playlists)
-            {
-                playlist.IsPlaying = playlist == SelectedPlaylist;
             }
 
             bool anyMasterySelected = false;
@@ -393,6 +371,10 @@ namespace SheetMusicOrganizer.ViewModel
         {
             if (Session.PlayingSong != song)
             {
+                foreach (var playlist in Playlists)
+                    playlist.IsPlaying = playlist.Songs.Contains(song);
+
+
                 Session.PlayingSong = song;
                 if(String.IsNullOrWhiteSpace(song.AudioDirectory1))
                     Session.Player.Stop();

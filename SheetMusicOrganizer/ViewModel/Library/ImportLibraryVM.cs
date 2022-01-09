@@ -53,7 +53,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
                 {
                     AddStatus($"Overwriting song... ({song})");
                     DbHandler.UpdateSong(song);
-                    if (Session.PlayingSong != null && Session.PlayingSong.Equals(song))
+                    if (Session.PlayingSong != null && Session.PlayingSong.Id == song.Id)
                         ActionOnUI(() => libraryVM.StopPlayingSong());
                     
                     foreach (var playlist in libraryVM.Playlists)

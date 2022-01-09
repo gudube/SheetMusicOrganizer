@@ -110,5 +110,17 @@ namespace SheetMusicOrganizer {
                 this["PdfResolution"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PartitionSelectionMode {
+            get {
+                return ((int)(this["PartitionSelectionMode"]));
+            }
+            set {
+                this["PartitionSelectionMode"] = value;
+            }
+        }
     }
 }

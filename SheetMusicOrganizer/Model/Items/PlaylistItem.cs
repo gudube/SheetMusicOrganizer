@@ -120,7 +120,7 @@ namespace SheetMusicOrganizer.Model.Items
 
         public bool HasSong(SongItem song)
         {
-            return _songs.Any(x => x.Equals(song));
+            return _songs.Any(x => x.Id == song.Id);
         }
 
         public bool AddSongs(IEnumerable<SongItem> newSongs)
