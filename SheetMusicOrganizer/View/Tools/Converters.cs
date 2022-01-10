@@ -36,7 +36,7 @@ namespace SheetMusicOrganizer.View.Tools
             if (value is bool boolValue && boolValue)
                 return Visibility.Visible;
             else
-                return Visibility.Hidden;
+                return (parameter as bool?) == true ? Visibility.Collapsed : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -52,12 +52,12 @@ namespace SheetMusicOrganizer.View.Tools
             if (value is bool boolValue && !boolValue)
                 return Visibility.Visible;
             else
-                return Visibility.Hidden;
+                return (parameter as bool?) == true ? Visibility.Collapsed : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is Visibility vis && vis == Visibility.Hidden;
+            return value is Visibility vis && vis != Visibility.Visible;
         }
     }
 

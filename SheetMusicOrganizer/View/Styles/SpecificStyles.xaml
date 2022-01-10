@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:modelItems="clr-namespace:SheetMusicOrganizer.Model.Items"
                     xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
-                    xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools">
+                    xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
+                    xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
+                    x:Class="SheetMusicOrganizer.View.Styles.SpecificStyles">
     <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
 
     <Style x:Key="MasteryListBoxItem" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
@@ -57,6 +59,120 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <!--#endregion-->
+
+    <!--#region TitleBar -->
+    <Style x:Key="CaptionButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="LayoutRoot" Background="Transparent" Width="44" Height="30">
+                        <TextBlock x:Name="txt" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
+                                   Foreground="{StaticResource ClickableSolidColor}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased"  TextOptions.TextFormattingMode="Display"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="LayoutRoot" Property="Background" Value="#E5E5E5"/>
+                            <Setter TargetName="txt" Property="Foreground" Value="#000000"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--Minimize-->
+    <Style x:Key="MinimizeButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CaptionButtonStyle}">
+        <Setter Property="Content" Value="&#xE949;"/>
+    </Style>
+    <!--Maximize-->
+    <Style x:Key="MaximizeButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CaptionButtonStyle}">
+        <Setter Property="Content" Value="&#xE739;"/>
+    </Style>
+    <!--Restore-->
+    <Style x:Key="RestoreButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CaptionButtonStyle}">
+        <Setter Property="Content" Value="&#xE923;"/>
+    </Style>
+    <!--Close-->
+    <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CaptionButtonStyle}">
+        <Setter Property="Content" Value="&#xE106;"/>
+    </Style>
+    
+    <Style TargetType="{x:Type windows:TitleBar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type windows:TitleBar}">
+                    <Border x:Name="MainWindowBorder" BorderBrush="Black" DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=windows:TitleBar}}">
+                        <Border.Style>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMaximized}" Value="True">
+                                        <DataTrigger.Setters>
+                                            <Setter Property="BorderThickness" Value="8"/>
+                                        </DataTrigger.Setters>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid x:Name="parentContainer" Background="{StaticResource BackgroundLv1SolidColor}">
+                            <Grid.CommandBindings>
+                                <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+                                <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+                                <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+                                <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+                            </Grid.CommandBindings>
+                            <Grid.Resources>
+                                <tools:BooleanToVisibilityTrue x:Key="BooleanToVisibilityTrue"/>
+                                <tools:BooleanToVisibilityFalse x:Key="BooleanToVisibilityFalse"/>
+                            </Grid.Resources>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height ="Auto"/>
+                                <RowDefinition Height ="*"/>
+                            </Grid.RowDefinitions>
+                            <!--Window chrome-->
+                            <Grid Grid.Row="0" Height="30" Background="{StaticResource BackgroundLv3SolidColor}" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <!--App icon-->
+                                    <Image Source="/icon.ico" Width="18" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <TextBlock Foreground="White" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" FontFamily="Arial" Margin="4 3 0 0" />
+                                </StackPanel>
+                                <!--Caption buttons-->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                                    <Button Style="{DynamicResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"
+                                Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
+                                    <Button x:Name="RestoreButton" Style="{DynamicResource RestoreButtonStyle}" 
+                                Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore">
+                                        <Button.Visibility>
+                                            <Binding Path="IsMaximized" Converter="{StaticResource BooleanToVisibilityTrue}" FallbackValue="Visible">
+                                                <Binding.ConverterParameter>
+                                                    <sys:Boolean>True</sys:Boolean>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </Button.Visibility>
+                                    </Button>
+                                    <Button x:Name="MaximizeButton" Style="{DynamicResource MaximizeButtonStyle}" 
+                                Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize">
+                                        <Button.Visibility>
+                                            <Binding Path="IsMaximized" Converter="{StaticResource BooleanToVisibilityFalse}" FallbackValue="Collapsed">
+                                                <Binding.ConverterParameter>
+                                                    <sys:Boolean>True</sys:Boolean>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </Button.Visibility>
+                                    </Button>
+                                    <Button Style="{DynamicResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close"
+                                Command="{x:Static SystemCommands.CloseWindowCommand}"/>
+                                </StackPanel>
+                            </Grid>
+                            <ContentControl Grid.Row="1" Content="{TemplateBinding Content}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=windows:TitleBar}}"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--#endregion-->
 
 </ResourceDictionary>

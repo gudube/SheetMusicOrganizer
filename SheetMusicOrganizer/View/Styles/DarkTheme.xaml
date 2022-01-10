@@ -313,5 +313,16 @@
     <BitmapImage x:Key="SwitchViewImage" UriSource="/View/Resources/dark/switch_view_40.png"/>
     <!--#endregion-->
 
+    <!--#region Window -->
+    <Style x:Key="WindowTitleBar" TargetType="{x:Type Window}" BasedOn="{StaticResource ControlBackgroundLv1}">
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <!--GlassFrameThickness="0 64 0 0" NonClientFrameEdges="Left,Bottom,Right"-->
+                <WindowChrome CaptionHeight="34"  />
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
 </ResourceDictionary>
    
