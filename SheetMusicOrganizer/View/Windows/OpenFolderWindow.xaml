@@ -7,54 +7,57 @@
         xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
         xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
         mc:Ignorable="d"
-        Title="Open Folder" SizeToContent="WidthAndHeight"
-        Style="{DynamicResource ControlBackgroundLv1}"
+        Title="Open Folder"
+        Style="{DynamicResource WindowTitleBar}"
         x:Name="MainOpenFolderWindow"
+        WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Window.Resources>
         <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
     </Window.Resources>
-    <StackPanel Orientation="Vertical" Margin="18">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{Binding Folder}" Style="{StaticResource InputTextBlock}"/>
-            <Button Grid.Column="2" Content="Select Folder" Click="SelectFolderButton_Click"
-                    Style="{DynamicResource 3DButton}"/>
-            <TextBlock Grid.Column="3" Style="{DynamicResource ErrorTextBlock}"/>
-        </Grid>
-        <TextBlock Style="{DynamicResource LabelTextBlock}" Margin="0,10, 0, 2">Link music sheet and audio:</TextBlock>
-        <RadioButton x:Name="ImportByFolder" IsChecked="True">By folder (pdf and audio files are in the same folder)</RadioButton>
-        <RadioButton x:Name="ImportByFilename">By file names (pdf and audio files have the same name)</RadioButton>
-        <RadioButton x:Name="ImportPdfOnly">Don't import audio - Only import pdf files</RadioButton>
-        <Separator Style="{DynamicResource HorizontalSeparator}" Margin="0, 10"/>
-        <controls:OptionalExpander Grid.IsSharedSizeScope="True">
-            <Grid Margin="10,2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" SharedSizeGroup="A"/>
-                    <RowDefinition Height="Auto" SharedSizeGroup="A"/>
-                    <RowDefinition Height="Auto" SharedSizeGroup="A"/>
-                </Grid.RowDefinitions>
-                <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.UseMetadataAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
-                    Use audio metadata (if found)
-                </CheckBox>
-                <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.RecursiveAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
-                    Recursive scan (in subfolders)
-                </CheckBox>
-                <CheckBox Grid.Row="2" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.OverwriteAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=false}">
-                    Overwrite existing songs (resets sync configuration)
-                </CheckBox>
+    <windows:TitleBar>
+        <StackPanel Orientation="Vertical" Margin="18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Folder}" Style="{StaticResource InputTextBlock}"/>
+                <Button Grid.Column="2" Content="Select Folder" Click="SelectFolderButton_Click"
+                        Style="{DynamicResource 3DButton}"/>
+                <TextBlock Grid.Column="3" Style="{DynamicResource ErrorTextBlock}"/>
             </Grid>
-        </controls:OptionalExpander>
-        <Grid Margin="0, 10, 0, 0">
-            <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" Style="{DynamicResource 3DButton}"/>
-            <Button Content="Confirm" Click="ConfirmButton_Click"  HorizontalAlignment="Right"
-                    Style="{DynamicResource 3DButton}" IsDefault="True"
-                    IsEnabled="{Binding Path=Folder, Converter={StaticResource StringNotEmptyConverter}}"/>
-        </Grid>
-    </StackPanel>
+            <TextBlock Style="{DynamicResource LabelTextBlock}" Margin="0,10, 0, 2">Link music sheet and audio:</TextBlock>
+            <RadioButton x:Name="ImportByFolder" IsChecked="True">By folder (pdf and audio files are in the same folder)</RadioButton>
+            <RadioButton x:Name="ImportByFilename">By file names (pdf and audio files have the same name)</RadioButton>
+            <RadioButton x:Name="ImportPdfOnly">Don't import audio - Only import pdf files</RadioButton>
+            <Separator Style="{DynamicResource HorizontalSeparator}" Margin="0, 10"/>
+            <controls:OptionalExpander Grid.IsSharedSizeScope="True">
+                <Grid Margin="10,2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" SharedSizeGroup="A"/>
+                        <RowDefinition Height="Auto" SharedSizeGroup="A"/>
+                        <RowDefinition Height="Auto" SharedSizeGroup="A"/>
+                    </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.UseMetadataAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
+                        Use audio metadata (if found)
+                    </CheckBox>
+                    <CheckBox Grid.Row="1" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.RecursiveAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=true}">
+                        Recursive scan (in subfolders)
+                    </CheckBox>
+                    <CheckBox Grid.Row="2" IsChecked="{Binding Path=DataContext.(windows:OpenFolderWindow.OverwriteAO), RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=false}">
+                        Overwrite existing songs (resets sync configuration)
+                    </CheckBox>
+                </Grid>
+            </controls:OptionalExpander>
+            <Grid Margin="0, 10, 0, 0">
+                <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" Style="{DynamicResource 3DButton}"/>
+                <Button Content="Confirm" Click="ConfirmButton_Click"  HorizontalAlignment="Right"
+                        Style="{DynamicResource 3DButton}" IsDefault="True"
+                        IsEnabled="{Binding Path=Folder, Converter={StaticResource StringNotEmptyConverter}}"/>
+            </Grid>
+        </StackPanel>
+    </windows:TitleBar>
 </Window>

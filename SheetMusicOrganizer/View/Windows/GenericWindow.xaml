@@ -3,9 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Style="{DynamicResource ControlBackgroundLv1}"
-        Title="GenericWindow" SizeToContent="WidthAndHeight">
-    <StackPanel Orientation="Vertical" Margin="18">
+        xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
+        mc:Ignorable="d" Style="{DynamicResource WindowTitleBar}"
+        WindowStartupLocation="CenterOwner"
+        Title="GenericWindow">
+    <windows:TitleBar>
+        <StackPanel Orientation="Vertical" Margin="18">
         <TextBlock x:Name="MainText" Width="400" TextWrapping="Wrap" Margin="0,0,0,18" Style="{DynamicResource LabelTextBlock}"/>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -18,4 +21,5 @@
                     HorizontalAlignment="Right" IsDefault="True" Style="{DynamicResource 3DButton}"/>
         </Grid>
     </StackPanel>
+    </windows:TitleBar>
 </Window>

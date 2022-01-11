@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -16,15 +17,23 @@ namespace SheetMusicOrganizer.View.Windows
 
         private void TitleBar_Loaded(object sender, RoutedEventArgs e)
         {
-            if (sender is DependencyObject source)
+            if (!DesignerProperties.GetIsInDesignMode(this) && sender is DependencyObject source)
             {
                 IsMaximized = Window.GetWindow(source).WindowState == WindowState.Maximized;
+                CanClose = Window.GetWindow(source).WindowStyle != WindowStyle.None;
+                IsTools = Window.GetWindow(source).WindowStyle == WindowStyle.ToolWindow || !CanClose;
                 Window.GetWindow(source).StateChanged += MainWindowStateChangeRaised;
             }
         }
 
-        public static readonly DependencyProperty IsMaximizedProperty = DependencyProperty.Register("IsMaximized", typeof(bool), typeof(TitleBar));
+        public static readonly DependencyProperty IsMaximizedProperty = DependencyProperty.Register("IsMaximized", typeof(bool), typeof(TitleBar), new PropertyMetadata(false));
         public bool IsMaximized { get => (bool)GetValue(IsMaximizedProperty); set => SetValue(IsMaximizedProperty, value); }
+
+        public static readonly DependencyProperty IsToolsProperty = DependencyProperty.Register("IsTools", typeof(bool), typeof(TitleBar), new PropertyMetadata(false));
+        public bool IsTools { get => (bool)GetValue(IsToolsProperty); set => SetValue(IsToolsProperty, value); }
+
+        public static readonly DependencyProperty CanCloseProperty = DependencyProperty.Register("CanClose", typeof(bool), typeof(TitleBar), new PropertyMetadata(true));
+        public bool CanClose { get => (bool)GetValue(CanCloseProperty); set => SetValue(CanCloseProperty, value); }
 
         // Can execute
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)

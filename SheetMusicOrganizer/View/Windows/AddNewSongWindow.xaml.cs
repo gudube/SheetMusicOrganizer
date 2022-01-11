@@ -20,8 +20,14 @@ namespace SheetMusicOrganizer.View.Windows
             Song = new SongItem();
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
+            Loaded += AddNewSongWindow_Loaded;
             InitializeComponent();
             ResetSongInformations();
+        }
+
+        private void AddNewSongWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         #region File Selection

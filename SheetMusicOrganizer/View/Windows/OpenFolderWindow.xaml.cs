@@ -20,8 +20,14 @@ namespace SheetMusicOrganizer.View.Windows
             this.Owner = Application.Current.MainWindow;
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
+            Loaded += OpenFolderWindow_Loaded;
             InitializeComponent();
 
+        }
+
+        private void OpenFolderWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         public static readonly DependencyProperty FolderProperty = DependencyProperty.Register("Folder", typeof(string), typeof(OpenFolderWindow));

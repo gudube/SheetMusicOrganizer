@@ -11,6 +11,7 @@ namespace SheetMusicOrganizer.View.Windows
         {
             this.DataContext = this;
             Owner = owner;
+            Loaded += GenericWindow_Loaded;
             InitializeComponent();
             MainText.Text = mainText;
             if (string.IsNullOrWhiteSpace(continueButtonText))
@@ -18,6 +19,11 @@ namespace SheetMusicOrganizer.View.Windows
             else
                 ContinueButton.Content = continueButtonText;
             ShowDialog();
+        }
+
+        private void GenericWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         //public static readonly DependencyProperty MainTextProperty = DependencyProperty.Register("MainText", typeof(string), typeof(GenericWindow));

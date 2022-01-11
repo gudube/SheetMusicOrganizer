@@ -15,7 +15,13 @@ namespace SheetMusicOrganizer.View.Windows
         public FirstTimeWindow()
         {
             this.DataContext = this;
+            Loaded += FirstTimeWindow_Loaded;
             InitializeComponent();
+        }
+
+        private void FirstTimeWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)

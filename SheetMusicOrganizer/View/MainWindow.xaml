@@ -12,7 +12,7 @@
         Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}"
         Height="855" Width="1520" MinHeight="500" MinWidth="700"
         Style="{DynamicResource WindowTitleBar}"
-        WindowState="Normal"
+        WindowState="Maximized"
         KeyDown="MainWindow_OnKeyDownUp" KeyUp="MainWindow_OnKeyDownUp">
     <Window.DataContext>
         <vm:MainVM x:Name="MainVm"/>

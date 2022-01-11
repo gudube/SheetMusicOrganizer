@@ -15,6 +15,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="icon.ico" />
     <None Remove="View\Resources\dark\lock_64.png" />
     <None Remove="View\Resources\dark\minus_64.png" />
     <None Remove="View\Resources\dark\music_dir_40.png" />
@@ -74,6 +75,7 @@
     <None Remove="View\Resources\waveform.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="icon.ico" />
     <Resource Include="View\Resources\dark\lock_64.png" />
     <Resource Include="View\Resources\dark\minus_64.png" />
     <Resource Include="View\Resources\dark\music_dir_40.png" />

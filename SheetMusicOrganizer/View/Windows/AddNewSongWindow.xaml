@@ -3,18 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
+        xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools" xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
         mc:Ignorable="d"
         Title="Add New Song"
-        Style="{DynamicResource ControlBackgroundLv1}"
-        SizeToContent="WidthAndHeight"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        Style="{DynamicResource WindowTitleBar}"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <tools:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
         <tools:StringsNotEmptyConverter x:Key="StringsNotEmptyConverter"/>
         <tools:InvertBoolConverter x:Key="InvertBoolConverter"/>
     </Window.Resources>
-    <StackPanel Orientation="Vertical" Margin="18">
+    <windows:TitleBar>
+        <StackPanel Orientation="Vertical" Margin="18">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
@@ -94,4 +95,5 @@
             </Button>
         </Grid>
     </StackPanel>
+    </windows:TitleBar>
 </Window>

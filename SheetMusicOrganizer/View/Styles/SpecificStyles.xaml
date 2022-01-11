@@ -62,6 +62,25 @@
     <!--#endregion-->
 
     <!--#region TitleBar -->
+    <Style x:Key="WindowTitleBar" TargetType="{x:Type Window}" BasedOn="{StaticResource ControlBackgroundLv1}">
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome CaptionHeight="34" GlassFrameThickness="0" CornerRadius="0"/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="WindowStyle" Value="ToolWindow">
+                <Trigger.Setters>
+                    <Setter Property="WindowChrome.WindowChrome">
+                        <Setter.Value>
+                            <WindowChrome CaptionHeight="34" GlassFrameThickness="0" CornerRadius="10"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger.Setters>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
     <Style x:Key="CaptionButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -107,7 +126,7 @@
                             <Style TargetType="{x:Type Border}">
                                 <Setter Property="BorderThickness" Value="0"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsMaximized}" Value="True">
+                                    <DataTrigger Binding="{Binding IsMaximized, FallbackValue=False}" Value="True">
                                         <DataTrigger.Setters>
                                             <Setter Property="BorderThickness" Value="8"/>
                                         </DataTrigger.Setters>
@@ -131,38 +150,52 @@
                                 <RowDefinition Height ="*"/>
                             </Grid.RowDefinitions>
                             <!--Window chrome-->
-                            <Grid Grid.Row="0" Height="30" Background="{StaticResource BackgroundLv3SolidColor}" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                            <Grid Grid.Row="0" Height="30" Background="{StaticResource BackgroundLv4SolidColor}" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                     <!--App icon-->
-                                    <Image Source="/icon.ico" Width="18" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                    <TextBlock Foreground="White" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" FontFamily="Arial" Margin="4 3 0 0" />
+                                    <Image Source="/icon.ico" Width="18" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="{Binding IsTools, Converter={StaticResource BooleanToVisibilityFalse}, ConverterParameter=true}" />
+                                    <TextBlock Foreground="White" Margin="10,0" VerticalAlignment="Center" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" FontFamily="Arial"/>
                                 </StackPanel>
                                 <!--Caption buttons-->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                                    <Button Style="{DynamicResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"
-                                Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
-                                    <Button x:Name="RestoreButton" Style="{DynamicResource RestoreButtonStyle}" 
-                                Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore">
-                                        <Button.Visibility>
-                                            <Binding Path="IsMaximized" Converter="{StaticResource BooleanToVisibilityTrue}" FallbackValue="Visible">
-                                                <Binding.ConverterParameter>
-                                                    <sys:Boolean>True</sys:Boolean>
-                                                </Binding.ConverterParameter>
-                                            </Binding>
-                                        </Button.Visibility>
+                                    <Button WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize" Command="{x:Static SystemCommands.MinimizeWindowCommand}">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MinimizeButtonStyle}">
+                                                <Setter Property="Visibility" Value="{Binding IsTools, Converter={StaticResource BooleanToVisibilityFalse}, ConverterParameter=true}"/>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
-                                    <Button x:Name="MaximizeButton" Style="{DynamicResource MaximizeButtonStyle}" 
-                                Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize">
-                                        <Button.Visibility>
-                                            <Binding Path="IsMaximized" Converter="{StaticResource BooleanToVisibilityFalse}" FallbackValue="Collapsed">
-                                                <Binding.ConverterParameter>
-                                                    <sys:Boolean>True</sys:Boolean>
-                                                </Binding.ConverterParameter>
-                                            </Binding>
-                                        </Button.Visibility>
+                                    <Button x:Name="RestoreButton" Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource RestoreButtonStyle}">
+                                                <Setter Property="Visibility" Value="{Binding IsMaximized, Converter={StaticResource BooleanToVisibilityTrue}, ConverterParameter=true}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTools}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
-                                    <Button Style="{DynamicResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close"
-                                Command="{x:Static SystemCommands.CloseWindowCommand}"/>
+                                    <Button x:Name="MaximizeButton" Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaximizeButtonStyle}">
+                                                <Setter Property="Visibility" Value="{Binding IsMaximized, Converter={StaticResource BooleanToVisibilityFalse}, ConverterParameter=true}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsTools}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close" Command="{x:Static SystemCommands.CloseWindowCommand}">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CloseButtonStyle}">
+                                                <Setter Property="Visibility" Value="{Binding CanClose, Converter={StaticResource BooleanToVisibilityTrue}, ConverterParameter=true}"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                             <ContentControl Grid.Row="1" Content="{TemplateBinding Content}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=windows:TitleBar}}"/>

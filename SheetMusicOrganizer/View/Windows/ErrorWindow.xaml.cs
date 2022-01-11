@@ -25,6 +25,7 @@ namespace SheetMusicOrganizer.View.Windows
                 Owner = owner;
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
+            Loaded += ErrorWindow_Loaded; ;
             InitializeComponent();
             createMessageFromException(exception);
             if(owner == null)
@@ -41,6 +42,11 @@ namespace SheetMusicOrganizer.View.Windows
                 $"  Title: {ErrorTitle.Text}\n" +
                 $"  Custom Message: {CustomMessage.Text}\n" + 
                 $"  Exception Message: {ErrorMessage.Text}\n");
+        }
+
+        private void ErrorWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         private void createMessageFromException(Exception exception)
