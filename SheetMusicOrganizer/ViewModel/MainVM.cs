@@ -105,11 +105,10 @@ namespace SheetMusicOrganizer.ViewModel
             }
         }
 
-        public void GoToSong(string partitionFilename)
+        public void GoToSong(SongItem song)
         {
-            SongItem? song = DbHandler.GetSong(partitionFilename);
             SetView(LibraryVM);
-            if(song != null) LibraryVM.GoToSong(song);
+            LibraryVM.GoToSong(song);
         }
 
         #endregion

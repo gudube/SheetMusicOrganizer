@@ -5,6 +5,7 @@ using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace SheetMusicOrganizer.ViewModel
 {

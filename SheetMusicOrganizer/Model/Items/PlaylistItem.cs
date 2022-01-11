@@ -151,15 +151,28 @@ namespace SheetMusicOrganizer.Model.Items
 
         public void UpdateSong(SongItem updatedSong)
         {
-            for(var i = 0; i < Songs.Count; i++)
+            var found = Songs.FirstOrDefault(x => x.Id == updatedSong.Id);
+            if (found != null)
             {
-                if (Songs[i].Id == updatedSong.Id)
-                {
-                    Songs[i] = updatedSong;
-                    OnPropertyChanged(nameof(Songs));
-                    return;
-                }
+                bool selected = SelectedSongs.Contains(found);
+                if (selected)
+                    SelectedSongs.Remove(found);
+                Songs.Remove(found);
+                var newSong = (SongItem)updatedSong.Clone();
+                Songs.Add(newSong);
+                if (selected)
+                    SelectedSongs.Add(newSong);
+                SortSongs();
             }
+            //for(var i = 0; i < Songs.Count; i++)
+            //{
+            //    if (Songs[i].Id == updatedSong.Id)
+            //    {
+            //        Songs[i] = (SongItem)updatedSong.Clone();
+            //        OnPropertyChanged(nameof(Songs));
+            //        return;
+            //    }
+            //}
         }
 
         public void RemoveSongs(IEnumerable<SongItem> songsToRemove)

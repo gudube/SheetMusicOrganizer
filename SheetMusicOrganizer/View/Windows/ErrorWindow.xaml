@@ -16,7 +16,7 @@
             <Image DockPanel.Dock="Left" Source="/View/Resources/error_emoji.png" Stretch="Uniform" VerticalAlignment="Top" Height="35" Margin="0,0,15,0"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
                 <TextBlock x:Name="ErrorTitle" TextWrapping="Wrap" Style="{DynamicResource ErrorTextBlock}" FontSize="22" IsHyphenationEnabled="True" TextAlignment="Left" Text="Oops, you found a bug." Margin="0"/>
-                <TextBox x:Name="CustomMessage" Style="{DynamicResource SelectableTextBox}" TextAlignment="Justify" Margin="0, 10" Text="You found an error in C:/Documents/Test/long_fichierTest/long_fichierTest/long_fichier.mp3. The file doesnt seem to exist."/>
+                <TextBox x:Name="CustomMessage" Style="{DynamicResource SelectableTextBox}" TextAlignment="Justify" Margin="0, 10" d:Text="You found an error in C:/Documents/Test/long_fichierTest/long_fichierTest/long_fichier.mp3. The file doesnt seem to exist."/>
                 <Expander x:Name="ErrorContainer" Header="Error details" Margin="0">
                     <TextBox x:Name="ErrorMessage" Style="{DynamicResource SelectableTextBox}" Text="No custom error message." Margin="30, 5, 0, 5"/>
                 </Expander>

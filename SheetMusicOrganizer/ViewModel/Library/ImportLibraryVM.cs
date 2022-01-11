@@ -31,7 +31,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
         private void ActionOnUI(Action action)
         {
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(action);
+            System.Windows.Application.Current.Dispatcher.Invoke(action);
         }
 
         private LibraryVM libraryVM;
