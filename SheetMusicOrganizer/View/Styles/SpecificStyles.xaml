@@ -154,7 +154,7 @@
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                     <!--App icon-->
                                     <Image Source="/icon.ico" Width="18" Margin="5,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="{Binding IsTools, Converter={StaticResource BooleanToVisibilityFalse}, ConverterParameter=true}" />
-                                    <TextBlock Foreground="White" Margin="10,0" VerticalAlignment="Center" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" FontFamily="Arial"/>
+                                    <TextBlock Foreground="{StaticResource ClickableSolidColor}" Margin="10,0" VerticalAlignment="Center" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}" FontFamily="Arial"/>
                                 </StackPanel>
                                 <!--Caption buttons-->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
