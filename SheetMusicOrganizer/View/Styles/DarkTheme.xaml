@@ -35,6 +35,9 @@
     <!--#endregion-->
     
     <!--#region TEXT -->
+    <Style x:Key="TitleTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TitleTextBlockBase}">
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
     <Style x:Key="InputTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource InputTextBlockBase}">
         <Setter Property="Background" Value="{StaticResource UnclickableSolidColor}"/>
     </Style>

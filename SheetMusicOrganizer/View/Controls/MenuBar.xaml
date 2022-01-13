@@ -9,7 +9,7 @@
              d:DesignHeight="50" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance viewModel:MainVM}">
     <Border BorderBrush="{DynamicResource BackgroundLv4SolidColor}" BorderThickness="0,0,0,1">
-        <Menu Grid.Row="0" Height="20">
+        <Menu Grid.Row="0" Height="20" Padding="0,1,0,0">
             <MenuItem x:Name="FileMenuItem" Header="File">
                 <MenuItem Header="Import Song" Click="AddNewSongMenuItem_Click"/>
                 <MenuItem Header="Import Folder" Click="OpenFolderMenuItem_Click"/>
@@ -19,6 +19,7 @@
                 <MenuItem x:Name="RecentMenuItem" Header="Recently Opened"/>
             </MenuItem>
             <MenuItem Header="Settings" Click="Settings_Click"/>
+            <MenuItem Header="About" Click="About_Click"/>
         </Menu>
     </Border>
 </UserControl>

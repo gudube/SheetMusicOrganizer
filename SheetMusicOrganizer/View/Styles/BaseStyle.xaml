@@ -162,6 +162,12 @@
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Background" Value="Transparent"/>
     </Style>
+    <Style x:Key="TitleTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
     <Style x:Key="InputTextBlockBase" TargetType="{x:Type TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Height" Value="16"/>

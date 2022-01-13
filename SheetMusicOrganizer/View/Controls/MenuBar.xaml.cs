@@ -74,5 +74,11 @@ namespace SheetMusicOrganizer.View.Controls
         {
             WindowManager.OpenOptionWindow(new SettingsWindow());
         }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenOptionWindow(new AboutWindow());
+        }
+        
     }
 }
