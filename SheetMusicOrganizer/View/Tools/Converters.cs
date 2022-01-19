@@ -179,7 +179,7 @@ namespace SheetMusicOrganizer.View.Tools
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             foreach (object value in values)
-                if (value is string text && string.IsNullOrWhiteSpace(text))
+                if (!(value is string) || (value is string text && string.IsNullOrWhiteSpace(text)))
                     return false;
             return true;
         }
