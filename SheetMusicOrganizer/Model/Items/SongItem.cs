@@ -172,7 +172,7 @@ namespace SheetMusicOrganizer.Model.Items
                     _codecMD = mimeSplits[^1];
             }
             if(_bitrateMD == "" || updateExisting)
-                _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
+                _bitrateMD = tFile.Properties.AudioBitrate > 0 ? tFile.Properties.AudioBitrate + " kbps" : "? kbps";
             if (_rating == 0 || updateExisting)
             {
                 TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);

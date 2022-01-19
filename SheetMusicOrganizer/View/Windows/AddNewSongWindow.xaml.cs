@@ -60,9 +60,11 @@ namespace SheetMusicOrganizer.View.Windows
 
         private void SelectAudioFile(bool mainAudio)
         {
+            var audioStrings = string.Join(", ", ImportLibraryVM.SupportedFormats.Select(x => $"*{x}"));
+            var audioExtensions = string.Join(";", ImportLibraryVM.SupportedFormats.Select(x => $"*{x}"));
             OpenFileDialog openDialog = new OpenFileDialog
             {
-                Filter = "Audio (*.mp3, *.flac)|*.mp3;*.flac|All Files (*.*)|*.*",
+                Filter = $"Audio ({audioStrings})|{audioExtensions}|All Files (*.*)|*.*",
                 Multiselect = false,
                 FilterIndex = 1
             };

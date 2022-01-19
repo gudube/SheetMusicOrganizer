@@ -38,6 +38,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
         private bool recursive;
         private bool useAudioMD;
         private bool overwrite;
+        public static readonly string[] SupportedFormats = { ".mp3", ".flac", ".wav", ".m4a", ".aiff"};
 
         public bool AddSong(SongItem song, bool overwrite)
         {
@@ -119,7 +120,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
                 string ext = Path.GetExtension(fileDir);
                 if (ext == ".pdf")
                     pdfFiles.Add(fileDir);
-                else if (ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a")
+                else if (SupportedFormats.Contains(ext))
                     audioFiles.Add(fileDir);
             }
 
@@ -188,7 +189,7 @@ namespace SheetMusicOrganizer.ViewModel.Library
             pdfFiles.AddRange(allFiles.Where(x => Path.GetExtension(x) == ".pdf"));
             audioFiles.AddRange(allFiles.Where(x => {
                 string ext = Path.GetExtension(x);
-                return ext == ".mp3" || ext == ".flac" || ext == ".wav" || ext == ".m4a";
+                return SupportedFormats.Contains(ext);
             }));
         }
 
