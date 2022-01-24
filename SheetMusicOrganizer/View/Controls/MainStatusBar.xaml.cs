@@ -45,5 +45,13 @@ namespace SheetMusicOrganizer.View.Controls
                 return null;
             }), null);
         }
+
+        private void ContentControl_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if(DataContext is MainVM mainVM && mainVM.Session.PlayingSong != null)
+            {
+                mainVM.GoToSong(mainVM.Session.PlayingSong, true);
+            }
+        }
     }
 }

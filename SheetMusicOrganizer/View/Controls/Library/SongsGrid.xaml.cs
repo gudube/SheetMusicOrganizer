@@ -9,6 +9,7 @@ using SheetMusicOrganizer.View.Windows;
 using SheetMusicOrganizer.ViewModel;
 using Syncfusion.Data;
 using Syncfusion.UI.Xaml.Grid;
+using Syncfusion.UI.Xaml.ScrollAxis;
 
 namespace SheetMusicOrganizer.View.Controls.Library
 {
@@ -24,6 +25,7 @@ namespace SheetMusicOrganizer.View.Controls.Library
             Songs.PreviewDragOver += Songs_DragOver;
             Songs.PreviewDragEnter += Songs_DragOver;
             Songs.RowDragDropController.DragStart += RowDragDropController_DragStart;
+            Songs.Loaded += Songs_LoadedScrollOnce;
         }
 
         #region Changed Event
@@ -32,6 +34,10 @@ namespace SheetMusicOrganizer.View.Controls.Library
             if (e.OldValue is LibraryVM oldVM)
             {
                 oldVM.Session.MasteryLevels.CollectionChanged -= MasteryLevels_CollectionChanged;
+                foreach (MasteryItem newItem in oldVM.Session.MasteryLevels)
+                    newItem.PropertyChanged -= MasteryItem_PropertyChanged;
+                oldVM.SongMasteryChanged -= NewVM_SongMasteryChanged;
+                oldVM.ScrollToSong -= NewVM_ScrollToSong;
                 oldVM.SelectedPlaylist?.PrepareChange();
             }
 
@@ -45,7 +51,32 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 foreach(MasteryItem newItem in newVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
                 newVM.SongMasteryChanged += NewVM_SongMasteryChanged;
+                newVM.ScrollToSong += NewVM_ScrollToSong;
             }
+        }
+
+        private void NewVM_ScrollToSong(object? sender, EventArgs e)
+        {
+            // if already loaded, do it directly. otherwise do it in loaded event handler
+            if (DataContext is LibraryVM libVM && Songs.IsLoaded && libVM.TempScrollSong != null)
+            {
+                var songToFocus = Songs.View.Records.FirstOrDefault(x => (x.Data as SongItem) == libVM.TempScrollSong);
+                if (songToFocus != null)
+                    Songs.ScrollInView(new RowColumnIndex(Songs.ResolveToRowIndex(songToFocus), 0));
+                libVM.TempScrollSong = null;
+            }
+        }
+
+        private void Songs_LoadedScrollOnce(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is LibraryVM libVM) || libVM.TempScrollSong == null)
+            {
+                return;
+            }
+            var recordToScroll = Songs.View.Records.FirstOrDefault(x => (x.Data as SongItem) == libVM.TempScrollSong);
+            if (recordToScroll != null)
+                Songs.ScrollInView(new RowColumnIndex(Songs.ResolveToRowIndex(recordToScroll), 0));
+            libVM.TempScrollSong = null;
         }
 
         //Playlist changed

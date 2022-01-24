@@ -6,6 +6,8 @@ using SheetMusicOrganizer.ViewModel.Tools;
 using System;
 using Microsoft.Data.Sqlite;
 using System.IO;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -73,7 +75,7 @@ namespace SheetMusicOrganizer.ViewModel
             SetView(LibraryVM);
         }
 
-        private void SetView(BaseViewModel view)
+        private void SetView(BaseViewModel view, bool thenGoToSong = true)
         {
             if (CurrentViewModel == view)
                 return;
@@ -90,6 +92,11 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 CurrentViewModel = view;
             }
+            if(view == LibraryVM && Session.PlayingSong != null && thenGoToSong)
+            {
+                LibraryVM.GoToSong(Session.PlayingSong, true);
+
+            }
         }
         #endregion
 
@@ -105,10 +112,10 @@ namespace SheetMusicOrganizer.ViewModel
             }
         }
 
-        public void GoToSong(SongItem song)
+        public void GoToSong(SongItem song, bool exactSameSong)
         {
-            SetView(LibraryVM);
-            LibraryVM.GoToSong(song);
+            SetView(LibraryVM, false);
+            LibraryVM.GoToSong(song, exactSameSong);
         }
 
         #endregion

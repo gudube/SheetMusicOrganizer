@@ -256,26 +256,42 @@ namespace SheetMusicOrganizer.ViewModel
         #endregion
 
         #region Songs
+        public event EventHandler? ScrollToSong;
+        public SongItem? TempScrollSong = null;
 
-        public void GoToSong(SongItem song)
+        public void GoToSong(SongItem song, bool exactSameSong)
         {
             // there's a mastery selected, but not the song's one, add it as selected
             if(Session.MasteryLevels.Any(mastery => mastery.IsSelected) && !song.Mastery.IsSelected)
                 song.Mastery.IsSelected = true;
 
-            SongItem? songToSelect = SelectedPlaylist?.Songs.FirstOrDefault(x => x.Id == song.Id);
-            if(songToSelect == null) // song is not visible in this playlist
+            SongItem? songToSelect = null;
+            if (exactSameSong)
             {
-                SelectedPlaylist = Playlists.ElementAtOrDefault(0);
-                songToSelect = SelectedPlaylist?.Songs.First(x => x.Id == song.Id);
-                if (songToSelect == null)
+                var playlist = Playlists.FirstOrDefault(pl => pl.Songs.Contains(song));
+                if(playlist != null)
                 {
-                    GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
-                    return;
+                    SelectedPlaylist = playlist;
+                    songToSelect = song;
+                }
+            } else {
+                songToSelect = SelectedPlaylist?.Songs.FirstOrDefault(x => x.Id == song.Id);
+                if (songToSelect == null) // song is not visible in this playlist
+                {
+                    SelectedPlaylist = Playlists.ElementAtOrDefault(0);
+                    songToSelect = SelectedPlaylist?.Songs.First(x => x.Id == song.Id);
                 }
             }
-            SelectedPlaylist?.SelectedSongs.Clear();
-            SelectedPlaylist?.SelectedSongs.Add(songToSelect);
+
+            if (songToSelect == null)
+            {
+                GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Could not find the song id '{song.Id}' when trying to go to the song. Song name '{song.Title}'"));
+            } else { 
+                SelectedPlaylist?.SelectedSongs.Clear();
+                SelectedPlaylist?.SelectedSongs.Add(songToSelect);
+                TempScrollSong = songToSelect;
+                ScrollToSong?.Invoke(this, EventArgs.Empty);
+            }
         }
         
         public DelegateCommand? RemoveSelectedSongsCommand { get; private set; }

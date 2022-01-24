@@ -157,7 +157,7 @@ namespace SheetMusicOrganizer.View.Windows
                 var importVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
                 if (importVM.AddSong(Song, false))
                 {
-                    mainVM.GoToSong(Song);
+                    mainVM.GoToSong(Song, false);
                     this.Close();
                 }
                 else
@@ -169,7 +169,7 @@ namespace SheetMusicOrganizer.View.Windows
                         try
                         {
                             importVM.AddSong(Song, true);
-                            mainVM.GoToSong(Song);
+                            mainVM.GoToSong(Song, false);
                             Application.Current.Dispatcher.InvokeAsync(() => { this.Close(); },  System.Windows.Threading.DispatcherPriority.ContextIdle);
                         }
                         catch (Exception ex)

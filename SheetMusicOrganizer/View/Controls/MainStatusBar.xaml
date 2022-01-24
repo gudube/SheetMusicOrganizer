@@ -13,10 +13,12 @@
                 </Grid>
             </ItemsPanelTemplate>
         </StatusBar.ItemsPanel>
-        <StackPanel Orientation="Horizontal" Margin="0, -3, 0, -5">
-            <StatusBarItem Content="Playing Song: "/>
-            <StatusBarItem Content="{Binding Path=Session.PlayingSong}"/>
-        </StackPanel>
+        <ContentControl Margin="0, -3, 0, -5" MouseDoubleClick="ContentControl_MouseDoubleClick">
+            <StackPanel Orientation="Horizontal">
+                <StatusBarItem Content="Playing Song: "/>
+                <StatusBarItem Content="{Binding Path=Session.PlayingSong}"/>
+            </StackPanel>
+        </ContentControl>
         <StatusBarItem x:Name="SavingMessage" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
         <StatusBarItem x:Name="LoadingMessage" HorizontalAlignment="Center"/>
     </StatusBar>
