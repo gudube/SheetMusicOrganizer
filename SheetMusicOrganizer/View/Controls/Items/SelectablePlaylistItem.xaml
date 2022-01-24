@@ -48,11 +48,8 @@
         <TextBox Grid.Column="0" x:Name="MainTextBox"
                  Text="{Binding Path=Tag.(viewModel:LibraryVM.EditPlaylistName), Mode=TwoWay, ElementName=Main, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
                  Visibility="{Binding IsEditing, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                 IsVisibleChanged="MainTextBox_OnIsVisibleChanged" HorizontalAlignment="Stretch">
-            <TextBox.InputBindings>
-                <KeyBinding Command="{Binding Path=Tag.(viewModel:LibraryVM.RenameSelectedPlaylistCommand), ElementName=Main}" Key="Return" />
-                <KeyBinding Command="{Binding Path=Tag.(viewModel:LibraryVM.CancelEditPlaylistCommand), ElementName=Main}" Key="Escape" />
-            </TextBox.InputBindings>
+                 IsVisibleChanged="MainTextBox_OnIsVisibleChanged" HorizontalAlignment="Stretch"
+                 LostKeyboardFocus="MainTextBox_LostKeyboardFocus" LostFocus="MainTextBox_LostFocus" KeyDown="MainTextBox_KeyDown">
         </TextBox>
     </Grid>
 </UserControl>
