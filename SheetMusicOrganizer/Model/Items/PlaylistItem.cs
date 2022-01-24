@@ -115,7 +115,13 @@ namespace SheetMusicOrganizer.Model.Items
         public ObservableCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
         
         private ObservableCollection<object> _selectedSongs = new ObservableCollection<object>();
-        public ObservableCollection<object> SelectedSongs { get => _selectedSongs; set => SetField(ref _selectedSongs, value); }
+        public ObservableCollection<object> SelectedSongs { get => _selectedSongs;
+            set
+            {
+                if(SetField(ref _selectedSongs, value))
+                    value.CollectionChanged += SelectedSongs_CollectionChanged;
+            }
+        }
         private List<object>? _tempSelected;
 
         public void SortSongs()
@@ -127,6 +133,17 @@ namespace SheetMusicOrganizer.Model.Items
                 Songs = new ObservableCollection<SongItem>(Songs.OrderBy(source => propInfo.GetValue(source)));
             else
                 Songs = new ObservableCollection<SongItem>(Songs.OrderByDescending(source => propInfo.GetValue(source)));
+        }
+
+        public void SortSelectedSongs()
+        {
+            var propInfo = typeof(SongItem).GetProperty(SortCol);
+            if (propInfo == null)
+                return;
+            if (SortAsc)
+                SelectedSongs = new ObservableCollection<object>(SelectedSongs.OrderBy(source => propInfo.GetValue(source)));
+            else
+                SelectedSongs = new ObservableCollection<object>(SelectedSongs.OrderByDescending(source => propInfo.GetValue(source)));
         }
 
         public bool HasSong(SongItem song)

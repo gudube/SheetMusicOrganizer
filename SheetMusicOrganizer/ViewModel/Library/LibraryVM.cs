@@ -349,6 +349,7 @@ namespace SheetMusicOrganizer.ViewModel
             SongItem? song = specificSong;
             if (song == null)
             {
+                SelectedPlaylist?.SortSelectedSongs();
                 if (Settings.Default.PartitionSelectionMode == 0)
                     song = SelectedPlaylist?.SelectedSongs.FirstOrDefault() as SongItem ?? Session.PlayingSong ?? SelectedPlaylist?.Songs.FirstOrDefault();
                 else
