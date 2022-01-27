@@ -26,7 +26,7 @@ namespace SheetMusicOrganizer.View.Windows
             InitializeComponent();
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             if (version != null)
-                VersionTextBlock.Text = $"Version {version.Major}.{version.Minor}";
+                VersionTextBlock.Text = $"Version {version.Major}.{version.Minor}.{version.Build}";
             else
                 VersionTextBlock.Visibility = Visibility.Collapsed;
         }
