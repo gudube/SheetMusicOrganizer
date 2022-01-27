@@ -18,6 +18,9 @@ namespace SheetMusicOrganizer.Model.Items
         private string _audioDirectory2;
         public string AudioDirectory2 { get => _audioDirectory2; set => SetField(ref _audioDirectory2, value); }
 
+        private string _dateAdded;
+        public string DateAdded { get => _dateAdded; set => SetField(ref _dateAdded, value); }
+
         private uint _number = 0;
         public uint Number { get => _number; set => SetField(ref _number, value); }
 
@@ -33,7 +36,7 @@ namespace SheetMusicOrganizer.Model.Items
         private string _genre = "";
         public string Genre { get => _genre; set => SetField(ref _genre, value); }
 
-        private string _lengthMD = "00:00";
+        private string _lengthMD = "";
         public string LengthMD { get => _lengthMD; private set => SetField(ref _lengthMD, value); }
 
         private string _codecMD = "";
@@ -44,6 +47,9 @@ namespace SheetMusicOrganizer.Model.Items
 
         private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
+
+        private string _year = "";
+        public string Year { get => _year; set => SetField(ref _year, value); }
 
         private string _notes = "";
         public string Notes { get => _notes; set {
@@ -100,6 +106,8 @@ namespace SheetMusicOrganizer.Model.Items
             if(string.IsNullOrWhiteSpace(_title))
                 _title = Path.GetFileNameWithoutExtension(partitionDir);
 
+            _dateAdded = DateTime.Now.ToString();
+
             _scrollStartTime = Settings.Default.DefaultScrollStartTime;
             _scrollEndTime = Settings.Default.DefaultScrollEndTime;
         }
@@ -115,6 +123,7 @@ namespace SheetMusicOrganizer.Model.Items
             _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
             _audioDirectory1 = GetSafeString(dataReader, songTable.AudioDirectory1.Name);
             _audioDirectory2 = GetSafeString(dataReader, songTable.AudioDirectory2.Name);
+            _dateAdded = GetSafeString(dataReader, songTable.DateAdded.Name);
             _number = GetSafeUInt(dataReader, songTable.Number.Name).GetValueOrDefault(0);
             _title = GetSafeString(dataReader, songTable.Title.Name);
             _artist = GetSafeString(dataReader, songTable.Artist.Name);
@@ -128,6 +137,7 @@ namespace SheetMusicOrganizer.Model.Items
             if (rating == null || rating > 255)
                 Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
             _rating = rating.GetValueOrDefault(0);
+            _year = GetSafeString(dataReader, songTable.Year.Name);
             _notes = GetSafeString(dataReader, songTable.Notes.Name);
             _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(1);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
@@ -162,7 +172,7 @@ namespace SheetMusicOrganizer.Model.Items
                 _album = tFile.Tag.Album;
             if(_genre == "" || updateExisting)
                 _genre = tFile.Tag.JoinedGenres;
-            if(_lengthMD == "00:00")
+            if(_lengthMD == "")
                 _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
             _lengthSecs = (int)Math.Floor(tFile.Properties.Duration.TotalSeconds);
             if (_codecMD == "" || updateExisting)
@@ -194,14 +204,16 @@ namespace SheetMusicOrganizer.Model.Items
                         _rating = 5;
                 }
             }
+            if(_year == "")
+                _year = tFile.Tag.Year > 0 ? tFile.Tag.Year.ToString() : "";
         }
 
         public override object?[] GetCustomValues()
         {
             return new object?[]
             {
-                PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-                LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime
+                PartitionDirectory, AudioDirectory1, AudioDirectory2, DateAdded, Number, Title, Artist, Album, Genre,
+                LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime
             };
         }
 

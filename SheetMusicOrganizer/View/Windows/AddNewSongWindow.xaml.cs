@@ -107,6 +107,9 @@ namespace SheetMusicOrganizer.View.Windows
         public static readonly DependencyProperty GenreTextProperty = DependencyProperty.Register("GenreText", typeof(string), typeof(AddNewSongWindow));
         public string GenreText { get => (string)GetValue(GenreTextProperty); set => SetValue(GenreTextProperty, value); }
 
+        public static readonly DependencyProperty YearTextProperty = DependencyProperty.Register("YearText", typeof(uint?), typeof(AddNewSongWindow));
+        public uint? YearText { get => (uint?)GetValue(YearTextProperty); set => SetValue(YearTextProperty, value); }
+
         public static readonly DependencyProperty RatingTextProperty = DependencyProperty.Register("RatingText", typeof(uint), typeof(AddNewSongWindow));
         public uint RatingText { get => (uint)GetValue(RatingTextProperty); set => SetValue(RatingTextProperty, value); }
 
@@ -115,6 +118,7 @@ namespace SheetMusicOrganizer.View.Windows
         private string _artistBackup = "";
         private string _albumBackup = "";
         private string _genreBackup = "";
+        private uint? _yearBackup = null;
         private uint _ratingBackup = 0;
 
         private void ResetSongInformations()
@@ -124,6 +128,7 @@ namespace SheetMusicOrganizer.View.Windows
             ArtistText = _artistBackup;
             AlbumText = _albumBackup;
             GenreText = _genreBackup;
+            YearText = _yearBackup;
             RatingText = _ratingBackup;
         }
 
@@ -134,6 +139,7 @@ namespace SheetMusicOrganizer.View.Windows
             _artistBackup = ArtistText;
             _albumBackup = AlbumText;
             _genreBackup = GenreText;
+            _yearBackup = YearText;
             _ratingBackup = RatingText;
 
             NumberText = Song.Number;
@@ -141,6 +147,7 @@ namespace SheetMusicOrganizer.View.Windows
             ArtistText = Song.Artist;
             AlbumText = Song.Album;
             GenreText = Song.Genre;
+            YearText = Convert.ToUInt32(Song.Year);
             RatingText = Song.Rating;
         }
         #endregion
@@ -188,6 +195,7 @@ namespace SheetMusicOrganizer.View.Windows
             Song.Artist = ArtistText;
             Song.Album = AlbumText;
             Song.Genre = GenreText;
+            Song.Year = YearText?.ToString() ?? "";
             Song.Rating = RatingText;
             if (string.IsNullOrWhiteSpace(Song.AudioDirectory1) && !string.IsNullOrWhiteSpace(Song.AudioDirectory2))
             {

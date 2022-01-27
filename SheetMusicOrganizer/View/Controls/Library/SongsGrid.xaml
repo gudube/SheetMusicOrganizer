@@ -8,7 +8,7 @@
              xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              mc:Ignorable="d" 
              Name="MainControl"
-             d:DesignHeight="450"
+             d:DesignHeight="450" d:DesignWidth="1920"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <UserControl.Resources>
         <tools:RatingConverter x:Key="RatingConverter"/>
@@ -18,32 +18,48 @@
         <Grid>
             <syncfusion:SfDataGrid x:Name="Songs" DataContext="{Binding SelectedPlaylist}" ItemsSource="{Binding Songs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
                                    Style="{DynamicResource SongsDataGrid}" RowStyle="{DynamicResource SongDataGridRow}" AlternatingRowStyle="{DynamicResource SongDataGridAlternatingRow}"
-                                   ScrollViewer.HorizontalScrollBarVisibility="Hidden" HideEmptyGridViewDefinition="True" EnableDataVirtualization="True" DataContextChanged="Songs_DataContextChanged"
+                                   HideEmptyGridViewDefinition="True" EnableDataVirtualization="True" DataContextChanged="Songs_DataContextChanged"
                                    SelectionMode="Extended" SelectionUnit="Row" SelectedItems="{Binding SelectedSongs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                    AllowSorting="True" SortColumnsChanged="Songs_SortColumnsChanged" SortColumnsChanging="Songs_SortColumnsChanging"
-                                   AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False">
+                                   AllowDraggingRows="True" AllowDraggingColumns="False" AllowDrop="False" ColumnSizer="AutoLastColumnFill">
                 <syncfusion:SfDataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElementName=MainControl, Path=DataContext.PlaySelectedSongCommand}" CommandParameter="{Binding ElementName=Songs, Path=SelectedItem}"/>
                 </syncfusion:SfDataGrid.InputBindings>
                 <syncfusion:SfDataGrid.Columns>
-                    <syncfusion:GridTextColumn HeaderText="#" MappingName="Number" Width="25" AllowResizing="False"/>
-                    <syncfusion:GridTextColumn HeaderText="Title" MappingName="Title" Width="190"/>
-                    <syncfusion:GridTextColumn HeaderText="Artist" MappingName="Artist" Width="170"/>
-                    <syncfusion:GridTextColumn HeaderText="Album" MappingName="Album" Width="170"/>
-                    <syncfusion:GridTextColumn HeaderText="Genre" MappingName="Genre" Width="100"/>
-                    <syncfusion:GridTextColumn HeaderText="Length" MappingName="LengthMD" Width="52"/>
-                    <syncfusion:GridTextColumn HeaderText="Codec" MappingName="CodecMD" Width="52"/>
-                    <syncfusion:GridTextColumn HeaderText="Bitrate" MappingName="BitrateMD" Width="65"/>
-                    <syncfusion:GridTextColumn HeaderText="Rating" MappingName="Rating" DisplayBinding="{Binding Path=Rating, Converter={StaticResource RatingConverter}}" Width="62"/>
-                    <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" Width="60" CellStyle="{DynamicResource MasteryGridCell}"/>
-                    <syncfusion:GridTextColumn HeaderText="Music Sheet Name" MappingName="PartitionDirectory" DisplayBinding="{Binding Path=PartitionDirectory, Converter={StaticResource DirFilenameConverter}}"
-                                           AllowResizing="False" ColumnSizer="AutoLastColumnFill">
+                    <syncfusion:GridTextColumn HeaderText="#" MappingName="Number" MinimumWidth="25" Width="25" MaximumWidth="35"/>
+                    <syncfusion:GridTextColumn HeaderText="Title" MappingName="Title" MinimumWidth="50" Width="190" MaximumWidth="375" TextTrimming="CharacterEllipsis"/>
+                    <syncfusion:GridTextColumn HeaderText="Artist" MappingName="Artist" MinimumWidth="50" Width="170" MaximumWidth="375" TextTrimming="CharacterEllipsis"/>
+                    <syncfusion:GridTextColumn HeaderText="Album" MappingName="Album" MinimumWidth="50" Width="170" MaximumWidth="375" TextTrimming="CharacterEllipsis"/>
+                    <syncfusion:GridTextColumn HeaderText="Genre" MappingName="Genre" MinimumWidth="50" Width="100" MaximumWidth="375" TextTrimming="CharacterEllipsis"/>
+                    <syncfusion:GridTextColumn HeaderText="Year" MappingName="Year" Width="40" AllowResizing="False"/>
+                    <syncfusion:GridTextColumn HeaderText="Length" MappingName="LengthMD" MinimumWidth="45" Width="52" MaximumWidth="60"/>
+                    <syncfusion:GridTextColumn HeaderText="Codec" MappingName="CodecMD" MinimumWidth="40" Width="52" MaximumWidth="90"/>
+                    <syncfusion:GridTextColumn HeaderText="Bitrate" MappingName="BitrateMD" MinimumWidth="32" Width="65" MaximumWidth="90"/>
+                    <syncfusion:GridTextColumn HeaderText="Rating" MappingName="Rating" DisplayBinding="{Binding Path=Rating, Converter={StaticResource RatingConverter}}" Width="62" AllowResizing="False"/>
+                    <syncfusion:GridTextColumn HeaderText="Mastery" MappingName="Mastery.Name" MinimumWidth="45" Width="60" MaximumWidth="90" CellStyle="{DynamicResource MasteryGridCell}" TextTrimming="CharacterEllipsis"/>
+                    <syncfusion:GridTextColumn HeaderText="Date Added" MappingName="DateAdded" MinimumWidth="40" Width="140" MaximumWidth="190"/>
+                    <syncfusion:GridTextColumn HeaderText="Music Sheet Filename" MappingName="PartitionDirectory" MinimumWidth="50" Width="200" MaximumWidth="375" TextTrimming="CharacterEllipsis" DisplayBinding="{Binding Path=PartitionDirectory, Converter={StaticResource DirFilenameConverter}}">
                         <syncfusion:GridTextColumn.ToolTipTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding PartitionDirectory}"></TextBlock>
                             </DataTemplate>
                         </syncfusion:GridTextColumn.ToolTipTemplate>
                     </syncfusion:GridTextColumn>
+                    <syncfusion:GridTextColumn HeaderText="Audio Filename" MappingName="AudioDirectory1" MinimumWidth="50" Width="200" MaximumWidth="375" TextTrimming="CharacterEllipsis" DisplayBinding="{Binding Path=AudioDirectory1, Converter={StaticResource DirFilenameConverter}}">
+                        <syncfusion:GridTextColumn.ToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AudioDirectory1}"></TextBlock>
+                            </DataTemplate>
+                        </syncfusion:GridTextColumn.ToolTipTemplate>
+                    </syncfusion:GridTextColumn>
+                    <syncfusion:GridTextColumn HeaderText="2nd Audio Filename" MappingName="AudioDirectory2" MinimumWidth="50" Width="200" MaximumWidth="375" TextTrimming="CharacterEllipsis" DisplayBinding="{Binding Path=AudioDirectory2, Converter={StaticResource DirFilenameConverter}}">
+                        <syncfusion:GridTextColumn.ToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AudioDirectory2}"></TextBlock>
+                            </DataTemplate>
+                        </syncfusion:GridTextColumn.ToolTipTemplate>
+                    </syncfusion:GridTextColumn>
+                    <syncfusion:GridTextColumn HeaderText="Notes" MappingName="Notes" Width="100" MinimumWidth="50" MaximumWidth="375" TextTrimming="CharacterEllipsis"/>
                 </syncfusion:SfDataGrid.Columns>
             </syncfusion:SfDataGrid>
             <StackPanel Orientation="Horizontal" Margin="0,25" HorizontalAlignment="Center" VerticalAlignment="Top">
