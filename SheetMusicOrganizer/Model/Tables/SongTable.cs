@@ -10,14 +10,15 @@
 
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-               LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime };
+            return new SqlColumn[] { PartitionDirectory, AudioDirectory1, AudioDirectory2, DateAdded, Number, Title, Artist, Album, Genre,
+               LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime };
         }
 
         #region Custom Columns
         public readonly SqlColumn PartitionDirectory = new SqlColumn("PartitionDirectory", EType.Text) { Unique = true };
         public readonly SqlColumn AudioDirectory1 = new SqlColumn("AudioDirectory1", EType.Text) { Nullable = true };
         public readonly SqlColumn AudioDirectory2 = new SqlColumn("AudioDirectory2", EType.Text) { Nullable = true };
+        public readonly SqlColumn DateAdded = new SqlColumn("DateAdded", EType.Text);
         
         #region Metadata
         public readonly SqlColumn Number = new SqlColumn("Number", EType.Int) { Nullable = true };
@@ -29,6 +30,7 @@
         public readonly SqlColumn CodecMD = new SqlColumn("CodecMD", EType.Text);
         public readonly SqlColumn BitrateMD = new SqlColumn("BitrateMD", EType.Text) { Nullable = true };
         public readonly SqlColumn Rating = new SqlColumn("Rating", EType.Int) { Nullable = true };
+        public readonly SqlColumn Year = new SqlColumn("Year", EType.Text) { Nullable = true };
         public readonly SqlColumn Notes = new SqlColumn("Notes", EType.Text, "");
         #endregion
 

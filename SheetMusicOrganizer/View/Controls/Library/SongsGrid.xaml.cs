@@ -26,6 +26,37 @@ namespace SheetMusicOrganizer.View.Controls.Library
             Songs.PreviewDragEnter += Songs_DragOver;
             Songs.RowDragDropController.DragStart += RowDragDropController_DragStart;
             Songs.Loaded += Songs_LoadedScrollOnce;
+            foreach(var column in Songs.Columns)
+                column.IsHidden = Settings.Default.HiddenColumns.Contains(column.HeaderText);
+            var lastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            lastColWidth = lastCol.Width;
+            lastColMaxWidth = lastCol.MaximumWidth;
+            lastCol.Width = double.NaN;
+            lastCol.MaximumWidth = double.NaN;
+            lastCol.AllowResizing = false;
+            Settings.Default.SettingsSaving += Default_SettingsSaving;
+        }
+
+        private double lastColWidth;
+        private double lastColMaxWidth;
+
+        private void Default_SettingsSaving(object sender, CancelEventArgs e)
+        {
+            var oldLastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            foreach (var column in Songs.Columns)
+                column.IsHidden = Settings.Default.HiddenColumns.Contains(column.HeaderText);
+            var newLastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            if(newLastCol != oldLastCol)
+            {
+                oldLastCol.Width = lastColWidth;
+                oldLastCol.MaximumWidth = lastColMaxWidth;
+                oldLastCol.AllowResizing = true;
+                lastColWidth = newLastCol.Width;
+                newLastCol.Width = double.NaN;
+                newLastCol.MaximumWidth = double.NaN;
+                newLastCol.AllowResizing = false;
+            }
+            Songs.GridColumnSizer.Refresh();
         }
 
         #region Changed Event

@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="SheetMusicOrganizer.View.Controls.MultiSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SheetMusicOrganizer.View.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid x:Name="MainContent" d:DataContext="{d:DesignInstance local:MultiSelector}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Style="{DynamicResource LabelTextBlock}" Margin="10" Text="{Binding Title1, Mode=OneTime}" d:Text="Title 1" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="2" Style="{DynamicResource LabelTextBlock}" Margin="10" Text="{Binding Title2, Mode=OneTime}" d:Text="Title 2" HorizontalAlignment="Center"></TextBlock>
+        <ListBox x:Name="Category1List" Grid.Row="1" Grid.Column="0" SelectionMode="Extended" ItemsSource="{Binding Category1Items}" SelectionChanged="Category1List_SelectionChanged" Background="{DynamicResource BackgroundLv3SolidColor}" Loaded="CategoryList_Loaded">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="IsEnabled" Value="{Binding Selectable}"/>
+                    <Setter Property="Focusable" Value="{Binding Selectable}"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <ListBox x:Name="Category2List" Grid.Row="1" Grid.Column="2" SelectionMode="Extended" ItemsSource="{Binding Category2Items}" SelectionChanged="Category2List_SelectionChanged" Background="{DynamicResource BackgroundLv3SolidColor}" Loaded="CategoryList_Loaded">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="IsEnabled" Value="{Binding Selectable}"/>
+                    <Setter Property="Focusable" Value="{Binding Selectable}"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
+            <Button x:Name="Category1Switch" Margin="10" Padding="5,2,5,4" IsEnabled="False" Click="Category1Switch_Click">&gt;&gt;</Button>
+            <Button x:Name="Category2Switch" Margin="10" Padding="5,2,5,4" IsEnabled="False" Click="Category2Switch_Click">&lt;&lt;</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
