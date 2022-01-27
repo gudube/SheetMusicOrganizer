@@ -17,7 +17,7 @@ namespace NAudioWrapper.WaveFormRendererLib
             if (Provider == null || ReadBuffer == null)
                 return new PeakInfo(0,0);
 
-            var samplesRead = Provider.Read(ReadBuffer, 0, ReadBuffer.Length);
+            var samplesRead = Provider.Read(ReadBuffer, 0, ReadBuffer.Length - (ReadBuffer.Length % (Provider.WaveFormat.BlockAlign / Provider.WaveFormat.Channels)));
             var sum = (samplesRead == 0) ? 0 : ReadBuffer.Take(samplesRead).Select(Math.Abs).Sum();
             var average = sum/samplesRead;
             

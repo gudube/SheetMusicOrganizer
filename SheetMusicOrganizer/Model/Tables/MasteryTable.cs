@@ -8,13 +8,12 @@
 
         public override SqlColumn[] GetCustomColumns()
         {
-            return new SqlColumn[] { Name, IsLocked, Color };
+            return new SqlColumn[] { Name, IsLocked };
         }
 
         #region Custom Columns
         public readonly SqlColumn Name = new SqlColumn("Name", EType.Text) {Unique = true };
         public readonly SqlColumn IsLocked = new SqlColumn("IsLocked", EType.Bool);
-        public readonly SqlColumn Color = new SqlColumn("Color", EType.Text);
         #endregion
 
     }

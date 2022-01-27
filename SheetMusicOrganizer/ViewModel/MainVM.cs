@@ -5,6 +5,9 @@ using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel.Tools;
 using System;
 using Microsoft.Data.Sqlite;
+using System.IO;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace SheetMusicOrganizer.ViewModel
 {
@@ -26,6 +29,13 @@ namespace SheetMusicOrganizer.ViewModel
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if(e.PropertyName == nameof(Session.PlayingSong))
+            {
+                if(Session.PlayingSong == null && CurrentViewModel == PartitionVM)
+                    SetView(LibraryVM);
+                
+                PlayerVM.ShowAdvancedOptions = CurrentViewModel == PartitionVM && !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1); 
+            }
         }
 
         #region Child VMs
@@ -38,13 +48,13 @@ namespace SheetMusicOrganizer.ViewModel
         public BaseViewModel? CurrentViewModel
         {
             get => _currentViewModel;
-            set
+            private set
             {
                 if (SetField(ref _currentViewModel, value))
                 {
                     if(value == PartitionVM)
                     {
-                        PlayerVM.ShowAdvancedOptions = true;
+                        PlayerVM.ShowAdvancedOptions = !String.IsNullOrWhiteSpace(Session.PlayingSong?.AudioDirectory1);
                     } else
                     {
                         PlayerVM.ShowAdvancedOptions = false;
@@ -59,24 +69,13 @@ namespace SheetMusicOrganizer.ViewModel
 
         public async Task LoadData()
         {
-            try
-            {
-                DbHandler.InitializeDatabase();
-
-                await LibraryVM.InitializeData();
-            }catch(Exception ex)
-            {
-                if (ex is SqliteException)
-                    throw;
-                else
-                    throw new SqliteException(ex.Message, 0);
-            }
-            
+            DbHandler.InitializeDatabase();
+            await LibraryVM.InitializeData();
             
             SetView(LibraryVM);
         }
 
-        private void SetView(BaseViewModel view)
+        private void SetView(BaseViewModel view, bool thenGoToSong = true)
         {
             if (CurrentViewModel == view)
                 return;
@@ -85,11 +84,18 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 bool foundSongToPlay = LibraryVM.SetSelectedSongPlaying(false);
                 if (foundSongToPlay)
+                {
                     CurrentViewModel = view;
+                }
             }
             else
             {
                 CurrentViewModel = view;
+            }
+            if(view == LibraryVM && Session.PlayingSong != null && thenGoToSong)
+            {
+                LibraryVM.GoToSong(Session.PlayingSong, true);
+
             }
         }
         #endregion
@@ -106,24 +112,12 @@ namespace SheetMusicOrganizer.ViewModel
             }
         }
 
-        public void GoToSong(string partitionFilename)
+        public void GoToSong(SongItem song, bool exactSameSong)
         {
-            SongItem song = DbHandler.GetSong(partitionFilename);
-            SetView(LibraryVM);
-            LibraryVM.GoToSong(song);
+            SetView(LibraryVM, false);
+            LibraryVM.GoToSong(song, exactSameSong);
         }
 
-        public bool AddSong(SongItem song)
-        {
-            if (LibraryVM.AddSong(song))
-            {
-                SetView(LibraryVM);
-                LibraryVM.GoToSong(song);
-                return true;
-            }
-
-            return false;
-        }
         #endregion
 
         #region Common Tasks

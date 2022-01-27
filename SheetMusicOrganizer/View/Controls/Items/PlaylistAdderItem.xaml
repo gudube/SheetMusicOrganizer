@@ -9,7 +9,12 @@
              Background="Transparent"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
     <Grid>
-        <Image Source="/View/Resources/plus_40.png" MaxHeight="20" HorizontalAlignment="Center">
+        <TextBox x:Name="AdderTextBox" Margin="4, 2, 4, 2" HorizontalAlignment="Stretch" Visibility="Hidden"
+                     Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     LostKeyboardFocus="AdderTextBox_OnLostKeyboardFocus" KeyDown="AdderTextBox_OnKeyDown" LostFocus="AdderTextBox_LostFocus">
+        </TextBox>
+    <Button x:Name="MainButton" Style="{DynamicResource SimpleButton}" Width="Auto" Height="Auto" Click="Button_Click">
+        <Image Source="{DynamicResource SmallPlusImage}" MaxHeight="20" HorizontalAlignment="Center">
             <Image.Style>
                 <Style TargetType="{x:Type Image}">
                     <Setter Property="Visibility" Value="Visible"></Setter>
@@ -17,16 +22,10 @@
                         <DataTrigger Binding="{Binding ElementName=AdderTextBox, Path=Visibility}" Value="Visible">
                             <Setter Property="Visibility" Value="Hidden"></Setter>
                         </DataTrigger>
-                    </Style.Triggers>
+                    </Style.Triggers>   
                 </Style>
             </Image.Style>
         </Image>
-        <TextBox x:Name="AdderTextBox" Margin="4, 2, 4, 2" HorizontalAlignment="Stretch" Visibility="Hidden"
-                 Text="{Binding AddingPlaylistName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                 LostKeyboardFocus="AdderTextBox_OnLostKeyboardFocus" KeyDown="AdderTextBox_OnKeyDown">
-            <TextBox.InputBindings>
-                <KeyBinding Command="{Binding CreateNewPlaylistCommand}" Key="Return" />
-            </TextBox.InputBindings>
-        </TextBox>
+    </Button>
     </Grid>
 </UserControl>

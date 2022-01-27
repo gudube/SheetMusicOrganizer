@@ -3,10 +3,9 @@ using System.IO;
 using System.Windows;
 using Serilog;
 using SheetMusicOrganizer.View;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 using SheetMusicOrganizer.View.Tools;
-using Microsoft.Data.Sqlite;
+using SheetMusicOrganizer.View.Windows;
+using System.Threading.Tasks;
 
 namespace SheetMusicOrganizer
 {
@@ -15,6 +14,9 @@ namespace SheetMusicOrganizer
     /// </summary>
     public partial class App
     {
+        private bool showSplashScreen = true;
+        private FirstTimeWindow? firstTimeWindow;
+
         public App()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NTA1NDA1QDMxMzkyZTMyMmUzME43c0xPRGQvVG8zRHhnd3hsb0xjU205TW4relhXRldsVHFrRktZaGYrbXM9");
@@ -22,14 +24,34 @@ namespace SheetMusicOrganizer
 
         private async void App_OnStartup(object sender, StartupEventArgs e)
         {
+            SetUpTools();
+
+            if (Settings.Default.RecentDBs.Count == 0)
+            {
+                firstTimeWindow = new FirstTimeWindow();
+                firstTimeWindow.Completed += FirstTimeWindow_Completed;
+                firstTimeWindow.Show();
+            } else
+            {
+                await ShowMainWindow();
+            }
+        }
+
+        private async void FirstTimeWindow_Completed(object? sender, EventArgs e)
+        {
+            firstTimeWindow?.Hide();
+            await ShowMainWindow();
+        }
+
+        private void SetUpTools()
+        {
             if (string.IsNullOrEmpty(Settings.Default.UserDir))
                 Settings.Default.UserDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Settings.Default.ApplicationName);
 
-            bool showSplashScreen = true;
             string[] args = Environment.GetCommandLineArgs();
-            foreach(string arg in args)
+            foreach (string arg in args)
             {
-                if(arg == "hardReset")
+                if (arg == "hardReset")
                     Settings.Default.Reset();
                 if (arg.StartsWith("overrideUserDir="))
                     Settings.Default.UserDir = arg.Substring("overrideUserDir=".Length);
@@ -52,7 +74,10 @@ namespace SheetMusicOrganizer
                 Exception? ex = (e.ExceptionObject as Exception);
                 Log.Warning("Unhandled Exception Thrown!!!: {message}\n{trace}", ex?.Message, ex?.StackTrace);
             };
-
+        }
+        
+        private async Task ShowMainWindow()
+        {
             SplashScreen? splash = null;
             if (showSplashScreen)
             {
@@ -62,21 +87,30 @@ namespace SheetMusicOrganizer
 
             try
             {
-                MainWindow window = new MainWindow();
-
-                await window.Configure();
-
-                this.MainWindow = window;
-
-                if (showSplashScreen)
+                if(Settings.Default.Theme == "Light")
                 {
-                    splash?.Close(TimeSpan.FromSeconds(1));
+                    ResourceDictionary dictTheme = new ResourceDictionary();
+                    dictTheme.Source = new Uri("/View/Styles/LightTheme.xaml", UriKind.Relative);
+                    ResourceDictionary dictStyles = new ResourceDictionary();
+                    dictStyles.Source = new Uri("/View/Styles/SpecificStyles.xaml", UriKind.Relative);
+                    Application.Current.Resources.MergedDictionaries.Clear();
+                    Application.Current.Resources.MergedDictionaries.Add(dictTheme);
+                    Application.Current.Resources.MergedDictionaries.Add(dictStyles);
                 }
+                MainWindow window = new MainWindow();
+                await window.Configure();
+                this.MainWindow = window;
                 window.Show();
+                firstTimeWindow?.Close();
             }
-            catch (SqliteException ex)
+            catch (Exception ex)
             {
-                WindowManager.OpenErrorAsMainWindow(ex, $"There was an error when trying to create/open the database from : {Settings.Default.RecentDBs[0]}");
+                if(!(ex is LibraryFileNotFoundException || ex is InitLibraryException))
+                    ex = new InitLibraryException(ex.Message);
+                WindowManager.OpenErrorAsMainWindow(ex);
+            }
+            finally
+            {
                 if (showSplashScreen)
                 {
                     splash?.Close(TimeSpan.FromSeconds(1));

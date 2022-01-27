@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Media.Effects;
 using System.Windows.Threading;
+using Microsoft.Win32;
+using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.View.Windows;
+using SheetMusicOrganizer.ViewModel;
 
 namespace SheetMusicOrganizer.View.Tools
 {
@@ -16,17 +20,7 @@ namespace SheetMusicOrganizer.View.Tools
             return _openedOptionWindow != null || _openedErrorWindow != null;
         }
 
-        public static void OpenAddNewSongWindow()
-        {
-            OpenOptionWindow(new AddNewSongWindow());
-        }
-
-        public static void OpenOpenFolderWindow()
-        {
-            OpenOptionWindow(new OpenFolderWindow());
-        }
-
-        private static void OpenOptionWindow(Window window)
+        public static void OpenOptionWindow(Window window)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(() =>
             {
@@ -36,8 +30,6 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedOptionWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedOptionWindow.ShowDialog();
-                _openedOptionWindow.Activate();
-                _openedOptionWindow.Focus();
             });
         }
 
@@ -49,8 +41,6 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedErrorWindow.Closed += OpenedWindow_Closed;
                 DarkenBackground(true);
                 _openedErrorWindow.ShowDialog();
-                _openedErrorWindow.Activate();
-                _openedErrorWindow.Focus();
             });
         }
 
@@ -90,6 +80,59 @@ namespace SheetMusicOrganizer.View.Tools
                 _openedErrorWindow = null;
 
             Application.Current.Shutdown();
+        }
+
+        public static bool OpenOpenLibraryWindow(bool openDatabase)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog
+            {
+                Filter = "Library File (*.sqlite)|*.sqlite",
+                Multiselect = false,
+                InitialDirectory = Settings.Default.UserDir,
+                FilterIndex = 1
+            };
+            if (openDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    if (openDatabase)
+                        DbHandler.OpenDatabase(openDialog.FileName);
+                    else
+                        DbHandler.SaveOpenedDbSettings(openDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(ex);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public static bool OpenCreateLibraryWindow(bool openDatabase)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Library File (*.sqlite)|*.sqlite",
+                InitialDirectory = Settings.Default.UserDir
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.Create(saveFileDialog.FileName);
+                try
+                {
+                    if (openDatabase)
+                        DbHandler.OpenDatabase(saveFileDialog.FileName);
+                    else
+                        DbHandler.SaveOpenedDbSettings(saveFileDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(ex);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

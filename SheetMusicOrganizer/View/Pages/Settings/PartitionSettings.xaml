@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="SheetMusicOrganizer.View.Pages.Settings.PartitionSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SheetMusicOrganizer.View.Pages.Settings"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <TextBlock Style="{DynamicResource LabelTextBlock}">Partition sheet resolution</TextBlock>
+        <ComboBox HorizontalAlignment="Left" Margin="0,5,0,0" Width="200" SelectedIndex="{Binding PdfResolutionIndex, Mode=TwoWay}">
+            <ComboBoxItem TabIndex="0">High (Requires more CPU)</ComboBoxItem>
+            <ComboBoxItem TabIndex="1">Medium (Default)</ComboBoxItem>
+            <ComboBoxItem TabIndex="2">Low (For low-end computers)</ComboBoxItem>
+        </ComboBox>
+    </StackPanel>
+</UserControl>

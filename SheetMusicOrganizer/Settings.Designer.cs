@@ -86,5 +86,59 @@ namespace SheetMusicOrganizer {
                 this["UserDir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Dark")]
+        public string Theme {
+            get {
+                return ((string)(this["Theme"]));
+            }
+            set {
+                this["Theme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
+        public uint PdfResolution {
+            get {
+                return ((uint)(this["PdfResolution"]));
+            }
+            set {
+                this["PdfResolution"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int PartitionSelectionMode {
+            get {
+                return ((int)(this["PartitionSelectionMode"]));
+            }
+            set {
+                this["PartitionSelectionMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <string>Music Sheet Filename</string>
+  <string>Audio Filename</string>
+  <string>2nd Audio Filename</string>
+  <string>Year</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection HiddenColumns {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["HiddenColumns"]));
+            }
+            set {
+                this["HiddenColumns"] = value;
+            }
+        }
     }
 }

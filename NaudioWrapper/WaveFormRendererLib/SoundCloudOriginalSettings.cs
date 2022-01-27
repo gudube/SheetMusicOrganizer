@@ -16,13 +16,19 @@ namespace NAudioWrapper.WaveFormRendererLib
             BackgroundColor = Color.White;
         }
 
+        public Color TopColor1 = Color.FromArgb(120, 120, 120);
+        public Color TopColor2 = Color.FromArgb(50, 50, 50);
+        public Color BottomColor1 = Color.FromArgb(16, 16, 16);
+        public Color BottomColor2 = Color.FromArgb(142, 142, 142);
+        public Color BottomColor3 = Color.FromArgb(150, 150, 150);
+
         public override Pen? TopPeakPen
         {
             get
             {
                 if (base.TopPeakPen == null || _lastTopHeight != TopHeight)
                 {
-                    base.TopPeakPen = CreateGradientPen(TopHeight, Color.FromArgb(120, 120, 120), Color.FromArgb(50, 50, 50));
+                    base.TopPeakPen = CreateGradientPen(TopHeight, TopColor1, TopColor2);
                     _lastTopHeight = TopHeight;
                 }
                 return base.TopPeakPen;
@@ -54,12 +60,13 @@ namespace NAudioWrapper.WaveFormRendererLib
 
         private Pen CreateSoundcloudBottomPen(int topHeight, int bottomHeight)
         {
-            var bottomGradient = new LinearGradientBrush(new Point(0, topHeight), new Point(0, topHeight + bottomHeight), 
-                Color.FromArgb(16, 16, 16), Color.FromArgb(150, 150, 150));
+            var bottomGradient = new LinearGradientBrush(new Point(0, topHeight), new Point(0, topHeight + bottomHeight),
+                BottomColor1, BottomColor3);
             var colorBlend = new ColorBlend(3);
-            colorBlend.Colors[0] = Color.FromArgb(16, 16, 16);
-            colorBlend.Colors[1] = Color.FromArgb(142, 142, 142);
-            colorBlend.Colors[2] = Color.FromArgb(150, 150, 150);
+            colorBlend.Colors[0] = BottomColor1;
+            colorBlend.Colors[1] = BottomColor2;
+            colorBlend.Colors[2] = BottomColor3;
+
             colorBlend.Positions[0] = 0;
             colorBlend.Positions[1] = 0.1f;
             colorBlend.Positions[2] = 1.0f;

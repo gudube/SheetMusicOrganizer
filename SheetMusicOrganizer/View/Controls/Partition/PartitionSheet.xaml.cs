@@ -19,11 +19,21 @@ namespace SheetMusicOrganizer.View.Controls.Partition
     /// </summary>
     public partial class PartitionSheet : UserControl
     {
+        private uint resolution;
         public PartitionSheet()
         {
-            InitializeComponent();
             DataContextChanged += PartitionSheet_DataContextChanged;
+            resolution = Settings.Default.PdfResolution;
             this.KeyDown += PartitionSheet_KeyDown;
+            Loaded += (s, e) =>
+            {
+                Settings.Default.SettingsSaving += Default_SettingsSaving;
+            };
+            Unloaded += (s, e) =>
+            {
+                Settings.Default.SettingsSaving -= Default_SettingsSaving;
+            };
+            InitializeComponent();
         }
 
         private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
@@ -33,7 +43,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
         }
 
         #region Changed events
-        private void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void PartitionSheet_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue is PartitionVM oldVM)
             {
@@ -42,18 +52,18 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             }
 
             if (e.NewValue is PartitionVM newVM) {
-                OpenShownSongPartition();
                 newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
                 newVM.PropertyChanged += PartitionVM_PropertyChanged;
+                await OpenShownSongPartition();
             }
         }
 
-        private void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void PartitionVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PartitionVM.Zoom))
                 UpdateZoom();
             else if (e.PropertyName == nameof(PartitionVM.ShownSong))
-                OpenShownSongPartition();
+                await OpenShownSongPartition();
         }
 
         private void Player_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -62,10 +72,22 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 UpdateScrollPos();
         }
 
+        private async void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Settings.Default.PdfResolution != resolution)
+            {
+                resolution = Settings.Default.PdfResolution;
+                await OpenShownSongPartition();
+            }
+        }
+
         #endregion
 
         #region PDFViewer
-        private void OpenShownSongPartition()
+        private Task? _createImageTask;
+        private CancellationTokenSource _cancelImageCreation = new CancellationTokenSource();
+
+        private async Task OpenShownSongPartition()
         {
             if (!(DataContext is PartitionVM partitionVM))
             {
@@ -92,43 +114,76 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                     return;
                 }
 
-                StorageFile.GetFileFromPathAsync(path).AsTask() //Get File as Task
-                //Then load pdf document on background thread
-                .ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask()).Unwrap()
-                //Finally display on UI Thread
-                .ContinueWith(t2 => PdfToImages(t2.Result), TaskScheduler.FromCurrentSynchronizationContext())
-                .ContinueWith(t3 =>
-                    t3.Exception?.Handle(ex =>
+                if (_createImageTask != null)
+                {
+                    if (!_createImageTask.IsCompleted)
                     {
-                        GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
-                        return false;
-                    }), new CancellationToken(), TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+                        try
+                        {
+                            //the task is running, cancel it and wait for it to be done before continuing
+                            _cancelImageCreation.Cancel();
+                            await _createImageTask;
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            //nothing to do here
+                        }
+                    }
+                    _createImageTask.Dispose();
+                    _cancelImageCreation.Dispose();
+                    _cancelImageCreation = new CancellationTokenSource();
+                }
+
+                CancellationToken ct = _cancelImageCreation.Token;
+
+                var getFileTask = StorageFile.GetFileFromPathAsync(path).AsTask(ct);
+                var loadFileTask = getFileTask.ContinueWith(t => PdfDocument.LoadFromFileAsync(t.Result).AsTask(ct), TaskContinuationOptions.NotOnCanceled).Unwrap();
+                _createImageTask = loadFileTask.ContinueWith(t2 => PdfToImages(t2.Result, ct), ct, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap();
+
+                try
+                {
+                    LoadingOverlay.Title = "LOADING...";
+                    await _createImageTask;
+                } catch(OperationCanceledException)
+                {
+                    PagesContainer.Items.Clear();
+                }
+                catch (Exception ex)
+                {
+                    GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
+                } finally
+                {
+                    LoadingOverlay.Title = "";
+                }
+
             }
         }
 
-        private async Task PdfToImages(PdfDocument? pdfDoc)
+        private async Task PdfToImages(PdfDocument? pdfDoc, CancellationToken? ct)
         {
+            ct?.ThrowIfCancellationRequested();
             if (!(DataContext is PartitionVM partitionVM))
             {
                 GlobalEvents.raiseErrorEvent(new InvalidOperationException($"Trying to use PdfToImages when DataContext is not a PartitionVM, but is {DataContext?.GetType()}"));
                 return;
             }
-
             PagesContainer.Items.Clear();
 
             if (pdfDoc == null) return;
 
             for (uint i = 0; i < pdfDoc.PageCount; i++)
             {
+                LoadingOverlay.Title = $"LOADING...\r\n{i}/{pdfDoc.PageCount} pages";
                 using (var page = pdfDoc.GetPage(i)) //get each page and convert
                 {
+                    ct?.ThrowIfCancellationRequested();
                     var bitmap = await PageToBitmapAsync(page);
                     var image = new Image
                     {
                         Source = bitmap,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         Margin = new Thickness(0, 4, 0, 4),
-                        Width = 1200 * partitionVM.Zoom
+                        Width = 1200 * partitionVM.Zoom,
                     };
                     PagesContainer.Items.Add(image);
                 }
@@ -141,12 +196,15 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
             using (var stream = new WrappingStream(new MemoryStream()))
             {
-                await page.RenderToStreamAsync(stream.AsRandomAccessStream());
+                await page.RenderToStreamAsync(stream.AsRandomAccessStream(), new PdfPageRenderOptions
+                {
+                    DestinationWidth = resolution
+                });
 
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream;
-                image.DecodePixelWidth = 1400;
+                image.DecodePixelWidth = (int) resolution;
                 image.EndInit();
                 image.Freeze();
             }

@@ -25,27 +25,54 @@ namespace SheetMusicOrganizer.View.Controls.Player
 
         public WaveFormSeekBar()
         {
-            InitializeComponent();
             Loaded += WaveFormSeekBar_Loaded;
+            Unloaded += (s, e) =>
+            {
+                Settings.Default.SettingsSaving -= Default_SettingsSaving;
+            };
+            InitializeComponent();
             DataContextChanged += WaveFormSeekBar_DataContextChanged;
             _flagConverter = (FlagTimeConverter)FlagsCanvas.FindResource("FlagTimeConverter");
             _flagConverter.FlagCanvas = FlagsCanvas;
             FlagsCanvas.SizeChanged += (_, _) => refreshFlags();
         }
 
+        private void Default_SettingsSaving(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var newColorSettings = Settings.Default.Theme == "Dark" ? _darkRendererSettings : _lightRendererSettings;
+            if(_colorSettings != newColorSettings)
+            {
+                _colorSettings = newColorSettings;
+                if(DataContext is PlayerVM playerVM)
+                    UpdateWaveForm(playerVM.Session.PlayingSong?.AudioDirectory1 ?? string.Empty);
+            }
+        }
+
         #region events
 
         private void WaveFormSeekBar_Loaded(object sender, RoutedEventArgs e)
         {
-            //Color color = ((SolidColorBrush) Control.Background).Color;
             _darkRendererSettings = new SoundCloudOriginalSettings
             {
-                Width = (int) SeekBar.ActualWidth,
-                TopHeight = (int) (SeekBar.ActualHeight*0.6), 
-                BottomHeight = (int) (SeekBar.ActualHeight*0.4),
-             //   BackgroundColor = System.Drawing.Color.FromArgb(255, color.R, color.G, color.B)
-                BackgroundColor = Color.Transparent
+                Width = (int)SeekBar.ActualWidth,
+                TopHeight = (int)(SeekBar.ActualHeight * 0.6),
+                BottomHeight = (int)(SeekBar.ActualHeight * 0.4),
+                BackgroundColor = Color.Transparent,
+                TopColor1 = Color.FromArgb(220, 220, 220),
+                TopColor2 = Color.FromArgb(100, 100, 100),
+                BottomColor1 = Color.FromArgb(60, 60, 60),
+                BottomColor2 = Color.FromArgb(82, 82, 82),
+                BottomColor3 = Color.FromArgb(90, 90, 90)
             };
+            _lightRendererSettings = new SoundCloudOriginalSettings
+            {
+                Width = (int)SeekBar.ActualWidth,
+                TopHeight = (int)(SeekBar.ActualHeight * 0.6),
+                BottomHeight = (int)(SeekBar.ActualHeight * 0.4),
+                BackgroundColor = Color.Transparent,
+            };
+            _colorSettings = Settings.Default.Theme == "Dark" ? _darkRendererSettings : _lightRendererSettings;
+            Settings.Default.SettingsSaving += Default_SettingsSaving;
         }
 
         private void WaveFormSeekBar_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -98,6 +125,9 @@ namespace SheetMusicOrganizer.View.Controls.Player
         private readonly WaveFormRenderer _waveFormRenderer = new WaveFormRenderer();
 
         private WaveFormRendererSettings? _darkRendererSettings;
+        private WaveFormRendererSettings? _lightRendererSettings;
+        private WaveFormRendererSettings? _colorSettings;
+
 
         #region Render WaveForm
 
@@ -106,15 +136,9 @@ namespace SheetMusicOrganizer.View.Controls.Player
 
         private async void UpdateWaveForm(string audioDirectory)
         {
-            if (_darkRendererSettings == null)
+            if (_colorSettings == null)
             {
                 GlobalEvents.raiseErrorEvent(new InvalidOperationException($"RendererSettings null when trying to create the waveform."));
-                return;
-            }
-
-            if (string.IsNullOrEmpty(audioDirectory))
-            {
-                WaveFormImage.Visibility = Visibility.Hidden;
                 return;
             }
 
@@ -139,7 +163,15 @@ namespace SheetMusicOrganizer.View.Controls.Player
                 _cancelImageCreation.Dispose();
                 _cancelImageCreation = new CancellationTokenSource();
             }
-            
+
+            if (string.IsNullOrEmpty(audioDirectory))
+            {
+                WaveFormImage.Source = null;
+                WaveFormImage.Visibility = Visibility.Hidden;
+                LoadingWaveFormText.Visibility = Visibility.Hidden;
+                return;
+            }
+
             CancellationToken ct = _cancelImageCreation.Token;
 
             _createImageTask = Task.Run(() =>
@@ -150,7 +182,7 @@ namespace SheetMusicOrganizer.View.Controls.Player
                     Image image;
                     try
                     {
-                        image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _darkRendererSettings, ct);
+                        image = _waveFormRenderer.Render(audioDirectory, new AveragePeakProvider(3), _colorSettings, ct);
                     }catch(InvalidOperationException ex)
                     {
                         _cancelImageCreation.Cancel();

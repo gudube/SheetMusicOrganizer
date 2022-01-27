@@ -34,8 +34,7 @@ namespace SheetMusicOrganizer.Model
             }
             else if (!File.Exists(Settings.Default.RecentDBs[0]))
             {
-                Log.Warning("Could not open the database file. Now opening the default one.");
-                OpenDefaultDatabase();
+                throw new LibraryFileNotFoundException(Settings.Default.RecentDBs[0]);
             }
 
             CreateTables(force);
@@ -75,7 +74,7 @@ namespace SheetMusicOrganizer.Model
             }
         }
 
-        private static void SaveOpenedDbSettings(string dBOpenedPath)
+        public static void SaveOpenedDbSettings(string dBOpenedPath)
         {
             Log.Information("Saving new opened database {path}", dBOpenedPath);
 
@@ -330,7 +329,7 @@ namespace SheetMusicOrganizer.Model
             string paramName = "@" + column;
 
             SqliteCommand cmd = con.CreateCommand();
-            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {table.Id} = {paramName}";
+            cmd.CommandText = $"DELETE FROM {table.TableName} WHERE {column} = {paramName}";
             cmd.Parameters.Add(CreateParameter(paramName, column.SqlType, value));
             cmd.ExecuteNonQuery();
         }
@@ -369,8 +368,9 @@ namespace SheetMusicOrganizer.Model
                 SqliteDataReader dataReader = GetAllItems(con, playlistTable.TableName);
                 while (dataReader.Read())
                 {
-                    PlaylistItem playlist = new PlaylistItem(dataReader); 
-                    playlist.Songs = await GetSongs(playlist.Id);
+                    PlaylistItem playlist = new PlaylistItem(dataReader);
+                    var songs = await GetSongs(playlist.Id);
+                    songs.ForEach(playlist.Songs.Add);
                     playlist.SortSongs();
                     playlists.Add(playlist);
                 }
@@ -436,7 +436,7 @@ namespace SheetMusicOrganizer.Model
             throw new SqliteException("Could not find the song corresponding to the id: " + songId, 1);
         }
         */
-        public static SongItem GetSong(string partitionDir)
+        public static SongItem? GetSong(string partitionDir)
         {
             SqliteParameter param = CreateParameter("@" + songTable.PartitionDirectory, songTable.PartitionDirectory.SqlType, partitionDir);
             string condition = $"WHERE {songTable.TableName}.{songTable.PartitionDirectory} = {param.ParameterName}";
@@ -447,7 +447,7 @@ namespace SheetMusicOrganizer.Model
                 if (dataReader.Read())
                     return new SongItem(dataReader);
             }
-            throw new SqliteException("Could not find the song corresponding to : " + partitionDir, 1);
+            return null;
         }
 
         public static async Task<List<SongItem>> GetSongs(int playlistId)
@@ -540,7 +540,29 @@ namespace SheetMusicOrganizer.Model
             }
         }
 
-        public static void DeleteSongs(int[] songIDs)
+        public static void UpdateSong(SongItem song)
+        {
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+
+                SongItem? existingSong = GetSong(song.PartitionDirectory);
+                if (existingSong == null) return;
+                song.Id = existingSong.Id;
+                UpdateRow(con, songTable, song);
+            }
+        }
+
+        public static void DeleteSong(string songPartition)
+        {
+            using (SqliteConnection con = CreateConnection())
+            {
+                con.Open();
+                DeleteRow(con, songTable, songTable.PartitionDirectory, songPartition);
+            }
+        }
+
+        public static void DeleteSongs(params int[] songIDs)
         {
             string safeCondition = $"WHERE {songTable.Id.Name} IN ( {string.Join(", ", songIDs)})";
             using (SqliteConnection con = CreateConnection())
@@ -559,11 +581,11 @@ namespace SheetMusicOrganizer.Model
 
             if (IsEmpty(con, masteryTable))
             {
-                MasteryItem defaultUnset = new MasteryItem("Unset", true, "#F0FDFA") { Id = DefaultMasteryId };
-                MasteryItem defaultBeginner = new MasteryItem("Beginner", true, "#D8F4EF");
-                MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true, "#B7ECEA");
-                MasteryItem defaultAdvanced = new MasteryItem("Advanced", true, "#97DEE7");
-                MasteryItem defaultMastered = new MasteryItem("Mastered", true, "#78C5DC");
+                MasteryItem defaultUnset = new MasteryItem("Unset", true) { Id = DefaultMasteryId };
+                MasteryItem defaultBeginner = new MasteryItem("Beginner", true);
+                MasteryItem defaultIntermediate = new MasteryItem("Intermediate", true);
+                MasteryItem defaultAdvanced = new MasteryItem("Advanced", true);
+                MasteryItem defaultMastered = new MasteryItem("Mastered", true);
 
                 InsertRows(con, masteryTable, new BaseModelItem[] { defaultUnset, defaultBeginner, defaultIntermediate, defaultAdvanced, defaultMastered });
             }

@@ -6,17 +6,19 @@
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1500" d:DataContext="{d:DesignInstance viewModel:MainVM}">
-    <StatusBar Height="21" BorderBrush="{StaticResource BackgroundLv3SolidColor}" BorderThickness="0, 1, 0, 0">
+    <StatusBar Height="21">
         <StatusBar.ItemsPanel>
             <ItemsPanelTemplate>
                 <Grid Margin="2, -2, 2, 0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 </Grid>
             </ItemsPanelTemplate>
         </StatusBar.ItemsPanel>
-        <StackPanel Orientation="Horizontal" Margin="0, -3, 0, -5">
-            <StatusBarItem Content="Playing Song: "/>
-            <StatusBarItem Content="{Binding Path=Session.PlayingSong}"/>
-        </StackPanel>
+        <ContentControl Margin="0, -3, 0, -5" MouseDoubleClick="ContentControl_MouseDoubleClick">
+            <StackPanel Orientation="Horizontal">
+                <StatusBarItem Content="Playing Song: "/>
+                <StatusBarItem Content="{Binding Path=Session.PlayingSong}"/>
+            </StackPanel>
+        </ContentControl>
         <StatusBarItem x:Name="SavingMessage" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
         <StatusBarItem x:Name="LoadingMessage" HorizontalAlignment="Center"/>
     </StatusBar>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Win32;
 using SheetMusicOrganizer.View.Tools;
+using SheetMusicOrganizer.View.Windows;
 using SheetMusicOrganizer.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,7 +29,6 @@ namespace SheetMusicOrganizer.View.Controls
         public MenuBar()
         {
             InitializeComponent();
-
             DataContextChanged += MenuBar_DataContextChanged;
         }
 
@@ -51,45 +52,33 @@ namespace SheetMusicOrganizer.View.Controls
 
         private void AddNewSongMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow();
+            WindowManager.OpenOptionWindow(new AddNewSongWindow());
         }
 
         private void OpenFolderMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenOpenFolderWindow();
+            WindowManager.OpenOptionWindow(new OpenFolderWindow());
         }
 
         private void LoadDatabase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(DataContext is MainVM mainVM)) return;
-
-            OpenFileDialog openDialog = new OpenFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                Multiselect = false,
-                InitialDirectory = Settings.Default.UserDir,
-                FilterIndex = 1
-            };
-            if (openDialog.ShowDialog() == true)
-            {
-                mainVM.LoadDatabase(openDialog.FileName);
-            }
+            WindowManager.OpenOpenLibraryWindow(true);
         }
 
         private void NewDatabase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(DataContext is MainVM mainVM)) return;
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "Library File (*.sqlite)|*.sqlite",
-                InitialDirectory = Settings.Default.UserDir
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                File.Create(saveFileDialog.FileName);
-                mainVM.LoadDatabase(saveFileDialog.FileName);
-            }
+            WindowManager.OpenCreateLibraryWindow(true);
         }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenOptionWindow(new SettingsWindow());
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            WindowManager.OpenOptionWindow(new AboutWindow());
+        }
+        
     }
 }

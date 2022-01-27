@@ -8,13 +8,8 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using Microsoft.Win32;
-using Serilog;
-using SheetMusicOrganizer.Model;
 using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
-using Windows.UI;
-using Windows.UI.ViewManagement;
 
 namespace SheetMusicOrganizer.View
 {
@@ -24,14 +19,23 @@ namespace SheetMusicOrganizer.View
     // ReSharper disable once UnusedMember.Global
     public partial class MainWindow : Window
     {
+
+        private FileStream? lockedFs;
         public MainWindow()
         {
+            //bool firstUse = Settings.Default.RecentDBs.Count == 0;
             InitializeComponent();
             Loaded += (s, a) => {
                 GlobalEvents.ErrorMessage += Status_ErrorMessage;
+                var openedDb = Settings.Default.RecentDBs[0];
+                if(openedDb != null)
+                    lockedFs = File.Open(openedDb, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                //if(firstUse)
+                //    WindowManager.OpenFirstTimeWindow();
             };
             Unloaded += (s, a) => {
                 GlobalEvents.ErrorMessage -= Status_ErrorMessage;
+                lockedFs?.Close();
             };
         }
 

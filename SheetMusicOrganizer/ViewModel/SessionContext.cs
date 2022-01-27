@@ -41,7 +41,14 @@ namespace SheetMusicOrganizer.ViewModel
 
         #region PlayingSong
         private INotifyPropertyChanged? _playingSong;
-        public SongItem? PlayingSong { get => (SongItem?) _playingSong; set => SetField(ref _playingSong, value); }
+        public SongItem? PlayingSong { get => (SongItem?) _playingSong; set {
+                if (_playingSong is SongItem oldSong)
+                    oldSong.ShowedAsPlaying = false;
+                SetField(ref _playingSong, value);
+                if(value is SongItem newSong)
+                    newSong.ShowedAsPlaying = true;
+            }
+        }
         #endregion
 
         #region AudioPlayer

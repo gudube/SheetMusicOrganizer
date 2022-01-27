@@ -3,7 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Serilog;
+using SheetMusicOrganizer.View.Tools;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Library;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -18,8 +20,14 @@ namespace SheetMusicOrganizer.View.Windows
             this.Owner = Application.Current.MainWindow;
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
+            Loaded += OpenFolderWindow_Loaded;
             InitializeComponent();
 
+        }
+
+        private void OpenFolderWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         public static readonly DependencyProperty FolderProperty = DependencyProperty.Register("Folder", typeof(string), typeof(OpenFolderWindow));
@@ -30,6 +38,9 @@ namespace SheetMusicOrganizer.View.Windows
 
         public static readonly DependencyProperty RecursiveAOProperty = DependencyProperty.Register("RecursiveAO", typeof(bool), typeof(OpenFolderWindow), new PropertyMetadata(true));
         public bool RecursiveAO { get => (bool)GetValue(RecursiveAOProperty); set => SetValue(RecursiveAOProperty, value); }
+
+        public static readonly DependencyProperty OverwriteAOProperty = DependencyProperty.Register("OverwriteAO", typeof(bool), typeof(OpenFolderWindow), new PropertyMetadata(false));
+        public bool OverwriteAO { get => (bool)GetValue(OverwriteAOProperty); set => SetValue(OverwriteAOProperty, value); }
 
         private void SelectFolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -48,13 +59,12 @@ namespace SheetMusicOrganizer.View.Windows
                 return;
             }
 
-            if(ImportByFolder.IsChecked.HasValue && ImportByFolder.IsChecked.Value)
-                mainVM.LibraryVM.AddDirByFolder(Folder, RecursiveAO, UseMetadataAO);
-            else if (ImportByFilename.IsChecked.HasValue && ImportByFilename.IsChecked.Value)
-                mainVM.LibraryVM.AddDirByFilename(Folder, RecursiveAO, UseMetadataAO);
-            else if(ImportPdfOnly.IsChecked.HasValue && ImportPdfOnly.IsChecked.Value)
-                mainVM.LibraryVM.AddDirWithoutAudio(Folder, RecursiveAO);
-            this.Close();
+            var importLibraryVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
+            Task importAction = importLibraryVM.AddDir(
+                    ImportByFolder.IsChecked.HasValue && ImportByFolder.IsChecked.Value,
+                    ImportByFilename.IsChecked.HasValue && ImportByFilename.IsChecked.Value,
+                    Folder, RecursiveAO, UseMetadataAO, OverwriteAO);
+            WindowManager.OpenOptionWindow(new ImportResultWindow(importLibraryVM, importAction));
         }
     }
 }

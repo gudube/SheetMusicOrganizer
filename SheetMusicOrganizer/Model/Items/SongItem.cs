@@ -6,7 +6,7 @@ using SheetMusicOrganizer.Model.Tables;
 
 namespace SheetMusicOrganizer.Model.Items
 {
-    public class SongItem : BaseModelItem
+    public class SongItem : BaseModelItem, ICloneable
     {
         #region Properties
         private string _partitionDirectory;
@@ -17,6 +17,9 @@ namespace SheetMusicOrganizer.Model.Items
 
         private string _audioDirectory2;
         public string AudioDirectory2 { get => _audioDirectory2; set => SetField(ref _audioDirectory2, value); }
+
+        private string _dateAdded;
+        public string DateAdded { get => _dateAdded; set => SetField(ref _dateAdded, value); }
 
         private uint _number = 0;
         public uint Number { get => _number; set => SetField(ref _number, value); }
@@ -33,7 +36,7 @@ namespace SheetMusicOrganizer.Model.Items
         private string _genre = "";
         public string Genre { get => _genre; set => SetField(ref _genre, value); }
 
-        private string _lengthMD = "00:00";
+        private string _lengthMD = "";
         public string LengthMD { get => _lengthMD; private set => SetField(ref _lengthMD, value); }
 
         private string _codecMD = "";
@@ -45,6 +48,9 @@ namespace SheetMusicOrganizer.Model.Items
         private uint _rating = 0;
         public uint Rating { get => _rating; set => SetField(ref _rating, value); }
 
+        private string _year = "";
+        public string Year { get => _year; set => SetField(ref _year, value); }
+
         private string _notes = "";
         public string Notes { get => _notes; set {
                 if(SetField(ref _notes, value))
@@ -52,7 +58,7 @@ namespace SheetMusicOrganizer.Model.Items
             }
         }
 
-        private int _masteryId = 0;
+        private int _masteryId = 1;
         public int MasteryId { get => _masteryId; 
             set
             {
@@ -83,14 +89,11 @@ namespace SheetMusicOrganizer.Model.Items
         private bool _showedAsPlaying = false;
         public bool ShowedAsPlaying { get => _showedAsPlaying; set => SetField(ref _showedAsPlaying, value); }
 
-        private bool _isSelected = false;
-        public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
-
         private int _lengthSecs = 0;
         public int LengthSecs { get => _lengthSecs; set => SetField(ref _lengthSecs, value); }
         #endregion
 
-        public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 0, bool useAudioMD = true) : base()
+        public SongItem(string partitionDir = "", string audioDirectory1 = "", string audioDirectory2 = "", int masteryId = 1, bool useAudioMD = true) : base()
         {
             _partitionDirectory = partitionDir;
             _audioDirectory1 = audioDirectory1;
@@ -102,6 +105,8 @@ namespace SheetMusicOrganizer.Model.Items
 
             if(string.IsNullOrWhiteSpace(_title))
                 _title = Path.GetFileNameWithoutExtension(partitionDir);
+
+            _dateAdded = DateTime.Now.ToString();
 
             _scrollStartTime = Settings.Default.DefaultScrollStartTime;
             _scrollEndTime = Settings.Default.DefaultScrollEndTime;
@@ -118,6 +123,7 @@ namespace SheetMusicOrganizer.Model.Items
             _partitionDirectory = GetSafeString(dataReader, songTable.PartitionDirectory.Name);
             _audioDirectory1 = GetSafeString(dataReader, songTable.AudioDirectory1.Name);
             _audioDirectory2 = GetSafeString(dataReader, songTable.AudioDirectory2.Name);
+            _dateAdded = GetSafeString(dataReader, songTable.DateAdded.Name);
             _number = GetSafeUInt(dataReader, songTable.Number.Name).GetValueOrDefault(0);
             _title = GetSafeString(dataReader, songTable.Title.Name);
             _artist = GetSafeString(dataReader, songTable.Artist.Name);
@@ -131,8 +137,9 @@ namespace SheetMusicOrganizer.Model.Items
             if (rating == null || rating > 255)
                 Log.Warning("Invalid rating '{Rating}' read from DB for song: {Song}", rating, this);
             _rating = rating.GetValueOrDefault(0);
+            _year = GetSafeString(dataReader, songTable.Year.Name);
             _notes = GetSafeString(dataReader, songTable.Notes.Name);
-            _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(0);
+            _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(1);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
             string[] lengthSeparated = LengthMD.Split(':');
@@ -165,7 +172,7 @@ namespace SheetMusicOrganizer.Model.Items
                 _album = tFile.Tag.Album;
             if(_genre == "" || updateExisting)
                 _genre = tFile.Tag.JoinedGenres;
-            if(_lengthMD == "00:00")
+            if(_lengthMD == "")
                 _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
             _lengthSecs = (int)Math.Floor(tFile.Properties.Duration.TotalSeconds);
             if (_codecMD == "" || updateExisting)
@@ -175,7 +182,7 @@ namespace SheetMusicOrganizer.Model.Items
                     _codecMD = mimeSplits[^1];
             }
             if(_bitrateMD == "" || updateExisting)
-                _bitrateMD = tFile.Properties.AudioBitrate + " kbps";
+                _bitrateMD = tFile.Properties.AudioBitrate > 0 ? tFile.Properties.AudioBitrate + " kbps" : "? kbps";
             if (_rating == 0 || updateExisting)
             {
                 TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);
@@ -197,30 +204,40 @@ namespace SheetMusicOrganizer.Model.Items
                         _rating = 5;
                 }
             }
+            if(_year == "")
+                _year = tFile.Tag.Year > 0 ? tFile.Tag.Year.ToString() : "";
         }
 
         public override object?[] GetCustomValues()
         {
             return new object?[]
             {
-                PartitionDirectory, AudioDirectory1, AudioDirectory2, Number, Title, Artist, Album, Genre,
-                LengthMD, CodecMD, BitrateMD, Rating, Notes, MasteryId, ScrollStartTime, ScrollEndTime
+                PartitionDirectory, AudioDirectory1, AudioDirectory2, DateAdded, Number, Title, Artist, Album, Genre,
+                LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime
             };
         }
 
         public override string ToString()
         {
-            return string.Join(" - ", Artist, Title);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is SongItem song && this.Id == song.Id;
+            string artist = Artist;
+            string title = Title;
+            if (String.IsNullOrWhiteSpace(Artist))
+                artist = "Unknown Artist";
+            if (String.IsNullOrWhiteSpace(Title))
+                title = "Unknown Title";
+            return string.Join(" - ", artist, title);
         }
 
         public override int GetHashCode()
         {
             return Id;
+        }
+
+        public object Clone()
+        {
+            var newSong = (SongItem)MemberwiseClone();
+            newSong.ShowedAsPlaying = false;
+            return newSong;
         }
     }
 }

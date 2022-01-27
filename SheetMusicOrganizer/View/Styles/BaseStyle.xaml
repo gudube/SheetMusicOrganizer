@@ -1,0 +1,251 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:syncfusion="http://schemas.syncfusion.com/wpf">
+
+    <!--#region Button -->
+    <Style x:Key="SimpleButtonBase" TargetType="{x:Type ButtonBase}">
+        <Setter Property="Width" Value="27"/>
+        <Setter Property="Height" Value="27"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style x:Key="3DButtonBase" TargetType="{x:Type Button}">
+        <Setter Property="Padding" Value="15,5"></Setter>
+    </Style>
+    <Style x:Key="RoundButtonBase" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Ellipse}">
+                <Setter Property="Opacity" Value="0.4"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=1}, Path=IsMouseOver}" Value="True">
+                        <Setter Property="Opacity" Value="0.6" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="{x:Type Image}">
+                <Setter Property="Margin" Value="15"/>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Height" Value="40px"/>
+        <Setter Property="Width" Value="40px"/>
+        <Setter Property="Margin" Value="0,0,0,10"></Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Checkbox -->
+    <Style x:Key="CheckBoxBase" TargetType="{x:Type CheckBox}">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,2"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region DataGrid -->
+    <Style x:Key="DataGridTextBase" TargetType="{x:Type syncfusion:GridCell}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="4,2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <!--<Setter Property="TextTrimming" Value="CharacterEllipsis"/>-->
+    </Style>
+    <Style x:Key="DataGridBase" TargetType="{x:Type syncfusion:SfDataGrid}">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="AllowEditing" Value="False"/>
+        <Setter Property="AllowResizingColumns" Value="True"/>
+        <Setter Property="AllowDraggingColumns" Value="False"/>
+        <Setter Property="GridLinesVisibility" Value="None"/>
+        <Setter Property="SelectionMode" Value="Extended"/>
+        <Setter Property="NavigationMode" Value="Row"/>
+        <Setter Property="SelectionUnit" Value="Row"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="CellStyle" Value="{StaticResource DataGridTextBase}"/>
+        <Setter Property="ShowToolTip" Value="True"/>
+    </Style>
+    <Style x:Key="GridHeaderCellControlBase" TargetType="{x:Type syncfusion:GridHeaderCellControl}">
+        <Setter Property="Padding" Value="4,0"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Expander -->
+    <Style x:Key="ExpanderBase" TargetType="{x:Type Expander}">
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Style.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region GridSplitter -->
+    <Style x:Key="GridSplitterBase" TargetType="{x:Type GridSplitter}">
+        <Setter Property="Background" Value="{StaticResource BackgroundLv2SolidColor}"/>
+        <Style.Triggers>
+            <Trigger Property="ResizeDirection" Value="Columns">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+            <Trigger Property="ResizeDirection" Value="Rows">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ListBox -->
+    <Style x:Key="ListBoxItemBase" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Height" Value="27"/>
+        <Setter Property="FontSize" Value="13"></Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Menu -->
+    <Style x:Key="MenuItemBase" TargetType="{x:Type MenuItem}">
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Radio buttons -->
+    <Style x:Key="RadioButtonBase" TargetType="{x:Type RadioButton}">
+        <Setter Property="FontSize" Value="13"></Setter>
+        <Setter Property="Margin" Value="0,1"></Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Scrollbar -->
+    <Style x:Key="ScrollBarBase" TargetType="{x:Type ScrollBar}">
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="20" />
+                <Setter Property="MinWidth" Value="20" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Separator -->
+    <Style x:Key="BaseSeparatorBase" TargetType="{x:Type Separator}">
+        <Setter Property="BorderThickness" Value="1,0,0,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Height="{TemplateBinding Height}"
+                            SnapsToDevicePixels="true"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Slider -->
+    <Style x:Key="SliderBase" TargetType="{x:Type Slider}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Cursor" Value="No"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region TextBlock -->
+    <Style x:Key="TitleBase" TargetType="{x:Type Control}">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style x:Key="TextBase" TargetType="{x:Type Control}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style x:Key="TitleTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="InputTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Height" Value="16"/>
+    </Style>
+    <Style x:Key="LabelTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="PopupTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="Background" Value="Beige"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="Black"/>
+    </Style>
+    <Style x:Key="ErrorTextBlockBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="Text" Value="*"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="Red"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="3,0,0,0"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region TextBox -->
+    <Style x:Key="TextBoxBase" TargetType="{x:Type TextBox}">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="SelectableTextBoxBase" TargetType="{x:Type TextBox}">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region WaveForm Triangles -->
+    <Style x:Key="BottomWaveFormFlagBase" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="LightGreen"></Setter>
+                <Setter Property="Fill" Value="LightGreen"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, -14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -3, 0, 0, -2"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+    <Style x:Key="TopWaveFormFlagBase" TargetType="{x:Type Grid}">
+        <Style.Resources>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="DarkRed"></Setter>
+                <Setter Property="Fill" Value="DarkRed"></Setter>
+                <Setter Property="Points" Value="-8, 0, 0, 14, 8, 0"></Setter>
+                <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value=" -4, -4, 0, 0"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+    <Style x:Key="TopFlagCoverBase" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="Red"></Setter>
+        <Setter Property="Opacity" Value="0.5"></Setter>
+    </Style>
+    <!--#endregion-->
+
+</ResourceDictionary>

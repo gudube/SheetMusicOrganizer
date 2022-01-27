@@ -5,6 +5,7 @@ using SheetMusicOrganizer.View.Tools;
 using Serilog;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Library;
 
 namespace SheetMusicOrganizer.View.Windows
 {
@@ -19,8 +20,14 @@ namespace SheetMusicOrganizer.View.Windows
             Song = new SongItem();
             this.WindowStyle = WindowStyle.ToolWindow;
             this.ResizeMode = ResizeMode.NoResize;
+            Loaded += AddNewSongWindow_Loaded;
             InitializeComponent();
             ResetSongInformations();
+        }
+
+        private void AddNewSongWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         #region File Selection
@@ -53,9 +60,11 @@ namespace SheetMusicOrganizer.View.Windows
 
         private void SelectAudioFile(bool mainAudio)
         {
+            var audioStrings = string.Join(", ", ImportLibraryVM.SupportedFormats.Select(x => $"*{x}"));
+            var audioExtensions = string.Join(";", ImportLibraryVM.SupportedFormats.Select(x => $"*{x}"));
             OpenFileDialog openDialog = new OpenFileDialog
             {
-                Filter = "Audio (*.mp3, *.flac)|*.mp3;*.flac|All Files (*.*)|*.*",
+                Filter = $"Audio ({audioStrings})|{audioExtensions}|All Files (*.*)|*.*",
                 Multiselect = false,
                 FilterIndex = 1
             };
@@ -98,6 +107,9 @@ namespace SheetMusicOrganizer.View.Windows
         public static readonly DependencyProperty GenreTextProperty = DependencyProperty.Register("GenreText", typeof(string), typeof(AddNewSongWindow));
         public string GenreText { get => (string)GetValue(GenreTextProperty); set => SetValue(GenreTextProperty, value); }
 
+        public static readonly DependencyProperty YearTextProperty = DependencyProperty.Register("YearText", typeof(uint?), typeof(AddNewSongWindow));
+        public uint? YearText { get => (uint?)GetValue(YearTextProperty); set => SetValue(YearTextProperty, value); }
+
         public static readonly DependencyProperty RatingTextProperty = DependencyProperty.Register("RatingText", typeof(uint), typeof(AddNewSongWindow));
         public uint RatingText { get => (uint)GetValue(RatingTextProperty); set => SetValue(RatingTextProperty, value); }
 
@@ -106,6 +118,7 @@ namespace SheetMusicOrganizer.View.Windows
         private string _artistBackup = "";
         private string _albumBackup = "";
         private string _genreBackup = "";
+        private uint? _yearBackup = null;
         private uint _ratingBackup = 0;
 
         private void ResetSongInformations()
@@ -115,6 +128,7 @@ namespace SheetMusicOrganizer.View.Windows
             ArtistText = _artistBackup;
             AlbumText = _albumBackup;
             GenreText = _genreBackup;
+            YearText = _yearBackup;
             RatingText = _ratingBackup;
         }
 
@@ -125,6 +139,7 @@ namespace SheetMusicOrganizer.View.Windows
             _artistBackup = ArtistText;
             _albumBackup = AlbumText;
             _genreBackup = GenreText;
+            _yearBackup = YearText;
             _ratingBackup = RatingText;
 
             NumberText = Song.Number;
@@ -132,6 +147,7 @@ namespace SheetMusicOrganizer.View.Windows
             ArtistText = Song.Artist;
             AlbumText = Song.Album;
             GenreText = Song.Genre;
+            YearText = Convert.ToUInt32(Song.Year);
             RatingText = Song.Rating;
         }
         #endregion
@@ -145,20 +161,23 @@ namespace SheetMusicOrganizer.View.Windows
             {
                 UpdateSongFromInformation();
 
-                if (mainVM.AddSong(Song))
+                var importVM = new ImportLibraryVM(mainVM.Session, mainVM.LibraryVM);
+                if (importVM.AddSong(Song, false))
                 {
+                    mainVM.GoToSong(Song, false);
                     this.Close();
                 }
                 else
                 {
-                    string message = "This music sheet already exists in the library.\nWould you like to go to the song?";
-                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Go To Song");
+                    string message = "This music sheet already exists in the library.\nWould you like to overwrite the song? (warning: resets sync configuration)";
+                    GenericWindow songExistingWindow = new GenericWindow(this, message, "Overwrite");
                     if (songExistingWindow.DialogResult.HasValue && songExistingWindow.DialogResult.Value)
                     {
                         try
                         {
-                            mainVM.GoToSong(Song.PartitionDirectory);
-                            this.Close();
+                            importVM.AddSong(Song, true);
+                            mainVM.GoToSong(Song, false);
+                            Application.Current.Dispatcher.InvokeAsync(() => { this.Close(); },  System.Windows.Threading.DispatcherPriority.ContextIdle);
                         }
                         catch (Exception ex)
                         {
@@ -176,6 +195,7 @@ namespace SheetMusicOrganizer.View.Windows
             Song.Artist = ArtistText;
             Song.Album = AlbumText;
             Song.Genre = GenreText;
+            Song.Year = YearText?.ToString() ?? "";
             Song.Rating = RatingText;
             if (string.IsNullOrWhiteSpace(Song.AudioDirectory1) && !string.IsNullOrWhiteSpace(Song.AudioDirectory2))
             {

@@ -6,79 +6,91 @@
              xmlns:partition="clr-namespace:SheetMusicOrganizer.View.Controls.Partition"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              xmlns:sync="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
+             xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
+             xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              mc:Ignorable="d" d:DesignHeight="1520" d:DesignWidth="400"
-             d:DataContext="{d:DesignInstance viewModel:PartitionVM}">
+             d:DataContext="{d:DesignInstance viewModel:PartitionVM}"
+             Style="{DynamicResource ControlBackgroundLv2}">
+    <UserControl.Resources>
+        <tools:StringEmptyToVisibleConverter x:Key="StringEmptyToVisibleConverter"/>
+    </UserControl.Resources>
     <StackPanel Orientation="Vertical">
         <Expander Header="Playback" IsExpanded="True" Margin="5, 5, 5, 0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
-                    <StackPanel Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
-                        <Grid Margin="5,10,10,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"></ColumnDefinition>
-                                <ColumnDefinition Width="70"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="10"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                                <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
-                                <TextBlock Text="x" Style="{StaticResource LabelTextBlock}" Margin="5,0"></TextBlock>
-                            </StackPanel>
-                            <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Session.Player.KeepPitch}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></CheckBox>
-                                <TextBlock Margin="5,0,0,0" Style="{StaticResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
-                            </StackPanel>
-                            <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.IsLooping}"></CheckBox>
-                            <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
-                                <TextBlock Text="Between" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopStart, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
-                                <TextBlock Text="and" Style="{StaticResource LabelTextBlock}"></TextBlock>
-                                <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopEnd, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
+            <Border Style="{DynamicResource PopInBorder}">
+                <Border Style="{DynamicResource BaseInsideBorder}">
+                    <Grid>
+                        <controls:DisabledOverlay Title="NO AUDIO" Visibility="{Binding Session.PlayingSong.AudioDirectory1, Converter={StaticResource StringEmptyToVisibleConverter}, FallbackValue=Visible}"/>
+                        <StackPanel Margin="1" Background="{DynamicResource BackgroundLv3SolidColor}">
+                            <Grid Margin="5,10,10,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                    <ColumnDefinition Width="70"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="10"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{DynamicResource LabelTextBlock}"></TextBlock>
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+                                    <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
+                                    <TextBlock Text="x" Style="{DynamicResource LabelTextBlock}" Margin="5,0"></TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+                                    <CheckBox VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Session.Player.KeepPitch}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></CheckBox>
+                                    <TextBlock Margin="5,0,0,0" Style="{DynamicResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
+                                </StackPanel>
+                                <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.IsLooping}"></CheckBox>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{DynamicResource LabelTextBlock}"></TextBlock>
+                                <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
+                                    <TextBlock Text="Between" Style="{DynamicResource LabelTextBlock}"></TextBlock>
+                                    <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopStart, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                    <TextBlock Text="and" Style="{DynamicResource LabelTextBlock}"></TextBlock>
+                                    <TextBox HorizontalAlignment="Stretch" Margin="5,0" Width="45" Text="{Binding Session.Player.LoopEnd, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=LoopCheckbox, Path=IsChecked}"></TextBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </Border>
         </Expander>
-        <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
+        <Separator Margin="5,10" Style="{DynamicResource HorizontalSeparator}"/>
         <Expander Header="Sync" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
-                    <StackPanel Orientation="Vertical" Margin="1" Background="{StaticResource BackgroundLv3SolidColor}">
-                        <ComboBox ItemsSource="{Binding SyncViewModels, Mode=OneTime}"
-                                  DisplayMemberPath="ViewModelName" Margin="1"
-                                  SelectedItem="{Binding SelectedSyncVM}"/>
-                        <ContentControl Content="{Binding SelectedSyncVM}"
-                                        Style="{StaticResource InsideLightControl}"
-                                        Margin="10, 0">
-                            <ContentControl.Resources>
-                                <DataTemplate DataType="{x:Type sync:NoSyncVM}">
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
-                                    <partition:SyncSettingsScrolling/>
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type sync:PageSyncVM}">
-                                    <TextBlock>Work In Progress !</TextBlock>
-                                </DataTemplate>
-                            </ContentControl.Resources>
-                        </ContentControl>
-                    </StackPanel>
+            <Border Style="{DynamicResource PopInBorder}">
+                <Border Style="{DynamicResource BaseInsideBorder}">
+                    <Grid>
+                        <controls:DisabledOverlay Title="NO AUDIO" Visibility="{Binding Session.PlayingSong.AudioDirectory1, Converter={StaticResource StringEmptyToVisibleConverter}, FallbackValue=Visible}"/>
+                        <StackPanel Orientation="Vertical" Margin="1" Background="{DynamicResource BackgroundLv3SolidColor}">
+                            <ComboBox ItemsSource="{Binding SyncViewModels, Mode=OneTime}"
+                                      DisplayMemberPath="ViewModelName" Margin="1"
+                                      SelectedItem="{Binding SelectedSyncVM}"/>
+                            <Border Style="{DynamicResource PopInBorder}">
+                                <ContentControl Content="{Binding SelectedSyncVM}" Margin="10, 0">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type sync:NoSyncVM}">
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
+                                            <partition:SyncSettingsScrolling/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type sync:PageSyncVM}">
+                                            <TextBlock>Work In Progress !</TextBlock>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </Border>
         </Expander>
-        <Separator Margin="5,10" Style="{StaticResource HorizontalSeparator}"/>
+        <Separator Margin="5,10" Style="{DynamicResource HorizontalSeparator}"/>
         <Expander Header="Notes" IsExpanded="True" Margin="5,0" Padding="0,0,0,5">
-            <Border Style="{StaticResource InsideLightBorder}">
-                <Border Style="{StaticResource BaseBlackBorder}">
-                    <Grid Background="{StaticResource BackgroundLv3SolidColor}">
+            <Border Style="{DynamicResource PopInBorder}">
+                <Border Style="{DynamicResource BaseInsideBorder}">
+                    <Grid Background="{DynamicResource BackgroundLv3SolidColor}">
                         <Grid.RowDefinitions>
                             <RowDefinition MinHeight="25" Height="100" MaxHeight="500"></RowDefinition>
                             <RowDefinition Height="5"></RowDefinition>
@@ -86,9 +98,9 @@
 
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                 Background="{StaticResource ClickableSolidColor}" MaxLength="1000" TextWrapping="Wrap"
+                                 MaxLength="1000" TextWrapping="Wrap"
                                  VerticalScrollBarVisibility="Auto" Text="{Binding Session.PlayingSong.Notes, UpdateSourceTrigger=PropertyChanged, Delay=1000}"></TextBox>
-                        <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="{StaticResource BackgroundLv3SolidColor}"></GridSplitter>
+                        <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="{DynamicResource BackgroundLv3SolidColor}"></GridSplitter>
                     </Grid>
                 </Border>
             </Border>

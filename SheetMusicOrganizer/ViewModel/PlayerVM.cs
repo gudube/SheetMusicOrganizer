@@ -17,6 +17,7 @@ namespace SheetMusicOrganizer.ViewModel
             StopCommand = new DelegateCommand(Stop);
             NextCommand = new DelegateCommand(Next);
             PreviousCommand = new DelegateCommand(Previous);
+            PlayRandomCommand = new DelegateCommand(PlayRandom);
             StartedSeekCommand = new DelegateCommand(StartedSeek);
             StoppedSeekCommand = new DelegateCommand(StoppedSeek);
             ChangeMuteCommand = new DelegateCommand(ChangeMute);
@@ -172,6 +173,12 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 PlayNextSong?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        public DelegateCommand PlayRandomCommand { get; }
+        private void PlayRandom(object? obj)
+        {
+           PlayRandomSong?.Invoke(this, EventArgs.Empty);
         }
 
         private bool _resumePlaying = false;

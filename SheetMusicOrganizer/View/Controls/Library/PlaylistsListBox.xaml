@@ -9,19 +9,19 @@
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="1520" d:DesignWidth="400"
-             Style="{StaticResource InsideLightControl}"
              d:DataContext="{d:DesignInstance viewModel:LibraryVM}">
-    <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"
-             KeyDown="MainListBox_OnKeyDown"
-             SelectedIndex="{Binding SelectedPlaylistIndex, Mode=TwoWay}">
-        <ListBox.Resources>
-            <DataTemplate DataType="{x:Type modelItems:PlaylistItem}">
-                    <viewItems:SelectablePlaylistItem Tag="{Binding Path=DataContext, ElementName=MainListBox}"/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type modelItems:AddPlaylistItem}">
-                <viewItems:PlaylistAdderItem DataContext="{Binding ElementName=MainListBox, Path=DataContext}"/>
-            </DataTemplate>
-        </ListBox.Resources>
-    </ListBox>
+        <StackPanel Orientation="Vertical">
+        <Border Style="{DynamicResource PopInBorder}">
+            <ListBox x:Name="MainListBox" SelectionMode="Single" ItemsSource="{Binding Path=Playlists, Mode=OneWay}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch"
+                 KeyDown="MainListBox_OnKeyDown" SelectedItem="{Binding SelectedPlaylist, Mode=TwoWay}">
+                <ListBox.Resources>
+                    <DataTemplate DataType="{x:Type modelItems:PlaylistItem}">
+                        <viewItems:SelectablePlaylistItem Tag="{Binding Path=DataContext, ElementName=MainListBox}"/>
+                    </DataTemplate>
+                </ListBox.Resources>
+            </ListBox>
+        </Border>
+        <viewItems:PlaylistAdderItem DataContext="{Binding ElementName=MainListBox, Path=DataContext}"/>
+        </StackPanel>
 </UserControl>

@@ -8,6 +8,59 @@ using Serilog;
 
 namespace SheetMusicOrganizer.View.Tools
 {
+    public class InvertBoolConverter: IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            else return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            else return false;
+        }
+    }
+
+    public class BooleanToVisibilityTrue : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue && boolValue)
+                return Visibility.Visible;
+            else
+                return parameter != null ? Visibility.Collapsed : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is Visibility vis && vis == Visibility.Visible;
+        }
+    }
+
+    public class BooleanToVisibilityFalse : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue && !boolValue)
+                return Visibility.Visible;
+            else
+                return parameter != null ? Visibility.Collapsed : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is Visibility vis && vis != Visibility.Visible;
+        }
+    }
+
     public class RatingConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
@@ -36,8 +89,10 @@ namespace SheetMusicOrganizer.View.Tools
     {
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(new BrushConverter().ConvertFrom(value) is SolidColorBrush brush)
+            if (value != null && new BrushConverter().ConvertFrom(value) is Brush brush)
+            {
                 return brush;
+            }
             
             Log.Error("Could not convert HEX to color: ", value);
             return Brushes.Black;
@@ -46,11 +101,63 @@ namespace SheetMusicOrganizer.View.Tools
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
-            /*
-            if(value is SolidColorBrush color) 
-                return color.Color.ToString();
+        }
+    }
 
-            Log.Warning("Could not convert value {value} to SolidColorBrush");*/
+    public class MasteryColorConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value is string name)
+            {
+                try
+                {
+                    var resource = Application.Current.FindResource(name);
+                    if (resource != null)
+                        return resource;
+                } catch(Exception)
+                {
+                    return Brushes.Black;
+                }
+            }
+            return Brushes.Black;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class StringToVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (string.IsNullOrWhiteSpace((string)value))
+                return Visibility.Hidden;
+            else
+                return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class StringEmptyToVisibleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(string.IsNullOrWhiteSpace((string)value))
+                return Visibility.Visible;
+            else
+                return Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -72,7 +179,7 @@ namespace SheetMusicOrganizer.View.Tools
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             foreach (object value in values)
-                if (value is string text && string.IsNullOrWhiteSpace(text))
+                if (!(value is string) || (value is string text && string.IsNullOrWhiteSpace(text)))
                     return false;
             return true;
         }
@@ -157,4 +264,20 @@ namespace SheetMusicOrganizer.View.Tools
             throw new NotImplementedException();
         }
     }
+
+    public class ListToStringConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is IEnumerable<string> list)
+                return String.Join("\r\n", list);
+            else return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }

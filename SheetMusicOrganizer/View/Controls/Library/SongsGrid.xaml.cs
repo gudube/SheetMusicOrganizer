@@ -1,15 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.View.Tools;
+using SheetMusicOrganizer.View.Windows;
 using SheetMusicOrganizer.ViewModel;
 using Syncfusion.Data;
 using Syncfusion.UI.Xaml.Grid;
+using Syncfusion.UI.Xaml.ScrollAxis;
 
 namespace SheetMusicOrganizer.View.Controls.Library
 {
@@ -25,6 +25,38 @@ namespace SheetMusicOrganizer.View.Controls.Library
             Songs.PreviewDragOver += Songs_DragOver;
             Songs.PreviewDragEnter += Songs_DragOver;
             Songs.RowDragDropController.DragStart += RowDragDropController_DragStart;
+            Songs.Loaded += Songs_LoadedScrollOnce;
+            foreach(var column in Songs.Columns)
+                column.IsHidden = Settings.Default.HiddenColumns.Contains(column.HeaderText);
+            var lastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            lastColWidth = lastCol.Width;
+            lastColMaxWidth = lastCol.MaximumWidth;
+            lastCol.Width = double.NaN;
+            lastCol.MaximumWidth = double.NaN;
+            lastCol.AllowResizing = false;
+            Settings.Default.SettingsSaving += Default_SettingsSaving;
+        }
+
+        private double lastColWidth;
+        private double lastColMaxWidth;
+
+        private void Default_SettingsSaving(object sender, CancelEventArgs e)
+        {
+            var oldLastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            foreach (var column in Songs.Columns)
+                column.IsHidden = Settings.Default.HiddenColumns.Contains(column.HeaderText);
+            var newLastCol = Songs.Columns.Last(x => x.IsHidden == false);
+            if(newLastCol != oldLastCol)
+            {
+                oldLastCol.Width = lastColWidth;
+                oldLastCol.MaximumWidth = lastColMaxWidth;
+                oldLastCol.AllowResizing = true;
+                lastColWidth = newLastCol.Width;
+                newLastCol.Width = double.NaN;
+                newLastCol.MaximumWidth = double.NaN;
+                newLastCol.AllowResizing = false;
+            }
+            Songs.GridColumnSizer.Refresh();
         }
 
         #region Changed Event
@@ -33,49 +65,86 @@ namespace SheetMusicOrganizer.View.Controls.Library
             if (e.OldValue is LibraryVM oldVM)
             {
                 oldVM.Session.MasteryLevels.CollectionChanged -= MasteryLevels_CollectionChanged;
+                foreach (MasteryItem newItem in oldVM.Session.MasteryLevels)
+                    newItem.PropertyChanged -= MasteryItem_PropertyChanged;
+                oldVM.SongMasteryChanged -= NewVM_SongMasteryChanged;
+                oldVM.ScrollToSong -= NewVM_ScrollToSong;
+                oldVM.SelectedPlaylist?.PrepareChange();
             }
 
             if (e.NewValue is LibraryVM newVM)
             {
                 Songs.SelectionController = new GridSelectionControllerExt(Songs, newVM);
 
-                setNewFilter();
-                newVM.PropertyChanged += NewVM_PropertyChanged;
+                updateMasteryFilter();
+                updateColSort();
                 newVM.Session.MasteryLevels.CollectionChanged += MasteryLevels_CollectionChanged;
                 foreach(MasteryItem newItem in newVM.Session.MasteryLevels)
                     newItem.PropertyChanged += MasteryItem_PropertyChanged;
                 newVM.SongMasteryChanged += NewVM_SongMasteryChanged;
+                newVM.ScrollToSong += NewVM_ScrollToSong;
             }
+        }
+
+        private void NewVM_ScrollToSong(object? sender, EventArgs e)
+        {
+            // if already loaded, do it directly. otherwise do it in loaded event handler
+            if (DataContext is LibraryVM libVM && Songs.IsLoaded && libVM.TempScrollSong != null)
+            {
+                var songToFocus = Songs.View.Records.FirstOrDefault(x => (x.Data as SongItem) == libVM.TempScrollSong);
+                if (songToFocus != null)
+                    Songs.ScrollInView(new RowColumnIndex(Songs.ResolveToRowIndex(songToFocus), 0));
+                libVM.TempScrollSong = null;
+            }
+        }
+
+        private void Songs_LoadedScrollOnce(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is LibraryVM libVM) || libVM.TempScrollSong == null)
+            {
+                return;
+            }
+            var recordToScroll = Songs.View.Records.FirstOrDefault(x => (x.Data as SongItem) == libVM.TempScrollSong);
+            if (recordToScroll != null)
+                Songs.ScrollInView(new RowColumnIndex(Songs.ResolveToRowIndex(recordToScroll), 0));
+            libVM.TempScrollSong = null;
+        }
+
+        //Playlist changed
+        private void Songs_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            updateColSort();
         }
 
         private void NewVM_SongMasteryChanged(object? sender, SongItem[] e)
         {
-            Songs.View.RefreshFilter(true);
-            Songs.ClearSelections(false);
+            Songs.View?.RefreshFilter(true);
         }
 
-        private void NewVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(LibraryVM.SelectedPlaylistIndex) && DataContext is LibraryVM libraryVM
-                && libraryVM.Playlists[libraryVM.SelectedPlaylistIndex] is PlaylistItem selectedPlaylist)
-            {
-                Songs.SortColumnDescriptions.Clear();
-                Songs.SortColumnDescriptions.Add(new SortColumnDescription()
-                {
-                    ColumnName = selectedPlaylist.SortCol,
-                    SortDirection = selectedPlaylist.SortAsc ? ListSortDirection.Ascending : ListSortDirection.Descending
-                });
-                Songs.ClearSelections(false);
-            }
+            if(sender is IEnumerable<MasteryItem> levels)
+                foreach(MasteryItem newItem in levels)
+                    newItem.PropertyChanged += MasteryItem_PropertyChanged;
         }
 
-        private void setNewFilter()
+        private void MasteryItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MasteryItem.IsSelected))
+                updateMasteryFilter();
+        }
+
+        #endregion
+
+        #region Actions on DataGrid
+
+        private void updateMasteryFilter()
         {
             if (DataContext is LibraryVM libraryVM && Songs.View != null)
             {
                 var gridCol = Songs.Columns["Mastery.Name"];
                 var selectedMasteryLevels = libraryVM.Session.MasteryLevels.Where(x => x.IsSelected);
-               
+
                 Songs.View.BeginInit();
                 gridCol.FilterPredicates.Clear();
 
@@ -98,48 +167,30 @@ namespace SheetMusicOrganizer.View.Controls.Library
             }
         }
 
-        private void MasteryLevels_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void updateColSort()
         {
-            if(DataContext is LibraryVM libraryVM)
-                foreach(MasteryItem newItem in libraryVM.Session.MasteryLevels)
-                    newItem.PropertyChanged += MasteryItem_PropertyChanged;
-        }
-
-        private void MasteryItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(MasteryItem.IsSelected))
+            if (DataContext is LibraryVM libraryVM && libraryVM.SelectedPlaylist != null)
             {
-                setNewFilter();
+                Songs.SortColumnDescriptions.Clear();
+                Songs.SortColumnDescriptions.Add(new SortColumnDescription()
+                {
+                    ColumnName = libraryVM.SelectedPlaylist.SortCol,
+                    SortDirection = libraryVM.SelectedPlaylist.SortAsc ? ListSortDirection.Ascending : ListSortDirection.Descending
+                });
             }
         }
-
-        private void SfDataGrid_SelectionChanged(object sender, GridSelectionChangedEventArgs e)
-        {
-            foreach (GridRowInfo item in e.AddedItems)
-                if (item.RowData is SongItem song)
-                    song.IsSelected = true;
-            foreach (GridRowInfo item in e.RemovedItems)
-                if (item.RowData is SongItem song)
-                    song.IsSelected = false;
-        }
-
-        private void OnSongMasteryChanged(SongItem songs)
-        {
-
-        }
-
         #endregion
 
-        #region Action Event
+        #region Events from the DataGrid
 
         private void AddNewSongButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenAddNewSongWindow();
+            WindowManager.OpenOptionWindow(new AddNewSongWindow());
         }
 
         private void AddFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowManager.OpenOpenFolderWindow();
+            WindowManager.OpenOptionWindow(new OpenFolderWindow());
         }
 
         private void Songs_SortColumnsChanging(object sender, GridSortColumnsChangingEventArgs e)
@@ -159,12 +210,12 @@ namespace SheetMusicOrganizer.View.Controls.Library
 
         private void Songs_SortColumnsChanged(object sender, GridSortColumnsChangedEventArgs e)
         {
-            if (DataContext is LibraryVM libraryVM && libraryVM.Playlists[libraryVM.SelectedPlaylistIndex] is PlaylistItem playlist)
+            if (DataContext is LibraryVM libraryVM && libraryVM.SelectedPlaylist != null)
             {
                 var sortColumn = Songs.View.SortDescriptions[0];
-                playlist.SortAsc = sortColumn.Direction == ListSortDirection.Ascending;
-                playlist.SortCol = sortColumn.PropertyName;
-                playlist.SortSongs();
+                libraryVM.SelectedPlaylist.SortAsc = sortColumn.Direction == ListSortDirection.Ascending;
+                libraryVM.SelectedPlaylist.SortCol = sortColumn.PropertyName;
+                libraryVM.SelectedPlaylist.SortSongs();
             }
         }
         
@@ -185,9 +236,9 @@ namespace SheetMusicOrganizer.View.Controls.Library
             e.Handled = true;
         }
 
-
         #endregion
 
+        #region Selection Controller
         internal class GridSelectionControllerExt : GridSelectionController
         {
             private LibraryVM _libraryVM;
@@ -217,7 +268,6 @@ namespace SheetMusicOrganizer.View.Controls.Library
                 }
             }
         }
-
-
+        #endregion
     }
 }

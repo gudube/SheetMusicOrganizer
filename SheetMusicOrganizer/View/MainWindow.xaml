@@ -7,54 +7,61 @@
         xmlns:player="clr-namespace:SheetMusicOrganizer.View.Controls.Player"
         xmlns:pages="clr-namespace:SheetMusicOrganizer.View.Pages"
         xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
-        xmlns:p="clr-namespace:SheetMusicOrganizer"
+        xmlns:p="clr-namespace:SheetMusicOrganizer" xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
         mc:Ignorable="d"
-        Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}" Height="855" Width="1520" MinHeight="500" MinWidth="700" Style="{StaticResource ControlBackgroundLv1}"
+        Title="{Binding Source={x:Static p:Settings.Default}, Path=ApplicationName, Mode=OneTime}"
+        Height="855" Width="1520" MinHeight="500" MinWidth="700"
+        Style="{DynamicResource WindowTitleBar}"
         WindowState="Maximized"
-        KeyDown="MainWindow_OnKeyDownUp"
-        KeyUp="MainWindow_OnKeyDownUp">
+        KeyDown="MainWindow_OnKeyDownUp" KeyUp="MainWindow_OnKeyDownUp">
     <Window.DataContext>
         <vm:MainVM x:Name="MainVm"/>
     </Window.DataContext>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Menu here-->
-            <RowDefinition Height="1"/>
-            <RowDefinition Height="Auto"/> <!-- Player here -->
-            <RowDefinition Height="*"/> <!-- Content here (all remaining space) -->
-            <RowDefinition Height="1"/>
-            <RowDefinition Height="Auto"/> <!-- Status here -->
-        </Grid.RowDefinitions>
-        <controls:MenuBar/>
-        <Border Grid.Row="1" Style="{StaticResource LightBorder}"/>
-        <player:PlayerControl x:Name="PlayerControl" Grid.Row="2" Height="60" DataContext="{Binding PlayerVM}"/>
-        <ContentControl x:Name="Control" Grid.Row="3" Content="{Binding CurrentViewModel}">
-            <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:LibraryVM}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                    <pages:LibraryView Grid.Column="0"/>
-                    <controls:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
-                                SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchPartitionViewCommand}"/>
-                    </Grid>
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:PartitionVM}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <controls:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
-                                SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchLibraryViewCommand}"/>
-                        <pages:PartitionView Grid.Column="1"/>
-                    </Grid>
-                </DataTemplate>
-            </ContentControl.Resources>
-        </ContentControl>
-        <Border Grid.Row="4" Style="{StaticResource BaseBlackBorder}" BorderThickness="1,0,0,0"/>
-        <controls:MainStatusBar Grid.Row="5"></controls:MainStatusBar>
-    </Grid>
+    <windows:TitleBar>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Menu here-->
+                <RowDefinition Height="Auto"/>
+                <!-- Player here -->
+                <RowDefinition Height="*"/>
+                <!-- Content here (all remaining space) -->
+                <RowDefinition Height="Auto"/>
+                <!-- Status here -->
+            </Grid.RowDefinitions>
+            <controls:MenuBar Grid.Row="0"/>
+            <player:PlayerControl x:Name="PlayerControl" Grid.Row="1" Height="60" DataContext="{Binding PlayerVM}"/>
+            <Border Grid.Row="2" Style="{DynamicResource PopInBorder}" BorderThickness="0,0,0,1">
+                <Border Style="{DynamicResource BaseInsideBorder}" BorderThickness="0,0,0,1">
+                    <ContentControl x:Name="Control" Content="{Binding CurrentViewModel}">
+                        <ContentControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:LibraryVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <pages:LibraryView Grid.Column="0"/>
+                                    <controls:SwitchViewButton Grid.Column="1" Title="PARTITION" Direction="Right"
+                                    SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchPartitionViewCommand}"/>
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:PartitionVM}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <controls:SwitchViewButton Grid.Column="0" Title="LIBRARY" Direction="Left"
+                                    SwitchViewCommand="{Binding ElementName=Control, Path=DataContext.SwitchLibraryViewCommand}"/>
+                                    <pages:PartitionView Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+                </Border>
+            </Border>
+            <controls:MainStatusBar Grid.Row="3"></controls:MainStatusBar>
+        </Grid>
+    </windows:TitleBar>
 </Window>

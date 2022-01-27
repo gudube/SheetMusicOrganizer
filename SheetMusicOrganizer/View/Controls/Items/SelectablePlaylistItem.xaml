@@ -40,19 +40,16 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="{Binding Name, Mode=OneWay}"/>
-            <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{StaticResource SpecialSolidColor}"
+            <TextBlock Grid.Column="1" Text=" (playing)" Foreground="{DynamicResource SpecialSolidColor}"
                        Visibility="{Binding IsPlaying, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
-            <Image Grid.Column="2" Source="/View/Resources/lock_64.png" MaxHeight="20" HorizontalAlignment="Right"
+            <Image Grid.Column="2" Source="{DynamicResource LockImage}" MaxHeight="20" HorizontalAlignment="Right"
                    Visibility="{Binding IsLocked, Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
         </Grid>
         <TextBox Grid.Column="0" x:Name="MainTextBox"
                  Text="{Binding Path=Tag.(viewModel:LibraryVM.EditPlaylistName), Mode=TwoWay, ElementName=Main, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
                  Visibility="{Binding IsEditing, Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                 IsVisibleChanged="MainTextBox_OnIsVisibleChanged" HorizontalAlignment="Stretch">
-            <TextBox.InputBindings>
-                <KeyBinding Command="{Binding Path=Tag.(viewModel:LibraryVM.RenameSelectedPlaylistCommand), ElementName=Main}" Key="Return" />
-                <KeyBinding Command="{Binding Path=Tag.(viewModel:LibraryVM.CancelEditPlaylistCommand), ElementName=Main}" Key="Escape" />
-            </TextBox.InputBindings>
+                 IsVisibleChanged="MainTextBox_OnIsVisibleChanged" HorizontalAlignment="Stretch"
+                 LostKeyboardFocus="MainTextBox_LostKeyboardFocus" LostFocus="MainTextBox_LostFocus" KeyDown="MainTextBox_KeyDown">
         </TextBox>
     </Grid>
 </UserControl>

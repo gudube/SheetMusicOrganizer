@@ -34,7 +34,6 @@ namespace NAudioWrapper
                     newPosition = _audioFileReader.Position; // when changing track version
 
                 Stop(true, false); // stop if playing
-
                 if (!File.Exists(filepath))
                 {
                     throw new FileNotFoundException("Trying to play from an audio file that doesn't exist.", filepath);

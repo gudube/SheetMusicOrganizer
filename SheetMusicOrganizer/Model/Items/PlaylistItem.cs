@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Data.Sqlite;
 using Serilog;
 using SheetMusicOrganizer.Model.Tables;
 
 namespace SheetMusicOrganizer.Model.Items
 {
-    public class BasePlaylistItem : BaseModelItem
-    {
-        // ReSharper disable once InconsistentNaming
-        //protected bool _isSelected = false;
-        //public virtual bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
-        public override object[] GetCustomValues()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class PlaylistItem : BasePlaylistItem
+    public class PlaylistItem : BaseModelItem
     {
         #region Properties
         private string _name;
@@ -72,6 +64,14 @@ namespace SheetMusicOrganizer.Model.Items
             _smartDir = "";
             _sortCol = new SongTable().Title.Name;
             _sortAsc = true;
+            SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
+        }
+
+        private void SelectedSongs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Application.Current.Dispatcher.InvokeAsync(() => {
+                ApplyChange();
+            }, DispatcherPriority.DataBind);
         }
 
         public PlaylistItem(SqliteDataReader dataReader)
@@ -88,6 +88,7 @@ namespace SheetMusicOrganizer.Model.Items
             _smartDir = GetSafeString(dataReader, playlistTable.SmartDir.Name);
             _sortCol = GetSafeString(dataReader, playlistTable.SortCol.Name);
             _sortAsc = GetSafeBool(dataReader, playlistTable.SortAsc.Name);
+            SelectedSongs.CollectionChanged += SelectedSongs_CollectionChanged;
         }
 
         public override object[] GetCustomValues()
@@ -108,9 +109,20 @@ namespace SheetMusicOrganizer.Model.Items
             return Id.GetHashCode();
         }
 
+
         #region songs
-        private List<SongItem> _songs = new List<SongItem>();
-        public List<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
+        private ObservableCollection<SongItem> _songs = new ObservableCollection<SongItem>();
+        public ObservableCollection<SongItem> Songs { get => _songs; set => SetField(ref _songs, value); }
+        
+        private ObservableCollection<object> _selectedSongs = new ObservableCollection<object>();
+        public ObservableCollection<object> SelectedSongs { get => _selectedSongs;
+            set
+            {
+                if(SetField(ref _selectedSongs, value))
+                    value.CollectionChanged += SelectedSongs_CollectionChanged;
+            }
+        }
+        private List<object>? _tempSelected;
 
         public void SortSongs()
         {
@@ -118,55 +130,99 @@ namespace SheetMusicOrganizer.Model.Items
             if (propInfo == null)
                 return;
             if (SortAsc)
-                Songs = Songs.OrderBy(source => propInfo.GetValue(source)).ToList();
+                Songs = new ObservableCollection<SongItem>(Songs.OrderBy(source => propInfo.GetValue(source)));
             else
-                Songs = Songs.OrderByDescending(source => propInfo.GetValue(source)).ToList();
+                Songs = new ObservableCollection<SongItem>(Songs.OrderByDescending(source => propInfo.GetValue(source)));
+        }
+
+        public void SortSelectedSongs()
+        {
+            var propInfo = typeof(SongItem).GetProperty(SortCol);
+            if (propInfo == null)
+                return;
+            if (SortAsc)
+                SelectedSongs = new ObservableCollection<object>(SelectedSongs.OrderBy(source => propInfo.GetValue(source)));
+            else
+                SelectedSongs = new ObservableCollection<object>(SelectedSongs.OrderByDescending(source => propInfo.GetValue(source)));
         }
 
         public bool HasSong(SongItem song)
         {
-            return _songs.Contains(song);
+            return _songs.Any(x => x.Id == song.Id);
         }
 
-        public bool AddSongs(params SongItem[] newSongs)
+        public bool AddSongs(IEnumerable<SongItem> newSongs)
         {
             List<int> addedSongs = new List<int>();
-            foreach(SongItem song in newSongs)
+            foreach (SongItem song in newSongs)
             {
-                if(!HasSong(song))
-                {
-                    _songs.Add(song);
-                    addedSongs.Add(song.Id);
-                }
+                if(HasSong(song))
+                    continue;
+                Songs.Add((SongItem)song.Clone());
+                addedSongs.Add(song.Id);
             }
-            OnPropertyChanged(nameof(Songs));
             DbHandler.AddSongsToPlaylist(Id, addedSongs.ToArray());
-            return newSongs.Length == addedSongs.Count;
+            SortSongs();
+            return newSongs.Count() == addedSongs.Count;
         }
 
-        public void RemoveSongs(params SongItem[] songsToRemove)
+        public void UpdateSong(SongItem updatedSong)
+        {
+            var found = Songs.FirstOrDefault(x => x.Id == updatedSong.Id);
+            if (found != null)
+            {
+                bool selected = SelectedSongs.Contains(found);
+                if (selected)
+                    SelectedSongs.Remove(found);
+                Songs.Remove(found);
+                var newSong = (SongItem)updatedSong.Clone();
+                Songs.Add(newSong);
+                if (selected)
+                    SelectedSongs.Add(newSong);
+                SortSongs();
+            }
+            //for(var i = 0; i < Songs.Count; i++)
+            //{
+            //    if (Songs[i].Id == updatedSong.Id)
+            //    {
+            //        Songs[i] = (SongItem)updatedSong.Clone();
+            //        OnPropertyChanged(nameof(Songs));
+            //        return;
+            //    }
+            //}
+        }
+
+        public void RemoveSongs(IEnumerable<SongItem> songsToRemove)
         {
             List<int> removedSongs = new List<int>();
-            foreach(SongItem song in songsToRemove)
+            foreach(SongItem song in songsToRemove.ToArray())
             {
                 if (HasSong(song))
                 {
-                    _songs.Remove(song);
+                    Songs.Remove(song);
+                    SelectedSongs.Remove(song);
                     removedSongs.Add(song.Id);
                 }
             }
-            OnPropertyChanged(nameof(Songs));
             DbHandler.RemoveSongsFromPlaylist(Id, removedSongs);
+        }
+
+        public void PrepareChange()
+        {
+            IsEditing = false;
+            _tempSelected = SelectedSongs.ToList();
+        }
+
+        private void ApplyChange()
+        {
+            if (_tempSelected != null && SelectedSongs.Count == 0)
+            {
+                foreach (var item in _tempSelected)
+                    SelectedSongs.Add(item);
+            }
+            _tempSelected = null;
         }
 
         #endregion
     }
-
-    public class AddPlaylistItem : BasePlaylistItem
-    {
-        public override object[] GetCustomValues()
-        {
-            throw new NotImplementedException();
-        }
-    };
 }
