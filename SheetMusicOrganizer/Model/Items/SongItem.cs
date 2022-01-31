@@ -143,7 +143,7 @@ namespace SheetMusicOrganizer.Model.Items
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
             string[] lengthSeparated = LengthMD.Split(':');
-            _lengthSecs = Int32.Parse(lengthSeparated[0]) * 60 + Int32.Parse(lengthSeparated[1]);
+            _lengthSecs = lengthSeparated.Length == 2 ? Int32.Parse(lengthSeparated[0]) * 60 + Int32.Parse(lengthSeparated[1]) : 0;
         }
 
         public void ReadAudioMetadata()
