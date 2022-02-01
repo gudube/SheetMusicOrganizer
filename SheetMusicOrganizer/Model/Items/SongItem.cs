@@ -80,6 +80,26 @@ namespace SheetMusicOrganizer.Model.Items
                     DbHandler.UpdateSong(this, DbHandler.songTable.ScrollEndTime, _scrollEndTime);
             }
         }
+
+        private int _pagesStartPercentage = 0;
+        public int PagesStartPercentage
+        {
+            get => _pagesStartPercentage; set
+            {
+                if (SetField(ref _pagesStartPercentage, Math.Max(0, value)))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.PagesStartPercentage, _pagesStartPercentage);
+            }
+        }
+
+        private int _pagesEndPercentage = 1;
+        public int PagesEndPercentage
+        {
+            get => _pagesEndPercentage; set
+            {
+                if (SetField(ref _pagesEndPercentage, Math.Min(1, value)))
+                    DbHandler.UpdateSong(this, DbHandler.songTable.PagesEndPercentage, _scrollEndTime);
+            }
+        }
         #endregion
 
         #region Other Properties
@@ -142,6 +162,8 @@ namespace SheetMusicOrganizer.Model.Items
             _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(1);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
+            _pagesStartPercentage = GetSafeInt(dataReader, songTable.PagesStartPercentage.Name).GetValueOrDefault(0);
+            _pagesEndPercentage = GetSafeInt(dataReader, songTable.PagesEndPercentage.Name).GetValueOrDefault(1);
             string[] lengthSeparated = LengthMD.Split(':');
             _lengthSecs = lengthSeparated.Length == 2 ? Int32.Parse(lengthSeparated[0]) * 60 + Int32.Parse(lengthSeparated[1]) : 0;
         }
@@ -213,7 +235,7 @@ namespace SheetMusicOrganizer.Model.Items
             return new object?[]
             {
                 PartitionDirectory, AudioDirectory1, AudioDirectory2, DateAdded, Number, Title, Artist, Album, Genre,
-                LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime
+                LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime, PagesStartPercentage, PagesEndPercentage
             };
         }
 
