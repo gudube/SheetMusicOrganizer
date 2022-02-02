@@ -19,7 +19,7 @@ namespace SheetMusicOrganizer.ViewModel
             {
                 _noSyncVM, _scrollSyncVM, _pageSyncVM
             };
-            _selectedSyncVM = _scrollSyncVM;
+            SelectedSyncVM = _scrollSyncVM;
         }
 
         protected override void Session_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -83,8 +83,25 @@ namespace SheetMusicOrganizer.ViewModel
         public BaseViewModel SelectedSyncVM
         {
             get => _selectedSyncVM;
-            set => SetField(ref _selectedSyncVM, value);
+            set
+            {
+                if (SetField(ref _selectedSyncVM, value))
+                    UpdateShowPartitionMarkers();
+            }
         }
+
+        private bool? _showPartitionMarkers;
+        public bool? ShowPartitionMarkers
+        {
+            get => _showPartitionMarkers;
+            set => SetField(ref _showPartitionMarkers, value);
+        }
+
+        private void UpdateShowPartitionMarkers()
+        {
+            ShowPartitionMarkers = (SelectedSyncVM == _scrollSyncVM);
+        }
+
         #endregion
     }
 }

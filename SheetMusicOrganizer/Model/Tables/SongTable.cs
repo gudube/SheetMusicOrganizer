@@ -37,8 +37,8 @@
         public readonly SqlColumn MasteryId;
         public readonly SqlColumn ScrollStartTime = new SqlColumn("ScrollStartTime", EType.Int) { Nullable = true };
         public readonly SqlColumn ScrollEndTime = new SqlColumn("ScrollEndTime", EType.Int) { Nullable = true };
-        public readonly SqlColumn PagesStartPercentage = new SqlColumn("PagesStartPercentage", EType.Real) { Nullable = true, DefaultValue = "0" };
-        public readonly SqlColumn PagesEndPercentage = new SqlColumn("PagesEndPercentage", EType.Real) { Nullable = true, DefaultValue = "1" };
+        public readonly SqlColumn PagesStartPercentage = new SqlColumn("PagesStartPercentage", EType.Real) { Nullable = true, DefaultValue = "0.0" };
+        public readonly SqlColumn PagesEndPercentage = new SqlColumn("PagesEndPercentage", EType.Real) { Nullable = true, DefaultValue = "1.0" };
         #endregion
     }
 }

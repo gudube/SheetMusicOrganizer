@@ -28,20 +28,22 @@
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"></RowDefinition>
-                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="30"></RowDefinition>
+                                    <RowDefinition Height="30"></RowDefinition>
                                     <RowDefinition Height="10"></RowDefinition>
-                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="30"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <CheckBox Grid.Row="0" Grid.Column="0" x:Name="SpeedCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.UseCustomSpeed}"></CheckBox>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Speed" Style="{DynamicResource LabelTextBlock}"></TextBlock>
                                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                                    <TextBox HorizontalAlignment="Left" Width="40px" Text="{Binding Session.Player.CustomSpeed, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
-                                    <TextBlock Text="x" Style="{DynamicResource LabelTextBlock}" Margin="5,0"></TextBlock>
+                                    <TextBox HorizontalAlignment="Left" Width="40px" Margin="5,0"
+                                             Text="{Binding Session.Player.CustomSpeed, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="BindingTextBox_KeyDown" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></TextBox>
+                                    <TextBlock Text="x" Style="{DynamicResource LabelTextBlock}"></TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
-                                    <CheckBox VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Session.Player.KeepPitch}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></CheckBox>
-                                    <TextBlock Margin="5,0,0,0" Style="{DynamicResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
+                                    <CheckBox VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0"
+                                              IsChecked="{Binding Session.Player.KeepPitch}" IsEnabled="{Binding ElementName=SpeedCheckbox, Path=IsChecked}"></CheckBox>
+                                    <TextBlock Style="{DynamicResource LabelTextBlock}">Keep pitch (can cause lag)</TextBlock>
                                 </StackPanel>
                                 <CheckBox Grid.Row="3" Grid.Column="0" Name="LoopCheckbox" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding Session.Player.IsLooping}"></CheckBox>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="Loop" Style="{DynamicResource LabelTextBlock}"></TextBlock>

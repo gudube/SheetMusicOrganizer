@@ -81,8 +81,8 @@ namespace SheetMusicOrganizer.Model.Items
             }
         }
 
-        private int _pagesStartPercentage = 0;
-        public int PagesStartPercentage
+        private float _pagesStartPercentage = 0;
+        public float PagesStartPercentage
         {
             get => _pagesStartPercentage; set
             {
@@ -91,8 +91,8 @@ namespace SheetMusicOrganizer.Model.Items
             }
         }
 
-        private int _pagesEndPercentage = 1;
-        public int PagesEndPercentage
+        private float _pagesEndPercentage = 1;
+        public float PagesEndPercentage
         {
             get => _pagesEndPercentage; set
             {

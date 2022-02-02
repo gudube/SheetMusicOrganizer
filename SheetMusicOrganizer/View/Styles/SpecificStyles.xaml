@@ -6,6 +6,7 @@
                     xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
                     x:Class="SheetMusicOrganizer.View.Styles.SpecificStyles">
     <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
+    <tools:MultiplicationConverter x:Key="MultiplicationConverter"/>
 
     <Style x:Key="MasteryListBoxItem" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
         <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=(modelItems:MasteryItem.IsSelected)}"/>
@@ -204,6 +205,44 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="TopPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}"/>
+        <Setter Property="Margin" Value="0,-1,0,4"/>
+        <Setter Property="Canvas.Top">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
+                    <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                    <Binding Path="Session.PlayingSong.PagesStartPercentage"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ShowPartitionMarkers, Mode=OneWay}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BottomPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}"/>
+        <Setter Property="Margin" Value="0,-5,0,0"/>
+        <Setter Property="Canvas.Top">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
+                    <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                    <Binding Path="Session.PlayingSong.PagesEndPercentage"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ShowPartitionMarkers, Mode=OneWay}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <!--#endregion-->

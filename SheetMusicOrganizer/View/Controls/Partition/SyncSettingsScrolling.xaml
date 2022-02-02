@@ -3,33 +3,64 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
+             xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel.Sync" xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="300"
+             d:DesignHeight="450" d:DesignWidth="350"
              d:DataContext="{d:DesignInstance viewModel:ScrollSyncVM}"
              Background="{DynamicResource BackgroundLv3SolidColor}">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*" MaxWidth="150"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after " Style="{DynamicResource LabelTextBlock}"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0" HorizontalAlignment="Stretch"
-                 Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{DynamicResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
-        <Button Grid.Row="0" Grid.Column="3" Style="{DynamicResource 3DButton}" Margin="5,1"
-                Command="{Binding Path=SetStartNowCommand}">Set to now</Button>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Stop before " Style="{DynamicResource LabelTextBlock}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Width="30" Margin="5,0" HorizontalAlignment="Stretch"
-                 Text="{Binding SyncingSong.ScrollEndTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{DynamicResource LabelTextBlock}" Margin="5,0" HorizontalAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="3" Style="{DynamicResource 3DButton}" Margin="5,1"
-                Command="{Binding SetEndNowCommand}">Set to now</Button>
-    </Grid>
+    <UserControl.Resources>
+        <tools:FloatPercentageConverter x:Key="FloatPercentageConverter"/>
+    </UserControl.Resources>
+    <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+        <TextBlock Text="Scroll Start/End Time" Style="{DynamicResource TitleTextBlock}"/>
+        <TextBlock Text="Drag the markers on the waveform or set values below to match the start/end time of the instrument."
+                   Style="{DynamicResource LabelTextBlock}" TextAlignment="Center" TextWrapping="Wrap" Padding="10,0,10,5"/>
+        <Grid Margin="0,0,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MaxWidth="150"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Start after :" Style="{DynamicResource LabelTextBlock}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0" HorizontalAlignment="Stretch"
+                     Text="{Binding SyncingSong.ScrollStartTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="seconds" Style="{DynamicResource LabelTextBlock}"/>
+            <Button Grid.Row="0" Grid.Column="3" Style="{DynamicResource 3DButton}" Margin="5,1"
+                    Command="{Binding Path=SetStartNowCommand}">Set to now</Button>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="End before :" Style="{DynamicResource LabelTextBlock}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Width="30" Margin="5,0" HorizontalAlignment="Stretch"
+                     Text="{Binding SyncingSong.ScrollEndTime, UpdateSourceTrigger=PropertyChanged, Delay=700}" PreviewKeyDown="TextBox_KeyDown"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="seconds" Style="{DynamicResource LabelTextBlock}"/>
+            <Button Grid.Row="1" Grid.Column="3" Style="{DynamicResource 3DButton}" Margin="5,1"
+                    Command="{Binding SetEndNowCommand}">Set to now</Button>
+        </Grid>
+        <TextBlock Text="Scroll Start/End Position" Style="{DynamicResource TitleTextBlock}"/>
+        <TextBlock Text="Drag the markers on the partition to match the start/end position of the staves."
+                   Style="{DynamicResource LabelTextBlock}" TextAlignment="Center" TextWrapping="Wrap" Padding="10,0"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MaxWidth="150"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Text="Start at :" Style="{DynamicResource LabelTextBlock}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
+                     Text="{Binding SyncingSong.PagesStartPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
+            <TextBlock Grid.Row="1" Text="End at :" Style="{DynamicResource LabelTextBlock}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
+                     Text="{Binding SyncingSong.PagesEndPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
+        </Grid>
+    </StackPanel>
 </UserControl>
