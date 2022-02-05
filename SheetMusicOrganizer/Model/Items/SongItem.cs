@@ -158,23 +158,23 @@ namespace SheetMusicOrganizer.Model.Items
         {
             TagLib.File tFile = TagLib.File.Create(audioDir);//, TagLib.ReadStyle.PictureLazy);
             if(_number == 0 || updateExisting)
-                _number = tFile.Tag.Track;
+                _number = tFile.Tag?.Track ?? 0;
             if(_title == "" || updateExisting)
-                _title = tFile.Tag.Title;
+                _title = tFile.Tag?.Title ?? "";
             if (_artist == "" || updateExisting)
             {
-                if (tFile.Tag.Performers.Length > 0) //use song artist if exists (or album)
-                    _artist = tFile.Tag.JoinedPerformers;
+                if (tFile.Tag?.Performers.Length > 0) //use song artist if exists (or album)
+                    _artist = tFile.Tag?.JoinedPerformers ?? "";
                 else
-                    _artist = tFile.Tag.JoinedAlbumArtists;
+                    _artist = tFile.Tag?.JoinedAlbumArtists ?? "";
             }
             if(_album == "" || updateExisting)
-                _album = tFile.Tag.Album;
+                _album = tFile.Tag?.Album ?? "";
             if(_genre == "" || updateExisting)
-                _genre = tFile.Tag.JoinedGenres;
+                _genre = tFile.Tag?.JoinedGenres ?? "";
             if(_lengthMD == "")
-                _lengthMD = tFile.Properties.Duration.ToString(@"mm\:ss"); //format of length: mm:ss
-            _lengthSecs = (int)Math.Floor(tFile.Properties.Duration.TotalSeconds);
+                _lengthMD = tFile.Properties?.Duration.ToString(@"mm\:ss") ?? ""; //format of length: mm:ss
+            _lengthSecs = (int)Math.Floor(tFile.Properties?.Duration.TotalSeconds ?? 0);
             if (_codecMD == "" || updateExisting)
             {
                 string[] mimeSplits = tFile.MimeType.Split('/');
@@ -182,7 +182,7 @@ namespace SheetMusicOrganizer.Model.Items
                     _codecMD = mimeSplits[^1];
             }
             if(_bitrateMD == "" || updateExisting)
-                _bitrateMD = tFile.Properties.AudioBitrate > 0 ? tFile.Properties.AudioBitrate + " kbps" : "? kbps";
+                _bitrateMD = tFile.Properties?.AudioBitrate > 0 ? tFile.Properties.AudioBitrate + " kbps" : "? kbps";
             if (_rating == 0 || updateExisting)
             {
                 TagLib.Id3v2.Tag? tagData = (TagLib.Id3v2.Tag?) tFile.GetTag(TagLib.TagTypes.Id3v2);
@@ -205,7 +205,7 @@ namespace SheetMusicOrganizer.Model.Items
                 }
             }
             if(_year == "")
-                _year = tFile.Tag.Year > 0 ? tFile.Tag.Year.ToString() : "";
+                _year = tFile.Tag?.Year > 0 ? tFile.Tag.Year.ToString() : "";
         }
 
         public override object?[] GetCustomValues()
@@ -238,6 +238,32 @@ namespace SheetMusicOrganizer.Model.Items
             var newSong = (SongItem)MemberwiseClone();
             newSong.ShowedAsPlaying = false;
             return newSong;
+        }
+
+        public bool IsSameMetadata(SongItem otherSong)
+        {
+            return this.PartitionDirectory.Equals(otherSong.PartitionDirectory, StringComparison.OrdinalIgnoreCase)
+            && this.AudioDirectory1.Equals(otherSong.AudioDirectory1, StringComparison.OrdinalIgnoreCase)
+            && this.AudioDirectory2.Equals(otherSong.AudioDirectory2, StringComparison.OrdinalIgnoreCase)
+            && this.Number == otherSong.Number
+            && this.Title == otherSong.Title
+            && this.Artist == otherSong.Artist
+            && this.Album == otherSong.Album
+            && this.Genre == otherSong.Genre
+            && this.LengthMD == otherSong.LengthMD
+            && this.CodecMD == otherSong.CodecMD
+            && this.BitrateMD == otherSong.BitrateMD
+            && this.Rating == otherSong.Rating
+            && this.Year == otherSong.Year;
+        }
+
+        public void CopyUserProperties(SongItem otherSong)
+        {
+            this.DateAdded = otherSong.DateAdded;
+            this.Notes = otherSong.Notes;
+            this.MasteryId = otherSong.MasteryId;
+            this.ScrollStartTime = otherSong.ScrollStartTime < this.LengthSecs ? otherSong.ScrollStartTime : 0;
+            this.ScrollEndTime = this.LengthSecs - otherSong.ScrollEndTime > this.ScrollStartTime ? otherSong.ScrollEndTime : 0;
         }
     }
 }

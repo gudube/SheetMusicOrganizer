@@ -48,30 +48,42 @@ namespace SheetMusicOrganizer.ViewModel.Library
 
         private bool AddSong(SongItem song)
         {
-            if (DbHandler.IsSongExisting(song.PartitionDirectory))
+            var existingSong = DbHandler.GetSong(song.PartitionDirectory);
+            if (existingSong != null)
             {
-                if(overwrite)
+                if (overwrite)
                 {
                     AddStatus($"Overwriting song... ({song})");
-                    DbHandler.UpdateSong(song);
-                    if (Session.PlayingSong != null && Session.PlayingSong.Id == song.Id)
-                        ActionOnUI(() => libraryVM.StopPlayingSong());
-                    
-                    foreach (var playlist in libraryVM.Playlists)
-                    {
-                        ActionOnUI(() => playlist.UpdateSong(song));
-                    }
-                    AddStatus($"Song overwritten. ({song})");
-                    return true;
                 }
                 else
                 {
-                    AddStatus($"Existing song, skipping. ({song})");
-                    return false;
+                    AddStatus($"Existing song, looking for differences... ({song})");
+                    if (song.IsSameMetadata(existingSong))
+                    {
+                        AddStatus($"No differences found, skipping. ({song})");
+                        return false;
+                    }
+                    else
+                    {
+                        song.CopyUserProperties(existingSong);
+                    }
                 }
 
+                DbHandler.UpdateSong(song);
+                if (Session.PlayingSong != null && Session.PlayingSong.Id == song.Id)
+                    ActionOnUI(() => libraryVM.StopPlayingSong());
+
+                foreach (var playlist in libraryVM.Playlists)
+                {
+                    ActionOnUI(() => playlist.UpdateSong(song));
+                }
+                if (overwrite)
+                    AddStatus($"Song overwritten. ({song})");
+                else
+                    AddStatus($"Some differences found, song updated. ({song})");
+                return true;
             }
-            
+
             AddStatus($"Adding new song... ({song})");
 
             MasteryItem[] selectedMasteryItems = Session.MasteryLevels.Where(x => x.IsSelected).ToArray();
