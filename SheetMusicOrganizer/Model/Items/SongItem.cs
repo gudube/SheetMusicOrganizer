@@ -97,7 +97,7 @@ namespace SheetMusicOrganizer.Model.Items
             get => _pagesEndPercentage; set
             {
                 if (SetField(ref _pagesEndPercentage, Math.Min(1, value)))
-                    DbHandler.UpdateSong(this, DbHandler.songTable.PagesEndPercentage, _scrollEndTime);
+                    DbHandler.UpdateSong(this, DbHandler.songTable.PagesEndPercentage, _pagesEndPercentage);
             }
         }
         #endregion
@@ -162,8 +162,8 @@ namespace SheetMusicOrganizer.Model.Items
             _masteryId = GetSafeInt(dataReader, songTable.MasteryId.Name).GetValueOrDefault(1);
             _scrollStartTime = GetSafeInt(dataReader, songTable.ScrollStartTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollStartTime);
             _scrollEndTime = GetSafeInt(dataReader, songTable.ScrollEndTime.Name).GetValueOrDefault(Settings.Default.DefaultScrollEndTime);
-            _pagesStartPercentage = GetSafeInt(dataReader, songTable.PagesStartPercentage.Name).GetValueOrDefault(0);
-            _pagesEndPercentage = GetSafeInt(dataReader, songTable.PagesEndPercentage.Name).GetValueOrDefault(1);
+            _pagesStartPercentage = GetSafeFloat(dataReader, songTable.PagesStartPercentage.Name).GetValueOrDefault(0);
+            _pagesEndPercentage = GetSafeFloat(dataReader, songTable.PagesEndPercentage.Name).GetValueOrDefault(1);
             string[] lengthSeparated = LengthMD.Split(':');
             _lengthSecs = lengthSeparated.Length == 2 ? Int32.Parse(lengthSeparated[0]) * 60 + Int32.Parse(lengthSeparated[1]) : 0;
         }

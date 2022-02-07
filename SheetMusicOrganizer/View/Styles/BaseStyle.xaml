@@ -251,8 +251,29 @@
 
     <!--#region Partition Markers -->
     <Style x:Key="PartitionMarkerBase" TargetType="{x:Type Grid}">
-        <Setter Property="Background" Value="Red"></Setter>
-        <Setter Property="Height" Value="2"></Setter>
+        <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}"/>
+        <Setter Property="Height" Value="20"></Setter>
+        <Setter Property="Margin" Value="0, -10, 0, 0"></Setter>
+        <Setter Property="Opacity" Value="0.5"></Setter>
+        <Style.Resources>
+            <Style TargetType="{x:Type Rectangle}">
+                <Setter Property="Stroke" Value="LightGreen"></Setter>
+                <Setter Property="Fill" Value="LightGreen"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Height" Value="4"></Setter>
+            </Style>
+            <Style TargetType="{x:Type Polygon}">
+                <Setter Property="Stroke" Value="LightGreen"></Setter>
+                <Setter Property="Fill" Value="LightGreen"></Setter>
+                <Setter Property="Points" Value="0, 0, 20, 10, 0, 20"></Setter>
+                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="2, 2, 0, 0"></Setter>
+                <Setter Property="FontSize" Value="12"></Setter>
+            </Style>
+        </Style.Resources>
     </Style>
     <!--#endregion-->
 

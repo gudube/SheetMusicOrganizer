@@ -57,15 +57,15 @@
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Text="Start at :" Style="{DynamicResource LabelTextBlock}"/>
             <TextBox Grid.Row="0" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
-                     Text="{Binding SyncingSong.PagesStartPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
+                     Text="{Binding SyncingSong.PagesStartPercentage, Converter={StaticResource FloatPercentageConverter}, Mode=OneWay}"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
-            <ToggleButton Grid.Row="0" Grid.Column="3" Style="{DynamicResource 3DButton}" Content="Set start"
+            <ToggleButton Grid.Row="0" Grid.Column="3" Style="{DynamicResource 3DToggleButton}" Content="Set start" Margin="5,1"
                           IsChecked="{Binding SettingStartPageScroll, Mode=TwoWay}" IsEnabled="{Binding SettingEndPageScroll, Converter={StaticResource InvertBoolConverter}, Mode=OneWay}"/>
             <TextBlock Grid.Row="1" Text="End at :" Style="{DynamicResource LabelTextBlock}"/>
             <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
-                     Text="{Binding SyncingSong.PagesEndPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
+                     Text="{Binding SyncingSong.PagesEndPercentage, Converter={StaticResource FloatPercentageConverter}, Mode=OneWay}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
-            <ToggleButton Grid.Row="1" Grid.Column="3" Style="{DynamicResource 3DButton}" Content="Set end"
+            <ToggleButton Grid.Row="1" Grid.Column="3" Style="{DynamicResource 3DToggleButton}" Content="Set end" Margin="5,1"
                           IsChecked="{Binding SettingEndPageScroll, Mode=TwoWay}" IsEnabled="{Binding SettingStartPageScroll, Converter={StaticResource InvertBoolConverter}, Mode=OneWay}"/>
         </Grid>
     </StackPanel>

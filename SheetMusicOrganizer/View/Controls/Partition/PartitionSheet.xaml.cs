@@ -285,41 +285,76 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
         #region Scroll Markers
 
-        private UIElement? tempScrollMarker;
+        private UIElement? tempScrollMarker = null;
+        private double? minValue = null;
+        private double? maxValue = null;
         private void TempScrollMarker_Loaded(object sender, RoutedEventArgs e)
         {
             tempScrollMarker = sender as UIElement;
         }
+
         private void TempScrollMarker_Unloaded(object sender, RoutedEventArgs e)
         {
             tempScrollMarker = null;
         }
 
-        private void Scrollbar_MouseMove(object sender, MouseEventArgs e)
+        private void TempScrollMarker_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(tempScrollMarker?.Visibility == Visibility.Visible)
-                Canvas.SetTop(tempScrollMarker, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y);
+            if (e.NewValue is true)
+            {
+                if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+                {
+                    if (scrollVM.SettingStartPageScroll)
+                        maxValue = partitionVM.ShownSong.PagesEndPercentage * Scrollbar.ExtentHeight - 50 * partitionVM.Zoom;
+                    else if (scrollVM.SettingEndPageScroll)
+                        minValue = partitionVM.ShownSong.PagesStartPercentage * Scrollbar.ExtentHeight + 50 * partitionVM.Zoom;
+                }
+            } else
+            {
+                maxValue = null;
+                minValue = null;
+            }
         }
 
-        private void Scrollbar_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ScrollContent_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(tempScrollMarker?.Visibility == Visibility.Visible)
+            {
+                if(minValue != null)
+                    Canvas.SetTop(tempScrollMarker, Math.Max(minValue ?? double.MinValue, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y));
+                else if(maxValue != null)
+                    Canvas.SetTop(tempScrollMarker, Math.Min(maxValue ?? double.MaxValue, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y));
+                else
+                    Canvas.SetTop(tempScrollMarker, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y);
+
+            }
+        }
+
+        private void ScrollContent_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
             {
                 if (scrollVM.SettingStartPageScroll)
                 {
-                    partitionVM.ShownSong.PagesStartPercentage = (float)((Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y) / Scrollbar.ExtentHeight);
+                    if(tempScrollMarker?.Opacity < 1)
+                        partitionVM.ShownSong.PagesStartPercentage = 0;
+                    else
+                        partitionVM.ShownSong.PagesStartPercentage = (float)(Canvas.GetTop(tempScrollMarker) / Scrollbar.ExtentHeight);
+
                     scrollVM.SettingStartPageScroll = false;
                 }
                 if (scrollVM.SettingEndPageScroll)
                 {
-                    partitionVM.ShownSong.PagesEndPercentage = (float)((Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y) / Scrollbar.ExtentHeight);
+                    if (tempScrollMarker?.Opacity < 1)
+                        partitionVM.ShownSong.PagesEndPercentage = 1;
+                    else
+                        partitionVM.ShownSong.PagesEndPercentage = (float)(Canvas.GetTop(tempScrollMarker) / Scrollbar.ExtentHeight);
                     scrollVM.SettingEndPageScroll = false;
                 }
             }
-
         }
-        #endregion
 
+        #endregion
 
     }
 }

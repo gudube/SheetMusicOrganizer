@@ -18,26 +18,34 @@
         <controls:DisabledOverlay x:Name="LoadingOverlay" Title="LOADING..." FontSize="26"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Title, Converter={StaticResource StringToVisibleConverter}, FallbackValue=Hidden}"/>
         <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
-                    HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" MouseMove="Scrollbar_MouseMove" PreviewMouseDown="Scrollbar_MouseDown">
-            <Grid>
-                <ContentControl Content="{Binding SelectedSyncVM}">
+                    HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <Grid PreviewMouseDown="ScrollContent_PreviewMouseDown" MouseMove="ScrollContent_MouseMove" HorizontalAlignment="Stretch" Background="Transparent">
+                <ContentControl Content="{Binding SelectedSyncVM}" Panel.ZIndex="10" >
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type sync:NoSyncVM}">
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
-                            <Canvas x:Name="ScrollSyncCanvas" Panel.ZIndex="10" HorizontalAlignment="Stretch">
+                            <Canvas x:Name="ScrollSyncCanvas" HorizontalAlignment="Stretch">
                                 <Grid Style="{DynamicResource TopPartitionMarker}">
-                                    <TextBlock>TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST</TextBlock>
+                                    <Rectangle/>
+                                    <Polygon/>
+                                    <TextBlock Text="S"/>
                                 </Grid>
-                                <Grid Style="{DynamicResource BottomPartitionMarker}"/>
-                                <Grid Style="{DynamicResource TempPartitionMarker}" Loaded="TempScrollMarker_Loaded" Unloaded="TempScrollMarker_Unloaded"/>
+                                <Grid Style="{DynamicResource BottomPartitionMarker}">
+                                    <Rectangle/>
+                                    <Polygon/>
+                                    <TextBlock Text="E"/>
+                                </Grid>
+                                <Grid Style="{DynamicResource TempPartitionMarker}" Loaded="TempScrollMarker_Loaded" Unloaded="TempScrollMarker_Unloaded" IsVisibleChanged="TempScrollMarker_IsVisibleChanged">
+                                    <Rectangle/>
+                                </Grid>
                             </Canvas>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type sync:PageSyncVM}">
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>
-                <ItemsControl x:Name="PagesContainer"/>
+                <ItemsControl x:Name="PagesContainer" Panel.ZIndex="9" HorizontalAlignment="Center"/>
             </Grid>
         </ScrollViewer>
         <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,30,20">

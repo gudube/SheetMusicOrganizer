@@ -146,6 +146,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="3DToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource 3DButton}">
+    </Style>
     <Style x:Key="RoundButton" TargetType="{x:Type Grid}" BasedOn="{StaticResource RoundButtonBase}">
         <Style.Resources>
             <Style TargetType="{x:Type Ellipse}">
