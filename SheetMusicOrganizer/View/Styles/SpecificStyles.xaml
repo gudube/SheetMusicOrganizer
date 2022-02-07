@@ -214,14 +214,14 @@
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
                     <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
-                    <Binding Path="Session.PlayingSong.PagesStartPercentage"/>
+                    <Binding Path="SyncingSong.PagesStartPercentage"/>
                 </MultiBinding>
             </Setter.Value>
         </Setter>
-        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Setter Property="Visibility" Value="Visible"></Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding ShowPartitionMarkers, Mode=OneWay}" Value="True">
-                <Setter Property="Visibility" Value="Visible"></Setter>
+            <DataTrigger Binding="{Binding SettingStartPageScroll, FallbackValue=True}" Value="True">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -233,18 +233,30 @@
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
                     <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
-                    <Binding Path="Session.PlayingSong.PagesEndPercentage"/>
+                    <Binding Path="SyncingSong.PagesEndPercentage"/>
                 </MultiBinding>
             </Setter.Value>
         </Setter>
-        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Setter Property="Visibility" Value="Visible"></Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding ShowPartitionMarkers, Mode=OneWay}" Value="True">
-                <Setter Property="Visibility" Value="Visible"></Setter>
+            <DataTrigger Binding="{Binding SettingEndPageScroll, FallbackValue=True}" Value="True">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
             </DataTrigger>
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="TempPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}"/>
+        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SettingStartPageScroll, FallbackValue=False}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding SettingEndPageScroll, FallbackValue=False}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
     <!--#endregion-->
 
 </ResourceDictionary>

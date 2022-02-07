@@ -23,7 +23,14 @@ namespace SheetMusicOrganizer.ViewModel.Sync
         public SongItem? SyncingSong
         {
             get => _syncingSong;
-            set => SetField(ref _syncingSong, value);
+            set
+            {
+                if (SetField(ref _syncingSong, value))
+                {
+                    SettingStartPageScroll = false;
+                    SettingEndPageScroll = false;
+                }
+            }
         }
 
         public DelegateCommand SetStartNowCommand { get; }
@@ -50,6 +57,18 @@ namespace SheetMusicOrganizer.ViewModel.Sync
                 SyncingSong.ScrollEndTime = (int) Math.Floor(Session.Player.Length - timeFromStart);
             }
         }
+        private bool _settingStartPageScroll = false;
+        public bool SettingStartPageScroll
+        {
+            get => _settingStartPageScroll;
+            set => SetField(ref _settingStartPageScroll, value);
+        }
 
+        private bool _settingEndPageScroll = false;
+        public bool SettingEndPageScroll
+        {
+            get => _settingEndPageScroll;
+            set => SetField(ref _settingEndPageScroll, value);
+        }
     }
 }

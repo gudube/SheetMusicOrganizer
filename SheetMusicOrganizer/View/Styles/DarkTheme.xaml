@@ -121,7 +121,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template" Value="{StaticResource DarkToggleButton}"/>
     </Style>
-    <Style x:Key="3DButton" TargetType="{x:Type Button}" BasedOn="{StaticResource 3DButtonBase}">
+    <Style x:Key="3DButton" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource 3DButtonBase}">
         <Setter Property="Foreground" Value="{StaticResource ClickableSolidColor}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template" Value="{StaticResource DarkButton}"/>

@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:SheetMusicOrganizer.View.Controls"
              xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel"
+             xmlns:sync="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
              mc:Ignorable="d" Focusable="True"
              Loaded="PartitionSheet_OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -13,18 +14,29 @@
     <Grid>
         <Grid.Resources>
             <tools:StringToVisibleConverter x:Key="StringToVisibleConverter"/>
-            <tools:MultiplicationConverter x:Key="MultiplicationConverter"/>
         </Grid.Resources>
         <controls:DisabledOverlay x:Name="LoadingOverlay" Title="LOADING..." FontSize="26"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Title, Converter={StaticResource StringToVisibleConverter}, FallbackValue=Hidden}"/>
         <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
-                    HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Auto">
+                    HorizontalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" MouseMove="Scrollbar_MouseMove" PreviewMouseDown="Scrollbar_MouseDown">
             <Grid>
-                <Canvas Panel.ZIndex="10" HorizontalAlignment="Stretch">
-                    <Grid Style="{DynamicResource TopPartitionMarker}">
-                        <TextBlock>TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST</TextBlock></Grid>
-                    <Grid Style="{DynamicResource BottomPartitionMarker}"/>
-                </Canvas>
+                <ContentControl Content="{Binding SelectedSyncVM}">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type sync:NoSyncVM}">
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
+                            <Canvas x:Name="ScrollSyncCanvas" Panel.ZIndex="10" HorizontalAlignment="Stretch">
+                                <Grid Style="{DynamicResource TopPartitionMarker}">
+                                    <TextBlock>TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEST</TextBlock>
+                                </Grid>
+                                <Grid Style="{DynamicResource BottomPartitionMarker}"/>
+                                <Grid Style="{DynamicResource TempPartitionMarker}" Loaded="TempScrollMarker_Loaded" Unloaded="TempScrollMarker_Unloaded"/>
+                            </Canvas>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type sync:PageSyncVM}">
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
                 <ItemsControl x:Name="PagesContainer"/>
             </Grid>
         </ScrollViewer>

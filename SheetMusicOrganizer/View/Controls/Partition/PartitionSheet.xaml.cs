@@ -11,6 +11,7 @@ using Windows.Storage;
 using Serilog;
 using System.Threading;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Sync;
 
 namespace SheetMusicOrganizer.View.Controls.Partition
 {
@@ -281,5 +282,44 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             partitionVM.Zoom -= 0.1;
         }
         #endregion
+
+        #region Scroll Markers
+
+        private UIElement? tempScrollMarker;
+        private void TempScrollMarker_Loaded(object sender, RoutedEventArgs e)
+        {
+            tempScrollMarker = sender as UIElement;
+        }
+        private void TempScrollMarker_Unloaded(object sender, RoutedEventArgs e)
+        {
+            tempScrollMarker = null;
+        }
+
+        private void Scrollbar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(tempScrollMarker?.Visibility == Visibility.Visible)
+                Canvas.SetTop(tempScrollMarker, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y);
+        }
+
+        private void Scrollbar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+            {
+                if (scrollVM.SettingStartPageScroll)
+                {
+                    partitionVM.ShownSong.PagesStartPercentage = (float)((Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y) / Scrollbar.ExtentHeight);
+                    scrollVM.SettingStartPageScroll = false;
+                }
+                if (scrollVM.SettingEndPageScroll)
+                {
+                    partitionVM.ShownSong.PagesEndPercentage = (float)((Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y) / Scrollbar.ExtentHeight);
+                    scrollVM.SettingEndPageScroll = false;
+                }
+            }
+
+        }
+        #endregion
+
+
     }
 }

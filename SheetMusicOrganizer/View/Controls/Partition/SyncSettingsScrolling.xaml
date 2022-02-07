@@ -3,13 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel.Sync" xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
+             xmlns:viewModel="clr-namespace:SheetMusicOrganizer.ViewModel.Sync"
+             xmlns:tools="clr-namespace:SheetMusicOrganizer.View.Tools"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="350"
              d:DataContext="{d:DesignInstance viewModel:ScrollSyncVM}"
              Background="{DynamicResource BackgroundLv3SolidColor}">
     <UserControl.Resources>
         <tools:FloatPercentageConverter x:Key="FloatPercentageConverter"/>
+        <tools:InvertBoolConverter x:Key="InvertBoolConverter"/>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" Margin="0,0,0,5">
         <TextBlock Text="Scroll Start/End Time" Style="{DynamicResource TitleTextBlock}"/>
@@ -57,10 +59,14 @@
             <TextBox Grid.Row="0" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
                      Text="{Binding SyncingSong.PagesStartPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
             <TextBlock Grid.Row="0" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
+            <ToggleButton Grid.Row="0" Grid.Column="3" Style="{DynamicResource 3DButton}" Content="Set start"
+                          IsChecked="{Binding SettingStartPageScroll, Mode=TwoWay}" IsEnabled="{Binding SettingEndPageScroll, Converter={StaticResource InvertBoolConverter}, Mode=OneWay}"/>
             <TextBlock Grid.Row="1" Text="End at :" Style="{DynamicResource LabelTextBlock}"/>
             <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5,0" HorizontalAlignment="Stretch"
                      Text="{Binding SyncingSong.PagesEndPercentage, Converter={StaticResource FloatPercentageConverter}}"/>
             <TextBlock Grid.Row="1" Grid.Column="2" Text="% of the partition" Style="{DynamicResource LabelTextBlock}"/>
+            <ToggleButton Grid.Row="1" Grid.Column="3" Style="{DynamicResource 3DButton}" Content="Set end"
+                          IsChecked="{Binding SettingEndPageScroll, Mode=TwoWay}" IsEnabled="{Binding SettingStartPageScroll, Converter={StaticResource InvertBoolConverter}, Mode=OneWay}"/>
         </Grid>
     </StackPanel>
 </UserControl>
