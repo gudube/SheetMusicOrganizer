@@ -223,8 +223,11 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 return;
             }
 
-            double posPercentage = partitionVM.GetSongPercentage();
-            Scrollbar.ScrollToVerticalOffset(posPercentage * Scrollbar.ScrollableHeight);
+            double? pos = partitionVM.SelectedSyncVM.GetPartitionPos();
+            if(pos != null)
+            {
+                Scrollbar.ScrollToVerticalOffset(pos ?? 0);
+            }
         }
 
         private void UpdateZoom()
@@ -356,5 +359,13 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
         #endregion
 
+        private void Scrollbar_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if ((e.ExtentHeightChange != 0 || e.ViewportHeightChange != 0) && DataContext is PartitionVM partitionVM)
+            {
+                partitionVM.SelectedSyncVM.ScrollableHeight = Scrollbar.ScrollableHeight;
+                partitionVM.SelectedSyncVM.ExtentHeight = e.ExtentHeight;
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@
         <controls:DisabledOverlay x:Name="LoadingOverlay" Title="LOADING..." FontSize="26"
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Title, Converter={StaticResource StringToVisibleConverter}, FallbackValue=Hidden}"/>
         <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
-                    HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ScrollChanged="Scrollbar_ScrollChanged">
             <Grid PreviewMouseDown="ScrollContent_PreviewMouseDown" MouseMove="ScrollContent_MouseMove" HorizontalAlignment="Stretch" Background="Transparent">
                 <ContentControl Content="{Binding SelectedSyncVM}" Panel.ZIndex="10" >
                     <ContentControl.Resources>
