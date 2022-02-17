@@ -208,7 +208,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TopPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+    <Style x:Key="TopPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource TopPartitionMarkerBase}">
         <Setter Property="Canvas.Top">
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
@@ -235,7 +235,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="BottomPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+    <Style x:Key="BottomPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource BottomPartitionMarkerBase}">
         <Setter Property="Canvas.Top">
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">

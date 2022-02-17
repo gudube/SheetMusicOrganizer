@@ -288,12 +288,12 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
         #region Scroll Markers
 
-        private UIElement? tempScrollMarker = null;
+        private FrameworkElement? tempScrollMarker = null;
         private double? minValue = null;
         private double? maxValue = null;
         private void TempScrollMarker_Loaded(object sender, RoutedEventArgs e)
         {
-            tempScrollMarker = sender as UIElement;
+            tempScrollMarker = sender as FrameworkElement;
         }
 
         private void TempScrollMarker_Unloaded(object sender, RoutedEventArgs e)
@@ -342,7 +342,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                     if(tempScrollMarker?.Opacity < 1)
                         partitionVM.ShownSong.PagesStartPercentage = 0;
                     else
-                        partitionVM.ShownSong.PagesStartPercentage = (float)(Canvas.GetTop(tempScrollMarker) / Scrollbar.ExtentHeight);
+                        partitionVM.ShownSong.PagesStartPercentage = (float)((Canvas.GetTop(tempScrollMarker) - 2) / Scrollbar.ExtentHeight);
 
                     scrollVM.SettingStartPageScroll = false;
                 }
@@ -351,7 +351,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                     if (tempScrollMarker?.Opacity < 1)
                         partitionVM.ShownSong.PagesEndPercentage = 1;
                     else
-                        partitionVM.ShownSong.PagesEndPercentage = (float)(Canvas.GetTop(tempScrollMarker) / Scrollbar.ExtentHeight);
+                        partitionVM.ShownSong.PagesEndPercentage = (float)((Canvas.GetTop(tempScrollMarker) + 2) / Scrollbar.ExtentHeight);
                     scrollVM.SettingEndPageScroll = false;
                 }
             }

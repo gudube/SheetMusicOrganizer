@@ -250,28 +250,59 @@
     <!--#endregion-->
 
     <!--#region Partition Markers -->
+    <Style x:Key="RectanglePartitionMarkerBase" TargetType="{x:Type Rectangle}">
+        <Setter Property="Stroke" Value="LightGreen"></Setter>
+        <Setter Property="Fill" Value="LightGreen"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="Height" Value="4"></Setter>
+    </Style>
+    <Style x:Key="PolygonPartitionMarkerBase" TargetType="{x:Type Polygon}">
+        <Setter Property="Stroke" Value="LightGreen"></Setter>
+        <Setter Property="Fill" Value="LightGreen"></Setter>
+        <Setter Property="Points" Value="0, 0, 20, 10, 0, 20"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+    </Style>
+    <Style x:Key="TextBlockPartitionMarkerBase" TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="2, 2, 0, 0"></Setter>
+        <Setter Property="FontSize" Value="12"></Setter>
+    </Style>
     <Style x:Key="PartitionMarkerBase" TargetType="{x:Type Grid}">
         <Setter Property="Width" Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Canvas}}}"/>
         <Setter Property="Height" Value="20"></Setter>
         <Setter Property="Margin" Value="0, -10, 0, 0"></Setter>
         <Setter Property="Opacity" Value="0.5"></Setter>
         <Style.Resources>
-            <Style TargetType="{x:Type Rectangle}">
-                <Setter Property="Stroke" Value="LightGreen"></Setter>
-                <Setter Property="Fill" Value="LightGreen"></Setter>
-                <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
-                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                <Setter Property="Height" Value="4"></Setter>
+            <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource RectanglePartitionMarkerBase}"/>
+            <Style TargetType="{x:Type Polygon}" BasedOn="{StaticResource PolygonPartitionMarkerBase}"/>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockPartitionMarkerBase}"/>
+        </Style.Resources>
+    </Style>
+    <Style x:Key="TopPartitionMarkerBase" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Margin" Value="0, 0, 0, 0"></Setter>
+        <Style.Resources>
+            <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource RectanglePartitionMarkerBase}">
+                <Setter Property="VerticalAlignment" Value="Top"></Setter>
             </Style>
-            <Style TargetType="{x:Type Polygon}">
-                <Setter Property="Stroke" Value="LightGreen"></Setter>
-                <Setter Property="Fill" Value="LightGreen"></Setter>
-                <Setter Property="Points" Value="0, 0, 20, 10, 0, 20"></Setter>
-                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            <Style TargetType="{x:Type Polygon}" BasedOn="{StaticResource PolygonPartitionMarkerBase}">
+                <Setter Property="Points" Value="0, 0, 0, 20, 20, 0"></Setter>
             </Style>
-            <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Margin" Value="2, 2, 0, 0"></Setter>
-                <Setter Property="FontSize" Value="12"></Setter>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockPartitionMarkerBase}">
+                <Setter Property="Margin" Value="2, -2, 0, 0"></Setter>
+            </Style>
+        </Style.Resources>
+    </Style>
+    <Style x:Key="BottomPartitionMarkerBase" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Margin" Value="0, -20, 0, 0"></Setter>
+        <Style.Resources>
+            <Style TargetType="{x:Type Rectangle}" BasedOn="{StaticResource RectanglePartitionMarkerBase}">
+                <Setter Property="VerticalAlignment" Value="Bottom"></Setter>
+            </Style>
+            <Style TargetType="{x:Type Polygon}" BasedOn="{StaticResource PolygonPartitionMarkerBase}">
+                <Setter Property="Points" Value="0, 0, 0, 20, 20, 20"></Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockPartitionMarkerBase}">
+                <Setter Property="Margin" Value="2, 4, 0, 0"></Setter>
             </Style>
         </Style.Resources>
     </Style>
