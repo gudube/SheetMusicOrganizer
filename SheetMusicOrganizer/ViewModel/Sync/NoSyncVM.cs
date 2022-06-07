@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using SheetMusicOrganizer.Model.Items;
+using System.ComponentModel;
 
 namespace SheetMusicOrganizer.ViewModel.Sync
 {
-    public class NoSyncVM : BaseViewModel
+    public class NoSyncVM : BaseSyncVM
     {
         public NoSyncVM(SessionContext session) : base(session)
         {
@@ -13,5 +14,14 @@ namespace SheetMusicOrganizer.ViewModel.Sync
         }
 
         public override string ViewModelName => "None";
+
+        public override double? GetPartitionPos()
+        {
+            return null;
+        }
+
+        public override SongItem? SyncingSong { get; set; }
+        public override double ScrollableHeight { get; set; }
+        public override double ExtentHeight { get; set; }
     }
 }

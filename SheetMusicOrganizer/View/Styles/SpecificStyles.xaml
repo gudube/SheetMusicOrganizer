@@ -6,6 +6,8 @@
                     xmlns:windows="clr-namespace:SheetMusicOrganizer.View.Windows"
                     x:Class="SheetMusicOrganizer.View.Styles.SpecificStyles">
     <tools:MasteryColorConverter x:Key="MasteryColorConverter"/>
+    <tools:MultiplicationConverter x:Key="MultiplicationConverter"/>
+    <tools:IsMarkerOnPageEnds x:Key="IsMarkerOnPageEnds"/>
 
     <Style x:Key="MasteryListBoxItem" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
         <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=(modelItems:MasteryItem.IsSelected)}"/>
@@ -206,6 +208,82 @@
         </Setter>
     </Style>
 
+    <Style x:Key="TopPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource TopPartitionMarkerBase}">
+        <Setter Property="Canvas.Top">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
+                    <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                    <Binding Path="SyncingSong.PagesStartPercentage"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SettingStartPageScroll, FallbackValue=True}" Value="True">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+            <DataTrigger Value="True">
+                <DataTrigger.Binding>
+                    <MultiBinding Converter="{StaticResource IsMarkerOnPageEnds}" Mode="OneWay">
+                        <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                        <Binding Path="(Canvas.Top)" RelativeSource="{RelativeSource Self}"/>
+                        <Binding ElementName="Scrollbar" Path="DataContext.Zoom"/>
+                    </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BottomPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource BottomPartitionMarkerBase}">
+        <Setter Property="Canvas.Top">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource MultiplicationConverter}" Mode="OneWay">
+                    <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                    <Binding Path="SyncingSong.PagesEndPercentage"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Visible"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SettingEndPageScroll, FallbackValue=True}" Value="True">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+            <DataTrigger Value="True">
+                <DataTrigger.Binding>
+                    <MultiBinding Converter="{StaticResource IsMarkerOnPageEnds}" Mode="OneWay">
+                        <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                        <Binding Path="(Canvas.Top)" RelativeSource="{RelativeSource Self}"/>
+                        <Binding ElementName="Scrollbar" Path="DataContext.Zoom"/>
+                    </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="TempPartitionMarker" TargetType="{x:Type Grid}" BasedOn="{StaticResource PartitionMarkerBase}">
+        <Setter Property="Visibility" Value="Hidden"></Setter>
+        <Setter Property="Opacity" Value="1"></Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SettingStartPageScroll, FallbackValue=False}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding SettingEndPageScroll, FallbackValue=False}" Value="True">
+                <Setter Property="Visibility" Value="Visible"></Setter>
+            </DataTrigger>
+            <DataTrigger Value="True">
+                <DataTrigger.Binding>
+                    <MultiBinding Converter="{StaticResource IsMarkerOnPageEnds}" Mode="OneWay">
+                        <Binding ElementName="Scrollbar" Path="ExtentHeight"/>
+                        <Binding Path="(Canvas.Top)" RelativeSource="{RelativeSource Self}"/>
+                        <Binding ElementName="Scrollbar" Path="DataContext.Zoom"/>
+                    </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="Opacity" Value="0.2"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
     <!--#endregion-->
 
 </ResourceDictionary>

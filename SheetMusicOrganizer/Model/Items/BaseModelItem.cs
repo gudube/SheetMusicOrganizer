@@ -56,6 +56,17 @@ namespace SheetMusicOrganizer.Model.Items
             return (uint) safeInt;
         }
 
+
+        protected float? GetSafeFloat(SqliteDataReader dR, string colName)
+        {
+            int colNum = dR.GetOrdinal(colName);
+            if (!dR.IsDBNull(colNum))
+                return dR.GetFloat(colNum);
+
+            //Log.Warning("Null value for Int {colName} for object {objName} with ID {Id}", colName, this.GetType(), Id);
+            return null;
+        }
+
         protected bool GetSafeBool(SqliteDataReader dR, string colName)
         {
             int colNum = dR.GetOrdinal(colName);

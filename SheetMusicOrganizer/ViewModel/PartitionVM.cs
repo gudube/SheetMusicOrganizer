@@ -15,7 +15,7 @@ namespace SheetMusicOrganizer.ViewModel
             _noSyncVM = new NoSyncVM(session);
             _scrollSyncVM = new ScrollSyncVM(session);
             _pageSyncVM = new PageSyncVM(session);
-            SyncViewModels = new ObservableCollection<BaseViewModel>()
+            SyncViewModels = new ObservableCollection<BaseSyncVM>()
             {
                 _noSyncVM, _scrollSyncVM, _pageSyncVM
             };
@@ -57,30 +57,16 @@ namespace SheetMusicOrganizer.ViewModel
             }
         }
 
-        public double GetSongPercentage()
-        {
-            if (ShownSong == null)
-            {
-                Log.Warning("Tried to get position in song for PartitionVM when shown song is null");
-                return 0;
-            }
-
-            double updatedPos = Session.Player.Position - ShownSong.ScrollStartTime;
-            double updatedLength = Session.Player.Length - ShownSong.ScrollStartTime - ShownSong.ScrollEndTime;
-            if (updatedPos <= 0 || updatedLength <= 0) 
-                return 0;
-            return updatedPos / updatedLength;
-        }
         #endregion
 
         #region Sync Method
         private readonly NoSyncVM _noSyncVM;
         private readonly ScrollSyncVM _scrollSyncVM;
         private readonly PageSyncVM _pageSyncVM;
-        public ObservableCollection<BaseViewModel> SyncViewModels { get; }
+        public ObservableCollection<BaseSyncVM> SyncViewModels { get; }
 
-        private BaseViewModel _selectedSyncVM;
-        public BaseViewModel SelectedSyncVM
+        private BaseSyncVM _selectedSyncVM;
+        public BaseSyncVM SelectedSyncVM
         {
             get => _selectedSyncVM;
             set => SetField(ref _selectedSyncVM, value);

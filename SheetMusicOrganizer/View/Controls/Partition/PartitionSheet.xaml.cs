@@ -11,6 +11,7 @@ using Windows.Storage;
 using Serilog;
 using System.Threading;
 using SheetMusicOrganizer.ViewModel;
+using SheetMusicOrganizer.ViewModel.Sync;
 
 namespace SheetMusicOrganizer.View.Controls.Partition
 {
@@ -38,7 +39,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
 
         private void PartitionSheet_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if(!Focus())
+            if (!Focus())
                 Log.Warning("Could not get focus on partition sheet once loaded.");
         }
 
@@ -51,7 +52,8 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 oldVM.PropertyChanged -= PartitionVM_PropertyChanged;
             }
 
-            if (e.NewValue is PartitionVM newVM) {
+            if (e.NewValue is PartitionVM newVM)
+            {
                 newVM.Session.Player.PropertyChanged += Player_PropertyChanged;
                 newVM.PropertyChanged += PartitionVM_PropertyChanged;
                 await OpenShownSongPartition();
@@ -144,14 +146,16 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 {
                     LoadingOverlay.Title = "LOADING...";
                     await _createImageTask;
-                } catch(OperationCanceledException)
+                }
+                catch (OperationCanceledException)
                 {
                     PagesContainer.Items.Clear();
                 }
                 catch (Exception ex)
                 {
                     GlobalEvents.raiseErrorEvent(new FileFormatException(new Uri(partitionDir), ex.Message));
-                } finally
+                }
+                finally
                 {
                     LoadingOverlay.Title = "";
                 }
@@ -204,7 +208,7 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
                 image.StreamSource = stream;
-                image.DecodePixelWidth = (int) resolution;
+                image.DecodePixelWidth = (int)resolution;
                 image.EndInit();
                 image.Freeze();
             }
@@ -222,8 +226,11 @@ namespace SheetMusicOrganizer.View.Controls.Partition
                 return;
             }
 
-            double posPercentage = partitionVM.GetSongPercentage();
-            Scrollbar.ScrollToVerticalOffset(posPercentage * Scrollbar.ScrollableHeight);
+            double? pos = partitionVM.SelectedSyncVM.GetPartitionPos();
+            if (pos != null)
+            {
+                Scrollbar.ScrollToVerticalOffset(pos ?? 0);
+            }
         }
 
         private void UpdateZoom()
@@ -281,5 +288,100 @@ namespace SheetMusicOrganizer.View.Controls.Partition
             partitionVM.Zoom -= 0.1;
         }
         #endregion
+
+        #region Scroll Markers
+
+        private FrameworkElement? tempScrollMarker = null;
+        private double? minValue = null;
+        private double? maxValue = null;
+        private void TempScrollMarker_Loaded(object sender, RoutedEventArgs e)
+        {
+            tempScrollMarker = sender as FrameworkElement;
+        }
+
+        private void TempScrollMarker_Unloaded(object sender, RoutedEventArgs e)
+        {
+            tempScrollMarker = null;
+        }
+
+        private void TempScrollMarker_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is true)
+            {
+                if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+                {
+                    if (scrollVM.SettingStartPageScroll)
+                        maxValue = partitionVM.ShownSong.PagesEndPercentage * Scrollbar.ExtentHeight - 50 * partitionVM.Zoom;
+                    else if (scrollVM.SettingEndPageScroll)
+                        minValue = partitionVM.ShownSong.PagesStartPercentage * Scrollbar.ExtentHeight + 50 * partitionVM.Zoom;
+                }
+            }
+            else
+            {
+                maxValue = null;
+                minValue = null;
+            }
+        }
+
+        private void ScrollContent_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (tempScrollMarker?.Visibility == Visibility.Visible)
+            {
+                if (minValue != null)
+                    Canvas.SetTop(tempScrollMarker, Math.Max(minValue ?? double.MinValue, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y));
+                else if (maxValue != null)
+                    Canvas.SetTop(tempScrollMarker, Math.Min(maxValue ?? double.MaxValue, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y));
+                else
+                    Canvas.SetTop(tempScrollMarker, Scrollbar.VerticalOffset + e.GetPosition(Scrollbar).Y);
+
+            }
+        }
+
+        private void ScrollContent_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+            {
+                if (scrollVM.SettingStartPageScroll)
+                {
+                    if (tempScrollMarker?.Opacity < 1)
+                        partitionVM.ShownSong.PagesStartPercentage = 0;
+                    else
+                        partitionVM.ShownSong.PagesStartPercentage = (float)((Canvas.GetTop(tempScrollMarker) - 2) / Scrollbar.ExtentHeight);
+
+                    scrollVM.SettingStartPageScroll = false;
+                }
+                if (scrollVM.SettingEndPageScroll)
+                {
+                    if (tempScrollMarker?.Opacity < 1)
+                        partitionVM.ShownSong.PagesEndPercentage = 1;
+                    else
+                        partitionVM.ShownSong.PagesEndPercentage = (float)((Canvas.GetTop(tempScrollMarker) + 2) / Scrollbar.ExtentHeight);
+                    scrollVM.SettingEndPageScroll = false;
+                }
+            }
+        }
+
+        #endregion
+
+        private void Scrollbar_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if ((e.ExtentHeightChange != 0 || e.ViewportHeightChange != 0) && DataContext is PartitionVM partitionVM)
+            {
+                partitionVM.SelectedSyncVM.ScrollableHeight = Scrollbar.ScrollableHeight;
+                partitionVM.SelectedSyncVM.ExtentHeight = e.ExtentHeight;
+            }
+        }
+
+        private void TopMarker_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+                scrollVM.SettingStartPageScroll = true;
+        }
+
+        private void BottomMarker_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is PartitionVM partitionVM && partitionVM.SelectedSyncVM is ScrollSyncVM scrollVM && partitionVM.ShownSong != null)
+                scrollVM.SettingEndPageScroll = true;
+        }
     }
 }

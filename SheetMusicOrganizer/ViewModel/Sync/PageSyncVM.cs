@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using SheetMusicOrganizer.Model.Items;
+using System.ComponentModel;
 
 namespace SheetMusicOrganizer.ViewModel.Sync
 {
-    public class PageSyncVM : BaseViewModel
+    public class PageSyncVM : BaseSyncVM
     {
         public PageSyncVM(SessionContext session) : base(session)
         {
@@ -12,6 +13,15 @@ namespace SheetMusicOrganizer.ViewModel.Sync
         {
         }
 
+        public override double? GetPartitionPos()
+        {
+            return null;
+        }
+
         public override string ViewModelName => "Scroll By Page";
+
+        public override SongItem? SyncingSong { get; set; }
+        public override double ScrollableHeight { get; set; }
+        public override double ExtentHeight { get; set; }
     }
 }

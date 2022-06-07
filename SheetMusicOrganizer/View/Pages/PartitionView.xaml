@@ -11,7 +11,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition MinWidth="200" Width="320" MaxWidth="600"/>
+            <ColumnDefinition MinWidth="330" Width="350" MaxWidth="600"/>
         </Grid.ColumnDefinitions>
         <partition:PartitionSheet x:Name="PartitionSheet" Grid.Column="0" BorderThickness="0,0,1,0"/>
         <GridSplitter Grid.Column="1" ResizeDirection="Columns" BorderThickness="1,0,0,0"/>

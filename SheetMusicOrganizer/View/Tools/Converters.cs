@@ -208,7 +208,7 @@ namespace SheetMusicOrganizer.View.Tools
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is float num)
-                return num * 100;
+                return Math.Round(num * 100, 1);
 
             Log.Warning("Could not convert value {value} as float to transform to /100 percentage", value);
             return 0.0;
@@ -220,7 +220,24 @@ namespace SheetMusicOrganizer.View.Tools
                 return num / 100;
 
             Log.Warning("Could not convert value {value} as double to transform to /1.0 percentage", value);
+            return 0;
+        }
+    }
+
+    public class MultiplicationConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b))
+                return a * b;
+
             return 0.0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -280,4 +297,21 @@ namespace SheetMusicOrganizer.View.Tools
         }
     }
 
+    public class IsMarkerOnPageEnds : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (Double.TryParse(System.Convert.ToString(values[0]), out var a) && Double.IsFinite(a) &&
+                Double.TryParse(System.Convert.ToString(values[1]), out var b) && Double.IsFinite(b) &&
+                Double.TryParse(System.Convert.ToString(values[2]), out var c) && Double.IsFinite(c))
+                return b < 50 * c || (a - b) < 50 * c;
+
+            return false;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

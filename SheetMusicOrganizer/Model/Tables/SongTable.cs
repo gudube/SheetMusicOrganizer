@@ -11,7 +11,7 @@
         public override SqlColumn[] GetCustomColumns()
         {
             return new SqlColumn[] { PartitionDirectory, AudioDirectory1, AudioDirectory2, DateAdded, Number, Title, Artist, Album, Genre,
-               LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime };
+               LengthMD, CodecMD, BitrateMD, Rating, Year, Notes, MasteryId, ScrollStartTime, ScrollEndTime, PagesStartPercentage, PagesEndPercentage };
         }
 
         #region Custom Columns
@@ -37,6 +37,8 @@
         public readonly SqlColumn MasteryId;
         public readonly SqlColumn ScrollStartTime = new SqlColumn("ScrollStartTime", EType.Int) { Nullable = true };
         public readonly SqlColumn ScrollEndTime = new SqlColumn("ScrollEndTime", EType.Int) { Nullable = true };
+        public readonly SqlColumn PagesStartPercentage = new SqlColumn("PagesStartPercentage", EType.Real) { Nullable = true, DefaultValue = "0.0" };
+        public readonly SqlColumn PagesEndPercentage = new SqlColumn("PagesEndPercentage", EType.Real) { Nullable = true, DefaultValue = "1.0" };
         #endregion
     }
 }

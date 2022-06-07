@@ -10,6 +10,7 @@ using Serilog;
 using SheetMusicOrganizer;
 using SheetMusicOrganizer.Model.Items;
 using SheetMusicOrganizer.Model.Tables;
+using System.Reflection;
 
 namespace SheetMusicOrganizer.Model
 {
@@ -120,11 +121,13 @@ namespace SheetMusicOrganizer.Model
         private static void UpdateDBVersion(SqliteConnection con)
         {
             int currentVersion = GetDBVersion(con);
-            if (currentVersion == 0)
+            if (currentVersion < 2)
             {
-                // example: AlterAddColumn(con, songTable, songTable.Notes);
-                SetDBVersion(con, 1);
+                var songTable = new SongTable();
+                AlterAddColumn(con, songTable, songTable.PagesStartPercentage);
+                AlterAddColumn(con, songTable, songTable.PagesEndPercentage);
             }
+            SetDBVersion(con, 2);
         }
         #endregion
 
