@@ -19,19 +19,19 @@
                                   Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Title, Converter={StaticResource StringToVisibleConverter}, FallbackValue=Hidden}"/>
         <ScrollViewer x:Name="Scrollbar" PanningMode="Both" VerticalScrollBarVisibility="Visible" CanContentScroll="True"
                     HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ScrollChanged="Scrollbar_ScrollChanged">
-            <Grid PreviewMouseDown="ScrollContent_PreviewMouseDown" MouseMove="ScrollContent_MouseMove" HorizontalAlignment="Stretch" Background="Transparent">
+            <Grid PreviewMouseUp="ScrollContent_PreviewMouseUp" MouseMove="ScrollContent_MouseMove" HorizontalAlignment="Stretch" Background="Transparent">
                 <ContentControl Content="{Binding SelectedSyncVM}" Panel.ZIndex="10" >
                     <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type sync:NoSyncVM}">
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type sync:ScrollSyncVM}">
                             <Canvas x:Name="ScrollSyncCanvas" HorizontalAlignment="Stretch">
-                                <Grid Style="{DynamicResource TopPartitionMarker}">
+                                <Grid x:Name="TopMarker" Style="{DynamicResource TopPartitionMarker}" MouseLeftButtonDown="TopMarker_MouseLeftButtonDown">
                                     <Rectangle/>
                                     <Polygon/>
                                     <TextBlock Text="S"/>
                                 </Grid>
-                                <Grid Style="{DynamicResource BottomPartitionMarker}">
+                                <Grid x:Name="BottomMarker" Style="{DynamicResource BottomPartitionMarker}" MouseLeftButtonDown="BottomMarker_MouseLeftButtonDown">
                                     <Rectangle/>
                                     <Polygon/>
                                     <TextBlock Text="E"/>
